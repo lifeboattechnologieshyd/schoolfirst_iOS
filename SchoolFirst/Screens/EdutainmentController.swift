@@ -34,11 +34,11 @@ class EdutainmentController: UIViewController {
     }
     
     
-    @IBAction func onChangeSegment(_ sender: UISegmentedControl) {
-        if sender.selectedSegmentIndex == 1 {
-            let vc = storyboard?.instantiateViewController(identifier: "FeelViewController") as? FeelViewController
-            navigationController?.pushViewController(vc!, animated: true)
-        }else{
+   @IBAction func onChangeSegment(_ sender: UISegmentedControl) {
+if sender.selectedSegmentIndex == 1 {
+          let vc = storyboard?.instantiateViewController(identifier: "HomeController") as? HomeController
+           navigationController?.pushViewController(vc!, animated: true)
+      }else{
             
         }
     }
