@@ -28,26 +28,26 @@ class HomeController: UIViewController {
     
     var schoolImages = [
         [
-            "school_building",
+            "curriculum",
             "news",
-            "event",
-            "homework",
-            "fee",
-            "gallery",
-            "attendence",
-            "time_table",
-            "admissions",
+            "freepik__the-style-is-candid-image-photography-with-natural__1632",
+            "freepik__the-style-is-candid-image-photography-with-natural__1629",
+            "freepik__the-style-is-candid-image-photography-with-natural__1630",
+            "Group 132409",
+            "online-course",
+            "freepik__the-style-is-candid-image-photography-with-natural__1631",
+            "student",
         ],
         [
-            "school_building",
+            "curriculum",
             "assessments",
-            "event",
-            "homework",
-            "fee",
-            "gallery",
-            "attendence",
-            "time_table",
-            "admissions",
+            "freepik__the-style-is-candid-image-photography-with-natural__1632",
+            "freepik__the-style-is-candid-image-photography-with-natural__1629",
+            "freepik__the-style-is-candid-image-photography-with-natural__1630",
+            "Group 132409",
+            "online-course",
+            "freepik__the-style-is-candid-image-photography-with-natural__1631",
+            "student",
         ]
     ]
     
@@ -372,6 +372,9 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
                 self.navigationController?.pushViewController(vc!, animated: true)
             case 2:
                 print("P-tips")
+                var stbd = UIStoryboard(name: "PTips", bundle: nil)
+                let vc = stbd.instantiateViewController(identifier: "PTipsViewController") as? PTipsViewController
+                self.navigationController?.pushViewController(vc!, animated: true)
             case 3:
                 print("Edutainment")
             case 4:
