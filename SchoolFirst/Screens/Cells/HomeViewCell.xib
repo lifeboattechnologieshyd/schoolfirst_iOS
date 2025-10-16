@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="HomeViewCell" id="gTV-IL-0wX" customClass="HomeViewCell" customModule="SF_Dev" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="101" height="101"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="101" height="101"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PEs-V1-Wcm">
+                        <rect key="frame" x="0.0" y="0.0" width="101" height="101"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="QMX-aE-ci1">
+                                <rect key="frame" x="20.666666666666671" y="10.666666666666664" width="60" height="59.999999999999993"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="CeP-hQ-hRk"/>
+                                    <constraint firstAttribute="width" constant="60" id="OFN-VZ-FZH"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="In7-hv-ycn">
+                                <rect key="frame" x="15.666666666666664" y="78.666666666666671" width="69.666666666666686" height="18"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="18" id="bqF-z1-JBE"/>
+                                </constraints>
+                                <attributedString key="attributedText">
+                                    <fragment content="My School">
+                                        <attributes>
+                                            <font key="NSFont" size="14" name="Lexend-Regular"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="QMX-aE-ci1" firstAttribute="centerY" secondItem="PEs-V1-Wcm" secondAttribute="centerY" constant="-10" id="9Vp-Ad-GPC"/>
+                            <constraint firstItem="In7-hv-ycn" firstAttribute="top" secondItem="QMX-aE-ci1" secondAttribute="bottom" constant="8" id="IKm-pV-hdJ"/>
+                            <constraint firstItem="QMX-aE-ci1" firstAttribute="centerX" secondItem="PEs-V1-Wcm" secondAttribute="centerX" id="J9h-bl-hur"/>
+                            <constraint firstItem="In7-hv-ycn" firstAttribute="centerX" secondItem="QMX-aE-ci1" secondAttribute="centerX" id="hPI-lo-4wu"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="0.0"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </view>
+                </subviews>
+            </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="PEs-V1-Wcm" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="4Sl-fh-bkf"/>
+                <constraint firstItem="PEs-V1-Wcm" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="EAp-HX-scY"/>
+                <constraint firstAttribute="bottom" secondItem="PEs-V1-Wcm" secondAttribute="bottom" id="Orw-D1-UZV"/>
+                <constraint firstAttribute="trailing" secondItem="PEs-V1-Wcm" secondAttribute="trailing" id="iTy-X2-gIy"/>
+            </constraints>
+            <size key="customSize" width="101" height="101"/>
+            <connections>
+                <outlet property="bgVw" destination="PEs-V1-Wcm" id="6Rd-wR-Krj"/>
+                <outlet property="imgVw" destination="QMX-aE-ci1" id="vCv-b4-6FE"/>
+                <outlet property="lblName" destination="In7-hv-ycn" id="zPa-41-L7x"/>
+            </connections>
+            <point key="canvasLocation" x="-46.564885496183201" y="36.971830985915496"/>
+        </collectionViewCell>
+    </objects>
+</document>

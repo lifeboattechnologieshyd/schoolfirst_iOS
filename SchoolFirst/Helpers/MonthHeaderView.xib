@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MonthHeaderView" customModule="SF_Dev" customModuleProvider="target">
+            <connections>
+                <outlet property="btnLeft" destination="G9d-d0-Yhy" id="8TE-ln-Thk"/>
+                <outlet property="btnNext" destination="7W6-Rd-dQ7" id="fdi-B4-Va3"/>
+                <outlet property="btnTitle" destination="bbM-h6-FUM" id="1kw-Gq-Da2"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="DUw-Sc-J2j">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="175"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="VNH-6l-T1a">
+                    <rect key="frame" x="16" y="67" width="361" height="66"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="G9d-d0-Yhy">
+                            <rect key="frame" x="0.0" y="0.0" width="56.666666666666664" height="66"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" image="chevron.left" catalog="system"/>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bbM-h6-FUM">
+                            <rect key="frame" x="64.666666666666671" y="0.0" width="224.66666666666663" height="66"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="September 2025 "/>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7W6-Rd-dQ7">
+                            <rect key="frame" x="297.33333333333331" y="0.0" width="63.666666666666686" height="66"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" image="chevron.right" catalog="system"/>
+                        </button>
+                    </subviews>
+                </stackView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="9o5-YY-QNF"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="9o5-YY-QNF" firstAttribute="trailing" secondItem="VNH-6l-T1a" secondAttribute="trailing" constant="16" id="FU3-Ct-gXb"/>
+                <constraint firstItem="9o5-YY-QNF" firstAttribute="bottom" secondItem="VNH-6l-T1a" secondAttribute="bottom" constant="8" id="JkA-Mg-WeA"/>
+                <constraint firstItem="VNH-6l-T1a" firstAttribute="top" secondItem="9o5-YY-QNF" secondAttribute="top" constant="8" id="f3u-0c-eUE"/>
+                <constraint firstItem="VNH-6l-T1a" firstAttribute="leading" secondItem="9o5-YY-QNF" secondAttribute="leading" constant="16" id="nx2-fm-dqY"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="-86.25954198473282" y="-110.21126760563381"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="chevron.left" catalog="system" width="97" height="128"/>
+        <image name="chevron.right" catalog="system" width="97" height="128"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

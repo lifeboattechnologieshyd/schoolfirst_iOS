@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="BannerCell" id="gTV-IL-0wX" customClass="BannerCell" customModule="SF_Dev" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="342" height="58"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="342" height="58"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="login_img" translatesAutoresizingMaskIntoConstraints="NO" id="De4-v7-ZQr">
+                        <rect key="frame" x="0.0" y="0.0" width="342" height="58"/>
+                    </imageView>
+                </subviews>
+            </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="De4-v7-ZQr" secondAttribute="bottom" id="3Wh-1L-slX"/>
+                <constraint firstItem="De4-v7-ZQr" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="PVI-AB-jl3"/>
+                <constraint firstItem="De4-v7-ZQr" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="dj0-Fp-AHF"/>
+                <constraint firstAttribute="trailing" secondItem="De4-v7-ZQr" secondAttribute="trailing" id="vip-nn-qyf"/>
+            </constraints>
+            <size key="customSize" width="342" height="58"/>
+            <connections>
+                <outlet property="img" destination="De4-v7-ZQr" id="L1T-10-uDH"/>
+            </connections>
+            <point key="canvasLocation" x="265.64885496183206" y="22.535211267605636"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <image name="login_img" width="395" height="263.33334350585938"/>
+    </resources>
+</document>

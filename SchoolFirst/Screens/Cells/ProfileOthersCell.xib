@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="363" id="KGk-i7-Jjw" customClass="ProfileOthersCell" customModule="SF_Dev" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="378"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="378"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="98F-Vm-KCk">
+                        <rect key="frame" x="16" y="4" width="288" height="370"/>
+                        <subviews>
+                            <stackView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="MzP-78-iV8">
+                                <rect key="frame" x="0.0" y="0.0" width="288" height="370"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="F7L-5G-OhN">
+                                        <rect key="frame" x="0.0" y="0.0" width="288" height="74"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dqi-xz-N32">
+                                                <rect key="frame" x="12" y="17" width="87.666666666666671" height="20"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="20" id="Z6I-e1-g8j"/>
+                                                </constraints>
+                                                <attributedString key="attributedText">
+                                                    <fragment content="Contact Us">
+                                                        <attributes>
+                                                            <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                                        </attributes>
+                                                    </fragment>
+                                                </attributedString>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bG4-J2-2DL">
+                                                <rect key="frame" x="12.000000000000014" y="45" width="240.33333333333337" height="17.666666666666671"/>
+                                                <attributedString key="attributedText">
+                                                    <fragment content="Have a query? Feel free to reach out">
+                                                        <attributes>
+                                                            <font key="NSFont" size="14" name="Lexend-Light"/>
+                                                        </attributes>
+                                                    </fragment>
+                                                </attributedString>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9C4-dm-rCp">
+                                                <rect key="frame" x="272" y="31" width="8" height="12"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="12" id="czw-Zd-4jd"/>
+                                                    <constraint firstAttribute="width" constant="8" id="kJb-Av-CiI"/>
+                                                </constraints>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" image="btn_next"/>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstItem="dqi-xz-N32" firstAttribute="top" secondItem="F7L-5G-OhN" secondAttribute="top" constant="17" id="7no-9Z-yQB"/>
+                                            <constraint firstItem="bG4-J2-2DL" firstAttribute="top" secondItem="dqi-xz-N32" secondAttribute="bottom" constant="8" id="FL6-wZ-aKc"/>
+                                            <constraint firstAttribute="trailing" secondItem="9C4-dm-rCp" secondAttribute="trailing" constant="8" id="Jgp-qb-wRI"/>
+                                            <constraint firstItem="dqi-xz-N32" firstAttribute="leading" secondItem="F7L-5G-OhN" secondAttribute="leading" constant="12" id="PMR-m1-6OM"/>
+                                            <constraint firstItem="bG4-J2-2DL" firstAttribute="leading" secondItem="dqi-xz-N32" secondAttribute="leading" id="vfm-tk-kue"/>
+                                            <constraint firstItem="9C4-dm-rCp" firstAttribute="centerY" secondItem="F7L-5G-OhN" secondAttribute="centerY" id="whP-bW-kiz"/>
+                                        </constraints>
+                                    </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1WS-t7-HHG">
+                                        <rect key="frame" x="0.0" y="74" width="288" height="74"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vp3-dD-lw2">
+                                                <rect key="frame" x="12" y="17" width="60" height="20"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="20" id="KcQ-t9-NpK"/>
+                                                </constraints>
+                                                <attributedString key="attributedText">
+                                                    <fragment content="Rate us">
+                                                        <attributes>
+                                                            <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                                            <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                                        </attributes>
+                                                    </fragment>
+                                                </attributedString>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="i3y-mH-hrt">
+                                                <rect key="frame" x="12" y="45" width="219.33333333333334" height="17.666666666666671"/>
+                                                <attributedString key="attributedText">
+                                                    <fragment content="Please give us rating in app store">
+                                                        <attributes>
+                                                            <font key="NSFont" size="14" name="Lexend-Light"/>
+                                                            <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                                        </attributes>
+                                                    </fragment>
+                                                </attributedString>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mmf-3V-BAU">
+                                                <rect key="frame" x="272" y="31" width="8" height="12"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="12" id="3CT-va-1RF"/>
+                                                    <constraint firstAttribute="width" constant="8" id="rSq-R2-Xnt"/>
+                                                </constraints>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" image="btn_next"/>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstItem="vp3-dD-lw2" firstAttribute="top" secondItem="1WS-t7-HHG" secondAttribute="top" constant="17" id="1w4-QN-wuu"/>
+                                            <constraint firstItem="i3y-mH-hrt" firstAttribute="leading" secondItem="vp3-dD-lw2" secondAttribute="leading" id="2XU-sQ-5O2"/>
+                                            <constraint firstItem="mmf-3V-BAU" firstAttribute="centerY" secondItem="1WS-t7-HHG" secondAttribute="centerY" id="GgA-ZK-h5Z"/>
+                                            <constraint firstItem="vp3-dD-lw2" firstAttribute="leading" secondItem="1WS-t7-HHG" secondAttribute="leading" constant="12" id="rjS-B3-7Qi"/>
+                                            <constraint firstItem="i3y-mH-hrt" firstAttribute="top" secondItem="vp3-dD-lw2" secondAttribute="bottom" constant="8" id="ufn-ze-SrC"/>
+                                            <constraint firstAttribute="trailing" secondItem="mmf-3V-BAU" secondAttribute="trailing" constant="8" id="xjo-Wd-f3N"/>
+                                        </constraints>
+                                    </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZcB-WD-UWT">
+                                        <rect key="frame" x="0.0" y="148" width="288" height="74"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yjK-Na-PsZ">
+                                                <rect key="frame" x="12" y="17" width="101.33333333333333" height="20"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="20" id="Pg3-uX-Awe"/>
+                                                </constraints>
+                                                <attributedString key="attributedText">
+                                                    <fragment content="Terms of use">
+                                                        <attributes>
+                                                            <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                                            <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                                        </attributes>
+                                                    </fragment>
+                                                </attributedString>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="its-yU-kIC">
+                                                <rect key="frame" x="12" y="45" width="282.33333333333331" height="17.666666666666671"/>
+                                                <attributedString key="attributedText">
+                                                    <fragment content="Check-out the terms of use of our Platform">
+                                                        <attributes>
+                                                            <font key="NSFont" size="14" name="Lexend-Light"/>
+                                                            <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                                        </attributes>
+                                                    </fragment>
+                                                </attributedString>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bz3-HN-2ym">
+                                                <rect key="frame" x="272" y="31" width="8" height="12"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="12" id="MOO-jJ-VLR"/>
+                                                    <constraint firstAttribute="width" constant="8" id="kGn-vc-c8k"/>
+                                                </constraints>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" image="btn_next"/>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstItem="its-yU-kIC" firstAttribute="leading" secondItem="yjK-Na-PsZ" secondAttribute="leading" id="26w-oA-R2v"/>
+                                            <constraint firstItem="yjK-Na-PsZ" firstAttribute="leading" secondItem="ZcB-WD-UWT" secondAttribute="leading" constant="12" id="Ifk-yM-M3q"/>
+                                            <constraint firstItem="Bz3-HN-2ym" firstAttribute="centerY" secondItem="ZcB-WD-UWT" secondAttribute="centerY" id="ONf-M4-lsp"/>
+                                            <constraint firstAttribute="trailing" secondItem="Bz3-HN-2ym" secondAttribute="trailing" constant="8" id="Wjv-qi-aen"/>
+                                            <constraint firstItem="yjK-Na-PsZ" firstAttribute="top" secondItem="ZcB-WD-UWT" secondAttribute="top" constant="17" id="hS1-U4-pn1"/>
+                                            <constraint firstItem="its-yU-kIC" firstAttribute="top" secondItem="yjK-Na-PsZ" secondAttribute="bottom" constant="8" id="ow6-X7-AAe"/>
+                                        </constraints>
+                                    </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="reh-bc-UkW">
+                                        <rect key="frame" x="0.0" y="222" width="288" height="74"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dSf-ld-HgM">
+                                                <rect key="frame" x="11.999999999999993" y="17" width="113.33333333333331" height="20"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="20" id="Y3a-He-IuI"/>
+                                                </constraints>
+                                                <attributedString key="attributedText">
+                                                    <fragment content="Privacy Policy">
+                                                        <attributes>
+                                                            <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                                            <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                                        </attributes>
+                                                    </fragment>
+                                                </attributedString>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dgg-bk-egR">
+                                                <rect key="frame" x="12" y="45" width="200.33333333333334" height="17.666666666666671"/>
+                                                <attributedString key="attributedText">
+                                                    <fragment content="Your Privacy is our top priority">
+                                                        <attributes>
+                                                            <font key="NSFont" size="14" name="Lexend-Light"/>
+                                                            <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                                        </attributes>
+                                                    </fragment>
+                                                </attributedString>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uMC-IK-Ag7">
+                                                <rect key="frame" x="272" y="31" width="8" height="12"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="12" id="B2Z-Cw-hpc"/>
+                                                    <constraint firstAttribute="width" constant="8" id="deZ-k2-Gly"/>
+                                                </constraints>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" image="btn_next"/>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstItem="dSf-ld-HgM" firstAttribute="top" secondItem="reh-bc-UkW" secondAttribute="top" constant="17" id="0ja-7p-w3F"/>
+                                            <constraint firstItem="uMC-IK-Ag7" firstAttribute="centerY" secondItem="reh-bc-UkW" secondAttribute="centerY" id="530-6g-coa"/>
+                                            <constraint firstItem="dgg-bk-egR" firstAttribute="top" secondItem="dSf-ld-HgM" secondAttribute="bottom" constant="8" id="CoG-gI-Wuv"/>
+                                            <constraint firstAttribute="trailing" secondItem="uMC-IK-Ag7" secondAttribute="trailing" constant="8" id="cEu-Il-Kc4"/>
+                                            <constraint firstItem="dgg-bk-egR" firstAttribute="leading" secondItem="dSf-ld-HgM" secondAttribute="leading" id="fLl-el-dB4"/>
+                                            <constraint firstItem="dSf-ld-HgM" firstAttribute="leading" secondItem="reh-bc-UkW" secondAttribute="leading" constant="12" id="gEn-8u-CsM"/>
+                                        </constraints>
+                                    </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2ew-9c-AJH">
+                                        <rect key="frame" x="0.0" y="296" width="288" height="74"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jIZ-OA-qY3">
+                                                <rect key="frame" x="12.000000000000007" y="17" width="120.66666666666669" height="20"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="20" id="e3J-qp-TIS"/>
+                                                </constraints>
+                                                <attributedString key="attributedText">
+                                                    <fragment content="Delete Account">
+                                                        <attributes>
+                                                            <color key="NSColor" red="1" green="0.085449453335205594" blue="0.098688491961548441" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                                            <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                                            <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                                        </attributes>
+                                                    </fragment>
+                                                </attributedString>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hJu-DW-iq4">
+                                                <rect key="frame" x="11.999999999999986" y="45" width="238.66666666666663" height="17.666666666666671"/>
+                                                <attributedString key="attributedText">
+                                                    <fragment content="Permanently remove your account.">
+                                                        <attributes>
+                                                            <font key="NSFont" size="14" name="Lexend-Regular"/>
+                                                            <real key="NSKern" value="0.0"/>
+                                                            <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0">
+                                                                <tabStops/>
+                                                            </paragraphStyle>
+                                                            <color key="NSStrokeColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                            <real key="NSStrokeWidth" value="0.0"/>
+                                                        </attributes>
+                                                    </fragment>
+                                                </attributedString>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dsg-4T-Rz9">
+                                                <rect key="frame" x="272" y="31" width="8" height="12"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="12" id="bE8-jV-vEa"/>
+                                                    <constraint firstAttribute="width" constant="8" id="dks-92-Jsi"/>
+                                                </constraints>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" image="btn_next"/>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstItem="jIZ-OA-qY3" firstAttribute="top" secondItem="2ew-9c-AJH" secondAttribute="top" constant="17" id="1Df-ak-Ac5"/>
+                                            <constraint firstItem="jIZ-OA-qY3" firstAttribute="leading" secondItem="2ew-9c-AJH" secondAttribute="leading" constant="12" id="NYn-E3-iWM"/>
+                                            <constraint firstItem="dsg-4T-Rz9" firstAttribute="centerY" secondItem="2ew-9c-AJH" secondAttribute="centerY" id="YpT-lJ-3vY"/>
+                                            <constraint firstItem="hJu-DW-iq4" firstAttribute="leading" secondItem="jIZ-OA-qY3" secondAttribute="leading" id="r8p-GM-tS3"/>
+                                            <constraint firstItem="hJu-DW-iq4" firstAttribute="top" secondItem="jIZ-OA-qY3" secondAttribute="bottom" constant="8" id="tHv-aa-UuN"/>
+                                            <constraint firstAttribute="trailing" secondItem="dsg-4T-Rz9" secondAttribute="trailing" constant="8" id="zWD-OR-Bpl"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                        <real key="value" value="0.0"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WRd-ah-9Bm">
+                                <rect key="frame" x="0.0" y="296" width="288" height="74"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain"/>
+                                <connections>
+                                    <action selector="onClickDelete:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="FTN-eh-Q4T"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="MzP-78-iV8" secondAttribute="trailing" id="5LM-rM-E62"/>
+                            <constraint firstItem="WRd-ah-9Bm" firstAttribute="bottom" secondItem="2ew-9c-AJH" secondAttribute="bottom" id="Fsn-no-kiE"/>
+                            <constraint firstItem="WRd-ah-9Bm" firstAttribute="trailing" secondItem="2ew-9c-AJH" secondAttribute="trailing" id="Y5d-ob-d05"/>
+                            <constraint firstAttribute="bottom" secondItem="MzP-78-iV8" secondAttribute="bottom" id="Ya9-MA-iRj"/>
+                            <constraint firstItem="WRd-ah-9Bm" firstAttribute="leading" secondItem="2ew-9c-AJH" secondAttribute="leading" id="ZX7-A7-5VT"/>
+                            <constraint firstItem="WRd-ah-9Bm" firstAttribute="top" secondItem="2ew-9c-AJH" secondAttribute="top" id="hVZ-J8-Zi7"/>
+                            <constraint firstItem="MzP-78-iV8" firstAttribute="leading" secondItem="98F-Vm-KCk" secondAttribute="leading" id="qAI-06-9oK"/>
+                            <constraint firstItem="MzP-78-iV8" firstAttribute="top" secondItem="98F-Vm-KCk" secondAttribute="top" id="yaw-gA-7Fo"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="12"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="98F-Vm-KCk" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="4" id="A8a-TR-2pF"/>
+                    <constraint firstAttribute="bottom" secondItem="98F-Vm-KCk" secondAttribute="bottom" constant="4" id="HUv-cG-Ye8"/>
+                    <constraint firstAttribute="trailing" secondItem="98F-Vm-KCk" secondAttribute="trailing" constant="16" id="eP3-ng-rKc"/>
+                    <constraint firstItem="98F-Vm-KCk" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="qTe-IZ-2mR"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="bgView" destination="98F-Vm-KCk" id="Egn-eW-b6g"/>
+                <outlet property="stackView" destination="MzP-78-iV8" id="uWe-6N-gDZ"/>
+            </connections>
+            <point key="canvasLocation" x="-61.068702290076331" y="132.04225352112678"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="btn_next" width="8" height="12"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

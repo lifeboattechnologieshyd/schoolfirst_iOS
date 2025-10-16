@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="CalendarBannerCell" rowHeight="80" id="KGk-i7-Jjw" customClass="CalendarBannerCell" customModule="SF_Dev" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="80"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="393" height="80"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="calendar_banner" translatesAutoresizingMaskIntoConstraints="NO" id="5ON-Er-bfp">
+                        <rect key="frame" x="16" y="8" width="361" height="64"/>
+                        <color key="backgroundColor" red="0.027450980390000001" green="0.40784313729999999" blue="0.22352941179999999" alpha="1" colorSpace="calibratedRGB"/>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="5"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </imageView>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="calender_date_icon" translatesAutoresizingMaskIntoConstraints="NO" id="jed-Vf-5SG">
+                        <rect key="frame" x="28" y="16" width="44" height="56"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="44" id="iCo-C2-2cX"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b66-4u-g0E">
+                        <rect key="frame" x="38" y="38" width="24" height="20"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="24" id="Xqh-mn-fCt"/>
+                            <constraint firstAttribute="height" constant="20" id="hRt-VU-QCP"/>
+                        </constraints>
+                        <attributedString key="attributedText">
+                            <fragment content="44">
+                                <attributes>
+                                    <font key="NSFont" size="16" name="Lexend-Bold"/>
+                                    <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                </attributes>
+                            </fragment>
+                        </attributedString>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KvP-16-01t">
+                        <rect key="frame" x="36" y="22" width="28" height="12"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="12" id="esj-EC-nPJ"/>
+                        </constraints>
+                        <attributedString key="attributedText">
+                            <fragment content="JAN">
+                                <attributes>
+                                    <color key="NSColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <font key="NSFont" size="9" name="Lexend-SemiBold"/>
+                                    <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                </attributes>
+                            </fragment>
+                        </attributedString>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e19-Yh-HfG">
+                        <rect key="frame" x="80" y="12" width="297" height="18"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="18" id="BmK-Jb-lqd"/>
+                        </constraints>
+                        <attributedString key="attributedText">
+                            <fragment content="FAMILY LIFE SKILLS CALENDAR">
+                                <attributes>
+                                    <color key="NSColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <font key="NSFont" size="14" name="Lexend-SemiBold"/>
+                                </attributes>
+                            </fragment>
+                        </attributedString>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p02-K7-eYk">
+                        <rect key="frame" x="80" y="30" width="293" height="42"/>
+                        <attributedString key="attributedText">
+                            <fragment content="Today’s Prompt: Create a Vision Board with Family and implement the ultimate….">
+                                <attributes>
+                                    <color key="NSColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                </attributes>
+                            </fragment>
+                        </attributedString>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="b66-4u-g0E" firstAttribute="centerY" secondItem="jed-Vf-5SG" secondAttribute="centerY" constant="4" id="1cT-5V-VBR"/>
+                    <constraint firstAttribute="bottom" secondItem="5ON-Er-bfp" secondAttribute="bottom" constant="8" id="3G8-VZ-QTT"/>
+                    <constraint firstItem="b66-4u-g0E" firstAttribute="centerX" secondItem="jed-Vf-5SG" secondAttribute="centerX" id="4vA-YT-XKO"/>
+                    <constraint firstItem="5ON-Er-bfp" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="7xF-Iw-X2E"/>
+                    <constraint firstItem="jed-Vf-5SG" firstAttribute="bottom" secondItem="5ON-Er-bfp" secondAttribute="bottom" id="D4K-TA-E5R"/>
+                    <constraint firstAttribute="trailing" secondItem="5ON-Er-bfp" secondAttribute="trailing" constant="16" id="I1W-Qy-4Da"/>
+                    <constraint firstItem="e19-Yh-HfG" firstAttribute="top" secondItem="jed-Vf-5SG" secondAttribute="top" constant="-4" id="Kel-zF-PbP"/>
+                    <constraint firstItem="jed-Vf-5SG" firstAttribute="leading" secondItem="5ON-Er-bfp" secondAttribute="leading" constant="12" id="UVZ-XY-SRn"/>
+                    <constraint firstItem="5ON-Er-bfp" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="UZc-S0-fp5"/>
+                    <constraint firstAttribute="trailing" secondItem="e19-Yh-HfG" secondAttribute="trailing" constant="16" id="VhQ-Z2-R67"/>
+                    <constraint firstItem="KvP-16-01t" firstAttribute="trailing" secondItem="jed-Vf-5SG" secondAttribute="trailing" constant="-8" id="XkE-DF-AB8"/>
+                    <constraint firstItem="p02-K7-eYk" firstAttribute="leading" secondItem="jed-Vf-5SG" secondAttribute="trailing" constant="8" id="YCo-o9-yqn"/>
+                    <constraint firstItem="p02-K7-eYk" firstAttribute="trailing" secondItem="5ON-Er-bfp" secondAttribute="trailing" constant="-4" id="eTK-9Y-lqJ"/>
+                    <constraint firstItem="KvP-16-01t" firstAttribute="leading" secondItem="jed-Vf-5SG" secondAttribute="leading" constant="8" id="g6R-Nf-oiU"/>
+                    <constraint firstItem="p02-K7-eYk" firstAttribute="bottom" secondItem="jed-Vf-5SG" secondAttribute="bottom" id="lIj-q4-ex2"/>
+                    <constraint firstItem="p02-K7-eYk" firstAttribute="top" secondItem="e19-Yh-HfG" secondAttribute="bottom" id="lOI-i9-7PO"/>
+                    <constraint firstItem="KvP-16-01t" firstAttribute="top" secondItem="jed-Vf-5SG" secondAttribute="top" constant="6" id="oNb-CL-4VP"/>
+                    <constraint firstItem="e19-Yh-HfG" firstAttribute="leading" secondItem="jed-Vf-5SG" secondAttribute="trailing" constant="8" id="uhv-Do-J1H"/>
+                    <constraint firstItem="jed-Vf-5SG" firstAttribute="top" secondItem="5ON-Er-bfp" secondAttribute="top" constant="8" id="vr8-VN-Wxs"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="lblDate" destination="b66-4u-g0E" id="YgY-e0-WKf"/>
+                <outlet property="lblMonth" destination="KvP-16-01t" id="phW-os-ouN"/>
+                <outlet property="lblPrompt" destination="p02-K7-eYk" id="8u3-OL-nFj"/>
+            </connections>
+            <point key="canvasLocation" x="-29.770992366412212" y="32.394366197183103"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="calendar_banner" width="379" height="84"/>
+        <image name="calender_date_icon" width="62" height="58"/>
+    </resources>
+</document>

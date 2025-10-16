@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="DateCell" id="gTV-IL-0wX" customClass="DateCell" customModule="SF_Dev" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="64" height="64"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="64" height="64"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DIk-mY-40g">
+                        <rect key="frame" x="8" y="0.0" width="48" height="64"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xJ1-mA-EKt">
+                                <rect key="frame" x="4" y="6" width="40" height="15"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="15" id="XQA-5p-Ksx"/>
+                                </constraints>
+                                <attributedString key="attributedText">
+                                    <fragment content="Aug">
+                                        <attributes>
+                                            <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XLZ-nM-Wg4">
+                                <rect key="frame" x="4" y="25" width="40" height="22"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="22" id="hd7-OO-rzG"/>
+                                </constraints>
+                                <attributedString key="attributedText">
+                                    <fragment content="31">
+                                        <attributes>
+                                            <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cne-ZL-djx">
+                                <rect key="frame" x="4" y="49" width="40" height="13"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="13" id="kIx-r5-McF"/>
+                                </constraints>
+                                <attributedString key="attributedText">
+                                    <fragment content="sun">
+                                        <attributes>
+                                            <font key="NSFont" size="10" name="Lexend-Light"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="0.92941176470588238" green="0.96470588235294119" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="cne-ZL-djx" firstAttribute="leading" secondItem="DIk-mY-40g" secondAttribute="leading" constant="4" id="12J-2J-Rke"/>
+                            <constraint firstAttribute="trailing" secondItem="cne-ZL-djx" secondAttribute="trailing" constant="4" id="CKK-Tt-64b"/>
+                            <constraint firstAttribute="trailing" secondItem="xJ1-mA-EKt" secondAttribute="trailing" constant="4" id="Olb-tI-0R9"/>
+                            <constraint firstItem="xJ1-mA-EKt" firstAttribute="top" secondItem="DIk-mY-40g" secondAttribute="top" constant="6" id="h11-HE-tME"/>
+                            <constraint firstItem="xJ1-mA-EKt" firstAttribute="leading" secondItem="DIk-mY-40g" secondAttribute="leading" constant="4" id="lLb-v5-eSt"/>
+                            <constraint firstItem="XLZ-nM-Wg4" firstAttribute="leading" secondItem="DIk-mY-40g" secondAttribute="leading" constant="4" id="nGk-IG-Ro7"/>
+                            <constraint firstItem="cne-ZL-djx" firstAttribute="top" secondItem="XLZ-nM-Wg4" secondAttribute="bottom" constant="2" id="os3-X4-6HS"/>
+                            <constraint firstItem="XLZ-nM-Wg4" firstAttribute="top" secondItem="xJ1-mA-EKt" secondAttribute="bottom" constant="4" id="qmV-t3-AEl"/>
+                            <constraint firstAttribute="trailing" secondItem="XLZ-nM-Wg4" secondAttribute="trailing" constant="4" id="rT3-Vo-UUK"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="12"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </view>
+                </subviews>
+            </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="DIk-mY-40g" secondAttribute="bottom" id="F2y-uT-nSs"/>
+                <constraint firstAttribute="trailing" secondItem="DIk-mY-40g" secondAttribute="trailing" constant="8" id="OjT-Ap-V4Q"/>
+                <constraint firstItem="DIk-mY-40g" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="Olu-pN-Jl9"/>
+                <constraint firstItem="DIk-mY-40g" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="8" id="oIX-fy-qdM"/>
+            </constraints>
+            <size key="customSize" width="64" height="64"/>
+            <connections>
+                <outlet property="bgView" destination="DIk-mY-40g" id="Kp0-ev-6g7"/>
+                <outlet property="lblDate" destination="XLZ-nM-Wg4" id="Zbk-9p-Ch9"/>
+                <outlet property="lblDay" destination="cne-ZL-djx" id="159-Nt-31P"/>
+                <outlet property="lblMonth" destination="xJ1-mA-EKt" id="sH5-RC-vBQ"/>
+            </connections>
+            <point key="canvasLocation" x="109.9236641221374" y="24.647887323943664"/>
+        </collectionViewCell>
+    </objects>
+</document>

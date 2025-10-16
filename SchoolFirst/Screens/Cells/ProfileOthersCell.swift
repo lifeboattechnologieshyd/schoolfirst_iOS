@@ -1,0 +1,31 @@
+//
+//  ProfileOthersCell.swift
+//  SchoolFirst
+//
+//  Created by Ranjith Padidala on 21/08/25.
+//
+
+import UIKit
+
+class ProfileOthersCell: UITableViewCell {
+
+    @IBOutlet weak var bgView: UIView!
+    @IBOutlet weak var stackView: UIStackView!
+    var onClickDelete: (() -> Void)?
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        // Initialization code
+        bgView.applyCardShadow()
+    }
+
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+
+        // Configure the view for the selected state
+    }
+    
+    @IBAction func onClickDelete(_ sender: UIButton) {
+        self.onClickDelete!()
+    }
+}
