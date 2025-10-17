@@ -10,11 +10,11 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="FeelsFirst" customModule="SF_Dev" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="357" height="310"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="FeelsCollectionViewCell" customModule="SF_Dev" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="160" height="310"/>
             <autoresizingMask key="autoresizingMask"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                <rect key="frame" x="0.0" y="0.0" width="357" height="310"/>
+                <rect key="frame" x="0.0" y="0.0" width="160" height="310"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="FeelsOne" translatesAutoresizingMaskIntoConstraints="NO" id="V8T-3n-YYB">
@@ -22,13 +22,6 @@
                         <constraints>
                             <constraint firstAttribute="height" constant="284" id="8o3-SW-tCZ"/>
                             <constraint firstAttribute="width" constant="160" id="BoX-R4-Row"/>
-                        </constraints>
-                    </imageView>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="FeelsTwo" translatesAutoresizingMaskIntoConstraints="NO" id="IwN-ce-MT5">
-                        <rect key="frame" x="184" y="16" width="160" height="284"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="284" id="HwZ-Zn-n0j"/>
-                            <constraint firstAttribute="width" constant="160" id="zt9-XE-5Dy"/>
                         </constraints>
                     </imageView>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="black" translatesAutoresizingMaskIntoConstraints="NO" id="5Ds-MU-5Pf">
@@ -56,48 +49,11 @@
                         <state key="normal" title="Button"/>
                         <buttonConfiguration key="configuration" style="plain" image="number" title=" "/>
                     </button>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="black" translatesAutoresizingMaskIntoConstraints="NO" id="DY0-qO-Nbp">
-                        <rect key="frame" x="194" y="22" width="42" height="20"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="42" id="7EJ-sz-9Mi"/>
-                            <constraint firstAttribute="height" constant="20" id="wV9-X5-XAw"/>
-                        </constraints>
-                    </imageView>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5ad-v6-1gr">
-                        <rect key="frame" x="202" y="22" width="42" height="20"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="20" id="Ch1-yZ-Pcy"/>
-                            <constraint firstAttribute="width" constant="42" id="o0q-zA-sfu"/>
-                        </constraints>
-                        <state key="normal" title="Button"/>
-                        <buttonConfiguration key="configuration" style="plain" image="number" title=" "/>
-                    </button>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6NT-gk-sN5">
-                        <rect key="frame" x="186" y="20" width="42" height="20"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="20" id="2WZ-1H-Bqw"/>
-                            <constraint firstAttribute="width" constant="42" id="Rgg-38-eYI"/>
-                        </constraints>
-                        <state key="normal" title="Button"/>
-                        <buttonConfiguration key="configuration" style="plain" image="like 1" title=" "/>
-                    </button>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" Family First Calendar Day 5 - How to Create a Positive atmosphere at…" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HwE-jI-jq9">
                         <rect key="frame" x="24" y="248" width="142" height="46"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="46" id="Kl4-nn-PST"/>
                             <constraint firstAttribute="width" constant="142" id="Rju-wi-XPq"/>
-                        </constraints>
-                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <nil key="highlightedColor"/>
-                    </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" Family First Calendar Day 5 - How to Create a Positive atmosphere at…" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="odw-QG-2qW">
-                        <rect key="frame" x="196" y="244" width="142" height="46"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="142" id="CZh-2q-LyU"/>
-                            <constraint firstAttribute="height" constant="46" id="Oll-Yv-KZ7"/>
-                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="142" id="X09-9x-ij2"/>
-                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="46" id="jiv-ey-Tmt"/>
                         </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -112,65 +68,36 @@
                         <state key="normal" title="Button"/>
                         <buttonConfiguration key="configuration" style="plain" image="play" title=" "/>
                     </button>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xAd-9T-0G4">
-                        <rect key="frame" x="252" y="134" width="40" height="40"/>
-                        <constraints>
-                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="40" id="FVJ-61-tWS"/>
-                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="40" id="byL-On-CZt"/>
-                            <constraint firstAttribute="height" constant="40" id="iJs-2d-3ri"/>
-                            <constraint firstAttribute="width" constant="40" id="jwm-dd-qcO"/>
-                        </constraints>
-                        <state key="normal" title="Button"/>
-                        <buttonConfiguration key="configuration" style="plain" image="play" title=" "/>
-                    </button>
                 </subviews>
             </view>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
                 <constraint firstItem="PXB-g7-TpE" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="16" id="23g-of-VMR"/>
                 <constraint firstItem="HwE-jI-jq9" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="24" id="2L0-Ct-WP9"/>
-                <constraint firstItem="6NT-gk-sN5" firstAttribute="leading" secondItem="V8T-3n-YYB" secondAttribute="trailing" constant="10" id="4Oh-W8-lRW"/>
-                <constraint firstItem="DY0-qO-Nbp" firstAttribute="centerY" secondItem="Qpf-B2-wFC" secondAttribute="centerY" id="5Ub-XU-QDm"/>
                 <constraint firstItem="Qpf-B2-wFC" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="32" id="6dV-LB-g37"/>
-                <constraint firstItem="5ad-v6-1gr" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="22" id="70H-1H-o78"/>
-                <constraint firstItem="6NT-gk-sN5" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="20" id="7ZK-Hf-oxm"/>
-                <constraint firstItem="xAd-9T-0G4" firstAttribute="leading" secondItem="V8T-3n-YYB" secondAttribute="trailing" constant="76" id="GLo-cd-cdF"/>
-                <constraint firstItem="DY0-qO-Nbp" firstAttribute="leading" secondItem="Qpf-B2-wFC" secondAttribute="trailing" constant="120" id="Mw6-i6-dRo"/>
-                <constraint firstItem="5ad-v6-1gr" firstAttribute="leading" secondItem="V8T-3n-YYB" secondAttribute="trailing" constant="26" id="N6l-Ke-j1N"/>
-                <constraint firstItem="odw-QG-2qW" firstAttribute="leading" secondItem="V8T-3n-YYB" secondAttribute="trailing" constant="20" id="OPX-kV-jrO"/>
                 <constraint firstItem="pSL-Xb-Ka5" firstAttribute="top" secondItem="5Ds-MU-5Pf" secondAttribute="bottom" constant="96" id="Q9e-cu-eOR"/>
-                <constraint firstItem="IwN-ce-MT5" firstAttribute="leading" secondItem="V8T-3n-YYB" secondAttribute="trailing" constant="8" id="Riz-i9-vRU"/>
                 <constraint firstItem="5Ds-MU-5Pf" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="24" id="UTr-bB-pzz"/>
-                <constraint firstItem="odw-QG-2qW" firstAttribute="top" secondItem="xAd-9T-0G4" secondAttribute="bottom" constant="70" id="UmH-25-vLM"/>
                 <constraint firstItem="V8T-3n-YYB" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="16" id="cPy-aZ-8hx"/>
                 <constraint firstItem="5Ds-MU-5Pf" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="24" id="eY0-VW-p1N"/>
                 <constraint firstAttribute="bottom" secondItem="HwE-jI-jq9" secondAttribute="bottom" constant="16" id="epT-k5-iJi"/>
                 <constraint firstItem="Qpf-B2-wFC" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="22" id="mba-2R-1xT"/>
-                <constraint firstItem="odw-QG-2qW" firstAttribute="top" secondItem="DY0-qO-Nbp" secondAttribute="bottom" constant="202" id="nod-wN-tfw"/>
                 <constraint firstItem="pSL-Xb-Ka5" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="74" id="sTQ-XM-wQQ"/>
                 <constraint firstItem="PXB-g7-TpE" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="22" id="suA-E2-puG"/>
-                <constraint firstItem="IwN-ce-MT5" firstAttribute="centerY" secondItem="V8T-3n-YYB" secondAttribute="centerY" id="xS3-Jo-0Ut"/>
                 <constraint firstItem="V8T-3n-YYB" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="16" id="zYm-Kr-Lfh"/>
             </constraints>
             <size key="customSize" width="357" height="310"/>
             <connections>
-                <outlet property="imgVwTwo" destination="IwN-ce-MT5" id="Zjc-xW-wZj"/>
-                <outlet property="imgVwone" destination="V8T-3n-YYB" id="9IL-Ql-Sh8"/>
-                <outlet property="imgVwtwo" destination="IwN-ce-MT5" id="6wz-bE-nmI"/>
-                <outlet property="lblTwo" destination="odw-QG-2qW" id="rEF-R9-Y0c"/>
-                <outlet property="lblone" destination="HwE-jI-jq9" id="ygK-CU-3WI"/>
-                <outlet property="lbltwo" destination="odw-QG-2qW" id="Zhm-4x-dCU"/>
-                <outlet property="likeButton" destination="Qpf-B2-wFC" id="9qw-XE-Mux"/>
-                <outlet property="numberButton" destination="Qpf-B2-wFC" id="c8H-NM-5lL"/>
-                <outlet property="play1Button" destination="xAd-9T-0G4" id="Rur-QD-yjH"/>
-                <outlet property="playButton" destination="xAd-9T-0G4" id="Gi0-D2-iNZ"/>
+                <outlet property="imgVwOne" destination="V8T-3n-YYB" id="IQI-Ln-NCc"/>
+                <outlet property="lblOne" destination="HwE-jI-jq9" id="4oa-bx-asB"/>
+                <outlet property="likeButtonOne" destination="PXB-g7-TpE" id="pcL-2h-XTw"/>
+                <outlet property="numberButtonOne" destination="Qpf-B2-wFC" id="LiA-Aw-1Oq"/>
+                <outlet property="playButton" destination="pSL-Xb-Ka5" id="T3a-gP-yla"/>
             </connections>
             <point key="canvasLocation" x="364.12213740458014" y="79.577464788732399"/>
         </collectionViewCell>
     </objects>
     <resources>
         <image name="FeelsOne" width="160" height="284"/>
-        <image name="FeelsTwo" width="160" height="284"/>
         <image name="black" width="42" height="20"/>
         <image name="like 1" width="12" height="12"/>
         <image name="number" width="14" height="15"/>

@@ -7,18 +7,18 @@
 
 import UIKit
 
-class FeelsFirst: UICollectionViewCell {
+class FeelsCollectionViewCell: UICollectionViewCell {
 
      @IBOutlet weak var imgVwOne: UIImageView!
     @IBOutlet weak var imgVwTwo: UIImageView!
      @IBOutlet weak var lblOne: UILabel!
-    @IBOutlet weak var lblTwo: UILabel!
-    @IBOutlet weak var playButton: UIButton!
-    @IBOutlet weak var play1Button: UIButton!
-    @IBOutlet weak var likeButtonOne: UIButton!
     @IBOutlet weak var numberButtonOne: UIButton!
     @IBOutlet weak var likeButtonTwo: UIButton!
     @IBOutlet weak var numberButtonTwo: UIButton!
+    @IBOutlet weak var likeButtonOne: UIButton!
+    @IBOutlet weak var lblTwo: UILabel!
+    @IBOutlet weak var playButton: UIButton!
+    @IBOutlet weak var playButtonOne: UIButton!
     
     override func awakeFromNib() {
         super.awakeFromNib()

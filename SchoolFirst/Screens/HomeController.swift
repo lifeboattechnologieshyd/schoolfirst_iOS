@@ -334,57 +334,57 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
         segmentControl.selectedSegmentIndex = pageIndex
     }
     
-    func onSelectItems(index: Int, selectedIndex: Int){
+    func onSelectItems(index: Int, selectedIndex: Int) {
         if selectedIndex == 0 {
             switch index {
             case 0:
-                let vc = storyboard?.instantiateViewController(identifier: "MySchoolViewController") as? MySchoolViewController
-                navigationController?.pushViewController(vc!, animated: true)
+                let vc = storyboard?.instantiateViewController(identifier: "MySchoolViewController") as! MySchoolViewController
+                navigationController?.pushViewController(vc, animated: true)
             case 1:
-                let vc = storyboard?.instantiateViewController(identifier: "BulletinController") as? BulletinController
-                navigationController?.pushViewController(vc!, animated: true)
+                let vc = storyboard?.instantiateViewController(identifier: "BulletinController") as! BulletinController
+                navigationController?.pushViewController(vc, animated: true)
             case 2:
-                let vc = storyboard?.instantiateViewController(identifier: "EventsViewController") as? EventsViewController
-                navigationController?.pushViewController(vc!, animated: true)
+                let vc = storyboard?.instantiateViewController(identifier: "EventsViewController") as! EventsViewController
+                navigationController?.pushViewController(vc, animated: true)
             case 3:
-                print("homework")
-                let vc = storyboard?.instantiateViewController(identifier: "HomeworkViewController") as? HomeworkViewController
-                self.navigationController?.pushViewController(vc!, animated: true)
+                let vc = storyboard?.instantiateViewController(identifier: "HomeworkViewController") as! HomeworkViewController
+                navigationController?.pushViewController(vc, animated: true)
             case 4:
-                //            let vc = storyboard?.instantiateViewController(identifier: "HomeworkViewController") as? HomeworkViewController
-                //            vc?.screen_title = "School Fee"
-                let vc = storyboard?.instantiateViewController(identifier: "FeeViewController") as? FeeViewController
-                self.navigationController?.pushViewController(vc!, animated: true)
+                let vc = storyboard?.instantiateViewController(identifier: "FeeViewController") as! FeeViewController
+                navigationController?.pushViewController(vc, animated: true)
             case 5:
-                let vc = storyboard?.instantiateViewController(identifier: "MySchoolViewController") as? MySchoolViewController
-                self.navigationController?.pushViewController(vc!, animated: true)
+                let vc = storyboard?.instantiateViewController(identifier: "MySchoolViewController") as! MySchoolViewController
+                navigationController?.pushViewController(vc, animated: true)
+            case 6:
+                let stbd = UIStoryboard(name: "Feels", bundle: nil)
+               let vc = stbd.instantiateViewController(identifier: "FeelsViewController") as! FeelsViewController
+               navigationController?.pushViewController(vc, animated: true)
             default:
-                let vc = storyboard?.instantiateViewController(identifier: "HomeworkViewController") as? HomeworkViewController
-                vc?.screen_title = ""
-                self.navigationController?.pushViewController(vc!, animated: true)
+                break
             }
-        }else{
+        } else {
             switch index {
             case 0:
-                print("Curicullum")
+                print("Curriculum")
             case 1:
-                let vc = storyboard?.instantiateViewController(identifier: "AssessmentsViewController") as? AssessmentsViewController
-                self.navigationController?.pushViewController(vc!, animated: true)
+                let vc = storyboard?.instantiateViewController(identifier: "AssessmentsViewController") as! AssessmentsViewController
+                navigationController?.pushViewController(vc, animated: true)
             case 2:
-                print("P-tips")
-                var stbd = UIStoryboard(name: "PTips", bundle: nil)
-                let vc = stbd.instantiateViewController(identifier: "PTipsViewController") as? PTipsViewController
-                self.navigationController?.pushViewController(vc!, animated: true)
+                let stbd = UIStoryboard(name: "PTips", bundle: nil)
+                let vc = stbd.instantiateViewController(identifier: "PTipsViewController") as! PTipsViewController
+                navigationController?.pushViewController(vc, animated: true)
             case 3:
                 print("Edutainment")
             case 4:
-                print("Feels")
+                 let stbd = UIStoryboard(name: "Feels", bundle: nil)
+                let vc = stbd.instantiateViewController(identifier: "FeelsViewController") as! FeelsViewController
+                navigationController?.pushViewController(vc, animated: true)
             case 5:
-                print("Vocabees")
+                print("Vocabbees")
             default:
                 print("Courses")
             }
         }
-        
     }
+    
 }
