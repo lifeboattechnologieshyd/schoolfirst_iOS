@@ -641,3 +641,31 @@ struct Lesson: Codable {
           selected = try container.decodeIfPresent(Bool.self, forKey: .selected) ?? false
       }
 }
+
+struct FeelItem: Identifiable, Codable, Hashable {
+    let id: String
+    let youtubeVideo: URL?
+    let title: String
+    let description: String
+    let thumbnailImage: String?
+    let likesCount: Int
+    let shareCount: Int
+    let viewsCount: Int
+    let score: Int
+    let category: String
+    var isLiked: Bool
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case youtubeVideo = "youtube_video"
+        case title
+        case description
+        case thumbnailImage = "thumbnail_image"
+        case likesCount = "likes_count"
+        case shareCount = "share_count"
+        case viewsCount = "views_count"
+        case score
+        case category
+        case isLiked = "is_liked"
+    }
+}
