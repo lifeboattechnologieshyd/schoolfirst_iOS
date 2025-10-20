@@ -333,29 +333,38 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
         segmentControl.selectedSegmentIndex = pageIndex
     }
     
+    func growthZoneItemSelection(index: Int){
+        switch index {
+        case 0:
+            let stbd = UIStoryboard(name: "curriculum", bundle: nil)
+            let vc = stbd.instantiateViewController(identifier: "CurriculumController") as! CurriculumController
+            navigationController?.pushViewController(vc, animated: true)
+        case 1:
+            let vc = storyboard?.instantiateViewController(identifier: "AssessmentsViewController") as! AssessmentsViewController
+            navigationController?.pushViewController(vc, animated: true)
+        case 2:
+            let stbd = UIStoryboard(name: "PTips", bundle: nil)
+            let vc = stbd.instantiateViewController(identifier: "PTipsViewController") as! PTipsViewController
+            navigationController?.pushViewController(vc, animated: true)
+        case 3:
+            print("Edutainment")
+        case 4:
+            let stbd = UIStoryboard(name: "Feels", bundle: nil)
+            let vc = stbd.instantiateViewController(identifier: "FeelsViewController") as! FeelsViewController
+            navigationController?.pushViewController(vc, animated: true)
+        case 5:
+            print("Vocabbees")
+            let stbd = UIStoryboard(name: "VocabBees", bundle: nil)
+            let vc = stbd.instantiateViewController(identifier: "VocabBeesViewController") as! VocabBeesViewController
+            navigationController?.pushViewController(vc, animated: true)
+        default:
+            print("Courses")
+        }
+    }
+    
     func onSelectItems(index: Int, selectedIndex: Int) {
         if segmentControl.isHidden {
-            switch index {
-            case 0:
-                print("Curriculum")
-            case 1:
-                let vc = storyboard?.instantiateViewController(identifier: "AssessmentsViewController") as! AssessmentsViewController
-                navigationController?.pushViewController(vc, animated: true)
-            case 2:
-                let stbd = UIStoryboard(name: "PTips", bundle: nil)
-                let vc = stbd.instantiateViewController(identifier: "PTipsViewController") as! PTipsViewController
-                navigationController?.pushViewController(vc, animated: true)
-            case 3:
-                print("Edutainment")
-            case 4:
-                let stbd = UIStoryboard(name: "Feels", bundle: nil)
-                let vc = stbd.instantiateViewController(identifier: "FeelsViewController") as! FeelsViewController
-                navigationController?.pushViewController(vc, animated: true)
-            case 5:
-                print("Vocabbees")
-            default:
-                print("Courses")
-            }
+            self.growthZoneItemSelection(index: index)
         }else {
             
             if selectedIndex == 0 {
@@ -386,27 +395,7 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
                     break
                 }
             } else {
-                switch index {
-                case 0:
-                    print("Curriculum")
-                case 1:
-                    let vc = storyboard?.instantiateViewController(identifier: "AssessmentsViewController") as! AssessmentsViewController
-                    navigationController?.pushViewController(vc, animated: true)
-                case 2:
-                    let stbd = UIStoryboard(name: "PTips", bundle: nil)
-                    let vc = stbd.instantiateViewController(identifier: "PTipsViewController") as! PTipsViewController
-                    navigationController?.pushViewController(vc, animated: true)
-                case 3:
-                    print("Edutainment")
-                case 4:
-                    let stbd = UIStoryboard(name: "Feels", bundle: nil)
-                    let vc = stbd.instantiateViewController(identifier: "FeelsViewController") as! FeelsViewController
-                    navigationController?.pushViewController(vc, animated: true)
-                case 5:
-                    print("Vocabbees")
-                default:
-                    print("Courses")
-                }
+                self.growthZoneItemSelection(index: index)
             }
         }
         
