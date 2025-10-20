@@ -290,17 +290,21 @@ extension UISegmentedControl {
         cornerRadius: CGFloat = 20
     ) {
          
+        setBackgroundImage(UIImage(color: backgroundColor), for: .normal, barMetrics: .default)
+        setBackgroundImage(UIImage(color: selectedBackgroundColor), for: .selected, barMetrics: .default)
+        setBackgroundImage(UIImage(color: selectedBackgroundColor), for: .highlighted, barMetrics: .default)
+
         // Divider (invisible)
         setDividerImage(UIImage(color: .clear), forLeftSegmentState: .normal, rightSegmentState: .normal, barMetrics: .default)
 
         // Text attributes
         let normalAttributes: [NSAttributedString.Key: Any] = [
             .font: font,
-            .foregroundColor: textColor
+            .foregroundColor: textColor,
         ]
         let selectedAttributes: [NSAttributedString.Key: Any] = [
             .font: selectedFont,
-            .foregroundColor: selectedTextColor
+            .foregroundColor: selectedTextColor,
         ]
         setTitleTextAttributes(normalAttributes, for: .normal)
         setTitleTextAttributes(selectedAttributes, for: .selected)

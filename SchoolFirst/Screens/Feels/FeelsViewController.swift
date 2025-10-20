@@ -10,89 +10,60 @@ import UIKit
  
 class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
-    
-   
-    
-    
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var feelsLbl: UILabel!
     @IBOutlet weak var colVw: UICollectionView!
     @IBOutlet weak var topVw: UIView!
+    var items = [FeelItem]()
     
-    
-    private var items: [FeelItem] = [
-        
-    ]
-
-    
-    // MARK: - View LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        topVw.applyCardShadow()
         
         colVw.delegate = self
         colVw.dataSource = self
         colVw.register(UINib(nibName: "FeelsCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FeelsCollectionViewCell")
-        
-        if let layout = colVw.collectionViewLayout as? UICollectionViewFlowLayout {
-            layout.minimumLineSpacing = 10
-            layout.minimumInteritemSpacing = 10
-        }
-        
-      
-         self.getEdutainment()
+        self.getEdutainment()
     }
-   
     
-    // MARK: - Collection View DataSource & Delegate
+    @IBAction func onClickBack(_ sender: UIButton) {
+        self.navigationController?.popViewController(animated: true)
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return items.count / 2
+        return items.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = colVw.dequeueReusableCell(withReuseIdentifier: "FeelsCollectionViewCell", for: indexPath) as! FeelsCollectionViewCell
-        
-        let firstIndex = indexPath.row * 2
-        let secondIndex = firstIndex + 1
-        
-       
-        
-        
-               
-       
-        
+        cell.imgVw.layer.cornerRadius = 8
+        cell.imgVw.loadImage(url: self.items[indexPath.row].thumbnailImage ?? "")
+        cell.lblName.text = self.items[indexPath.row].title
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = collectionView.frame.width
-        let height = width / 2
-        return CGSize(width: width, height: height)
+        let width = (collectionView.frame.size.width-8)/2
+        return CGSize(width: width, height: 284)
     }
     
-    // MARK: - Button Actions
-    @objc func likeTapped(_ sender: UIButton) {
-        let index = sender.tag
-        guard index < items.count else { return }
-        items[index].likes += 1
-        colVw.reloadData()
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let stbd = UIStoryboard(name: "Feels", bundle: nil)
+        let vc = stbd.instantiateViewController(identifier: "FeelPlayerController") as! FeelPlayerController
+        navigationController?.pushViewController(vc, animated: true)
     }
     
-    @objc func playTapped(_ sender: UIButton) {
-        let index = sender.tag
-        print("Play tapped on item at index \(index)")
-    }
     
-    // MARK: - API Method
     func getEdutainment() {
-        NetworkManager.shared.request(urlString: API.EDUTAIN_FEEL, method: .GET) { [weak self] (result: Result<APIResponse<[Feed]>, NetworkError>) in
+        NetworkManager.shared.request(urlString: API.EDUTAIN_FEEL, method: .GET) { [weak self] (result: Result<APIResponse<[FeelItem]>, NetworkError>) in
             guard let self = self else { return }
-            
             switch result {
             case .success(let info):
                 if info.success {
                     if let data = info.data {
-                        self.apiFeed = data
+                        self.items = data
                     }
                     DispatchQueue.main.async {
                         self.colVw.reloadData()
@@ -105,5 +76,4 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
             }
         }
     }
-    
 }
