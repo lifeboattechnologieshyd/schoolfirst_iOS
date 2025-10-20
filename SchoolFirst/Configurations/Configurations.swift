@@ -84,6 +84,9 @@ struct API {
     static let GRADES = BASE_URL + "school/grade/unassigned"
     static let SUBJECTS = BASE_URL + "curriculum/subject?grade="
     static let LESSON = BASE_URL + "curriculum/lesson"
+    
+    
+    static let CURRICULUM_TYPES = BASE_URL + "curriculum/curriculum"
 
 
 }
