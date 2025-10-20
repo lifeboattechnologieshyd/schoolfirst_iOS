@@ -354,8 +354,8 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
             navigationController?.pushViewController(vc, animated: true)
         case 5:
             print("Vocabbees")
-            let stbd = UIStoryboard(name: "curriculum", bundle: nil)
-            let vc = stbd.instantiateViewController(identifier: "CurriculumController") as! CurriculumController
+            let stbd = UIStoryboard(name: "VocabBees", bundle: nil)
+            let vc = stbd.instantiateViewController(identifier: "VocabBeesViewController") as! VocabBeesViewController
             navigationController?.pushViewController(vc, animated: true)
         default:
             print("Courses")
