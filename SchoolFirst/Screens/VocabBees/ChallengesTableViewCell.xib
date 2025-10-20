@@ -78,6 +78,9 @@
                                         </constraints>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="btn_next_filled"/>
+                                        <connections>
+                                            <action selector="nextButtonTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="h2V-lf-BQH"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -120,6 +123,7 @@
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <connections>
                 <outlet property="ChallengeImage" destination="6cy-hX-1eh" id="afr-Tq-Yi9"/>
                 <outlet property="bgVIew" destination="blo-jD-RF5" id="pVO-Ry-2JR"/>

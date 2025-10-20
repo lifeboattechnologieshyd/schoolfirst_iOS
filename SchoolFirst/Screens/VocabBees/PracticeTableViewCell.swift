@@ -24,13 +24,12 @@ class PracticeTableViewCell: UITableViewCell {
         super.awakeFromNib()
         
     }
-        override func layoutSubviews() {
-            super.layoutSubviews()
-            
-            playnowView.layer.cornerRadius = playnowView.frame.width / 2
-            playnowView.clipsToBounds = true
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        playnowView.layer.cornerRadius = 10   
+            playnowView.layer.masksToBounds = true
         }
+        
+        
     }
-
-    
-

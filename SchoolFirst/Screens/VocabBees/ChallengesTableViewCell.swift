@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol ChallengesTableViewCellDelegate: AnyObject {
+    func didTapNextButton()
+}
+
 class  ChallengesTableViewCell: UITableViewCell {
     
     
@@ -28,7 +32,16 @@ class  ChallengesTableViewCell: UITableViewCell {
         override func layoutSubviews() {
             super.layoutSubviews()
             
-             circleView.layer.cornerRadius = circleView.frame.width / 2
-            circleView.clipsToBounds = true
+            circleView.layer.cornerRadius = 10   
+            circleView.layer.masksToBounds = true
+            }
+            
+            
+    weak var delegate: ChallengesTableViewCellDelegate?
+        
+    @IBAction func nextButtonTapped(_ sender: Any) {
+    delegate?.didTapNextButton()
         }
     }
+
+        

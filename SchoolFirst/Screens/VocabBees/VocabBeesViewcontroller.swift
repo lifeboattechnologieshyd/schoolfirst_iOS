@@ -7,47 +7,56 @@
 
 import UIKit
 
+
+
 class VocabBeesViewController:UIViewController {
      
     
     @IBOutlet weak var tblVw: UITableView!
     
     override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        
-        
-        tblVw.register(UINib(nibName: "ChallengesTableViewCell", bundle: nil), forCellReuseIdentifier: "ChallengesTableViewCell")
-        tblVw.register(UINib(nibName: "PracticeTableViewCell", bundle: nil), forCellReuseIdentifier: "PracticeTableViewCell")
-        tblVw.register(UINib(nibName: "CompeteTableViewCell", bundle: nil), forCellReuseIdentifier: "CompeteTableViewCell")
-       
+            super.viewDidLoad()
 
-        tblVw.dataSource = self
-        tblVw.delegate = self
-    }
-}
-extension VocabBeesViewController:UITableViewDataSource,UITableViewDelegate{
-    
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
-        
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch indexPath.row {
-        case 0:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "ChallengesTableViewCell", for: indexPath) as! ChallengesTableViewCell
-            return cell
-        case 1:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "PracticeTableViewCell", for: indexPath) as! PracticeTableViewCell
-            return cell
-        case 2:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "CompeteTableViewCell", for: indexPath) as! CompeteTableViewCell
-            return cell
-        default:
-            return UITableViewCell()
+             tblVw.register(UINib(nibName: "ChallengesTableViewCell", bundle: nil), forCellReuseIdentifier: "ChallengesTableViewCell")
+            tblVw.register(UINib(nibName: "PracticeTableViewCell", bundle: nil), forCellReuseIdentifier: "PracticeTableViewCell")
+            tblVw.register(UINib(nibName: "CompeteTableViewCell", bundle: nil), forCellReuseIdentifier: "CompeteTableViewCell")
+
+            tblVw.delegate = self
+            tblVw.dataSource = self
         }
     }
-    
-}
+
+    extension VocabBeesViewController: UITableViewDataSource, UITableViewDelegate, ChallengesTableViewCellDelegate {
+
+        func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+            return 3
+        }
+
+        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+            switch indexPath.row {
+            case 0:
+                let cell = tableView.dequeueReusableCell(withIdentifier: "ChallengesTableViewCell", for: indexPath) as! ChallengesTableViewCell
+                cell.delegate = self // Important!
+                return cell
+            case 1:
+                let cell = tableView.dequeueReusableCell(withIdentifier: "PracticeTableViewCell", for: indexPath) as! PracticeTableViewCell
+                return cell
+            case 2:
+                let cell = tableView.dequeueReusableCell(withIdentifier: "CompeteTableViewCell", for: indexPath) as! CompeteTableViewCell
+                return cell
+            default:
+                return UITableViewCell()
+            }
+        }
+
+        func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+            return 200
+        }
+
+         func didTapNextButton() {
+            let storyboard = UIStoryboard(name: "VocabBees", bundle: nil)
+            if let gradeVC = storyboard.instantiateViewController(withIdentifier: "gradeViewController") as? gradeViewController {
+                self.navigationController?.pushViewController(gradeVC, animated: true)
+            }
+        }
+    }

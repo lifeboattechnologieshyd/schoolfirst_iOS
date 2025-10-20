@@ -34,8 +34,8 @@ class CompeteTableViewCell: UITableViewCell {
         override func layoutSubviews() {
             super.layoutSubviews()
             
-             registerView.layer.cornerRadius = registerView.frame.width / 2
-            registerView.clipsToBounds = true
-        }
+            registerView.layer.cornerRadius = 10   
+            registerView.layer.masksToBounds = true
+            }
     }
 
