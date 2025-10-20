@@ -8,16 +8,29 @@
 import UIKit
 
 class PracticeTableViewCell: UITableViewCell {
-
+    
+    
+    @IBOutlet weak var bgView: UIView!
+    @IBOutlet weak var beatImage: UILabel!
+    @IBOutlet weak var completedImage: UILabel!
+    @IBOutlet weak var wordsImage: UILabel!
+    @IBOutlet weak var practiceImage: UIImageView!
+    
+    @IBOutlet weak var playnowView: UIView!
+    @IBOutlet weak var playnoeLabel: UILabel!
+    @IBOutlet weak var nextButton: UIButton!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        
+    }
+        override func layoutSubviews() {
+            super.layoutSubviews()
+            
+            playnowView.layer.cornerRadius = playnowView.frame.width / 2
+            playnowView.clipsToBounds = true
+        }
     }
 
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
     
-}
+
