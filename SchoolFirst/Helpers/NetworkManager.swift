@@ -669,3 +669,17 @@ struct FeelItem: Identifiable, Codable, Hashable {
         case isLiked = "is_liked"
     }
 }
+
+struct Curriculum: Codable, Identifiable {
+    let id: String
+    let curriculumName: String
+    let description: String?
+    let status: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case curriculumName = "curriculum_name"
+        case description
+        case status
+    }
+}

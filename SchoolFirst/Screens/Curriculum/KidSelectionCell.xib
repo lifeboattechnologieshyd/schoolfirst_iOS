@@ -33,6 +33,11 @@
                                     <constraint firstAttribute="width" constant="36" id="Pmz-QV-Dch"/>
                                     <constraint firstAttribute="height" constant="36" id="oUL-Ki-HWx"/>
                                 </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="18"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="For Abhinay" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HQU-Gv-CMc">
                                 <rect key="frame" x="60.000000000000007" y="12.000000000000002" width="85.666666666666686" height="17.666666666666671"/>
@@ -84,6 +89,12 @@
                 <constraint firstAttribute="bottom" secondItem="aNf-0i-MbR" secondAttribute="bottom" constant="16" id="uVP-8e-h3J"/>
             </constraints>
             <size key="customSize" width="310" height="90"/>
+            <connections>
+                <outlet property="bgView" destination="aNf-0i-MbR" id="BGC-5Z-hKN"/>
+                <outlet property="imgVw" destination="QMI-tx-34G" id="YSO-H2-YIA"/>
+                <outlet property="lblGrade" destination="ZmP-AC-Nwc" id="a8W-oF-PsA"/>
+                <outlet property="lblNAme" destination="HQU-Gv-CMc" id="FDm-ch-tGZ"/>
+            </connections>
             <point key="canvasLocation" x="303.81679389312978" y="33.802816901408455"/>
         </collectionViewCell>
     </objects>

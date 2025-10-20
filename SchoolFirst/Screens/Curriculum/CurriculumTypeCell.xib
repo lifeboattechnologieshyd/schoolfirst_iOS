@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="CurriculumTypeCell" rowHeight="118" id="KGk-i7-Jjw" customClass="CurriculumTypeCell" customModule="SF_Dev" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="373" height="118"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="373" height="118"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6Br-Sh-MK0">
+                        <rect key="frame" x="16" y="6" width="341" height="106"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iBL-Bc-kv2">
+                                <rect key="frame" x="305" y="10" width="24" height="24"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="24" id="9ek-hb-vdS"/>
+                                    <constraint firstAttribute="height" constant="24" id="HxS-im-pHx"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="next"/>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZMa-uc-AFg">
+                                <rect key="frame" x="16" y="12" width="273" height="20"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Paranpara Curriculam">
+                                        <attributes>
+                                            <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yDx-Zx-nw5">
+                                <rect key="frame" x="16" y="40" width="303" height="60"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="A Curriculam designed by Expert Educators over a course of 40 years. Its specially calibrated for Indian Students.">
+                                        <attributes>
+                                            <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="ZMa-uc-AFg" firstAttribute="leading" secondItem="6Br-Sh-MK0" secondAttribute="leading" constant="16" id="Cag-dj-93O"/>
+                            <constraint firstItem="yDx-Zx-nw5" firstAttribute="trailing" secondItem="iBL-Bc-kv2" secondAttribute="trailing" constant="-10" id="Oc0-Sl-JYY"/>
+                            <constraint firstItem="iBL-Bc-kv2" firstAttribute="top" secondItem="6Br-Sh-MK0" secondAttribute="top" constant="10" id="RGV-KU-Tdq"/>
+                            <constraint firstItem="iBL-Bc-kv2" firstAttribute="leading" secondItem="ZMa-uc-AFg" secondAttribute="trailing" constant="16" id="a3T-dP-eR4"/>
+                            <constraint firstItem="ZMa-uc-AFg" firstAttribute="centerY" secondItem="iBL-Bc-kv2" secondAttribute="centerY" id="bMl-V5-NaP"/>
+                            <constraint firstAttribute="bottom" secondItem="yDx-Zx-nw5" secondAttribute="bottom" constant="6" id="gNp-v8-btb"/>
+                            <constraint firstItem="yDx-Zx-nw5" firstAttribute="leading" secondItem="ZMa-uc-AFg" secondAttribute="leading" id="mFI-ak-JVl"/>
+                            <constraint firstItem="yDx-Zx-nw5" firstAttribute="top" secondItem="ZMa-uc-AFg" secondAttribute="bottom" constant="8" id="pNu-bY-MyG"/>
+                            <constraint firstAttribute="trailing" secondItem="iBL-Bc-kv2" secondAttribute="trailing" constant="12" id="wM7-hP-jdD"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="10"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="6Br-Sh-MK0" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="6" id="0MW-ZK-gDL"/>
+                    <constraint firstAttribute="trailing" secondItem="6Br-Sh-MK0" secondAttribute="trailing" constant="16" id="3vm-zw-Ceb"/>
+                    <constraint firstAttribute="bottom" secondItem="6Br-Sh-MK0" secondAttribute="bottom" constant="6" id="Z14-mf-tFD"/>
+                    <constraint firstItem="6Br-Sh-MK0" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="cmt-r1-p0B"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="bgView" destination="6Br-Sh-MK0" id="bHa-s6-Xl6"/>
+                <outlet property="lblDesc" destination="yDx-Zx-nw5" id="at8-os-VF9"/>
+                <outlet property="lblName" destination="ZMa-uc-AFg" id="qbU-1T-0MV"/>
+            </connections>
+            <point key="canvasLocation" x="-61.832061068702288" y="45.774647887323944"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="next" width="24" height="24"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
