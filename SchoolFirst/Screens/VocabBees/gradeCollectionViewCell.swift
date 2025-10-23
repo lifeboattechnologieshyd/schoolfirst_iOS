@@ -7,14 +7,32 @@
 
 import UIKit
 
-class gradeCollectionViewCell: UICollectionViewCell {
+protocol GradeCellDelegate: AnyObject {
+    func didTapNextButton(cell: gradeCollectionViewCell)
+}
 
+class gradeCollectionViewCell: UICollectionViewCell {
+    
     @IBOutlet weak var clsView: UIView!
     @IBOutlet weak var clsLabel: UILabel!
     @IBOutlet weak var nextButton: UIButton!
+    
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        
+        clsView.layer.cornerRadius = 12
+        clsView.layer.masksToBounds = false
+        clsView.layer.shadowColor = UIColor.black.cgColor
+        clsView.layer.shadowOpacity = 0.25
+        clsView.layer.shadowOffset = CGSize(width: 0, height: 3)
+        clsView.layer.shadowRadius = 6        
+    }
+    weak var delegate: GradeCellDelegate?
+        
+        @IBAction func nextButtonTapped(_ sender: UIButton) {
+            delegate?.didTapNextButton(cell: self)
+        }
     }
 
-}
+
