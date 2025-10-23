@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="CurriculumConceptCell" rowHeight="110" id="KGk-i7-Jjw" customClass="CurriculumConceptCell" customModule="SF_Dev" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="389" height="110"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="389" height="110"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="zd3-YP-2Qm">
+                        <rect key="frame" x="16" y="8" width="114" height="94"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="114" id="l1T-TM-FcU"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="8"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fQd-p0-xHT">
+                        <rect key="frame" x="142" y="8.0000000000000018" width="235" height="17.666666666666671"/>
+                        <attributedString key="attributedText">
+                            <fragment content="Introduction to Cellular System">
+                                <attributes>
+                                    <font key="NSFont" size="14" name="Lexend-SemiBold"/>
+                                    <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                </attributes>
+                            </fragment>
+                        </attributedString>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZrV-OY-FgW">
+                        <rect key="frame" x="142" y="33.666666666666671" width="235" height="37.666666666666671"/>
+                        <attributedString key="attributedText">
+                            <fragment content="Cellular syste has many functions. one of the primary functions is growth. Growth happens in phases like how it used to…">
+                                <attributes>
+                                    <font key="NSFont" size="10" name="Lexend-Regular"/>
+                                    <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                </attributes>
+                            </fragment>
+                        </attributedString>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ahf-aM-ZgF">
+                        <rect key="frame" x="0.0" y="108.66666666666667" width="389" height="1"/>
+                        <color key="backgroundColor" red="0.79607843140000001" green="0.8980392157" blue="0.99215686270000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="eL0-ob-KrS"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="zd3-YP-2Qm" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="7xm-iG-ea5"/>
+                    <constraint firstAttribute="trailing" secondItem="ZrV-OY-FgW" secondAttribute="trailing" constant="12" id="Ata-Je-WSc"/>
+                    <constraint firstItem="fQd-p0-xHT" firstAttribute="leading" secondItem="zd3-YP-2Qm" secondAttribute="trailing" constant="12" id="Ax4-XN-Hg4"/>
+                    <constraint firstItem="zd3-YP-2Qm" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="GQm-ze-90E"/>
+                    <constraint firstItem="ZrV-OY-FgW" firstAttribute="top" secondItem="fQd-p0-xHT" secondAttribute="bottom" constant="8" id="MhA-Fx-hXy"/>
+                    <constraint firstAttribute="trailing" secondItem="fQd-p0-xHT" secondAttribute="trailing" constant="12" id="Sje-yh-h7I"/>
+                    <constraint firstAttribute="trailing" secondItem="ahf-aM-ZgF" secondAttribute="trailing" id="cIS-HA-tEO"/>
+                    <constraint firstAttribute="bottom" secondItem="zd3-YP-2Qm" secondAttribute="bottom" constant="8" id="dDC-et-wLd"/>
+                    <constraint firstItem="ahf-aM-ZgF" firstAttribute="top" relation="greaterThanOrEqual" secondItem="ZrV-OY-FgW" secondAttribute="bottom" constant="8" id="jec-FC-Xdb"/>
+                    <constraint firstItem="ZrV-OY-FgW" firstAttribute="leading" secondItem="zd3-YP-2Qm" secondAttribute="trailing" constant="12" id="kjk-Xf-xyd"/>
+                    <constraint firstAttribute="bottom" secondItem="ahf-aM-ZgF" secondAttribute="bottom" constant="0.5" id="mvD-nr-9NN"/>
+                    <constraint firstItem="fQd-p0-xHT" firstAttribute="top" secondItem="zd3-YP-2Qm" secondAttribute="top" id="ohQ-IC-Gnv"/>
+                    <constraint firstItem="ahf-aM-ZgF" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="vNX-4j-Kkr"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="imgVw" destination="zd3-YP-2Qm" id="OBj-tr-6Ld"/>
+                <outlet property="lblDescription" destination="ZrV-OY-FgW" id="NV5-92-FF1"/>
+                <outlet property="lblTitle" destination="fQd-p0-xHT" id="jh8-5f-lSa"/>
+            </connections>
+            <point key="canvasLocation" x="191.6030534351145" y="42.95774647887324"/>
+        </tableViewCell>
+    </objects>
+</document>

@@ -683,3 +683,56 @@ struct Curriculum: Codable, Identifiable {
         case status
     }
 }
+
+
+struct CurriculumCategory: Codable, Identifiable {
+    let id: String
+    let categoryName: String
+    let categoryImage: String
+    let gradeIDs: [String]
+    let curriculumID: String
+    let curriculumName: String
+    let status: String
+    let gradeName: String
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case categoryName = "category_name"
+        case categoryImage = "category_image"
+        case gradeIDs = "grade_ids"
+        case curriculumID = "curriculum_id"
+        case curriculumName = "curriculum_name"
+        case status
+        case gradeName = "grade_name"
+    }
+}
+
+struct LessonConcept: Codable, Identifiable {
+    let id: String
+    let lessonID: String
+    let title: String
+    let description: String
+    let pdfURL: URL?
+    let images: [URL]
+    let videos: [URL]?
+    let youtubeURLs: [URL]?
+    let tags: [String]
+    let status: String
+    let priority: Int
+    let curriculumName: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case lessonID = "lesson_id"
+        case title
+        case description
+        case pdfURL = "pdf"
+        case images
+        case videos
+        case youtubeURLs = "youtube_urls"
+        case tags
+        case status
+        case priority
+        case curriculumName = "curriculum_name"
+    }
+}

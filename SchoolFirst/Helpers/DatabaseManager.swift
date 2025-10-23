@@ -41,6 +41,7 @@ class UserManager {
     private init() {}
     
     var assessmentSelectedStudent : Student!
+    var curriculamSelectedStudent : Student!
     
     var kids : [Student] {
         return DBManager.shared.allStudents(schools: UserManager.shared.user?.schools ?? [])

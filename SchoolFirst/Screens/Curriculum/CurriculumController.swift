@@ -25,11 +25,13 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
         
         self.tblVw.register(UINib(nibName: "CurriculumTypeCell", bundle: nil), forCellReuseIdentifier: "CurriculumTypeCell")
         if UserManager.shared.kids.count == 0 {
-            selected_student = 0
+            
             colVw.isHidden = true
             tblVw.isHidden = true
             
         }else {
+            selected_student = 0
+            UserManager.shared.curriculamSelectedStudent = UserManager.shared.kids[0]
             colVw.delegate = self
             colVw.dataSource = self
             tblVw.delegate = self
@@ -53,6 +55,7 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         selected_student = indexPath.row
+        UserManager.shared.curriculamSelectedStudent = UserManager.shared.kids[indexPath.row]
         colVw.reloadItems(at: [indexPath])
     }
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
@@ -80,6 +83,11 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
         return UITableView.automaticDimension
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let stbd = UIStoryboard(name: "curriculum", bundle: nil)
+        let vc = stbd.instantiateViewController(identifier: "CurriculumCategoryController") as! CurriculumCategoryController
+        navigationController?.pushViewController(vc, animated: true)
+    }
     
     func getCurriculumType(){
         NetworkManager.shared.request(urlString: API.CURRICULUM_TYPES, method: .GET) { (result: Result<APIResponse<[Curriculum]>, NetworkError>)  in
