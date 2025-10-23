@@ -9,7 +9,7 @@ import UIKit
 
 
 
-class VocabBeesViewController:UIViewController {
+class VocabBeesViewController:UIViewController, PracticeTableViewCellDelegate, ChallengesTableViewCellDelegate {
      
     
     @IBOutlet weak var tblVw: UITableView!
@@ -28,7 +28,7 @@ class VocabBeesViewController:UIViewController {
         }
     }
 
-extension VocabBeesViewController: UITableViewDataSource, UITableViewDelegate, ChallengesTableViewCellDelegate {
+extension VocabBeesViewController: UITableViewDataSource, UITableViewDelegate, NextButtonDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 3
@@ -38,14 +38,16 @@ extension VocabBeesViewController: UITableViewDataSource, UITableViewDelegate, C
         switch indexPath.row {
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: "ChallengesTableViewCell", for: indexPath) as! ChallengesTableViewCell
-            cell.delegate = self // Important!
+            cell.delegate = self
             return cell
         case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: "PracticeTableViewCell", for: indexPath) as! PracticeTableViewCell
+            cell.delegate = self
             return cell
         case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: "CompeteTableViewCell", for: indexPath) as! CompeteTableViewCell
-            return cell
+            cell.delegate = self
+             return cell
         default:
             return UITableViewCell()
         }
@@ -55,15 +57,15 @@ extension VocabBeesViewController: UITableViewDataSource, UITableViewDelegate, C
         return 200
     }
     
-    func didTapNextButton() {
+     func didTapNextButton() {
         let storyboard = UIStoryboard(name: "VocabBees", bundle: nil)
         if let gradeVC = storyboard.instantiateViewController(withIdentifier: "gradeViewController") as? gradeViewController {
             self.navigationController?.pushViewController(gradeVC, animated: true)
         }
     }
+    
     @IBAction func BackButton(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
-        
     }
-    
 }
+

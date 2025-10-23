@@ -7,6 +7,11 @@
 
 import UIKit
 
+protocol NextButtonDelegate: AnyObject {
+    func didTapNextButton()
+}
+
+
 class CompeteTableViewCell: UITableViewCell {
     
     
@@ -22,20 +27,24 @@ class CompeteTableViewCell: UITableViewCell {
     @IBOutlet weak var todayLabel: UILabel!
     @IBOutlet weak var timeLabel: UILabel!
     @IBOutlet weak var registerLabel: UILabel!
-    @IBOutlet weak var nextLabel: UIButton!
     
+    @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var registerView: UIView!
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    }
     
-     
+    weak var delegate: NextButtonDelegate?
+        
+        override func awakeFromNib() {
+            super.awakeFromNib()
+         }
+        
         override func layoutSubviews() {
             super.layoutSubviews()
             
-            registerView.layer.cornerRadius = 10   
+            registerView.layer.cornerRadius = 10
             registerView.layer.masksToBounds = true
-            }
+        }
+        
+         @IBAction func nextButtonTapped(_ sender: UIButton) {
+            delegate?.didTapNextButton()
+        }
     }
-

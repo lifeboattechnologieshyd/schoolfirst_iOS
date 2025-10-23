@@ -111,6 +111,9 @@
                                         </constraints>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="btn_next_filled" title=" "/>
+                                        <connections>
+                                            <action selector="nextButtonTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="Ozd-1f-yzC"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -170,7 +173,7 @@
                 <outlet property="competeLabel" destination="KdP-RZ-wIk" id="AcJ-jC-XsT"/>
                 <outlet property="graphImage" destination="ldX-U9-Uc9" id="VTS-rG-wrd"/>
                 <outlet property="minutesLabel" destination="Vl0-hB-a5D" id="alP-j8-Baj"/>
-                <outlet property="nextLabel" destination="GMf-fW-2cH" id="YMX-tR-BQ2"/>
+                <outlet property="nextButton" destination="GMf-fW-2cH" id="65j-KK-uXH"/>
                 <outlet property="registerLabel" destination="c6L-56-WBl" id="wlh-P3-D64"/>
                 <outlet property="registerView" destination="JO4-Mn-Gzw" id="qbC-J6-FgP"/>
                 <outlet property="sundayLabel" destination="no4-xA-xJh" id="tno-IF-KrM"/>
