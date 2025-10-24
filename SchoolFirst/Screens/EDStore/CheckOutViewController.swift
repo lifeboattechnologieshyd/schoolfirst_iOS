@@ -49,7 +49,7 @@ class CheckOutViewController: UIViewController {
         }
 
          @IBAction func buyNowButtonTapped(_ sender: UIButton) {
-            let storyboard = UIStoryboard(name: "EDStore", bundle: nil)
+            let storyboard = UIStoryboard(name: "EdStore", bundle: nil)
             if let nextVC = storyboard.instantiateViewController(withIdentifier: "MakePaymentViewController") as? MakePaymentViewController {
                 self.navigationController?.pushViewController(nextVC, animated: true)
             }

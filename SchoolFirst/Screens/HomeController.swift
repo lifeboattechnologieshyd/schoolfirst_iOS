@@ -357,9 +357,9 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
             let stbd = UIStoryboard(name: "VocabBees", bundle: nil)
             let vc = stbd.instantiateViewController(identifier: "VocabBeesViewController") as! VocabBeesViewController
             navigationController?.pushViewController(vc, animated: true)
-        case 6:
+        case 7:
             print("EdStore")
-            let stbd = UIStoryboard(name: "EDStore", bundle: nil)
+            let stbd = UIStoryboard(name: "EdStore", bundle: nil)
             let vc = stbd.instantiateViewController(identifier: "EdStoreViewController") as! EdStoreViewController
             navigationController?.pushViewController(vc, animated: true)
         default:
