@@ -58,7 +58,7 @@ class EdStoreViewController:UIViewController {
         }
 
          func didTapImage(in cell: EdStoreTableViewCell) {
-            let storyboard = UIStoryboard(name: "EDStore", bundle: nil)
+            let storyboard = UIStoryboard(name: "EdStore", bundle: nil)
             if let nextVC = storyboard.instantiateViewController(withIdentifier: "CheckOutViewController") as? CheckOutViewController {
                 self.navigationController?.pushViewController(nextVC, animated: true)
             }
