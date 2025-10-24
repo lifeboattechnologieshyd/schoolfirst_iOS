@@ -47,7 +47,7 @@ class CurriculumCategoryController: UIViewController, UITableViewDelegate, UITab
     }
     
     func getCurriculumCats(){
-        var url = API.CURRICULUM_CATEGORIES + "\(UserManager.shared.curriculamSelectedStudent.gradeID)"
+        let url = API.CURRICULUM_CATEGORIES + "\(UserManager.shared.curriculamSelectedStudent.gradeID)"
         NetworkManager.shared.request(urlString: url, method: .GET) { (result: Result<APIResponse<[CurriculumCategory]>, NetworkError>)  in
             switch result {
             case .success(let info):

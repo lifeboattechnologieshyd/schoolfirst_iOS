@@ -36,7 +36,7 @@ class HomeController: UIViewController {
             "gallery",
             "attendence",
             "time_table",
-            "student",
+            "school_bus",
         ],
         [
             "curriculum",
