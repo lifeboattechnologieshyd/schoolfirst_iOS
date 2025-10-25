@@ -62,6 +62,7 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
     func navigateToPlayer(index: Int){
         let stbd = UIStoryboard(name: "Feels", bundle: nil)
         let vc = stbd.instantiateViewController(identifier: "FeelPlayerController") as! FeelPlayerController
+        vc.selected_feel_item = items[index]
         navigationController?.pushViewController(vc, animated: true)
     }
     

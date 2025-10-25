@@ -117,7 +117,6 @@
                                         <rect key="frame" x="62" y="13.999999999999998" width="42" height="22.333333333333329"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="22.329999999999998" id="DQu-oR-a1d"/>
-                                            <constraint firstAttribute="width" constant="42" id="K3I-ay-hvZ"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
                                         <nil key="textColor"/>
@@ -133,17 +132,36 @@
                                     <constraint firstItem="vjJ-Cw-4dU" firstAttribute="centerY" secondItem="S7J-SR-EbX" secondAttribute="centerY" id="vCj-Zz-GaY"/>
                                 </constraints>
                             </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tO6-cB-jJZ" customClass="YTPlayerView">
+                                <rect key="frame" x="0.0" y="109" width="393" height="709"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </view>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="dmN-zt-Q2z">
+                                <rect key="frame" x="171.66666666666666" y="401" width="50" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="FmV-3a-2Jz"/>
+                                    <constraint firstAttribute="width" constant="50" id="emF-Qx-aYP"/>
+                                </constraints>
+                            </activityIndicatorView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="SnB-tR-uvX"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="SnB-tR-uvX" firstAttribute="trailing" secondItem="G3J-DT-qkO" secondAttribute="trailing" id="1oE-mf-yOq"/>
+                            <constraint firstItem="tO6-cB-jJZ" firstAttribute="top" secondItem="G3J-DT-qkO" secondAttribute="bottom" id="8gA-S6-R5f"/>
                             <constraint firstItem="G3J-DT-qkO" firstAttribute="leading" secondItem="DlI-Rf-4NM" secondAttribute="leading" id="EmL-0i-Jag"/>
+                            <constraint firstItem="dmN-zt-Q2z" firstAttribute="centerX" secondItem="DlI-Rf-4NM" secondAttribute="centerX" id="MtU-4u-eB4"/>
+                            <constraint firstItem="dmN-zt-Q2z" firstAttribute="centerY" secondItem="DlI-Rf-4NM" secondAttribute="centerY" id="W8Q-as-g5d"/>
+                            <constraint firstItem="SnB-tR-uvX" firstAttribute="bottom" secondItem="tO6-cB-jJZ" secondAttribute="bottom" id="YjM-co-DLc"/>
+                            <constraint firstItem="SnB-tR-uvX" firstAttribute="trailing" secondItem="tO6-cB-jJZ" secondAttribute="trailing" id="aQr-Cp-qDb"/>
                             <constraint firstItem="G3J-DT-qkO" firstAttribute="top" secondItem="SnB-tR-uvX" secondAttribute="top" id="iEm-pF-bqV"/>
+                            <constraint firstItem="tO6-cB-jJZ" firstAttribute="leading" secondItem="SnB-tR-uvX" secondAttribute="leading" id="lCe-WG-paF"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="dmN-zt-Q2z" id="Rhd-qU-ox1"/>
                         <outlet property="lblTitle" destination="vjJ-Cw-4dU" id="sRv-qW-W9L"/>
+                        <outlet property="playerView" destination="tO6-cB-jJZ" id="KgR-bD-Mcj"/>
                         <outlet property="topView" destination="G3J-DT-qkO" id="Q2n-7e-TKR"/>
                     </connections>
                 </viewController>

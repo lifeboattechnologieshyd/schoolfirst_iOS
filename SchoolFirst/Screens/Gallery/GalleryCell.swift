@@ -7,21 +7,30 @@
 
 import UIKit
 
-class GalleryCell: UITableViewCell {
-
-    @IBOutlet weak var mainVw: UIView!
-    @IBOutlet weak var imgVw: UIView!
-    @IBOutlet weak var paintingLbl: UIView!
-    @IBOutlet weak var dateLbl: UILabel!
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-    
+protocol GalleryCellDelegate: AnyObject {
+    func galleryCellDidTap(_ cell: GalleryCell)
 }
+
+class GalleryCell: UITableViewCell {
+    
+    @IBOutlet weak var mainVw: UIView!
+    @IBOutlet weak var imgVw: UIImageView!
+    @IBOutlet weak var paintingLbl: UILabel!
+    @IBOutlet weak var dateLbl: UILabel!
+    
+    weak var delegate: GalleryCellDelegate?
+
+        override func awakeFromNib() {
+            super.awakeFromNib()
+            mainVw.layer.cornerRadius = 10
+            mainVw.layer.masksToBounds = true
+
+             let tapGesture = UITapGestureRecognizer(target: self, action: #selector(imageTapped))
+            imgVw.isUserInteractionEnabled = true
+            imgVw.addGestureRecognizer(tapGesture)
+        }
+
+        @objc func imageTapped() {
+            delegate?.galleryCellDidTap(self)
+        }
+    }

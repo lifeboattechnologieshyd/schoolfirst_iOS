@@ -393,7 +393,8 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
                     let vc = storyboard?.instantiateViewController(identifier: "FeeViewController") as! FeeViewController
                     navigationController?.pushViewController(vc, animated: true)
                 case 5:
-                    let vc = storyboard?.instantiateViewController(identifier: "MySchoolViewController") as! MySchoolViewController
+                    let stbd = UIStoryboard(name: "Gallery", bundle: nil)
+                    let vc = storyboard?.instantiateViewController(identifier: "GalleryViewController") as! GalleryViewController
                     navigationController?.pushViewController(vc, animated: true)
                 case 6:
                     let stbd = UIStoryboard(name: "Feels", bundle: nil)
