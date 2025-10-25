@@ -7,9 +7,6 @@
 
 import UIKit
 
-protocol NextButtonDelegate: AnyObject {
-    func didTapNextButton()
-}
 
 
 class CompeteTableViewCell: UITableViewCell {
@@ -31,20 +28,15 @@ class CompeteTableViewCell: UITableViewCell {
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var registerView: UIView!
     
-    weak var delegate: NextButtonDelegate?
-        
-        override func awakeFromNib() {
-            super.awakeFromNib()
-         }
-        
-        override func layoutSubviews() {
-            super.layoutSubviews()
-            
-            registerView.layer.cornerRadius = 10
-            registerView.layer.masksToBounds = true
-        }
-        
-         @IBAction func nextButtonTapped(_ sender: UIButton) {
-            delegate?.didTapNextButton()
-        }
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
     }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        registerView.layer.cornerRadius = 10
+        registerView.layer.masksToBounds = true
+    }
+}

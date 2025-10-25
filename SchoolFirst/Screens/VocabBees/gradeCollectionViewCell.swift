@@ -7,9 +7,7 @@
 
 import UIKit
 
-protocol GradeCellDelegate: AnyObject {
-    func didTapNextButton(cell: gradeCollectionViewCell)
-}
+
 
 class gradeCollectionViewCell: UICollectionViewCell {
     
@@ -28,11 +26,8 @@ class gradeCollectionViewCell: UICollectionViewCell {
         clsView.layer.shadowOffset = CGSize(width: 0, height: 3)
         clsView.layer.shadowRadius = 6        
     }
-    weak var delegate: GradeCellDelegate?
         
-        @IBAction func nextButtonTapped(_ sender: UIButton) {
-            delegate?.didTapNextButton(cell: self)
-        }
+       
     }
 
 

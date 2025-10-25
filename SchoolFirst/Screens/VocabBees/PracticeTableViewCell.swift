@@ -7,9 +7,6 @@
 
 import UIKit
 
-protocol PracticeTableViewCellDelegate: AnyObject {
-    func didTapNextButton()
-}
 
 
 class PracticeTableViewCell: UITableViewCell {
@@ -33,15 +30,8 @@ class PracticeTableViewCell: UITableViewCell {
         super.layoutSubviews()
         
         playnowView.layer.cornerRadius = 10   
-            playnowView.layer.masksToBounds = true
-        }
-        
-        
-    weak var delegate: PracticeTableViewCellDelegate?
-        
-    @IBAction func nextButtonTapped(_ sender: Any) {
-    delegate?.didTapNextButton()
-        }
+        playnowView.layer.masksToBounds = true
     }
+}
 
-    
+
