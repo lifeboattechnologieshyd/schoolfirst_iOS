@@ -31,6 +31,7 @@ class CurriculumCategoryController: UIViewController, UITableViewDelegate, UITab
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CurriculamCategoryCell") as! CurriculamCategoryCell
+        cell.lblTitle.text = cats[indexPath.row].categoryName
         cell.imgVw.loadImage(url: cats[indexPath.row].categoryImage)
         return cell
     }

@@ -9,6 +9,7 @@ import UIKit
 
 class CurriculamCategoryCell: UITableViewCell {
 
+    @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var imgVw: UIImageView!
     override func awakeFromNib() {
         super.awakeFromNib()

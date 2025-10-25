@@ -19,30 +19,56 @@
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="4K9-QB-8HU">
                         <rect key="frame" x="16" y="8" width="380" height="169"/>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="8"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
                     </imageView>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="blacklayer" translatesAutoresizingMaskIntoConstraints="NO" id="aR9-6A-piE">
+                    <view alpha="0.5" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Pgq-SK-7Qi">
                         <rect key="frame" x="16" y="8" width="380" height="169"/>
-                    </imageView>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="8"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </view>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="veA-Ca-Vqw">
+                        <rect key="frame" x="32" y="20" width="380" height="35"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <attributedString key="attributedText">
+                            <fragment content="Emerging Core Subjects">
+                                <attributes>
+                                    <color key="NSColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <font key="NSFont" size="28" name="Lexend-Bold"/>
+                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                </attributes>
+                            </fragment>
+                        </attributedString>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
                 <constraints>
                     <constraint firstAttribute="trailing" secondItem="4K9-QB-8HU" secondAttribute="trailing" constant="16" id="3cw-Sb-P6O"/>
+                    <constraint firstItem="veA-Ca-Vqw" firstAttribute="top" secondItem="4K9-QB-8HU" secondAttribute="top" constant="12" id="4Dh-nd-s9e"/>
+                    <constraint firstItem="Pgq-SK-7Qi" firstAttribute="bottom" secondItem="4K9-QB-8HU" secondAttribute="bottom" id="4KM-tz-kWg"/>
+                    <constraint firstItem="Pgq-SK-7Qi" firstAttribute="trailing" secondItem="4K9-QB-8HU" secondAttribute="trailing" id="F0H-FV-zSE"/>
+                    <constraint firstItem="veA-Ca-Vqw" firstAttribute="leading" secondItem="4K9-QB-8HU" secondAttribute="leading" constant="16" id="L8v-ax-PVG"/>
                     <constraint firstItem="4K9-QB-8HU" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="Rol-eN-hGh"/>
                     <constraint firstAttribute="bottom" secondItem="4K9-QB-8HU" secondAttribute="bottom" constant="8" id="TSU-xS-X0A"/>
-                    <constraint firstItem="aR9-6A-piE" firstAttribute="top" secondItem="4K9-QB-8HU" secondAttribute="top" id="YnS-DB-B0V"/>
-                    <constraint firstItem="aR9-6A-piE" firstAttribute="bottom" secondItem="4K9-QB-8HU" secondAttribute="bottom" id="dwy-TG-hPA"/>
-                    <constraint firstItem="aR9-6A-piE" firstAttribute="trailing" secondItem="4K9-QB-8HU" secondAttribute="trailing" id="jJa-xG-RkW"/>
-                    <constraint firstItem="aR9-6A-piE" firstAttribute="leading" secondItem="4K9-QB-8HU" secondAttribute="leading" id="wmK-9q-KQO"/>
+                    <constraint firstItem="Pgq-SK-7Qi" firstAttribute="top" secondItem="4K9-QB-8HU" secondAttribute="top" id="bql-S7-uXO"/>
+                    <constraint firstItem="Pgq-SK-7Qi" firstAttribute="leading" secondItem="4K9-QB-8HU" secondAttribute="leading" id="fsT-eg-uWC"/>
+                    <constraint firstItem="veA-Ca-Vqw" firstAttribute="trailing" secondItem="4K9-QB-8HU" secondAttribute="trailing" constant="16" id="kxE-na-EdK"/>
                     <constraint firstItem="4K9-QB-8HU" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="xnA-3T-fWW"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
                 <outlet property="imgVw" destination="4K9-QB-8HU" id="hQV-Ya-UhR"/>
+                <outlet property="lblTitle" destination="veA-Ca-Vqw" id="Pe9-NG-m7e"/>
             </connections>
             <point key="canvasLocation" x="-32.061068702290072" y="69.366197183098592"/>
         </tableViewCell>
     </objects>
-    <resources>
-        <image name="blacklayer" width="415" height="218"/>
-    </resources>
 </document>

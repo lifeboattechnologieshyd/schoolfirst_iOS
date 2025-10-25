@@ -10,23 +10,23 @@ import UIKit
 
 
 class VocabBeesViewController:UIViewController, PracticeTableViewCellDelegate, ChallengesTableViewCellDelegate {
-     
+    
     
     @IBOutlet weak var tblVw: UITableView!
     @IBOutlet weak var BackButton: UIButton!
     
     
     override func viewDidLoad() {
-            super.viewDidLoad()
-
-             tblVw.register(UINib(nibName: "ChallengesTableViewCell", bundle: nil), forCellReuseIdentifier: "ChallengesTableViewCell")
-            tblVw.register(UINib(nibName: "PracticeTableViewCell", bundle: nil), forCellReuseIdentifier: "PracticeTableViewCell")
-            tblVw.register(UINib(nibName: "CompeteTableViewCell", bundle: nil), forCellReuseIdentifier: "CompeteTableViewCell")
-
-            tblVw.delegate = self
-            tblVw.dataSource = self
-        }
+        super.viewDidLoad()
+        
+        tblVw.register(UINib(nibName: "ChallengesTableViewCell", bundle: nil), forCellReuseIdentifier: "ChallengesTableViewCell")
+        tblVw.register(UINib(nibName: "PracticeTableViewCell", bundle: nil), forCellReuseIdentifier: "PracticeTableViewCell")
+        tblVw.register(UINib(nibName: "CompeteTableViewCell", bundle: nil), forCellReuseIdentifier: "CompeteTableViewCell")
+        
+        tblVw.delegate = self
+        tblVw.dataSource = self
     }
+}
 
 extension VocabBeesViewController: UITableViewDataSource, UITableViewDelegate, NextButtonDelegate {
     
