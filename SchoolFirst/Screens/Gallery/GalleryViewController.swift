@@ -15,35 +15,53 @@ class GalleryViewController: UIViewController {
     @IBOutlet weak var topView: UIView!
     @IBOutlet weak var galleryLbl: UILabel!
     
- 
+    var gallery = [EventGallery]()
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-         topView.layer.shadowColor = UIColor.black.cgColor
-        topView.layer.shadowOpacity = 0.3
-        topView.layer.shadowOffset = CGSize(width: 0, height: 3)
-        topView.layer.shadowRadius = 4
-        topView.layer.masksToBounds = false
+        topView.addBottomShadow()
         
-         tblVw.register(UINib(nibName: "GalleryCell", bundle: nil), forCellReuseIdentifier: "GalleryCell")
+        tblVw.register(UINib(nibName: "GalleryCell", bundle: nil), forCellReuseIdentifier: "GalleryCell")
         tblVw.delegate = self
         tblVw.dataSource = self
+        getGalleryData()
     }
     
-     @IBAction func backButtonTapped(_ sender: UIButton) {
+    @IBAction func backButtonTapped(_ sender: UIButton) {
         self.navigationController?.popViewController(animated: true)
-     }
+    }
 }
 
-extension GalleryViewController: GalleryCellDelegate {
-
-    func galleryCellDidTap(_ cell: GalleryCell) {
-        guard let indexPath = tblVw.indexPath(for: cell) else { return }
-
-        let storyboard = UIStoryboard(name: "Gallery", bundle: nil)
-        if let detailVC = storyboard.instantiateViewController(withIdentifier: "AnnualDayViewController") as? AnnualDayViewController {
-             self.navigationController?.pushViewController(detailVC, animated: true)
+extension GalleryViewController {
+    
+    
+    
+    func getGalleryData() {
+        NetworkManager.shared.request(urlString: API.EVENT_GALLERY,method: .GET) { (result: Result<APIResponse<[EventGallery]>, NetworkError>)  in
+            switch result {
+            case .success(let info):
+                if info.success {
+                    if let data = info.data {
+                        self.gallery = data
+                    }
+                    DispatchQueue.main.async {
+                        self.tblVw.reloadData()
+                    }
+                }else{
+                    print(info.description)
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    switch error {
+                    case .noaccess:
+                        self.handleLogout()
+                    default:
+                        self.showAlert(msg: error.localizedDescription)
+                    }
+                }
+            }
         }
     }
 }
@@ -51,20 +69,24 @@ extension GalleryViewController: GalleryCellDelegate {
 extension GalleryViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 4
+        return self.gallery.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "GalleryCell", for: indexPath) as! GalleryCell
-        cell.delegate = self
-        cell.paintingLbl.text = "Painting \(indexPath.row + 1)"
-        cell.dateLbl.text = "Date: 2025"
-        cell.imgVw.image = UIImage(named: "defaultImage")
+        cell.dateLbl.text = self.gallery[indexPath.row].eventDate
+        cell.imgVw.loadImage(url: self.gallery[indexPath.row].images.first ?? "")
         return cell
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 248
+    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let stbd = UIStoryboard(name: "Gallery", bundle: nil)
+        let vc = stbd.instantiateViewController(identifier: "AnnualDayViewController") as! AnnualDayViewController
+        vc.gallery = self.gallery[indexPath.row]
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
 

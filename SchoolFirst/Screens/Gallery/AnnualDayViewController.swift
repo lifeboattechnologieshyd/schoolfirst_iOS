@@ -14,19 +14,20 @@ class AnnualDayViewController: UIViewController {
     @IBOutlet weak var annualLbl: UILabel!
     @IBOutlet weak var topVw: UIView!
     @IBOutlet weak var colVw: UICollectionView!
+    var gallery : EventGallery!
     
-    let numberOfItems = 10
-    let imageName = "Annaual Day Celebrations"
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        dateLbl.text = gallery.eventDate
+        annualLbl.text = gallery.eventName
         
         colVw.delegate = self
         colVw.dataSource = self
         
-         colVw.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "AnnualCollectionViewCell")
+        self.colVw.register(UINib(nibName: "AnnualCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "AnnualCollectionViewCell")
         
-         backButton.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
+        backButton.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
     }
     
     @objc func backTapped() {
@@ -37,33 +38,27 @@ class AnnualDayViewController: UIViewController {
 extension AnnualDayViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return numberOfItems
+        return gallery.images.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = colVw.dequeueReusableCell(withReuseIdentifier: "AnnualCollectionViewCell", for: indexPath)
-        
-        
-        let imageView = UIImageView(frame: cell.contentView.bounds)
-        imageView.image = UIImage(named: imageName)
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        
-        cell.contentView.addSubview(imageView)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "AnnualCollectionViewCell", for: indexPath) as! AnnualCollectionViewCell
+        cell.imgVw.loadImage(url: self.gallery.images[indexPath.row])
         return cell
     }
     
-     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 160, height: 92)
+        let width = (collectionView.frame.size.width-10)/2
+        return CGSize(width: width, height: width*0.575)
     }
     
-     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
                         minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 10
     }
     
-     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
                         minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 10
     }

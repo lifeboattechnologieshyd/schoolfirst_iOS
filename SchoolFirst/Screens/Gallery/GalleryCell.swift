@@ -7,9 +7,7 @@
 
 import UIKit
 
-protocol GalleryCellDelegate: AnyObject {
-    func galleryCellDidTap(_ cell: GalleryCell)
-}
+
 
 class GalleryCell: UITableViewCell {
     
@@ -18,19 +16,10 @@ class GalleryCell: UITableViewCell {
     @IBOutlet weak var paintingLbl: UILabel!
     @IBOutlet weak var dateLbl: UILabel!
     
-    weak var delegate: GalleryCellDelegate?
-
-        override func awakeFromNib() {
-            super.awakeFromNib()
-            mainVw.layer.cornerRadius = 10
-            mainVw.layer.masksToBounds = true
-
-             let tapGesture = UITapGestureRecognizer(target: self, action: #selector(imageTapped))
-            imgVw.isUserInteractionEnabled = true
-            imgVw.addGestureRecognizer(tapGesture)
-        }
-
-        @objc func imageTapped() {
-            delegate?.galleryCellDidTap(self)
-        }
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        mainVw.layer.cornerRadius = 10
+        mainVw.layer.masksToBounds = true
     }
+    
+}

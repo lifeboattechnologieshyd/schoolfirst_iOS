@@ -15,7 +15,6 @@ class FeelPlayerController: UIViewController {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var topView: UIView!
     @IBOutlet weak var playerView: YTPlayerView!
-    @IBOutlet weak var thumbnailImageView: UIImageView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
 
@@ -32,8 +31,6 @@ class FeelPlayerController: UIViewController {
     func playYouTubeVideo() {
         let videoID = "\(selected_feel_item.youtubeVideo!)".extractYoutubeId()
         
-        let thumbnailURL = "https://img.youtube.com/vi/\(videoID ?? "")/hqdefault.jpg"
-        thumbnailImageView.loadImage(url: thumbnailURL)
         
         activityIndicator.startAnimating()
         
@@ -57,7 +54,6 @@ class FeelPlayerController: UIViewController {
 extension FeelPlayerController: YTPlayerViewDelegate {
     func playerViewDidBecomeReady(_ playerView: YTPlayerView) {
         activityIndicator.stopAnimating()
-        thumbnailImageView.isHidden = true
-        playerView.playVideo()
+         playerView.playVideo()
     }
 }

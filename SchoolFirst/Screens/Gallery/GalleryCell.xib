@@ -19,52 +19,57 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="F70-Oe-gMr">
-                        <rect key="frame" x="16" y="16" width="436" height="248"/>
+                        <rect key="frame" x="16" y="6" width="436" height="287"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="H4W-jE-WSW">
-                                <rect key="frame" x="0.0" y="0.0" width="436" height="190"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="190" id="ue4-rj-R2X"/>
-                                </constraints>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="H4W-jE-WSW">
+                                <rect key="frame" x="0.0" y="0.0" width="436" height="225.33333333333334"/>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Painting Day for Pre- Primary Kids" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="adM-gp-eLh">
-                                <rect key="frame" x="12" y="202" width="246" height="18"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="18" id="WTM-GO-5ir"/>
-                                    <constraint firstAttribute="width" constant="246" id="XAM-da-uKO"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
-                                <nil key="textColor"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="adM-gp-eLh">
+                                <rect key="frame" x="12" y="237.33333333333334" width="412" height="17.666666666666657"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Painting Day for Pre- Primary Kids">
+                                        <attributes>
+                                            <font key="NSFont" size="14" name="Lexend-SemiBold"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" 13 Sep 2025 | 15 Pics" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GG4-BS-oha">
-                                <rect key="frame" x="12" y="224" width="124" height="16"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GG4-BS-oha">
+                                <rect key="frame" x="12" y="259" width="412" height="16"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="124" id="6Uz-2B-N3f"/>
-                                    <constraint firstAttribute="height" constant="16" id="ZXt-CO-ci8"/>
+                                    <constraint firstAttribute="height" constant="16" id="pFm-vE-ZKa"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" weight="light" pointSize="12"/>
-                                <nil key="textColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment content=" 13 Sep 2025 | 15 Pics">
+                                        <attributes>
+                                            <font key="NSFont" metaFont="cellTitle"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="GG4-BS-oha" firstAttribute="top" secondItem="adM-gp-eLh" secondAttribute="bottom" constant="4" id="5KG-cp-COX"/>
-                            <constraint firstAttribute="trailing" secondItem="H4W-jE-WSW" secondAttribute="trailing" id="AmE-mZ-UPe"/>
-                            <constraint firstAttribute="height" constant="248" id="Uec-6X-eQR"/>
-                            <constraint firstItem="adM-gp-eLh" firstAttribute="top" secondItem="H4W-jE-WSW" secondAttribute="bottom" constant="12" id="Ul6-sd-o0d"/>
-                            <constraint firstItem="adM-gp-eLh" firstAttribute="leading" secondItem="F70-Oe-gMr" secondAttribute="leading" constant="12" id="VMG-py-1uk"/>
-                            <constraint firstItem="H4W-jE-WSW" firstAttribute="top" secondItem="F70-Oe-gMr" secondAttribute="top" id="gG2-S0-ZbE"/>
-                            <constraint firstItem="GG4-BS-oha" firstAttribute="leading" secondItem="adM-gp-eLh" secondAttribute="leading" id="lKM-0j-aIp"/>
-                            <constraint firstItem="H4W-jE-WSW" firstAttribute="leading" secondItem="F70-Oe-gMr" secondAttribute="leading" id="xcG-la-x9j"/>
+                            <constraint firstItem="H4W-jE-WSW" firstAttribute="leading" secondItem="F70-Oe-gMr" secondAttribute="leading" id="0pH-xg-Ae7"/>
+                            <constraint firstItem="adM-gp-eLh" firstAttribute="leading" secondItem="GG4-BS-oha" secondAttribute="leading" id="JvB-PJ-2rr"/>
+                            <constraint firstItem="adM-gp-eLh" firstAttribute="trailing" secondItem="GG4-BS-oha" secondAttribute="trailing" id="Ob9-dw-kXi"/>
+                            <constraint firstItem="GG4-BS-oha" firstAttribute="top" secondItem="adM-gp-eLh" secondAttribute="bottom" constant="4" id="SHR-l8-vXh"/>
+                            <constraint firstItem="GG4-BS-oha" firstAttribute="leading" secondItem="F70-Oe-gMr" secondAttribute="leading" constant="12" id="UnC-0C-zxc"/>
+                            <constraint firstItem="H4W-jE-WSW" firstAttribute="top" secondItem="F70-Oe-gMr" secondAttribute="top" id="WpZ-Od-ifS"/>
+                            <constraint firstAttribute="bottom" secondItem="GG4-BS-oha" secondAttribute="bottom" constant="12" id="iFh-gZ-28M"/>
+                            <constraint firstAttribute="trailing" secondItem="H4W-jE-WSW" secondAttribute="trailing" id="iuc-4N-Lql"/>
+                            <constraint firstItem="adM-gp-eLh" firstAttribute="top" secondItem="H4W-jE-WSW" secondAttribute="bottom" constant="12" id="jUr-Cu-eGq"/>
+                            <constraint firstAttribute="trailing" secondItem="GG4-BS-oha" secondAttribute="trailing" constant="12" id="qL9-ey-nmR"/>
                         </constraints>
                     </view>
                 </subviews>
                 <constraints>
-                    <constraint firstAttribute="trailing" secondItem="F70-Oe-gMr" secondAttribute="trailing" constant="16" id="j5i-HD-Ufs"/>
-                    <constraint firstItem="F70-Oe-gMr" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="q26-AO-Dhb"/>
-                    <constraint firstItem="F70-Oe-gMr" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="16" id="wOw-HQ-9yy"/>
+                    <constraint firstAttribute="bottom" secondItem="F70-Oe-gMr" secondAttribute="bottom" constant="6" id="Kt8-i8-Yxv"/>
+                    <constraint firstItem="F70-Oe-gMr" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="6" id="PTz-Bf-kV7"/>
+                    <constraint firstAttribute="trailing" secondItem="F70-Oe-gMr" secondAttribute="trailing" constant="16" id="cpq-5F-14R"/>
+                    <constraint firstItem="F70-Oe-gMr" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="m7Z-bZ-PS7"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
