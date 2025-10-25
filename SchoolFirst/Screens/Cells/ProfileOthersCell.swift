@@ -10,6 +10,7 @@ import UIKit
 class ProfileOthersCell: UITableViewCell {
 
     @IBOutlet weak var bgView: UIView!
+    @IBOutlet weak var Logout: UIButton!
     @IBOutlet weak var stackView: UIStackView!
     var onClickDelete: (() -> Void)?
 

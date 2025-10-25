@@ -42,8 +42,8 @@ extension GalleryViewController: GalleryCellDelegate {
         guard let indexPath = tblVw.indexPath(for: cell) else { return }
 
         let storyboard = UIStoryboard(name: "Gallery", bundle: nil)
-        if let detailVC = storyboard.instantiateViewController(withIdentifier: "AnnualDayViewController") as? AnnualDayViewController {
-             self.navigationController?.pushViewController(detailVC, animated: true)
+        if let annualVC = storyboard.instantiateViewController(withIdentifier: "AnnualDayViewController") as? AnnualDayViewController {
+             self.navigationController?.pushViewController(annualVC, animated: true)
         }
     }
 }
