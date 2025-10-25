@@ -17,10 +17,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="m43-sG-LvI">
-                                <rect key="frame" x="0.0" y="173" width="393" height="645"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                            </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yps-2v-N5H">
                                 <rect key="frame" x="0.0" y="59" width="393" height="50"/>
                                 <subviews>
@@ -68,6 +64,10 @@
                                     <action selector="onChangeSegment:" destination="Y6W-OH-hqX" eventType="valueChanged" id="5Kv-mw-YiA"/>
                                 </connections>
                             </segmentedControl>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="m43-sG-LvI">
+                                <rect key="frame" x="0.0" y="173" width="393" height="645"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="9SV-KO-dMg"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -82,9 +82,11 @@
                             <constraint firstItem="5S3-Ip-05p" firstAttribute="top" secondItem="yps-2v-N5H" secondAttribute="bottom" constant="12" id="foo-QO-cGB"/>
                             <constraint firstItem="9SV-KO-dMg" firstAttribute="trailing" secondItem="m43-sG-LvI" secondAttribute="trailing" id="hOt-MB-Kda"/>
                             <constraint firstItem="m43-sG-LvI" firstAttribute="leading" secondItem="9SV-KO-dMg" secondAttribute="leading" id="jW8-nz-VqI"/>
+                            <constraint firstItem="m43-sG-LvI" firstAttribute="top" secondItem="yps-2v-N5H" secondAttribute="bottom" priority="999" constant="2" id="jX6-cg-sU2"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="lblTitle" destination="ONe-Qu-YcU" id="y5j-zn-lPo"/>
                         <outlet property="segmentControl" destination="5S3-Ip-05p" id="JZ6-K8-ZrF"/>
                         <outlet property="tblView" destination="m43-sG-LvI" id="KTr-6l-kOk"/>
                         <outlet property="topView" destination="yps-2v-N5H" id="j4O-dN-5LZ"/>

@@ -9,8 +9,10 @@ import UIKit
 
 class FeelsCollectionViewCell: UICollectionViewCell {
 
+    @IBOutlet weak var btnPlay: UIButton!
     @IBOutlet weak var lblName: UILabel!
     @IBOutlet weak var imgVw: UIImageView!
+    var playClicked: ((Int) -> Void)?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -18,7 +20,8 @@ class FeelsCollectionViewCell: UICollectionViewCell {
         
     }
     
-    @IBAction func onClickPlay(_ sender: Any) {
+    @IBAction func onClickPlay(_ sender: UIButton) {
+        self.playClicked!(sender.tag)
     }
     
 }

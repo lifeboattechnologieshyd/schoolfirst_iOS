@@ -9,6 +9,7 @@ import  UIKit
 
 class PTipsViewController: UIViewController {
     
+    @IBOutlet weak var lblTitle: UILabel!
     
     @IBOutlet weak var segmentControl: UISegmentedControl!
     @IBOutlet weak var tblView: UITableView!
@@ -16,6 +17,7 @@ class PTipsViewController: UIViewController {
     @IBOutlet weak var topView: UIView!
     
     var feed = [Feed]()
+    var isEdutain = true
 
     override func viewDidLoad() {
         
@@ -23,8 +25,15 @@ class PTipsViewController: UIViewController {
         topView.addBottomShadow()
         tblView.register(UINib(nibName: "EdutainCell", bundle: nil), forCellReuseIdentifier: "EdutainCell")
         self.segmentControl.applyCustomStyle()
-        self.getEdutainment()
-        
+        if isEdutain {
+            self.getEdutainment(text: "Diy")
+            segmentControl.removeFromSuperview()
+            lblTitle.text = "Edutainment"
+        }else{
+            self.getEdutainment(text: "Ptips")
+            lblTitle.text = "Ptips"
+
+        }
         tblView.dataSource = self
         tblView.delegate = self
         
@@ -47,7 +56,7 @@ class PTipsViewController: UIViewController {
     
     
     func getEdutainment(text: String = "Ptips"){
-        var url = API.EDUTAIN_FEED + "?f_category=\(text)"
+        let url = API.EDUTAIN_FEED + "?f_category=\(text)"
         NetworkManager.shared.request(urlString: url,method: .GET) { (result: Result<APIResponse<[Feed]>, NetworkError>)  in
             switch result {
             case .success(let info):

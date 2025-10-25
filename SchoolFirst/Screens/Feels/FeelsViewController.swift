@@ -18,12 +18,13 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        topVw.applyCardShadow()
+        topVw.addBottomShadow()
         
         colVw.delegate = self
         colVw.dataSource = self
         colVw.register(UINib(nibName: "FeelsCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FeelsCollectionViewCell")
         self.getEdutainment()
+        
     }
     
     @IBAction func onClickBack(_ sender: UIButton) {
@@ -37,7 +38,17 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = colVw.dequeueReusableCell(withReuseIdentifier: "FeelsCollectionViewCell", for: indexPath) as! FeelsCollectionViewCell
         cell.imgVw.layer.cornerRadius = 8
-        cell.imgVw.loadImage(url: self.items[indexPath.row].thumbnailImage ?? "")
+        cell.btnPlay.tag = indexPath.row
+        if let url = self.items[indexPath.row].thumbnailImage {
+            cell.imgVw.loadImage(url: url)
+        }else{
+            if let urlstring = "\(self.items[indexPath.row].youtubeVideo!)".extractYoutubeId() {
+                cell.imgVw.loadImage(url: urlstring.youtubeThumbnailURL())
+            }
+        }
+        cell.playClicked = { index in
+            self.navigateToPlayer(index: index)
+        }
         cell.lblName.text = self.items[indexPath.row].title
         return cell
     }
@@ -48,11 +59,14 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
         return CGSize(width: width, height: 284)
     }
     
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func navigateToPlayer(index: Int){
         let stbd = UIStoryboard(name: "Feels", bundle: nil)
         let vc = stbd.instantiateViewController(identifier: "FeelPlayerController") as! FeelPlayerController
         navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        navigateToPlayer(index: indexPath.row)
     }
     
     
