@@ -204,6 +204,18 @@ extension String {
             return "recent"
         }
     }
+    func extractYoutubeId() -> String? {
+        if let url = URL(string: self) {
+            if url.absoluteString.contains("youtube.com/shorts") {
+                return url.lastPathComponent
+            }
+        }
+        return nil
+    }
+    func youtubeThumbnailURL(quality: String = "hqdefault") -> String {
+        "https://img.youtube.com/vi/\(self)/\(quality).jpg"
+    }
+    
 }
 
 

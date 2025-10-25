@@ -9,27 +9,55 @@ import  UIKit
 
 class PTipsViewController: UIViewController {
     
+    @IBOutlet weak var lblTitle: UILabel!
     
+    @IBOutlet weak var segmentControl: UISegmentedControl!
     @IBOutlet weak var tblView: UITableView!
-    @IBOutlet weak var Back: UIButton!
+
+    @IBOutlet weak var topView: UIView!
+    
     var feed = [Feed]()
+    var isEdutain = true
 
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        
+        topView.addBottomShadow()
         tblView.register(UINib(nibName: "EdutainCell", bundle: nil), forCellReuseIdentifier: "EdutainCell")
-        
-        self.getEdutainment()
-        
+        self.segmentControl.applyCustomStyle()
+        if isEdutain {
+            self.getEdutainment(text: "Diy")
+            segmentControl.removeFromSuperview()
+            lblTitle.text = "Edutainment"
+        }else{
+            self.getEdutainment(text: "Ptips")
+            lblTitle.text = "Ptips"
+
+        }
         tblView.dataSource = self
         tblView.delegate = self
         
     }
     
-    func getEdutainment(){
-        var url = API.EDUTAIN_FEED + "?f_category=Ptips"
-        NetworkManager.shared.request(urlString: API.EDUTAIN_FEED,method: .GET) { (result: Result<APIResponse<[Feed]>, NetworkError>)  in
+    
+    @IBAction func onChangeSegment(_ sender: UISegmentedControl) {
+        if segmentControl.selectedSegmentIndex == 0 {
+            self.getEdutainment(text: "Ptips")
+        }else{
+            self.getEdutainment(text: "Ftips")
+        }
+    }
+    
+    
+    
+    @IBAction func onClickBack(_ sender: UIButton) {
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    
+    func getEdutainment(text: String = "Ptips"){
+        let url = API.EDUTAIN_FEED + "?f_category=\(text)"
+        NetworkManager.shared.request(urlString: url,method: .GET) { (result: Result<APIResponse<[Feed]>, NetworkError>)  in
             switch result {
             case .success(let info):
                 if info.success {

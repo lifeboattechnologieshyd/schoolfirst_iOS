@@ -36,7 +36,7 @@ class HomeController: UIViewController {
             "gallery",
             "attendence",
             "time_table",
-            "student",
+            "school_bus",
         ],
         [
             "curriculum",
@@ -345,9 +345,13 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
         case 2:
             let stbd = UIStoryboard(name: "PTips", bundle: nil)
             let vc = stbd.instantiateViewController(identifier: "PTipsViewController") as! PTipsViewController
+            vc.isEdutain = false
             navigationController?.pushViewController(vc, animated: true)
         case 3:
-            print("Edutainment")
+            let stbd = UIStoryboard(name: "PTips", bundle: nil)
+            let vc = stbd.instantiateViewController(identifier: "PTipsViewController") as! PTipsViewController
+            vc.isEdutain = true
+            navigationController?.pushViewController(vc, animated: true)
         case 4:
             let stbd = UIStoryboard(name: "Feels", bundle: nil)
             let vc = stbd.instantiateViewController(identifier: "FeelsViewController") as! FeelsViewController
@@ -371,7 +375,6 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
         if segmentControl.isHidden {
             self.growthZoneItemSelection(index: index)
         }else {
-            
             if selectedIndex == 0 {
                 switch index {
                 case 0:
