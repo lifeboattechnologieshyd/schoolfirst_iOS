@@ -14,11 +14,7 @@ class FeelsCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imgVw: UIImageView!
     var playClicked: ((Int) -> Void)?
 
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        
-        
-    }
+     
     
     @IBAction func onClickPlay(_ sender: UIButton) {
         self.playClicked!(sender.tag)
