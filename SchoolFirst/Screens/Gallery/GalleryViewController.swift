@@ -35,9 +35,6 @@ class GalleryViewController: UIViewController {
 }
 
 extension GalleryViewController {
-    
-    
-    
     func getGalleryData() {
         NetworkManager.shared.request(urlString: API.EVENT_GALLERY,method: .GET) { (result: Result<APIResponse<[EventGallery]>, NetworkError>)  in
             switch result {
@@ -62,6 +59,7 @@ extension GalleryViewController {
                     }
                 }
             }
+
         }
     }
 }

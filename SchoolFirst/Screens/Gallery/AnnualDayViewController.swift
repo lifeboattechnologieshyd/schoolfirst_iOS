@@ -22,6 +22,13 @@ class AnnualDayViewController: UIViewController {
         dateLbl.text = gallery.eventDate
         annualLbl.text = gallery.eventName
         
+        topVw.layer.shadowColor = UIColor.black.cgColor
+        topVw.layer.shadowOpacity = 0.3
+        topVw.layer.shadowOffset = CGSize(width: 0, height: 3)
+        topVw.layer.shadowRadius = 4
+        topVw.layer.masksToBounds = false
+       
+        
         colVw.delegate = self
         colVw.dataSource = self
         
