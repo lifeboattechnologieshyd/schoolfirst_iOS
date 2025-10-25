@@ -12,11 +12,7 @@ class FeelsCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var lblName: UILabel!
     @IBOutlet weak var imgVw: UIImageView!
 
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        
-        
-    }
+     
     
     @IBAction func onClickPlay(_ sender: Any) {
     }
