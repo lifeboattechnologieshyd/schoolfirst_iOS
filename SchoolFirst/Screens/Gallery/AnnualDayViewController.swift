@@ -16,18 +16,12 @@ class AnnualDayViewController: UIViewController {
     @IBOutlet weak var colVw: UICollectionView!
     var gallery : EventGallery!
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        dateLbl.text = gallery.eventDate
+        dateLbl.text = gallery.eventDate.convertTo()
         annualLbl.text = gallery.eventName
         
-        topVw.layer.shadowColor = UIColor.black.cgColor
-        topVw.layer.shadowOpacity = 0.3
-        topVw.layer.shadowOffset = CGSize(width: 0, height: 3)
-        topVw.layer.shadowRadius = 4
-        topVw.layer.masksToBounds = false
-       
+        topVw.addBottomShadow()
         
         colVw.delegate = self
         colVw.dataSource = self

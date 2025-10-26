@@ -72,8 +72,9 @@ extension GalleryViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "GalleryCell", for: indexPath) as! GalleryCell
-        cell.dateLbl.text = self.gallery[indexPath.row].eventDate
+        cell.dateLbl.text = self.gallery[indexPath.row].eventDate.convertTo()
         cell.imgVw.loadImage(url: self.gallery[indexPath.row].images.first ?? "")
+        cell.paintingLbl.text = self.gallery[indexPath.row].eventName
         return cell
     }
 

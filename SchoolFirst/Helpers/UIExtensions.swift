@@ -194,6 +194,23 @@ extension String {
         return predicate.evaluate(with: self)
     }
     
+    /// converts yyyy-MM-dd type string into dd MMM yyyy
+    func convertTo() -> String{
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "yyyy-MM-dd"
+        inputFormatter.locale = Locale(identifier: "en_US_POSIX")
+        
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "dd MMM yyyy"
+        outputFormatter.locale = Locale(identifier: "en_US_POSIX")
+        
+        if let date = inputFormatter.date(from: self) {
+            return outputFormatter.string(from: date)
+        } else {
+            return self // fallback if parsing fails
+        }
+    }
+    
     func getTimeAgo() -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ"
@@ -221,9 +238,47 @@ extension String {
 
 import Kingfisher
 
+struct RemoveAlphaProcessor: ImageProcessor {
+    let identifier = "com.lifeboat.RemoveAlphaProcessor"
+    
+    func process(item: ImageProcessItem, options: KingfisherParsedOptionsInfo) -> KFCrossPlatformImage? {
+        switch item {
+        case .image(let image):
+            guard let cgImage = image.cgImage else { return image }
+            let width = cgImage.width
+            let height = cgImage.height
+            
+            let colorSpace = CGColorSpaceCreateDeviceRGB()
+            let context = CGContext(
+                data: nil,
+                width: width,
+                height: height,
+                bitsPerComponent: 8,
+                bytesPerRow: 0,
+                space: colorSpace,
+                bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue
+            )
+            
+            context?.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+            if let newCG = context?.makeImage() {
+                return UIImage(cgImage: newCG)
+            }
+            return image
+            
+        case .data(_):
+            return nil
+        }
+    }
+}
+
+
 extension UIImageView {
     
     func loadImage(url: String, placeHolderImage: String = "SchoolFirst"){
+        let downsample = DownsamplingImageProcessor(size: self.bounds.size)
+        let removeAlpha = RemoveAlphaProcessor()
+        let combined = downsample |> removeAlpha
+        
         let processor = DownsamplingImageProcessor(size: self.bounds.size)
         self.kf.indicatorType = .activity
         self.kf.setImage(
@@ -301,14 +356,14 @@ extension UISegmentedControl {
         selectedBackgroundColor: UIColor = .primary,
         cornerRadius: CGFloat = 20
     ) {
-         
+        
         setBackgroundImage(UIImage(color: backgroundColor), for: .normal, barMetrics: .default)
         setBackgroundImage(UIImage(color: selectedBackgroundColor), for: .selected, barMetrics: .default)
         setBackgroundImage(UIImage(color: selectedBackgroundColor), for: .highlighted, barMetrics: .default)
-
+        
         // Divider (invisible)
         setDividerImage(UIImage(color: .clear), forLeftSegmentState: .normal, rightSegmentState: .normal, barMetrics: .default)
-
+        
         // Text attributes
         let normalAttributes: [NSAttributedString.Key: Any] = [
             .font: font,
@@ -357,7 +412,7 @@ extension UILabel {
         let paddingView = UIView()
         paddingView.translatesAutoresizingMaskIntoConstraints = false
         self.superview?.insertSubview(paddingView, belowSubview: self)
-
+        
         NSLayoutConstraint.activate([
             paddingView.topAnchor.constraint(equalTo: self.topAnchor, constant: -top),
             paddingView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: -left),
