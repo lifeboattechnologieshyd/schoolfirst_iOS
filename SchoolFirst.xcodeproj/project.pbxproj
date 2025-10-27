@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		8803F35D2E0AB958000F7784 /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8803F35C2E0AB958000F7784 /* IQKeyboardManagerSwift */; };
 		8803F6112E11CA68000F7784 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 8803F6102E11CA68000F7784 /* Lottie */; };
+		884F56D12EAF5566000645BE /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 884F56D02EAF5566000645BE /* FirebaseAnalytics */; };
+		884F56D32EAF5566000645BE /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 884F56D22EAF5566000645BE /* FirebaseCore */; };
+		884F56D52EAF5566000645BE /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 884F56D42EAF5566000645BE /* FirebaseCrashlytics */; };
 		889390E92E5D82880064AFEE /* YouTubeiOSPlayerHelper in Frameworks */ = {isa = PBXBuildFile; productRef = 889390E82E5D82880064AFEE /* YouTubeiOSPlayerHelper */; };
 		88BD71232E5362D900CC824D /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 88BD71222E5362D900CC824D /* Kingfisher */; };
 /* End PBXBuildFile section */
@@ -46,6 +49,9 @@
 				88BD71232E5362D900CC824D /* Kingfisher in Frameworks */,
 				8803F35D2E0AB958000F7784 /* IQKeyboardManagerSwift in Frameworks */,
 				8803F6112E11CA68000F7784 /* Lottie in Frameworks */,
+				884F56D52EAF5566000645BE /* FirebaseCrashlytics in Frameworks */,
+				884F56D12EAF5566000645BE /* FirebaseAnalytics in Frameworks */,
+				884F56D32EAF5566000645BE /* FirebaseCore in Frameworks */,
 				889390E92E5D82880064AFEE /* YouTubeiOSPlayerHelper in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -93,6 +99,9 @@
 				8803F6102E11CA68000F7784 /* Lottie */,
 				88BD71222E5362D900CC824D /* Kingfisher */,
 				889390E82E5D82880064AFEE /* YouTubeiOSPlayerHelper */,
+				884F56D02EAF5566000645BE /* FirebaseAnalytics */,
+				884F56D22EAF5566000645BE /* FirebaseCore */,
+				884F56D42EAF5566000645BE /* FirebaseCrashlytics */,
 			);
 			productName = SchoolFirst;
 			productReference = 884DB5D62DFC0394003F154E /* School First.app */;
@@ -127,6 +136,7 @@
 				8803F60F2E11CA68000F7784 /* XCRemoteSwiftPackageReference "lottie-spm" */,
 				88BD71212E5362D900CC824D /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				889390E72E5D82880064AFEE /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */,
+				884F56CF2EAF5419000645BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 884DB5D72DFC0394003F154E /* Products */;
@@ -595,6 +605,14 @@
 				minimumVersion = 4.5.2;
 			};
 		};
+		884F56CF2EAF5419000645BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.4.0;
+			};
+		};
 		889390E72E5D82880064AFEE /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/youtube/youtube-ios-player-helper.git";
@@ -623,6 +641,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8803F60F2E11CA68000F7784 /* XCRemoteSwiftPackageReference "lottie-spm" */;
 			productName = Lottie;
+		};
+		884F56D02EAF5566000645BE /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 884F56CF2EAF5419000645BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		884F56D22EAF5566000645BE /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 884F56CF2EAF5419000645BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		884F56D42EAF5566000645BE /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 884F56CF2EAF5419000645BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 		889390E82E5D82880064AFEE /* YouTubeiOSPlayerHelper */ = {
 			isa = XCSwiftPackageProductDependency;
