@@ -29,9 +29,11 @@ class PracticeTableViewCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        playnowView.layer.cornerRadius = 10   
+        playnowView.layer.cornerRadius = 10
         playnowView.layer.masksToBounds = true
     }
+    
 }
-
+    
+    
 
