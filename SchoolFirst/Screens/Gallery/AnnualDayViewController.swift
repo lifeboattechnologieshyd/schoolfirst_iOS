@@ -20,14 +20,11 @@ class AnnualDayViewController: UIViewController {
         super.viewDidLoad()
         dateLbl.text = gallery.eventDate.convertTo()
         annualLbl.text = gallery.eventName
-        
         topVw.addBottomShadow()
-        
         colVw.delegate = self
         colVw.dataSource = self
         
         self.colVw.register(UINib(nibName: "AnnualCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "AnnualCollectionViewCell")
-        
         backButton.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
     }
     
