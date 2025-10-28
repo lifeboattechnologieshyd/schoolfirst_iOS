@@ -14,7 +14,7 @@ import FirebaseMessaging
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
 
-    func application(
+     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
@@ -22,8 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         configureFirebase()
         setupNavigationBar()
         setupKeyboardManager()
-
-         setupPushNotifications(application: application)
+        setupPushNotifications(application: application)
 
         Analytics.logEvent("app_launched", parameters: nil)
         Crashlytics.crashlytics().log("App started")
@@ -35,19 +34,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         #if PROD
         let fileName = "GoogleService-Info-Prod"
         #else
-        let fileName = "GoogleService-Info-dev"
+        let fileName = "GoogleService-Info-Dev"
         #endif
 
-        guard let filePath = Bundle.main.path(forResource: fileName, ofType: "plist"),
-              let options = FirebaseOptions(contentsOfFile: filePath) else {
-            print("Could not find \(fileName).plist. Make sure it's added to your target and the name matches exactly.")
+        guard let filePath = Bundle.main.path(forResource: fileName, ofType: "plist") else {
+            print("Could not find \(fileName).plist in bundle. Make sure it's added to your target and name matches exactly.")
+            return
+        }
+
+        guard let options = FirebaseOptions(contentsOfFile: filePath) else {
+            print("Could not load Firebase options from \(fileName).plist")
             return
         }
 
         FirebaseApp.configure(options: options)
         Messaging.messaging().delegate = self
 
-        print("Firebase configured with \(fileName).plist")
+        #if PROD
+        print("Firebase configured for PRODUCTION with \(fileName).plist")
+        #else
+        print("Firebase configured for DEVELOPMENT with \(fileName).plist")
+        #endif
     }
 
      private func setupNavigationBar() {
@@ -85,9 +92,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let token = fcmToken else {
-            print(" No FCM token received.")
+            print("No FCM token received.")
             return
         }
         #if PROD
@@ -97,19 +104,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         #endif
     }
 
-     func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                willPresent notification: UNNotification,
-                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.banner, .badge, .sound])
+    func userNotificationCenter(
+            _ center: UNUserNotificationCenter,
+            willPresent notification: UNNotification,
+            withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+        ) {
+            completionHandler([.banner, .badge, .sound])
+        }
+
+         func application(
+            _ application: UIApplication,
+            configurationForConnecting connectingSceneSession: UISceneSession,
+            options: UIScene.ConnectionOptions
+        ) -> UISceneConfiguration {
+            return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+        }
+
+        func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {}
     }
-
-     func application(_ application: UIApplication,
-                     configurationForConnecting connectingSceneSession: UISceneSession,
-                     options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
-    }
-
-    func application(_ application: UIApplication,
-                     didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {}
-}
-

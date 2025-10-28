@@ -9,17 +9,32 @@ import UIKit
 
 class FeeViewController: UIViewController {
 
+    @IBOutlet weak var topVw: UIView!
     @IBOutlet weak var tblVw: UITableView!
+     
     override func viewDidLoad() {
-        super.viewDidLoad()
-        tblVw.register(UINib(nibName: "FeeTableViewCell", bundle: nil), forCellReuseIdentifier: "FeeTableViewCell")
-        tblVw.delegate = self
-        tblVw.dataSource = self
-        getFeeDetails()
-    }
-    
-    
+           super.viewDidLoad()
+           
+           tblVw.register(UINib(nibName: "FeeTableViewCell", bundle: nil),
+                          forCellReuseIdentifier: "FeeTableViewCell")
+           tblVw.delegate = self
+           tblVw.dataSource = self
+           
+           getFeeDetails()
+           
+           // Allow shadow to be visible outside the view bounds
+           topVw.clipsToBounds = false
+           topVw.layer.masksToBounds = false
+       }
+
+       // 👉 Add the shadow here — this method runs after Auto Layout sets the correct frame
+       override func viewDidLayoutSubviews() {
+           super.viewDidLayoutSubviews()
+           topVw.addBottomShadow()
+       }
     @IBAction func onClickBack(_ sender: UIButton) {
+        self.navigationController?.popViewController(animated: true)
+    
     }
 }
 

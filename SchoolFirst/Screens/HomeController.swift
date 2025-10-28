@@ -31,12 +31,12 @@ class HomeController: UIViewController {
             "school_building",
             "news",
             "event",
-            "homework",
-            "fee",
-            "gallery",
             "attendence",
+            "homework",
             "time_table",
+            "fee",
             "school_bus",
+            "gallery",
         ],
         [
             "curriculum",
@@ -56,13 +56,13 @@ class HomeController: UIViewController {
             "My School",
             "Bulletin",
             "Events",
-            "Homework",
-            "Fee",
-            "Gallery",
             "Attendance",
+            "Homework",
             "Time Table",
-            "School Bus"
-        ],
+            "Fee",
+            "School Bus",
+            "Gallery",
+         ],
         [
             "Curriculum",
             "Assessments",
@@ -333,7 +333,7 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
         segmentControl.selectedSegmentIndex = pageIndex
     }
     
-    func growthZoneItemSelection(index: Int){
+    func FamilyZoneItemSelection(index: Int){
         switch index {
         case 0:
             let stbd = UIStoryboard(name: "curriculum", bundle: nil)
@@ -373,7 +373,7 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
     
     func onSelectItems(index: Int, selectedIndex: Int) {
         if segmentControl.isHidden {
-            self.growthZoneItemSelection(index: index)
+            self.FamilyZoneItemSelection(index: index)
         }else {
             if selectedIndex == 0 {
                 switch index {
@@ -387,24 +387,30 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
                     let vc = storyboard?.instantiateViewController(identifier: "EventsViewController") as! EventsViewController
                     navigationController?.pushViewController(vc, animated: true)
                 case 3:
-                    let vc = storyboard?.instantiateViewController(identifier: "HomeworkViewController") as! HomeworkViewController
+                    let vc = storyboard?.instantiateViewController(identifier: "MySchoolViewController") as! MySchoolViewController
                     navigationController?.pushViewController(vc, animated: true)
                 case 4:
-                    let vc = storyboard?.instantiateViewController(identifier: "FeeViewController") as! FeeViewController
+                    let vc = storyboard?.instantiateViewController(identifier: "HomeworkViewController") as! HomeworkViewController
                     navigationController?.pushViewController(vc, animated: true)
                 case 5:
-                    let stbd = UIStoryboard(name: "Gallery", bundle: nil)
-                    let vc = stbd.instantiateViewController(identifier: "GalleryViewController") as! GalleryViewController
+                    let vc = storyboard?.instantiateViewController(identifier: "BulletinController") as! BulletinController
                     navigationController?.pushViewController(vc, animated: true)
                 case 6:
-                    let stbd = UIStoryboard(name: "Feels", bundle: nil)
-                    let vc = stbd.instantiateViewController(identifier: "FeelsViewController") as! FeelsViewController
+                    let vc = storyboard?.instantiateViewController(identifier: "FeeViewController") as! FeeViewController
+                    navigationController?.pushViewController(vc, animated: true)
+                case 7:
+                    let vc = storyboard?.instantiateViewController(identifier: "BulletinController") as! BulletinController
+                    navigationController?.pushViewController(vc, animated: true)
+                case 8:
+                    let stbd = UIStoryboard(name: "Gallery", bundle: nil)
+                    let vc = stbd.instantiateViewController(identifier: "GalleryViewController") as! GalleryViewController
                     navigationController?.pushViewController(vc, animated: true)
                 default:
                     break
                 }
+
             } else {
-                self.growthZoneItemSelection(index: index)
+                self.FamilyZoneItemSelection(index: index)
             }
         }
         
