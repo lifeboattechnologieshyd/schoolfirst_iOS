@@ -10,6 +10,7 @@
 		8803F35D2E0AB958000F7784 /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8803F35C2E0AB958000F7784 /* IQKeyboardManagerSwift */; };
 		8803F6112E11CA68000F7784 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 8803F6102E11CA68000F7784 /* Lottie */; };
 		884DAD6D2EB1FDD60088EBA7 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 884DAD6C2EB1FDD60088EBA7 /* FirebaseAnalyticsCore */; };
+		884DAD702EB20F190088EBA7 /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = 884DAD6F2EB20F190088EBA7 /* FSCalendar */; };
 		884F56E62EAF7958000645BE /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 884F56E52EAF7958000645BE /* FirebaseAnalytics */; };
 		884F56E82EAF7958000645BE /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 884F56E72EAF7958000645BE /* FirebaseCore */; };
 		884F56EA2EAF7958000645BE /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 884F56E92EAF7958000645BE /* FirebaseCrashlytics */; };
@@ -51,6 +52,7 @@
 				884F56EF2EAF8F43000645BE /* FirebaseMessaging in Frameworks */,
 				88BD71232E5362D900CC824D /* Kingfisher in Frameworks */,
 				8803F35D2E0AB958000F7784 /* IQKeyboardManagerSwift in Frameworks */,
+				884DAD702EB20F190088EBA7 /* FSCalendar in Frameworks */,
 				8803F6112E11CA68000F7784 /* Lottie in Frameworks */,
 				884DAD6D2EB1FDD60088EBA7 /* FirebaseAnalyticsCore in Frameworks */,
 				884F56EA2EAF7958000645BE /* FirebaseCrashlytics in Frameworks */,
@@ -108,6 +110,7 @@
 				884F56E92EAF7958000645BE /* FirebaseCrashlytics */,
 				884F56EE2EAF8F43000645BE /* FirebaseMessaging */,
 				884DAD6C2EB1FDD60088EBA7 /* FirebaseAnalyticsCore */,
+				884DAD6F2EB20F190088EBA7 /* FSCalendar */,
 			);
 			productName = SchoolFirst;
 			productReference = 884DB5D62DFC0394003F154E /* School First.app */;
@@ -143,6 +146,7 @@
 				88BD71212E5362D900CC824D /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				889390E72E5D82880064AFEE /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */,
 				884F56E42EAF7958000645BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				884DAD6E2EB20F190088EBA7 /* XCRemoteSwiftPackageReference "FSCalendar" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 884DB5D72DFC0394003F154E /* Products */;
@@ -620,6 +624,14 @@
 				minimumVersion = 4.5.2;
 			};
 		};
+		884DAD6E2EB20F190088EBA7 /* XCRemoteSwiftPackageReference "FSCalendar" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/WenchaoD/FSCalendar";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.8.4;
+			};
+		};
 		884F56E42EAF7958000645BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -661,6 +673,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 884F56E42EAF7958000645BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAnalyticsCore;
+		};
+		884DAD6F2EB20F190088EBA7 /* FSCalendar */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 884DAD6E2EB20F190088EBA7 /* XCRemoteSwiftPackageReference "FSCalendar" */;
+			productName = FSCalendar;
 		};
 		884F56E52EAF7958000645BE /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
