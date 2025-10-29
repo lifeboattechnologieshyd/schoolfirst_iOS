@@ -13,6 +13,7 @@ class ProfileOthersCell: UITableViewCell {
     @IBOutlet weak var Logout: UIButton!
     @IBOutlet weak var stackView: UIStackView!
     var onClickDelete: (() -> Void)?
+    var onLogoutTapped: (() -> Void)?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -29,4 +30,9 @@ class ProfileOthersCell: UITableViewCell {
     @IBAction func onClickDelete(_ sender: UIButton) {
         self.onClickDelete!()
     }
+    @IBAction func onClickLogout(_ sender: UIButton) {
+        onLogoutTapped?()
+    }
 }
+
+

@@ -9,17 +9,14 @@ import UIKit
 
 class ProfileViewController: UIViewController {
     
-    // header view outlets
-    
-    @IBOutlet weak var imgProfile: UIImageView!
+     @IBOutlet weak var imgProfile: UIImageView!
     @IBOutlet weak var imgVw: UIImageView!
-    
     @IBOutlet weak var tblVw: UITableView!
-    override func viewDidLoad() {
+    
+     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.imgVw.loadImage(url: UserManager.shared.user?.schools.first?.fullLogo ?? "", placeHolderImage: "")
-        
         
         self.tblVw.register(UINib(nibName: "ProfileTableViewCell", bundle: nil), forCellReuseIdentifier: "ProfileTableViewCell")
         self.tblVw.register(UINib(nibName: "KidsCell", bundle: nil), forCellReuseIdentifier: "KidsCell")
@@ -27,28 +24,39 @@ class ProfileViewController: UIViewController {
         
         tblVw.delegate = self
         tblVw.dataSource = self
-        
     }
     
-    func confirmation() {
+     func confirmation() {
         let alert = UIAlertController(title: "Confirmation", message: "Are you sure want to delete your account?", preferredStyle: .alert)
         let action = UIAlertAction(title: "Yes", style: .destructive) { action in
             self.showAlert(msg: "We’ve received your request. Your account will be permanently deleted in 15 days. If you change your mind, you can log in again before that time to cancel the request.")
         }
-        let action2 = UIAlertAction(title: "No", style: .default) { action in
-            print("No")
-        }
+        let action2 = UIAlertAction(title: "No", style: .default)
         alert.addAction(action)
         alert.addAction(action2)
         self.present(alert, animated: true)
     }
+    
+     func navigateToLogin() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let loginVC = storyboard.instantiateViewController(withIdentifier: "ViewController") as? ViewController {
+            
+            if let window = UIApplication.shared.connectedScenes
+                .compactMap({ ($0 as? UIWindowScene)?.keyWindow })
+                .first {
+                
+                let nav = UINavigationController(rootViewController: loginVC)
+                nav.navigationBar.isHidden = true
+                window.rootViewController = nav
+                window.makeKeyAndVisible()
+            }
+        }
+    }
 }
 
-extension ProfileViewController : UITableViewDataSource, UITableViewDelegate {
+ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
-    }
+    func numberOfSections(in tableView: UITableView) -> Int { 3 }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return section == 1 ? UserManager.shared.kids.count : 1
@@ -58,48 +66,50 @@ extension ProfileViewController : UITableViewDataSource, UITableViewDelegate {
         
         if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ProfileTableViewCell") as! ProfileTableViewCell
-            cell.onShareClick = {
+            cell.onShareClick = { [weak self] in
+                guard let self = self else { return }
                 self.shareApp(from: self)
             }
             return cell
-        }else if indexPath.section == 1 {
+            
+        } else if indexPath.section == 1 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "KidsCell") as! KidsCell
-            cell.setupCell(student:  UserManager.shared.kids[indexPath.row])
+            cell.setupCell(student: UserManager.shared.kids[indexPath.row])
             return cell
-        } else  {
+            
+        } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ProfileOthersCell") as! ProfileOthersCell
-            cell.onClickDelete = {
-                self.confirmation()
+            
+             cell.onClickDelete = { [weak self] in
+                self?.confirmation()
             }
+            
+             cell.onLogoutTapped = { [weak self] in
+                self?.navigateToLogin()
+            }
+            
             return cell
         }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if indexPath.section == 0 {
-            return 145
-        }else if indexPath.section == 1 {
-            return 74
-        } else {
-            return 495
+        switch indexPath.section {
+        case 0: return 145
+        case 1: return 74
+        default: return 495
         }
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if section == 0 {
-            return ""
-        } else if section == 1 {
-            return "My Kids"
-        } else {
-            return "Others"
+        switch section {
+        case 1: return "My Kids"
+        case 2: return "Others"
+        default: return ""
         }
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if section == 0 {
-            return 0
-        } else {
-            return 20
-        }
+        return section == 0 ? 0 : 20
     }
 }
+
