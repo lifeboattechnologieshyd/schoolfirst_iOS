@@ -10,6 +10,10 @@ import IQKeyboardManagerSwift
 import Firebase
 import UserNotifications
 import FirebaseMessaging
+import FirebaseCrashlytics
+import FirebaseCore
+import FirebaseAnalytics
+
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
