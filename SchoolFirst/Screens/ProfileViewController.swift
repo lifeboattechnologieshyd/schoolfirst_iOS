@@ -9,11 +9,11 @@ import UIKit
 
 class ProfileViewController: UIViewController {
     
-     @IBOutlet weak var imgProfile: UIImageView!
+    @IBOutlet weak var imgProfile: UIImageView!
     @IBOutlet weak var imgVw: UIImageView!
     @IBOutlet weak var tblVw: UITableView!
     
-     override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         
         self.imgVw.loadImage(url: UserManager.shared.user?.schools.first?.fullLogo ?? "", placeHolderImage: "")
@@ -26,19 +26,9 @@ class ProfileViewController: UIViewController {
         tblVw.dataSource = self
     }
     
-     func confirmation() {
-        let alert = UIAlertController(title: "Confirmation", message: "Are you sure want to delete your account?", preferredStyle: .alert)
-        let action = UIAlertAction(title: "Yes", style: .destructive) { action in
-            self.showAlert(msg: "We’ve received your request. Your account will be permanently deleted in 15 days. If you change your mind, you can log in again before that time to cancel the request.")
-        }
-        let action2 = UIAlertAction(title: "No", style: .default)
-        alert.addAction(action)
-        alert.addAction(action2)
-        self.present(alert, animated: true)
-    }
     
-     func navigateToLogin() {
-         UserManager.shared.deleteUser()
+    func navigateToLogin() {
+        UserManager.shared.deleteUser()
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         if let loginVC = storyboard.instantiateViewController(withIdentifier: "ViewController") as? ViewController {
             if let window = UIApplication.shared.connectedScenes
@@ -53,7 +43,26 @@ class ProfileViewController: UIViewController {
     }
 }
 
- extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
+extension ProfileViewController {
+    
+    func logoutConfirmation() {
+        let alert = UIAlertController(
+            title: "Logout",
+            message: "Are you sure you want to logout?",
+            preferredStyle: .alert
+        )
+        let yesAction = UIAlertAction(title: "Yes", style: .destructive) { [weak self] _ in
+            self?.navigateToLogin()
+        }
+        let noAction = UIAlertAction(title: "No", style: .cancel)
+        alert.addAction(yesAction)
+        alert.addAction(noAction)
+        self.present(alert, animated: true)
+    }
+
+}
+
+extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
     
     func numberOfSections(in tableView: UITableView) -> Int { 3 }
     
@@ -63,7 +72,8 @@ class ProfileViewController: UIViewController {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        if indexPath.section == 0 {
+        switch indexPath.section {
+        case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: "ProfileTableViewCell") as! ProfileTableViewCell
             cell.onShareClick = { [weak self] in
                 guard let self = self else { return }
@@ -71,25 +81,27 @@ class ProfileViewController: UIViewController {
             }
             return cell
             
-        } else if indexPath.section == 1 {
+        case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: "KidsCell") as! KidsCell
             cell.setupCell(student: UserManager.shared.kids[indexPath.row])
             return cell
             
-        } else {
+        case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: "ProfileOthersCell") as! ProfileOthersCell
             
-             cell.onClickDelete = { [weak self] in
-//                 var um = [0,1]
-//                 print(um[2])
+            cell.onClickDelete = { [weak self] in
                 self?.confirmation()
             }
             
-             cell.onLogoutTapped = { [weak self] in
-                self?.navigateToLogin()
+            
+            cell.onLogoutTapped = { [weak self] in
+                self?.logoutConfirmation()
             }
             
             return cell
+            
+        default:
+            return UITableViewCell()
         }
     }
     
@@ -113,4 +125,3 @@ class ProfileViewController: UIViewController {
         return section == 0 ? 0 : 20
     }
 }
-

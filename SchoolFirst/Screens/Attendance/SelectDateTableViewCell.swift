@@ -1,13 +1,13 @@
 //
-//  CalenderCell.swift
+//  SelectDateTableViewCell.swift
 //  SchoolFirst
 //
-//  Created by Lifeboat on 28/10/25.
+//  Created by Lifeboat on 30/10/25.
 //
 
 import UIKit
 
-class CalenderCell: UITableViewCell {
+class SelectDateTableViewCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()

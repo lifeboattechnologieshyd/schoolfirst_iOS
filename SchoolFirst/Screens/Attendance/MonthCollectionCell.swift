@@ -14,7 +14,10 @@ class MonthCollectionCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        
+         bgVw.backgroundColor = UIColor(red: 203/255, green: 229/255, blue: 253/255, alpha: 1.0) // #CBE5FD
+        bgVw.layer.cornerRadius = 10
+        bgVw.layer.masksToBounds = true  
     }
-
 }
+
