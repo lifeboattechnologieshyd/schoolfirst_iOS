@@ -90,7 +90,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ProfileOthersCell") as! ProfileOthersCell
             
             cell.onClickDelete = { [weak self] in
-                self?.confirmation()
+//                self?.confirmation()
             }
             
             

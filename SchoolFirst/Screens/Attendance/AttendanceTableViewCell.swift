@@ -34,7 +34,6 @@ class AttendanceTableViewCell: UITableViewCell, UICollectionViewDelegate, UIColl
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MonthCollectionCell", for: indexPath) as! MonthCollectionCell
         cell.monthLbl.text = months[indexPath.item]
         cell.bgVw.layer.cornerRadius = 8
-        cell.bgVw.backgroundColor = .systemGray5
         return cell
     }
 

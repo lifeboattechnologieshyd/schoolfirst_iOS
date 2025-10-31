@@ -20,29 +20,46 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bTo-LZ-6gH">
                         <rect key="frame" x="0.0" y="0.0" width="108" height="51"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Mar-25" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3eV-TP-AKM">
-                                <rect key="frame" x="30.333333333333332" y="17" width="47.666666666666671" height="17"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3eV-TP-AKM">
+                                <rect key="frame" x="0.0" y="0.0" width="108" height="51"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Mar-25">
+                                        <attributes>
+                                            <color key="NSColor" red="0.99607843137254903" green="0.94901960784313721" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                            <font key="NSFont" size="14" name="Lexend-Regular"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="16"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" red="0.043137254899999998" green="0.33725490200000002" blue="0.60392156860000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.043137254899999998" green="0.33725490200000002" blue="0.60392156860000001" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="tintColor" red="0.05028576404" green="0.33521342279999999" blue="0.60576432940000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="3eV-TP-AKM" firstAttribute="centerX" secondItem="bTo-LZ-6gH" secondAttribute="centerX" id="q8o-wi-B64"/>
-                            <constraint firstItem="3eV-TP-AKM" firstAttribute="centerY" secondItem="bTo-LZ-6gH" secondAttribute="centerY" id="tQd-a2-lvT"/>
+                            <constraint firstItem="3eV-TP-AKM" firstAttribute="leading" secondItem="bTo-LZ-6gH" secondAttribute="leading" id="3Vn-2Y-Wz4"/>
+                            <constraint firstAttribute="trailing" secondItem="3eV-TP-AKM" secondAttribute="trailing" id="49J-wh-7W4"/>
+                            <constraint firstAttribute="bottom" secondItem="3eV-TP-AKM" secondAttribute="bottom" id="fWl-mF-TJQ"/>
+                            <constraint firstItem="3eV-TP-AKM" firstAttribute="top" secondItem="bTo-LZ-6gH" secondAttribute="top" id="hFs-zP-sQq"/>
                         </constraints>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
                                 <color key="value" red="0.05028576404" green="0.33521342279999999" blue="0.60576432940000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="16"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </view>
                 </subviews>
             </view>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
-            <color key="backgroundColor" red="0.05028576404" green="0.33521342279999999" blue="0.60576432940000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="bTo-LZ-6gH" secondAttribute="trailing" id="7kS-2S-htc"/>
                 <constraint firstAttribute="bottom" secondItem="bTo-LZ-6gH" secondAttribute="bottom" id="GQK-fF-JOg"/>
