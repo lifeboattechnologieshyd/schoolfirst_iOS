@@ -199,11 +199,9 @@ extension String {
         let inputFormatter = DateFormatter()
         inputFormatter.dateFormat = "yyyy-MM-dd"
         inputFormatter.locale = Locale(identifier: "en_US_POSIX")
-        
         let outputFormatter = DateFormatter()
         outputFormatter.dateFormat = "dd MMM yyyy"
         outputFormatter.locale = Locale(identifier: "en_US_POSIX")
-        
         if let date = inputFormatter.date(from: self) {
             return outputFormatter.string(from: date)
         } else {

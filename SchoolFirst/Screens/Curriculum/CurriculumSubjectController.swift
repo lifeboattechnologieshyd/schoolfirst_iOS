@@ -17,12 +17,23 @@ class CurriculumSubjectController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.colzvw.register(UINib(nibName: "SubjectCollectionCell", bundle: nil), forCellWithReuseIdentifier: "SubjectCollectionCell")
-
         getSubjects()
         topVw.addBottomShadow()
         self.colzvw.delegate = self
         self.colzvw.dataSource = self
         
+        print(self.colzvw.frame.size)
+        print(self.colzvw.bounds)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        colzvw.collectionViewLayout.invalidateLayout()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        colzvw.collectionViewLayout.invalidateLayout()
     }
     
     @IBAction func onClickBack(_ sender: UIButton) {
@@ -72,7 +83,10 @@ extension CurriculumSubjectController : UICollectionViewDelegate, UICollectionVi
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: (colzvw.frame.size.width-10)/2, height: 140)
+        print(self.colzvw.frame.size.width-10)
+        print(self.colzvw.bounds.width-10)
+
+        return CGSize(width: (colzvw.bounds.width-10)/2, height: 140)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

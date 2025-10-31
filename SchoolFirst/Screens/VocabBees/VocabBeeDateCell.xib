@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="VocabBeeDateCell" rowHeight="74" id="KGk-i7-Jjw" customClass="VocabBeeDateCell" customModule="SF_Dev" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="367" height="74"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="367" height="74"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JTd-21-Y8u">
+                        <rect key="frame" x="16" y="4" width="335" height="66"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VEK-Gf-2YJ">
+                                <rect key="frame" x="12" y="10" width="156" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="ekB-7Y-DnQ"/>
+                                </constraints>
+                                <attributedString key="attributedText">
+                                    <fragment content="13-11-2025 | ">
+                                        <attributes>
+                                            <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                        </attributes>
+                                    </fragment>
+                                    <fragment content="TODAY">
+                                        <attributes>
+                                            <color key="NSColor" red="0.043137254901960784" green="0.33725490196078434" blue="0.60392156862745094" alpha="1" colorSpace="calibratedRGB"/>
+                                            <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zF2-2e-M3E">
+                                <rect key="frame" x="12" y="38" width="142.33333333333334" height="18"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="18" id="BDG-AK-xCI"/>
+                                </constraints>
+                                <attributedString key="attributedText">
+                                    <fragment content="10 Words | 10 Minutes">
+                                        <attributes>
+                                            <font key="NSFont" size="14" name="Lexend-Light"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Et-Jm-asG">
+                                <rect key="frame" x="303" y="21" width="24" height="24"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="24" id="JRS-ZZ-u4m"/>
+                                    <constraint firstAttribute="width" constant="24" id="tce-wr-8WR"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="btn_next"/>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="zF2-2e-M3E" firstAttribute="top" secondItem="VEK-Gf-2YJ" secondAttribute="bottom" constant="8" id="CVr-WQ-uPV"/>
+                            <constraint firstItem="8Et-Jm-asG" firstAttribute="centerY" secondItem="JTd-21-Y8u" secondAttribute="centerY" id="G76-0d-Imk"/>
+                            <constraint firstAttribute="trailing" secondItem="8Et-Jm-asG" secondAttribute="trailing" constant="8" id="HCL-tg-WFc"/>
+                            <constraint firstItem="VEK-Gf-2YJ" firstAttribute="top" secondItem="JTd-21-Y8u" secondAttribute="top" constant="10" id="Qc3-s7-icW"/>
+                            <constraint firstItem="VEK-Gf-2YJ" firstAttribute="leading" secondItem="JTd-21-Y8u" secondAttribute="leading" constant="12" id="gFi-Mp-pXz"/>
+                            <constraint firstItem="zF2-2e-M3E" firstAttribute="leading" secondItem="JTd-21-Y8u" secondAttribute="leading" constant="12" id="hPo-7D-qpJ"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="JTd-21-Y8u" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="4" id="Cdo-vV-U7S"/>
+                    <constraint firstAttribute="bottom" secondItem="JTd-21-Y8u" secondAttribute="bottom" constant="4" id="KAN-rb-8Br"/>
+                    <constraint firstItem="JTd-21-Y8u" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="KeC-Y8-Pjz"/>
+                    <constraint firstAttribute="trailing" secondItem="JTd-21-Y8u" secondAttribute="trailing" constant="16" id="gtp-sw-RcQ"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="lblDate" destination="VEK-Gf-2YJ" id="Vgx-GW-5wB"/>
+                <outlet property="lblDescription" destination="zF2-2e-M3E" id="PMs-50-BKQ"/>
+            </connections>
+            <point key="canvasLocation" x="-66.412213740458014" y="30.281690140845072"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="btn_next" width="8" height="12"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

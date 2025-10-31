@@ -10,6 +10,9 @@ import UIKit
  
 class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
+    var page_size = 1
+    var page = 20
+    
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var feelsLbl: UILabel!
     @IBOutlet weak var colVw: UICollectionView!
@@ -24,7 +27,6 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
         colVw.dataSource = self
         colVw.register(UINib(nibName: "FeelsCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FeelsCollectionViewCell")
         self.getEdutainment()
-        
     }
     
     @IBAction func onClickBack(_ sender: UIButton) {
@@ -59,7 +61,7 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
         return CGSize(width: width, height: 284)
     }
     
-    func navigateToPlayer(index: Int){
+    func navigateToPlayer(index: Int) {
         let stbd = UIStoryboard(name: "Feels", bundle: nil)
         let vc = stbd.instantiateViewController(identifier: "FeelPlayerController") as! FeelPlayerController
         vc.selected_feel_item = items[index]
@@ -72,7 +74,8 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
     
     
     func getEdutainment() {
-        NetworkManager.shared.request(urlString: API.EDUTAIN_FEEL, method: .GET) { [weak self] (result: Result<APIResponse<[FeelItem]>, NetworkError>) in
+        var url = API.EDUTAIN_FEEL+"page_size=\(page_size)&page=\(page)"
+        NetworkManager.shared.request(urlString: url, method: .GET) { [weak self] (result: Result<APIResponse<[FeelItem]>, NetworkError>) in
             guard let self = self else { return }
             switch result {
             case .success(let info):

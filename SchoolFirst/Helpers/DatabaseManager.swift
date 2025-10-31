@@ -19,6 +19,13 @@ class DBManager {
         }
     }
     
+    func deleteUser(){
+        UserDefaults.standard.removeObject(forKey: "USER_INFO")
+        UserDefaults.standard.removeObject(forKey: "ACCESSTOKEN")
+        UserDefaults.standard.removeObject(forKey: "REFRESHTOKEN")
+        UserDefaults.standard.removeObject(forKey: "LOGGEDIN")
+    }
+    
     func allStudents(schools: [School]) -> [Student] {
         return schools.flatMap { $0.students }
     }
@@ -37,14 +44,25 @@ class DBManager {
 
 class UserManager {
     static let shared = UserManager()
-    
     private init() {}
-    
     var assessmentSelectedStudent : Student!
     var curriculamSelectedStudent : Student!
     
+    
+    // vocabee
+    var vocabBee_selected_mode = "DAILY" // PRACTICE, COMPETE
+    var vocabBee_selected_grade : GradeModel!
+    var vocabBee_selected_student : Student!
+    
+    
     var kids : [Student] {
         return DBManager.shared.allStudents(schools: UserManager.shared.user?.schools ?? [])
+    }
+    
+    func deleteUser(){
+        DBManager.shared.deleteUser()
+        
+        
     }
     
     var user: User? {

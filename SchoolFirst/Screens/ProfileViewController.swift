@@ -38,13 +38,12 @@ class ProfileViewController: UIViewController {
     }
     
      func navigateToLogin() {
+         UserManager.shared.deleteUser()
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         if let loginVC = storyboard.instantiateViewController(withIdentifier: "ViewController") as? ViewController {
-            
             if let window = UIApplication.shared.connectedScenes
                 .compactMap({ ($0 as? UIWindowScene)?.keyWindow })
                 .first {
-                
                 let nav = UINavigationController(rootViewController: loginVC)
                 nav.navigationBar.isHidden = true
                 window.rootViewController = nav
@@ -81,6 +80,8 @@ class ProfileViewController: UIViewController {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ProfileOthersCell") as! ProfileOthersCell
             
              cell.onClickDelete = { [weak self] in
+//                 var um = [0,1]
+//                 print(um[2])
                 self?.confirmation()
             }
             

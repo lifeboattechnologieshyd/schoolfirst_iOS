@@ -92,6 +92,9 @@ struct API {
     static let CURRICULUM_CATEGORIES = BASE_URL + "curriculum/categori?grade="
     
     
+    // Vocabee
+    
+    static let VOCABEE_GET_DATES = BASE_URL + "vocabee/words/history"
 
 
 }

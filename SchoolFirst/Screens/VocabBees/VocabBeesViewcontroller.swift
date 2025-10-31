@@ -42,6 +42,7 @@ extension VocabBeesViewController: UITableViewDataSource, UITableViewDelegate {
             return cell
         case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: "PracticeTableViewCell", for: indexPath) as! PracticeTableViewCell
+            
             return cell
         case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: "CompeteTableViewCell", for: indexPath) as! CompeteTableViewCell
@@ -55,6 +56,13 @@ extension VocabBeesViewController: UITableViewDataSource, UITableViewDelegate {
         return 220
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.row == 0 {
+            UserManager.shared.vocabBee_selected_mode = "DAILY"
+        }else if indexPath.row == 1 {
+            UserManager.shared.vocabBee_selected_mode = "PRACTICE"
+        }else {
+            UserManager.shared.vocabBee_selected_mode = "COMPETE"
+        }
         let storyboard = UIStoryboard(name: "VocabBees", bundle: nil)
         if let gradeVC = storyboard.instantiateViewController(withIdentifier: "gradeViewController") as? gradeViewController {
             self.navigationController?.pushViewController(gradeVC, animated: true)
