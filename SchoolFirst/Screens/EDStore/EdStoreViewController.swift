@@ -19,7 +19,7 @@ class EdStoreViewController:UIViewController {
     override func viewDidLoad() {
             super.viewDidLoad()
 
-            tblVw.register(UINib(nibName: "EdStoreTableViewCell", bundle: nil),
+        tblVw.register(UINib(nibName: "EdStoreTableViewCell", bundle: nil),
                            forCellReuseIdentifier: "EdStoreTableViewCell")
 
             tblVw.dataSource = self
