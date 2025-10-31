@@ -66,7 +66,7 @@ class AttendanceViewController: UIViewController {
         switch indexPath.row {
         case 0: return 390
         case 1: return 50
-        case 2: return 430
+        case 2: return 480
         default: return 60
         }
     }
