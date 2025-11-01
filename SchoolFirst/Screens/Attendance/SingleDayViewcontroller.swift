@@ -16,12 +16,12 @@ class SingleDayViewcontroller: UIViewController {
     @IBOutlet weak var fulldayButton: UIButton!
     @IBOutlet weak var halfdayVw: UIView!
     @IBOutlet weak var fulldayVw: UIView!
+    @IBOutlet weak var userVw: UIView!
     @IBOutlet weak var bottonVw: UIView!
     @IBOutlet weak var tellusTf: UITextField!
     @IBOutlet weak var reasonVw: UIView!
     @IBOutlet weak var multipledaysVw: UIView!
     @IBOutlet weak var singledayVw: UIView!
-    @IBOutlet weak var userVw: UIView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +29,7 @@ class SingleDayViewcontroller: UIViewController {
         topVw.addBottomShadow()
         bottonVw.layer.applyShadow(color: .black, opacity: 0.2, offset: CGSize(width: 0, height: -2), radius: 4)
 
-         [dateVw, reasonVw].forEach {
+        [dateVw, reasonVw].forEach {
             $0?.layer.cornerRadius = 5
             $0?.layer.applyShadow(color: .black, opacity: 0.2, offset: CGSize(width: 0, height: 2), radius: 4)
         }
@@ -40,11 +40,14 @@ class SingleDayViewcontroller: UIViewController {
         }
 
         [halfdayVw, fulldayVw, multipledaysVw].forEach { $0?.layer.cornerRadius = 12 }
-        [userVw, singledayVw].forEach {
-            $0?.layer.cornerRadius = 12
-            $0?.layer.borderWidth = 1
-            $0?.layer.borderColor = UIColor(red: 11/255, green: 86/255, blue: 154/255, alpha: 1).cgColor
-        }
+
+         userVw.layer.cornerRadius = 25
+        userVw.layer.borderWidth = 1
+        userVw.layer.borderColor = UIColor(red: 11/255, green: 86/255, blue: 154/255, alpha: 1).cgColor
+
+        singledayVw.layer.cornerRadius = 8
+        singledayVw.layer.borderWidth = 1
+        singledayVw.layer.borderColor = UIColor(red: 11/255, green: 86/255, blue: 154/255, alpha: 1).cgColor
     }
 
     @IBAction func halfdayButtonTapped(_ sender: UIButton) {
@@ -53,6 +56,7 @@ class SingleDayViewcontroller: UIViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
+
     @IBAction func backButtonTapped(_ sender: UIButton) {
         if let navigationController = navigationController {
             navigationController.popViewController(animated: true)
@@ -60,6 +64,5 @@ class SingleDayViewcontroller: UIViewController {
             dismiss(animated: true, completion: nil)
         }
     }
-
 }
 
