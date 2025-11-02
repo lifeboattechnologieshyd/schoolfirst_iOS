@@ -12,9 +12,11 @@ import FSCalendar
 
 class AttendanceViewController: UIViewController {
 
+    
     @IBOutlet weak var topVw: UIView!
     @IBOutlet weak var tblVw: UITableView!
-
+    @IBOutlet weak var backButton: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -71,12 +73,18 @@ class AttendanceViewController: UIViewController {
         }
     }
 }
-
- extension AttendanceViewController: AttendanceCellDelegate {
+extension AttendanceViewController: AttendanceCellDelegate {
     func didTapRequestLeave() {
         let storyboard = UIStoryboard(name: "Attendance", bundle: nil)
-        if let submitVC = storyboard.instantiateViewController(withIdentifier: "SubmitLeaveViewController") as? SubmitLeaveViewController {
-            self.navigationController?.pushViewController(submitVC, animated: true)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SubmitLeaveViewController") as? SubmitLeaveViewController {
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    func didTapLeaveHistory() {
+        let storyboard = UIStoryboard(name: "Attendance", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "LeaveHistoryViewController") as? LeaveHistoryViewController {
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 }

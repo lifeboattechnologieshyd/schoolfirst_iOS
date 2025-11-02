@@ -12,6 +12,7 @@ class SubmitLeaveViewController: UIViewController {
     @IBOutlet weak var multipleVw: UIView!
     @IBOutlet weak var submitButton: UIButton!
     @IBOutlet weak var singleVw: UIView!
+    @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var bottomVw: UIView!
     @IBOutlet weak var multipledaysImg: UIImageView!
     @IBOutlet weak var singledayImg: UIImageView!
@@ -38,27 +39,46 @@ class SubmitLeaveViewController: UIViewController {
         userVw.layer.borderWidth = 1
         userVw.layer.borderColor = UIColor(red: 11/255, green: 86/255, blue: 154/255, alpha: 1).cgColor
         userVw.clipsToBounds = true
-    
-let tapGesture = UITapGestureRecognizer(target: self, action: #selector(singleDayTapped))
+
+         let singleTap = UITapGestureRecognizer(target: self, action: #selector(singleDayTapped))
         singledayImg.isUserInteractionEnabled = true
-        singledayImg.addGestureRecognizer(tapGesture)
+        singledayImg.addGestureRecognizer(singleTap)
+
+         let multipleTap = UITapGestureRecognizer(target: self, action: #selector(multipleDayTapped))
+        multipledaysImg.isUserInteractionEnabled = true
+        multipledaysImg.addGestureRecognizer(multipleTap)
     }
 
-    @objc func singleDayTapped() {
+     @objc func singleDayTapped() {
         let storyboard = UIStoryboard(name: "Attendance", bundle: nil)
         if let nextVC = storyboard.instantiateViewController(withIdentifier: "SingleDayViewcontroller") as? SingleDayViewcontroller {
-            self.navigationController?.pushViewController(nextVC, animated: true)
+            navigationController?.pushViewController(nextVC, animated: true)
+        }
+    }
+
+    @objc func multipleDayTapped() {
+        let storyboard = UIStoryboard(name: "Attendance", bundle: nil)
+        if let nextVC = storyboard.instantiateViewController(withIdentifier: "MultipleDaysViewController") as? MultipleDaysViewController {
+            navigationController?.pushViewController(nextVC, animated: true)
+        }
+    }
+
+     @IBAction func backButtonTapped(_ sender: UIButton) {
+        if let navigationController = navigationController {
+            navigationController.popViewController(animated: true)
+        } else {
+            dismiss(animated: true, completion: nil)
         }
     }
 }
 
-extension CALayer {
+ extension CALayer {
     func applyShadow(color: UIColor, opacity: Float, offset: CGSize, radius: CGFloat) {
-        self.shadowColor = color.cgColor
-        self.shadowOpacity = opacity
-        self.shadowOffset = offset
-        self.shadowRadius = radius
-        self.masksToBounds = false
+        shadowColor = color.cgColor
+        shadowOpacity = opacity
+        shadowOffset = offset
+        shadowRadius = radius
+        masksToBounds = false
     }
 }
 

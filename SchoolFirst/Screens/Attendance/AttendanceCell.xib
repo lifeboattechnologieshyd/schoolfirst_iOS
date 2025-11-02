@@ -11,11 +11,11 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="AttendanceCell" rowHeight="399" id="KGk-i7-Jjw" customClass="AttendanceCell" customModule="SF_Dev" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="384" height="399"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="AttendanceCell" rowHeight="390" id="KGk-i7-Jjw" customClass="AttendanceCell" customModule="SF_Dev" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="406" height="390"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="384" height="399"/>
+                <rect key="frame" x="0.0" y="0.0" width="406" height="390"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IJN-Wc-vi7">
@@ -58,7 +58,7 @@
                         </constraints>
                     </view>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="743-VX-h2K">
-                        <rect key="frame" x="191" y="15" width="164" height="50"/>
+                        <rect key="frame" x="220" y="15" width="164" height="50"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image=" Profile" translatesAutoresizingMaskIntoConstraints="NO" id="x8r-Uf-uxs">
                                 <rect key="frame" x="8" y="7" width="36" height="36"/>
@@ -107,6 +107,9 @@
                                 <rect key="frame" x="12.333333333333329" y="6.6666666666666856" width="131.66666666666669" height="35"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title=" Leave History"/>
+                                <connections>
+                                    <action selector="leaveHistoryButtonTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="rxM-Nw-4Ud"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="0.79656857250000002" green="0.89681297540000005" blue="0.99202007059999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -118,13 +121,16 @@
                         </constraints>
                     </view>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0jf-bk-fRC">
-                        <rect key="frame" x="192" y="290" width="156" height="48"/>
+                        <rect key="frame" x="226" y="290" width="156" height="48"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="l5f-V2-rux">
                                 <rect key="frame" x="8.3333333333333428" y="6.6666666666666856" width="139.66666666666666" height="35"/>
                                 <color key="tintColor" red="0.99516242740000005" green="0.94719189410000004" blue="0.01824968494" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title=" Request Leave"/>
+                                <connections>
+                                    <action selector="requestLeaveButtonTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="mMk-u0-C41"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="0.05028576404" green="0.33521342279999999" blue="0.60576432940000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -136,14 +142,14 @@
                         </constraints>
                     </view>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Line Calender" translatesAutoresizingMaskIntoConstraints="NO" id="8gs-Gu-Fye">
-                        <rect key="frame" x="0.0" y="359" width="384" height="15"/>
+                        <rect key="frame" x="0.0" y="359" width="406" height="15"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="15" id="AFs-jI-RaM"/>
                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="15" id="kVo-Q5-OXA"/>
                         </constraints>
                     </imageView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9Qf-By-PMN">
-                        <rect key="frame" x="16" y="84" width="352" height="190"/>
+                        <rect key="frame" x="16" y="84" width="374" height="190"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" Attendance Snapshot" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aR8-46-Tvh">
                                 <rect key="frame" x="78" y="12" width="200" height="20"/>
@@ -255,9 +261,9 @@
                     <constraint firstItem="0jf-bk-fRC" firstAttribute="top" secondItem="9Qf-By-PMN" secondAttribute="bottom" constant="16" id="Tyg-xd-LVa"/>
                     <constraint firstAttribute="trailing" secondItem="8gs-Gu-Fye" secondAttribute="trailing" id="UvV-uN-yEt"/>
                     <constraint firstItem="9Qf-By-PMN" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="X9p-0N-rbX"/>
-                    <constraint firstItem="743-VX-h2K" firstAttribute="leading" secondItem="IJN-Wc-vi7" secondAttribute="trailing" constant="11" id="eOC-nq-Fai"/>
+                    <constraint firstItem="743-VX-h2K" firstAttribute="leading" secondItem="IJN-Wc-vi7" secondAttribute="trailing" constant="40" id="eOC-nq-Fai"/>
                     <constraint firstItem="DZ2-xY-7kB" firstAttribute="top" secondItem="9Qf-By-PMN" secondAttribute="bottom" constant="16" id="iBh-lL-6Oi"/>
-                    <constraint firstItem="0jf-bk-fRC" firstAttribute="leading" secondItem="DZ2-xY-7kB" secondAttribute="trailing" constant="20" id="jLx-Z1-lBl"/>
+                    <constraint firstItem="0jf-bk-fRC" firstAttribute="leading" secondItem="DZ2-xY-7kB" secondAttribute="trailing" constant="54" id="jLx-Z1-lBl"/>
                     <constraint firstItem="IJN-Wc-vi7" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="sC1-H0-EaS"/>
                     <constraint firstItem="8gs-Gu-Fye" firstAttribute="top" secondItem="DZ2-xY-7kB" secondAttribute="bottom" constant="21" id="tEW-dc-WRJ"/>
                     <constraint firstItem="9Qf-By-PMN" firstAttribute="top" secondItem="IJN-Wc-vi7" secondAttribute="bottom" constant="18" id="zGd-oT-3SS"/>
@@ -282,7 +288,7 @@
                 <outlet property="shrvVw" destination="743-VX-h2K" id="wpX-4E-DK0"/>
                 <outlet property="voiletVw" destination="0jf-bk-fRC" id="6G0-bU-PJs"/>
             </connections>
-            <point key="canvasLocation" x="178.62595419847327" y="113.02816901408451"/>
+            <point key="canvasLocation" x="195.41984732824426" y="109.85915492957747"/>
         </tableViewCell>
     </objects>
     <resources>
