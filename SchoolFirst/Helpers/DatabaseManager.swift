@@ -53,6 +53,7 @@ class UserManager {
     var vocabBee_selected_mode = "DAILY" // PRACTICE, COMPETE
     var vocabBee_selected_grade : GradeModel!
     var vocabBee_selected_student : Student!
+    var vocabBee_selected_date : VocabeeDate!
     
     
     var kids : [Student] {

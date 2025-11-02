@@ -21,5 +21,9 @@ class VocabBeeDateCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
+    func setup(item : VocabeeDate){
+        self.lblDate.text = "\(item.date)"
+        self.lblDescription.text = "\(item.totalWords) Words | \(item.minutes) Min"
+    }
     
 }

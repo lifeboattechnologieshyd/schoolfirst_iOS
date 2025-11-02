@@ -736,3 +736,75 @@ struct LessonConcept: Codable, Identifiable {
         case curriculumName = "curriculum_name"
     }
 }
+
+struct VocabeeDate: Codable {
+    let date: String
+    let totalWords: Int
+    let minutes: Int
+    let attemptedWords: Int
+    let pointsEarned: Int
+    let totalPoints: Int
+    
+    enum CodingKeys: String, CodingKey {
+            case date
+            case totalWords = "total_words"
+            case minutes
+            case attemptedWords = "attempted_words"
+            case pointsEarned = "points_earned"
+            case totalPoints = "total_points"
+        }
+}
+
+struct WordInfo: Codable {
+    let id: String
+    let word: String
+    let definition: String
+    let points: Int
+    let usage: String
+    let origin: String
+    let partsOfSpeech: String
+    let others: String
+    let othersVoice: String
+    let pronunciation: String
+    let partsOfSpeechVoice: String
+    let definitionVoice: String
+    let originVoice: String
+    let usageVoice: String
+    let date: String
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case word
+        case definition
+        case points
+        case usage
+        case origin
+        case partsOfSpeech = "parts_of_speech"
+        case others
+        case othersVoice = "others_voice"
+        case pronunciation
+        case partsOfSpeechVoice = "parts_of_speech_voice"
+        case definitionVoice = "definition_voice"
+        case originVoice = "origin_voice"
+        case usageVoice = "usage_voice"
+        case date
+    }
+}
+
+struct WordAnswer: Codable {
+    let id: String
+    let wordId: String
+    let userAnswer: String
+    let correctAnswer: String
+    let isCorrect: Bool
+    let points: Int
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case wordId = "word_id"
+        case userAnswer = "user_answer"
+        case correctAnswer = "correct_answer"
+        case isCorrect = "is_correct"
+        case points
+    }
+}

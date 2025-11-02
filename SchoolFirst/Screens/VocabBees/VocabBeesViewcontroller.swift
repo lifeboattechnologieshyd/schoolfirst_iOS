@@ -19,6 +19,11 @@ class VocabBeesViewController:UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        if UserManager.shared.kids.count > 0 {
+            UserManager.shared.vocabBee_selected_student = UserManager.shared.kids[0]
+        }else{
+            print("Please add student")
+        }
         topView.addBottomShadow()
         tblVw.register(UINib(nibName: "ChallengesTableViewCell", bundle: nil), forCellReuseIdentifier: "ChallengesTableViewCell")
         tblVw.register(UINib(nibName: "PracticeTableViewCell", bundle: nil), forCellReuseIdentifier: "PracticeTableViewCell")
