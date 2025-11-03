@@ -70,6 +70,10 @@ class AttendanceViewController: UIViewController {
         default: return 60
         }
     }
-}
+     
+     @IBAction func backButtonTapped(_ sender: UIButton) {
+         navigationController?.popViewController(animated: true)
+     }
+ }
 
 
