@@ -20,10 +20,9 @@ class AttendanceViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        topVw.addBottomShadow()
-        setupTableView()
-    }
-
+        topVw.addBottomShadow(shadowOpacity: 0.15, shadowRadius: 3, shadowHeight: 4)
+            setupTableView()
+        }
     private func setupTableView() {
         tblVw.delegate = self
         tblVw.dataSource = self
@@ -47,7 +46,6 @@ class AttendanceViewController: UIViewController {
         switch indexPath.row {
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: "AttendanceCell", for: indexPath) as! AttendanceCell
-             cell.delegate = self
             return cell
 
         case 1:
@@ -66,26 +64,16 @@ class AttendanceViewController: UIViewController {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.row {
-        case 0: return 390
+        case 0: return 378
         case 1: return 50
         case 2: return 480
         default: return 60
         }
     }
-}
-extension AttendanceViewController: AttendanceCellDelegate {
-    func didTapRequestLeave() {
-        let storyboard = UIStoryboard(name: "Attendance", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SubmitLeaveViewController") as? SubmitLeaveViewController {
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
+     
+     @IBAction func backButtonTapped(_ sender: UIButton) {
+         navigationController?.popViewController(animated: true)
+     }
+ }
 
-    func didTapLeaveHistory() {
-        let storyboard = UIStoryboard(name: "Attendance", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "LeaveHistoryViewController") as? LeaveHistoryViewController {
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-}
 

@@ -7,10 +7,6 @@
 
 import UIKit
 
-protocol AttendanceCellDelegate: AnyObject {
-    func didTapRequestLeave()
-    func didTapLeaveHistory()
-}
 
 class AttendanceCell: UITableViewCell {
     
@@ -31,7 +27,6 @@ class AttendanceCell: UITableViewCell {
     @IBOutlet weak var shrvLbl: UILabel!
     @IBOutlet weak var abhiImg: UIImageView!
     
-    weak var delegate: AttendanceCellDelegate?
 
     var presentCount: Int = 10
     var absentCount: Int = 16
@@ -61,11 +56,11 @@ class AttendanceCell: UITableViewCell {
     }
 
      @IBAction func requestLeaveButtonTapped(_ sender: UIButton) {
-        delegate?.didTapRequestLeave()
+        
     }
 
     @IBAction func leaveHistoryButtonTapped(_ sender: UIButton) {
-        delegate?.didTapLeaveHistory()
+        
     }
 
     override func layoutSubviews() {

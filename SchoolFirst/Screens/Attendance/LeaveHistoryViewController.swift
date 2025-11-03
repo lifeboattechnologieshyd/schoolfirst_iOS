@@ -34,8 +34,8 @@ class LeaveHistoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        topVw.addBottomShadow()
-        
+        topVw.addBottomShadow(shadowOpacity: 0.15, shadowRadius: 3, shadowHeight: 4)
+         
         setupCollectionView()
         setupViews()
     }

@@ -88,29 +88,28 @@ extension UIView {
     func addBottomShadow(
         shadowColor: UIColor = .black,
         shadowOpacity: Float = 0.2,
-        shadowRadius: CGFloat = 6,
-        shadowHeight: CGFloat = 6
+        shadowRadius: CGFloat = 4,
+        shadowHeight: CGFloat = 3
     ) {
-        // Very important: allow shadow outside bounds
-        self.layer.masksToBounds = false
-        self.superview?.clipsToBounds = false
+        layer.masksToBounds = false
+        superview?.clipsToBounds = false
         
-        // Define a rectangle only at the bottom of the view
-        let shadowRect = CGRect(
-            x: 0,
-            y: self.bounds.height - shadowHeight,
-            width: self.bounds.width,
-            height: shadowHeight
-        )
-        let path = UIBezierPath(rect: shadowRect)
-        
-        // Apply shadow properties
+        // This offset pushes shadow only downward
         layer.shadowColor = shadowColor.cgColor
         layer.shadowOpacity = shadowOpacity
         layer.shadowRadius = shadowRadius
-        layer.shadowOffset = .zero
-        layer.shadowPath = path.cgPath
+        layer.shadowOffset = CGSize(width: 0, height: shadowHeight)
+        
+        // Create a shadow path only at the bottom
+        let shadowRect = CGRect(
+            x: 0,
+            y: bounds.height - shadowHeight,
+            width: bounds.width,
+            height: shadowHeight
+        )
+        layer.shadowPath = UIBezierPath(rect: shadowRect).cgPath
     }
+
     
     func applyCardShadow(
         cornerRadius: CGFloat = 8,
