@@ -74,7 +74,7 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
     
     
     func getEdutainment() {
-        var url = API.EDUTAIN_FEEL+"page_size=\(page_size)&page=\(page)"
+        var url = API.EDUTAIN_FEEL+"?page_size=\(page_size)&page=\(page)"
         NetworkManager.shared.request(urlString: url, method: .GET) { [weak self] (result: Result<APIResponse<[FeelItem]>, NetworkError>) in
             guard let self = self else { return }
             switch result {

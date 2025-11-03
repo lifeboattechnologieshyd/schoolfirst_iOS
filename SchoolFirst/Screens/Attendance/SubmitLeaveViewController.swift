@@ -22,8 +22,8 @@ class SubmitLeaveViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        topVw.addBottomShadow()
-        
+        topVw.addBottomShadow(shadowOpacity: 0.15, shadowRadius: 3, shadowHeight: 4)
+         
          [singleVw, multipleVw].forEach { view in
             view?.layer.cornerRadius = 12
             view?.layer.shadowColor = UIColor.black.cgColor

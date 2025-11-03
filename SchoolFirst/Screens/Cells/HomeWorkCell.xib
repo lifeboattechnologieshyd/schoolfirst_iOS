@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -19,14 +20,14 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aIw-Rq-41I">
-                        <rect key="frame" x="16" y="8" width="87" height="20"/>
+                        <rect key="frame" x="16" y="8" width="78.333333333333329" height="20"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="8ps-dS-Jfr"/>
                         </constraints>
                         <attributedString key="attributedText">
                             <fragment content="Homework">
                                 <attributes>
-                                    <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                    <font key="NSFont" metaFont="system" size="16"/>
                                 </attributes>
                             </fragment>
                         </attributedString>
@@ -40,12 +41,12 @@
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jtL-Wc-PuL">
-                        <rect key="frame" x="266" y="9.3333333333333339" width="87" height="17.666666666666664"/>
+                        <rect key="frame" x="273.66666666666669" y="9.6666666666666643" width="79.333333333333314" height="17"/>
                         <attributedString key="attributedText">
                             <fragment content="View Details">
                                 <attributes>
                                     <color key="NSColor" red="0.043137254901960784" green="0.33725490196078434" blue="0.60392156862745094" alpha="1" colorSpace="calibratedRGB"/>
-                                    <font key="NSFont" size="14" name="Lexend-SemiBold"/>
+                                    <font key="NSFont" metaFont="system" size="14"/>
                                 </attributes>
                             </fragment>
                         </attributedString>
@@ -65,7 +66,7 @@
                         </collectionViewFlowLayout>
                     </collectionView>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Ra-u6-Jkc">
-                        <rect key="frame" x="266" y="9.3333333333333339" width="111" height="17.666666666666664"/>
+                        <rect key="frame" x="273.66666666666669" y="9.6666666666666643" width="103.33333333333331" height="17"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <state key="normal" title="Button"/>
                         <buttonConfiguration key="configuration" style="plain"/>
@@ -81,14 +82,14 @@
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EIB-nT-o3q">
-                        <rect key="frame" x="36.000000000000007" y="113" width="121.66666666666669" height="13"/>
+                        <rect key="frame" x="35.999999999999993" y="113" width="126.33333333333331" height="13"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="13" id="8Q3-Zz-61w"/>
                         </constraints>
                         <attributedString key="attributedText">
                             <fragment content="8 students completed this">
                                 <attributes>
-                                    <font key="NSFont" size="10" name="Lexend-Light"/>
+                                    <font key="NSFont" metaFont="system" size="10"/>
                                     <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                 </attributes>
                             </fragment>
@@ -96,12 +97,12 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NMJ-f7-vGQ">
-                        <rect key="frame" x="249.33333333333334" y="112" width="127.66666666666666" height="15"/>
+                        <rect key="frame" x="249" y="112" width="128" height="15"/>
                         <attributedString key="attributedText">
                             <fragment content="Deadline: 19 Aug 2025">
                                 <attributes>
                                     <color key="NSColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                    <font key="NSFont" metaFont="cellTitle"/>
                                 </attributes>
                             </fragment>
                         </attributedString>
