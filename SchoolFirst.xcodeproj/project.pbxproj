@@ -27,15 +27,6 @@
 		885E77E82EB5E72400256F9F /* Exceptions for "SchoolFirst" folder in "SchoolFirst" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"Fonts/Lexend-Black.ttf",
-				"Fonts/Lexend-Bold.ttf",
-				"Fonts/Lexend-ExtraBold.ttf",
-				"Fonts/Lexend-ExtraLight.ttf",
-				"Fonts/Lexend-Light.ttf",
-				"Fonts/Lexend-Medium.ttf",
-				"Fonts/Lexend-Regular.ttf",
-				"Fonts/Lexend-SemiBold.ttf",
-				"Fonts/Lexend-Thin.ttf",
 				Info.plist,
 			);
 			target = 884DB5D52DFC0394003F154E /* SchoolFirst */;
@@ -97,6 +88,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 884DB5E92DFC0396003F154E /* Build configuration list for PBXNativeTarget "SchoolFirst" */;
 			buildPhases = (
+				880D2EC62EBB558A006979A5 /* Copy Firebase Configurations */,
 				884DB5D22DFC0394003F154E /* Sources */,
 				884DB5D32DFC0394003F154E /* Frameworks */,
 				884DB5D42DFC0394003F154E /* Resources */,
@@ -176,6 +168,30 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		880D2EC62EBB558A006979A5 /* Copy Firebase Configurations */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/SchoolFirst/Configurations/GoogleService-Info-DEV.plist",
+				"$(SRCROOT)/SchoolFirst/Configurations/GoogleService-Info-PROD.plist",
+			);
+			name = "Copy Firebase Configurations";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nset -e  # Exit immediately if a command fails\n\necho \"------------------------------------\"\necho \"🔥 Firebase Config Copy Script\"\necho \"Active configuration: ${CONFIGURATION}\"\necho \"------------------------------------\"\n\n# Path to your Firebase plist files\nCONFIGS_DIR=\"${PROJECT_DIR}/SchoolFirst/Configurations\"\n\n# Destination inside the app bundle (use the resources folder, not the app root)\nDESTINATION=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\necho \"Listing config folder contents:\"\nls -l \"${CONFIGS_DIR}\"\n# Remove any old plist first\nrm -f \"${DESTINATION}/GoogleService-Info.plist\"\n\n# Match all your configurations properly\ncase \"${CONFIGURATION}\" in\n    \"Debug Dev\"|\"Release Dev\")\n        cp \"${CONFIGS_DIR}/GoogleService-Info-DEV.plist\" \"${DESTINATION}/GoogleService-Info.plist\"\n        echo \"✅ Copied DEV Firebase config (${CONFIGURATION})\"\n        ;;\n    \"Debug\"|\"Release\")\n        cp \"${CONFIGS_DIR}/GoogleService-Info-PROD.plist\" \"${DESTINATION}/GoogleService-Info.plist\"\n        echo \"✅ Copied PROD Firebase config (${CONFIGURATION})\"\n        ;;\n    *)\n        echo \"⚠️ Unknown configuration: ${CONFIGURATION}\"\n        echo \"Available files in ${CONFIGS_DIR}:\"\n        ls -l \"${CONFIGS_DIR}\"\n        ;;\nesac\n\n# Confirm the file exists\nif [ -f \"${DESTINATION}/GoogleService-Info.plist\" ]; then\n    echo \"📦 Firebase plist copied successfully:\"\n    ls -l \"${DESTINATION}/GoogleService-Info.plist\"\nelse\n    echo \"❌ Firebase plist NOT FOUND in ${DESTINATION}\"\n    exit 1\nfi\n\necho \"------------------------------------\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		884DB5D22DFC0394003F154E /* Sources */ = {

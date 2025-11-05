@@ -35,30 +35,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
      private func configureFirebase() {
-        #if PROD
-        let fileName = "GoogleService-Info-Prod"
-        #else
-        let fileName = "GoogleService-Info-Dev"
-        #endif
-
-        guard let filePath = Bundle.main.path(forResource: fileName, ofType: "plist") else {
-            print("Could not find \(fileName).plist in bundle. Make sure it's added to your target and name matches exactly.")
-            return
-        }
-
-        guard let options = FirebaseOptions(contentsOfFile: filePath) else {
-            print("Could not load Firebase options from \(fileName).plist")
-            return
-        }
-
-        FirebaseApp.configure(options: options)
+      
+        FirebaseApp.configure()
         Messaging.messaging().delegate = self
 
-        #if PROD
-        print("Firebase configured for PRODUCTION with \(fileName).plist")
-        #else
-        print("Firebase configured for DEVELOPMENT with \(fileName).plist")
-        #endif
+     
     }
 
      private func setupNavigationBar() {
