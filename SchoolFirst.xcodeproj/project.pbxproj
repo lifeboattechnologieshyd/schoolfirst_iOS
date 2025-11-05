@@ -92,6 +92,7 @@
 				884DB5D22DFC0394003F154E /* Sources */,
 				884DB5D32DFC0394003F154E /* Frameworks */,
 				884DB5D42DFC0394003F154E /* Resources */,
+				880D2ED02EBB7A80006979A5 /* Upload Crashlytics dSYMs */,
 			);
 			buildRules = (
 			);
@@ -190,6 +191,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nset -e  # Exit immediately if a command fails\n\necho \"------------------------------------\"\necho \"🔥 Firebase Config Copy Script\"\necho \"Active configuration: ${CONFIGURATION}\"\necho \"------------------------------------\"\n\n# Path to your Firebase plist files\nCONFIGS_DIR=\"${PROJECT_DIR}/SchoolFirst/Configurations\"\n\n# Destination inside the app bundle (use the resources folder, not the app root)\nDESTINATION=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\necho \"Listing config folder contents:\"\nls -l \"${CONFIGS_DIR}\"\n# Remove any old plist first\nrm -f \"${DESTINATION}/GoogleService-Info.plist\"\n\n# Match all your configurations properly\ncase \"${CONFIGURATION}\" in\n    \"Debug Dev\"|\"Release Dev\")\n        cp \"${CONFIGS_DIR}/GoogleService-Info-DEV.plist\" \"${DESTINATION}/GoogleService-Info.plist\"\n        echo \"✅ Copied DEV Firebase config (${CONFIGURATION})\"\n        ;;\n    \"Debug\"|\"Release\")\n        cp \"${CONFIGS_DIR}/GoogleService-Info-PROD.plist\" \"${DESTINATION}/GoogleService-Info.plist\"\n        echo \"✅ Copied PROD Firebase config (${CONFIGURATION})\"\n        ;;\n    *)\n        echo \"⚠️ Unknown configuration: ${CONFIGURATION}\"\n        echo \"Available files in ${CONFIGS_DIR}:\"\n        ls -l \"${CONFIGS_DIR}\"\n        ;;\nesac\n\n# Confirm the file exists\nif [ -f \"${DESTINATION}/GoogleService-Info.plist\" ]; then\n    echo \"📦 Firebase plist copied successfully:\"\n    ls -l \"${DESTINATION}/GoogleService-Info.plist\"\nelse\n    echo \"❌ Firebase plist NOT FOUND in ${DESTINATION}\"\n    exit 1\nfi\n\necho \"------------------------------------\"\n";
+		};
+		880D2ED02EBB7A80006979A5 /* Upload Crashlytics dSYMs */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(PROJECT_DIR)/SchoolFirst/FirebaseConfigs/GoogleService-Info-DEV.plist\n$(PROJECT_DIR)/SchoolFirst/FirebaseConfigs/GoogleService-Info-PROD.plist\n$(DWARF_DSYM_FOLDER_PATH)/$(DWARF_DSYM_FILE_NAME)\n",
+			);
+			name = "Upload Crashlytics dSYMs";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nset -e\nsleep 3\n\necho \"------------------------------------\"\necho \"🔥 Crashlytics dSYM Upload Script (SPM Safe Version)\"\necho \"Active configuration: ${CONFIGURATION}\"\necho \"------------------------------------\"\n\nCONFIGS_DIR=\"${PROJECT_DIR}/SchoolFirst/FirebaseConfigs\"\nPLIST_PATH=\"\"\nDSYM_PATH=\"\"\n\n# Make sure build dir exists\nif [ ! -d \"${BUILD_DIR}\" ]; then\n  echo \"⚠️ BUILD_DIR missing — creating...\"\n  mkdir -p \"${BUILD_DIR}\"\nfi\n\n# Select Firebase plist file\ncase \"${CONFIGURATION}\" in\n  \"Debug Dev\"|\"Release Dev\")\n    PLIST_PATH=\"${CONFIGS_DIR}/GoogleService-Info-DEV.plist\"\n    ;;\n  \"Debug\"|\"Release\")\n    PLIST_PATH=\"${CONFIGS_DIR}/GoogleService-Info-PROD.plist\"\n    ;;\n  *)\n    echo \"⚠️ Unknown configuration: ${CONFIGURATION}\"\n    ls \"${CONFIGS_DIR}\"\n    exit 0\n    ;;\nesac\n\n# Check plist exists\nif [ ! -f \"${PLIST_PATH}\" ]; then\n  echo \"❌ Firebase plist not found at: ${PLIST_PATH}\"\n  exit 0\nfi\n\n# Wait for dSYM path\nif [ ! -d \"${DWARF_DSYM_FOLDER_PATH}\" ]; then\n  echo \"⚠️ Waiting for dSYM folder...\"\n  sleep 3\nfi\n\nDSYM_PATH=\"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}\"\n\nif [ ! -d \"${DSYM_PATH}\" ]; then\n  echo \"⚠️ Waiting for dSYM file...\"\n  sleep 3\nfi\n\n# Crashlytics upload path (SPM)\nCRASHLYTICS_RUN_PATH=\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\nif [ ! -f \"${CRASHLYTICS_RUN_PATH}\" ]; then\n  CRASHLYTICS_RUN_PATH=\"${PROJECT_DIR}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\nfi\n\nif [ ! -f \"${CRASHLYTICS_RUN_PATH}\" ]; then\n  echo \"❌ Crashlytics run script not found!\"\n  exit 0\nfi\n\necho \"✅ Using plist: ${PLIST_PATH}\"\necho \"✅ Using dSYM path: ${DSYM_PATH}\"\necho \"✅ Using Crashlytics script: ${CRASHLYTICS_RUN_PATH}\"\n\n\"${CRASHLYTICS_RUN_PATH}\" \\\n  --google-service-info \"${PLIST_PATH}\" \\\n  --path \"${DWARF_DSYM_FOLDER_PATH}\"\n\necho \"------------------------------------\"\necho \"✅ Crashlytics dSYM upload complete\"\necho \"------------------------------------\"\n\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

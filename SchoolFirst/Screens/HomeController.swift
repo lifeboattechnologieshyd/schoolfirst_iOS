@@ -372,6 +372,7 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
     }
     
     func onSelectItems(index: Int, selectedIndex: Int) {
+        fatalError("testing crash")
         if segmentControl.isHidden {
             self.FamilyZoneItemSelection(index: index)
         }else {

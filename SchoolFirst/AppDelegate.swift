@@ -14,11 +14,10 @@ import FirebaseCrashlytics
 import FirebaseCore
 import FirebaseAnalytics
 
-
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
 
-     func application(
+    func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
@@ -34,15 +33,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return true
     }
 
-     private func configureFirebase() {
-      
-        FirebaseApp.configure()
-        Messaging.messaging().delegate = self
+    private func configureFirebase() {
+         if let filePath = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
+           let options = FirebaseOptions(contentsOfFile: filePath) {
+            FirebaseApp.configure(options: options)
+            print("✅ Firebase configured using: \(filePath)")
+        } else {
+            print("❌ GoogleService-Info.plist not found in bundle!")
+        }
 
-     
+        Messaging.messaging().delegate = self
     }
 
-     private func setupNavigationBar() {
+    private func setupNavigationBar() {
         if #available(iOS 15.0, *) {
             let navBarAppearance = UINavigationBarAppearance()
             navBarAppearance.configureWithOpaqueBackground()
@@ -62,7 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         IQKeyboardManager.shared.resignOnTouchOutside = true
     }
 
-     private func setupPushNotifications(application: UIApplication) {
+    private func setupPushNotifications(application: UIApplication) {
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
             print("Push permission granted: \(granted)")
@@ -90,20 +93,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func userNotificationCenter(
-            _ center: UNUserNotificationCenter,
-            willPresent notification: UNNotification,
-            withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
-        ) {
-            completionHandler([.banner, .badge, .sound])
-        }
-
-         func application(
-            _ application: UIApplication,
-            configurationForConnecting connectingSceneSession: UISceneSession,
-            options: UIScene.ConnectionOptions
-        ) -> UISceneConfiguration {
-            return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
-        }
-
-        func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {}
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([.banner, .badge, .sound])
     }
+
+    func application(
+        _ application: UIApplication,
+        configurationForConnecting connectingSceneSession: UISceneSession,
+        options: UIScene.ConnectionOptions
+    ) -> UISceneConfiguration {
+        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    }
+
+    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {}
+}
+
