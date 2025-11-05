@@ -45,7 +45,6 @@ class CalendarTableCell: UITableViewCell {
         imgVw.loadImage(url: calender.image)
         let prompt = madeAttributeString(boldPart: "Prompt:", desc: " \(calender.prompt)")
         let benifit = madeAttributeString(boldPart: "Benifit:", desc: " \(calender.benefit)")
-        let writeup = madeAttributeString(boldPart: "Writeup:", desc: " \(calender.description)")
         lblPrompt.numberOfLines = 0
         lblBenifit.numberOfLines = 0
         lblWriteup.numberOfLines = 0
@@ -56,14 +55,42 @@ class CalendarTableCell: UITableViewCell {
         
         lblPrompt.attributedText = prompt
         lblBenifit.attributedText = benifit
-        lblWriteup.attributedText = writeup
+        lblWriteup.attributedText = madeAttributeWriteupString(boldPart: "Writeup: ", desc: calender.description)
         
         videoUrl = calender.youtubeVideoURL
-        
-
-        
-        
     }
+    
+    func madeAttributeWriteupString(boldPart: String, desc: String) -> NSMutableAttributedString {
+        // 1. Create your normal bold part
+        let boldAttr = NSMutableAttributedString(
+            string: boldPart,
+            attributes: [
+                .font: UIFont.lexend(.bold, size: 16),
+                .foregroundColor: UIColor.label
+            ]
+        )
+
+        // 2. Convert HTML string to NSAttributedString
+        if let htmlData = desc.data(using: .utf8),
+           let htmlAttr = try? NSMutableAttributedString(
+                data: htmlData,
+                options: [
+                    .documentType: NSAttributedString.DocumentType.html,
+                    .characterEncoding: String.Encoding.utf8.rawValue
+                ],
+                documentAttributes: nil
+           ) {
+            
+            let fullRange = NSRange(location: 0, length: htmlAttr.length)
+            htmlAttr.addAttributes([
+                .font: UIFont.lexend(.regular, size: 16),
+                .foregroundColor: UIColor.label
+            ], range: fullRange)
+            boldAttr.append(htmlAttr)
+        }
+        return boldAttr
+    }
+
     
     func madeAttributeString(boldPart: String, desc:String) -> NSMutableAttributedString{
         let normalPart = desc

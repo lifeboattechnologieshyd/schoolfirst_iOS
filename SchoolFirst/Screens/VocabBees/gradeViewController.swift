@@ -81,8 +81,10 @@ class gradeViewController: UIViewController,UICollectionViewDelegate,UICollectio
                 self.navigationController?.pushViewController(nextVC, animated: true)
             }
         }else {
-            
-            
+            let storyboard = UIStoryboard(name: "VocabBees", bundle: nil)
+            if let nextVC = storyboard.instantiateViewController(withIdentifier: "PracticeGameController") as? PracticeGameController {
+                self.navigationController?.pushViewController(nextVC, animated: true)
+            }
         }
     }
     

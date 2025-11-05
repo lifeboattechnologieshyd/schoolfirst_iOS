@@ -11,13 +11,24 @@ class KeyboardCell: UICollectionViewCell {
 
     @IBOutlet weak var bgView: UIView!
     @IBOutlet weak var lblKey: UILabel!
+    @IBOutlet weak var imgVw: UIImageView!
     override func awakeFromNib() {
         super.awakeFromNib()
 
     }
     
     func configure(with title: String) {
-        lblKey.text = title
+        if title == "Delete" {
+            lblKey.text = "⌫"
+            imgVw.contentMode = .scaleAspectFit
+        } else if title == "Space" {
+            lblKey.text = " Space "
+            imgVw.contentMode = .scaleAspectFill
+        }else{
+            lblKey.text = title
+            imgVw.contentMode = .scaleAspectFit
+
+        }
         lblKey.layer.cornerRadius = 8
     }
     

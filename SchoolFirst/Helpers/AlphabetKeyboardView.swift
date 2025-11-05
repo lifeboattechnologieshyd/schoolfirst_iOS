@@ -23,7 +23,7 @@ class AlphabetKeyboardView: UIView {
 
 //    private let letters = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     let allKeys = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ").map { String($0) }
-    let extraKeys = ["Y", "Z", "⌫"]
+    let extraKeys = ["Y", "Z", "Space", "Delete"]
     
     var rows: [[String]] {
         var result: [[String]] = []
@@ -96,7 +96,6 @@ extension AlphabetKeyboardView: UICollectionViewDataSource, UICollectionViewDele
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        return letters.count + 2 // A-Z + delete + submit
         return rows[section].count
     }
 
@@ -105,22 +104,6 @@ extension AlphabetKeyboardView: UICollectionViewDataSource, UICollectionViewDele
             return UICollectionViewCell()
         }
         cell.configure(with: rows[indexPath.section][indexPath.item])
-
-//        if indexPath.item < letters.count {
-//            let letter = String(letters[indexPath.item])
-//            cell.configure(text: letter,
-//                           bgColor: UIColor(red: 175/255, green: 239/255, blue: 230/255, alpha: 1),
-//                           textColor: .black)
-//        } else if indexPath.item == letters.count {
-//            cell.configure(text: "⌫",
-//                           bgColor: UIColor(red: 50/255, green: 90/255, blue: 180/255, alpha: 1),
-//                           textColor: .white)
-//        } else {
-//            cell.configure(text: "⏎",
-//                           bgColor: UIColor(red: 50/255, green: 90/255, blue: 180/255, alpha: 1),
-//                           textColor: .white)
-//        }
-
         return cell
     }
 
@@ -130,48 +113,65 @@ extension AlphabetKeyboardView: UICollectionViewDataSource, UICollectionViewDele
         cell.animatePress()
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
         let key = rows[indexPath.section][indexPath.item]
-        if key == "⌫" {
+        if key == "Delete" {
             delegate?.didTapDelete()
-        } else {
+        } else if key == "Space" {
+            delegate?.didTapLetter(" ")
+        }
+        else {
             delegate?.didTapLetter(String(key))
         }
     }
 
-
-//    func collectionView(_ collectionView: UICollectionView,
-//                        layout collectionViewLayout: UICollectionViewLayout,
-//                        sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        let columns: CGFloat = 6
-//        let layout = collectionViewLayout as! UICollectionViewFlowLayout
-//        let totalSpacing = layout.sectionInset.left + layout.sectionInset.right + (columns - 1) * layout.minimumInteritemSpacing
-//        let width = floor((collectionView.bounds.width - totalSpacing) / columns)
-//        return CGSize(width: width, height: 55)
-//    }
     func collectionView(_ collectionView: UICollectionView,
                           layout collectionViewLayout: UICollectionViewLayout,
                           sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let spacing: CGFloat = 6
+            let keysPerRow = 6
+            let totalSpacing = spacing * CGFloat(keysPerRow - 1)
+            let normalKeyWidth = (collectionView.bounds.width - totalSpacing) / CGFloat(keysPerRow)
+            let height: CGFloat = 44
+            let key = rows[indexPath.section][indexPath.item]
 
-          let totalWidth = collectionView.bounds.width
-          let spacing: CGFloat = 6
-          let keysInRow = CGFloat(6) // we want equal size keys always
-          let availableWidth = totalWidth - (spacing * (keysInRow - 1))
-          let width = floor(availableWidth / keysInRow)
-          return CGSize(width: width, height: 44)
+            // Make space key wider
+            if key == "Space" {
+                return CGSize(width: normalKeyWidth * 3 + spacing * 2, height: height)
+            }
+
+            return CGSize(width: normalKeyWidth, height: height)
+
+//          let totalWidth = collectionView.bounds.width
+//          let spacing: CGFloat = 6
+//          let keysInRow = CGFloat(6) // we want equal size keys always
+//          let availableWidth = totalWidth - (spacing * (keysInRow - 1))
+//          let width = floor(availableWidth / keysInRow)
+//          return CGSize(width: width, height: 44)
       }
 
       func collectionView(_ collectionView: UICollectionView,
                           layout collectionViewLayout: UICollectionViewLayout,
                           insetForSectionAt section: Int) -> UIEdgeInsets {
 
-          let totalWidth = collectionView.bounds.width
-          let spacing: CGFloat = 6
-          let keysInRow = CGFloat(rows[section].count)
-          let maxKeys = CGFloat(6)
-          let keyWidth = floor((totalWidth - (spacing * (maxKeys - 1))) / maxKeys)
-          let rowWidth = keyWidth * keysInRow + spacing * (keysInRow - 1)
-          let inset = max((totalWidth - rowWidth) / 2, 0)
+//          let totalWidth = collectionView.bounds.width
+//          let spacing: CGFloat = 6
+//          let keysInRow = CGFloat(rows[section].count)
+//          let maxKeys = CGFloat(6)
+//          let keyWidth = floor((totalWidth - (spacing * (maxKeys - 1))) / maxKeys)
+//          let rowWidth = keyWidth * keysInRow + spacing * (keysInRow - 1)
+//          let inset = max((totalWidth - rowWidth) / 2, 0)
+//
+//          return UIEdgeInsets(top: 6, left: inset, bottom: 6, right: inset)
+          let lastRowCount = 4
+              let spacing: CGFloat = 6
+              let keysPerRow = 6
+              let totalSpacing = spacing * CGFloat(lastRowCount - 1)
 
-          return UIEdgeInsets(top: 6, left: inset, bottom: 6, right: inset)
+              let normalKeyWidth = (collectionView.bounds.width - (CGFloat(keysPerRow - 1) * spacing)) / CGFloat(keysPerRow)
+              let spaceWidth = normalKeyWidth * 3 + spacing * 2
+              let totalWidth = normalKeyWidth * 3 + spaceWidth + totalSpacing  // X + Y + space + delete
+              let inset = max((collectionView.bounds.width - totalWidth) / 2, 0)
+
+              return UIEdgeInsets(top: 6, left: inset, bottom: 6, right: inset)
       }
 
       func collectionView(_ collectionView: UICollectionView,

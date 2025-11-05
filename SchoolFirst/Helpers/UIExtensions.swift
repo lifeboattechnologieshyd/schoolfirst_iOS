@@ -405,6 +405,23 @@ extension UIColor {
 }
 
 extension UILabel {
+    func setHTMLFromString(_ htmlText: String) {
+        guard let data = htmlText.data(using: .utf8) else { return }
+        do {
+            let attributedString = try NSAttributedString(
+                data: data,
+                options: [
+                    .documentType: NSAttributedString.DocumentType.html,
+                    .characterEncoding: String.Encoding.utf8.rawValue
+                ],
+                documentAttributes: nil
+            )
+            self.attributedText = attributedString
+        } catch {
+            print("Error setting HTML: \(error)")
+        }
+    }
+    
     func addPadding(top: CGFloat, left: CGFloat, bottom: CGFloat, right: CGFloat) {
         let paddingView = UIView()
         paddingView.translatesAutoresizingMaskIntoConstraints = false
