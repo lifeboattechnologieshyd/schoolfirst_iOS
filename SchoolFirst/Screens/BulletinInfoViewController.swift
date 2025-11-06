@@ -17,6 +17,8 @@ class BulletinInfoViewController: UIViewController {
         tblVw.register(UINib(nibName: "BulletinInfoCell", bundle: nil), forCellReuseIdentifier: "BulletinInfoCell")
         tblVw.delegate = self
         tblVw.dataSource = self
+        
+        
     }
     @IBAction func onClickBack(_ sender: UIButton) {
         self.navigationController?.popViewController(animated: true)

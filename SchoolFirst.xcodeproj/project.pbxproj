@@ -201,7 +201,8 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"$(PROJECT_DIR)/SchoolFirst/FirebaseConfigs/GoogleService-Info-DEV.plist\n$(PROJECT_DIR)/SchoolFirst/FirebaseConfigs/GoogleService-Info-PROD.plist\n$(DWARF_DSYM_FOLDER_PATH)/$(DWARF_DSYM_FILE_NAME)\n",
+				"$(PROJECT_DIR)/SchoolFirst/Configurations/GoogleService-Info-DEV.plist",
+				"$(PROJECT_DIR)/SchoolFirst/Configurations/GoogleService-Info-PROD.plist",
 			);
 			name = "Upload Crashlytics dSYMs";
 			outputFileListPaths = (
@@ -210,7 +211,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nset -e\nsleep 3\n\necho \"------------------------------------\"\necho \"🔥 Crashlytics dSYM Upload Script (SPM Safe Version)\"\necho \"Active configuration: ${CONFIGURATION}\"\necho \"------------------------------------\"\n\nCONFIGS_DIR=\"${PROJECT_DIR}/SchoolFirst/FirebaseConfigs\"\nPLIST_PATH=\"\"\nDSYM_PATH=\"\"\n\n# Make sure build dir exists\nif [ ! -d \"${BUILD_DIR}\" ]; then\n  echo \"⚠️ BUILD_DIR missing — creating...\"\n  mkdir -p \"${BUILD_DIR}\"\nfi\n\n# Select Firebase plist file\ncase \"${CONFIGURATION}\" in\n  \"Debug Dev\"|\"Release Dev\")\n    PLIST_PATH=\"${CONFIGS_DIR}/GoogleService-Info-DEV.plist\"\n    ;;\n  \"Debug\"|\"Release\")\n    PLIST_PATH=\"${CONFIGS_DIR}/GoogleService-Info-PROD.plist\"\n    ;;\n  *)\n    echo \"⚠️ Unknown configuration: ${CONFIGURATION}\"\n    ls \"${CONFIGS_DIR}\"\n    exit 0\n    ;;\nesac\n\n# Check plist exists\nif [ ! -f \"${PLIST_PATH}\" ]; then\n  echo \"❌ Firebase plist not found at: ${PLIST_PATH}\"\n  exit 0\nfi\n\n# Wait for dSYM path\nif [ ! -d \"${DWARF_DSYM_FOLDER_PATH}\" ]; then\n  echo \"⚠️ Waiting for dSYM folder...\"\n  sleep 3\nfi\n\nDSYM_PATH=\"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}\"\n\nif [ ! -d \"${DSYM_PATH}\" ]; then\n  echo \"⚠️ Waiting for dSYM file...\"\n  sleep 3\nfi\n\n# Crashlytics upload path (SPM)\nCRASHLYTICS_RUN_PATH=\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\nif [ ! -f \"${CRASHLYTICS_RUN_PATH}\" ]; then\n  CRASHLYTICS_RUN_PATH=\"${PROJECT_DIR}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\nfi\n\nif [ ! -f \"${CRASHLYTICS_RUN_PATH}\" ]; then\n  echo \"❌ Crashlytics run script not found!\"\n  exit 0\nfi\n\necho \"✅ Using plist: ${PLIST_PATH}\"\necho \"✅ Using dSYM path: ${DSYM_PATH}\"\necho \"✅ Using Crashlytics script: ${CRASHLYTICS_RUN_PATH}\"\n\n\"${CRASHLYTICS_RUN_PATH}\" \\\n  --google-service-info \"${PLIST_PATH}\" \\\n  --path \"${DWARF_DSYM_FOLDER_PATH}\"\n\necho \"------------------------------------\"\necho \"✅ Crashlytics dSYM upload complete\"\necho \"------------------------------------\"\n\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nset -e\n\necho \"------------------------------------\"\necho \"🔥 Crashlytics dSYM Upload Script (SPM Safe Version)\"\necho \"Active configuration: ${CONFIGURATION}\"\necho \"------------------------------------\"\n\nCONFIGS_DIR=\"${PROJECT_DIR}/SchoolFirst/Configurations\"\nPLIST_PATH=\"\"\nDSYM_PATH=\"\"\n\n# Make sure build dir exists\nif [ ! -d \"${BUILD_DIR}\" ]; then\n  echo \"⚠️ BUILD_DIR missing — creating...\"\n  mkdir -p \"${BUILD_DIR}\"\nfi\n\n# Select Firebase plist file\ncase \"${CONFIGURATION}\" in\n  \"Debug Dev\"|\"Release Dev\")\n    PLIST_PATH=\"${CONFIGS_DIR}/GoogleService-Info-DEV.plist\"\n    ;;\n  \"Debug\"|\"Release\")\n    PLIST_PATH=\"${CONFIGS_DIR}/GoogleService-Info-PROD.plist\"\n    ;;\n  *)\n    echo \"⚠️ Unknown configuration: ${CONFIGURATION}\"\n    ls \"${CONFIGS_DIR}\"\n    exit 0\n    ;;\nesac\n\n# Check plist exists\nif [ ! -f \"${PLIST_PATH}\" ]; then\n  echo \"❌ Firebase plist not found at: ${PLIST_PATH}\"\n  exit 0\nfi\n\n# Wait for dSYM path\nif [ ! -d \"${DWARF_DSYM_FOLDER_PATH}\" ]; then\n  echo \"⚠️ Waiting for dSYM folder...\"\n  \nfi\n\nDSYM_PATH=\"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}\"\n\nif [ ! -d \"${DSYM_PATH}\" ]; then\n  echo \"⚠️ Waiting for dSYM file...\"\n  \nfi\n\n# Crashlytics upload path (SPM)\nCRASHLYTICS_RUN_PATH=\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\nif [ ! -f \"${CRASHLYTICS_RUN_PATH}\" ]; then\n  CRASHLYTICS_RUN_PATH=\"${PROJECT_DIR}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\nfi\n\nif [ ! -f \"${CRASHLYTICS_RUN_PATH}\" ]; then\n  echo \"❌ Crashlytics run script not found!\"\n  exit 0\nfi\n\necho \"✅ Using plist: ${PLIST_PATH}\"\necho \"✅ Using dSYM path: ${DSYM_PATH}\"\necho \"✅ Using Crashlytics script: ${CRASHLYTICS_RUN_PATH}\"\n\nsleep 3\n\n\n# ✅ Upload dSYMs\n\n\"${CRASHLYTICS_RUN_PATH}\" \\\n  --google-service-info \"${PLIST_PATH}\" \\\n  --path \"${DWARF_DSYM_FOLDER_PATH}\"\n  \necho \"------------------------------------\"\necho \"✅ Crashlytics dSYM upload complete\"\necho \"------------------------------------\"\n\n# Cleanup\n\n\n\n\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -234,8 +235,9 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = SchoolFirst/SchoolFirst.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7CN8AS9ANR;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SchoolFirst/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SchoolFirst;
@@ -253,7 +255,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.14;
+				MARKETING_VERSION = 1.15;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(app_bundle_identifier)";
 				PRODUCT_NAME = "$(app_name)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "\nPROD\nPROD\nPROD\nPROD";
@@ -272,8 +274,9 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = SchoolFirst/SchoolFirst.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7CN8AS9ANR;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SchoolFirst/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SchoolFirst;
@@ -291,7 +294,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.14;
+				MARKETING_VERSION = 1.15;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(app_bundle_identifier)";
 				PRODUCT_NAME = "$(app_name)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = PROD;
@@ -500,8 +503,9 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = SchoolFirst/SchoolFirst.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7CN8AS9ANR;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SchoolFirst/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SchoolFirst;
@@ -519,7 +523,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.14;
+				MARKETING_VERSION = 1.15;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(app_bundle_identifier)";
 				PRODUCT_NAME = "$(app_name)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -597,8 +601,9 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = SchoolFirst/SchoolFirst.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7CN8AS9ANR;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SchoolFirst/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SchoolFirst;
@@ -616,7 +621,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.14;
+				MARKETING_VERSION = 1.15;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(app_bundle_identifier)";
 				PRODUCT_NAME = "$(app_name)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEV;
