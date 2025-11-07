@@ -7,11 +7,12 @@
 
 import UIKit
 
- 
 class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
-    var page_size = 1
-    var page = 20
+     var page = 1
+    var pageSize = 20
+    var isLoading = false
+    var canLoadMore = true
     
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var feelsLbl: UILabel!
@@ -21,12 +22,15 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        topVw.addBottomShadow()
         
+        topVw.addBottomShadow()
         colVw.delegate = self
         colVw.dataSource = self
-        colVw.register(UINib(nibName: "FeelsCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FeelsCollectionViewCell")
-        self.getEdutainment()
+        
+        colVw.register(UINib(nibName: "FeelsCollectionViewCell", bundle: nil),
+                       forCellWithReuseIdentifier: "FeelsCollectionViewCell")
+        
+        getEdutainment()
     }
     
     @IBAction func onClickBack(_ sender: UIButton) {
@@ -37,27 +41,37 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
         return items.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = colVw.dequeueReusableCell(withReuseIdentifier: "FeelsCollectionViewCell", for: indexPath) as! FeelsCollectionViewCell
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        let cell = colVw.dequeueReusableCell(withReuseIdentifier: "FeelsCollectionViewCell",
+                                             for: indexPath) as! FeelsCollectionViewCell
+        
         cell.imgVw.layer.cornerRadius = 8
         cell.btnPlay.tag = indexPath.row
+        
         if let url = self.items[indexPath.row].thumbnailImage {
             cell.imgVw.loadImage(url: url)
-        }else{
+        } else {
             if let urlstring = "\(self.items[indexPath.row].youtubeVideo!)".extractYoutubeId() {
                 cell.imgVw.loadImage(url: urlstring.youtubeThumbnailURL())
             }
         }
+        
         cell.playClicked = { index in
             self.navigateToPlayer(index: index)
         }
+        
         cell.lblName.text = self.items[indexPath.row].title
+        
         return cell
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = (collectionView.frame.size.width-8)/2
+        
+        let width = (collectionView.frame.size.width - 8) / 2
         return CGSize(width: width, height: 284)
     }
     
@@ -72,27 +86,60 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
         navigateToPlayer(index: indexPath.row)
     }
     
+     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let frameHeight = scrollView.frame.height
+        
+        if offsetY > contentHeight - frameHeight - 200 {
+            if !isLoading && canLoadMore {
+                page += 1
+                getEdutainment()
+            }
+        }
+    }
     
     func getEdutainment() {
-        var url = API.EDUTAIN_FEEL+"?page_size=\(page)&page=\(page_size)"
-        NetworkManager.shared.request(urlString: url, method: .GET) { [weak self] (result: Result<APIResponse<[FeelItem]>, NetworkError>) in
+        
+        guard !isLoading else { return }
+        isLoading = true
+        
+        let url = API.EDUTAIN_FEEL + "?page_size=\(pageSize)&page=\(page)"
+        
+        NetworkManager.shared.request(urlString: url, method: .GET)
+        { [weak self] (result: Result<APIResponse<[FeelItem]>, NetworkError>) in
+            
             guard let self = self else { return }
+            self.isLoading = false
+            
             switch result {
             case .success(let info):
+                
                 if info.success {
                     if let data = info.data {
-                        self.items = data
+                        
+                         if data.count < self.pageSize {
+                            self.canLoadMore = false
+                        }
+                        
+                        if self.page == 1 {
+                            self.items = data
+                        } else {
+                            self.items.append(contentsOf: data)
+                        }
                     }
+                    
                     DispatchQueue.main.async {
                         self.colVw.reloadData()
                     }
                 } else {
                     self.showAlert(msg: info.description)
                 }
+                
             case .failure(let error):
                 self.showAlert(msg: error.localizedDescription)
             }
         }
     }
 }
-    
+

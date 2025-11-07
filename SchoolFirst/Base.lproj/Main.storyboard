@@ -2259,6 +2259,74 @@
             </objects>
             <point key="canvasLocation" x="7080" y="-1264"/>
         </scene>
+        <!--Add KidVC-->
+        <scene sceneID="Wki-eB-Th8">
+            <objects>
+                <viewController storyboardIdentifier="AddKidVC" id="O7V-uX-m7r" customClass="AddKidVC" customModule="SF_Dev" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Iw8-v6-iQw">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GBN-Dp-1Rr">
+                                <rect key="frame" x="0.0" y="83" width="393" height="50"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Sc-Tn-iO5">
+                                        <rect key="frame" x="8" y="17" width="16" height="16"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="16" id="sGY-dC-UZk"/>
+                                            <constraint firstAttribute="width" constant="16" id="vDU-dU-hb0"/>
+                                        </constraints>
+                                        <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="arrow.backward" catalog="system" title=" "/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                                <color key="value" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add Kid" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iJg-1F-aXB">
+                                        <rect key="frame" x="36" y="15" width="97" height="20"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="20" id="GPx-5P-QCd"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="5zd-UO-osa"/>
+                                    <constraint firstItem="2Sc-Tn-iO5" firstAttribute="top" secondItem="GBN-Dp-1Rr" secondAttribute="top" constant="17" id="6M6-Qp-RX0"/>
+                                    <constraint firstItem="2Sc-Tn-iO5" firstAttribute="leading" secondItem="GBN-Dp-1Rr" secondAttribute="leading" constant="8" id="DAH-Wm-RkZ"/>
+                                    <constraint firstItem="iJg-1F-aXB" firstAttribute="leading" secondItem="2Sc-Tn-iO5" secondAttribute="trailing" constant="12" id="bsk-Ek-Dl2"/>
+                                    <constraint firstItem="iJg-1F-aXB" firstAttribute="centerY" secondItem="2Sc-Tn-iO5" secondAttribute="centerY" id="gCj-jm-fOh"/>
+                                    <constraint firstAttribute="trailing" secondItem="iJg-1F-aXB" secondAttribute="trailing" constant="260" id="qrt-Uk-54d"/>
+                                </constraints>
+                            </view>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="CUA-5C-A90">
+                                <rect key="frame" x="0.0" y="133" width="393" height="685"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="fCx-IX-97d"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="fCx-IX-97d" firstAttribute="bottom" secondItem="CUA-5C-A90" secondAttribute="bottom" id="3t6-fD-aWL"/>
+                            <constraint firstItem="GBN-Dp-1Rr" firstAttribute="top" secondItem="fCx-IX-97d" secondAttribute="top" constant="24" id="J4c-9n-wFH"/>
+                            <constraint firstItem="CUA-5C-A90" firstAttribute="top" secondItem="GBN-Dp-1Rr" secondAttribute="bottom" id="OXF-Mf-i2S"/>
+                            <constraint firstItem="CUA-5C-A90" firstAttribute="leading" secondItem="fCx-IX-97d" secondAttribute="leading" id="R38-Vh-EtT"/>
+                            <constraint firstItem="GBN-Dp-1Rr" firstAttribute="trailing" secondItem="fCx-IX-97d" secondAttribute="trailing" id="U2a-wX-4gj"/>
+                            <constraint firstItem="GBN-Dp-1Rr" firstAttribute="leading" secondItem="fCx-IX-97d" secondAttribute="leading" id="c8c-Cc-T2a"/>
+                            <constraint firstItem="fCx-IX-97d" firstAttribute="trailing" secondItem="CUA-5C-A90" secondAttribute="trailing" id="fCZ-Cg-Hg8"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="OPf-Gj-U04" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="7790" y="-1264"/>
+        </scene>
     </scenes>
     <resources>
         <image name="arrow.backward" catalog="system" width="128" height="95"/>
