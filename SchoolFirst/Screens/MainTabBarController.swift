@@ -8,70 +8,51 @@
 import UIKit
 import Kingfisher
 
-class MainTabBarController: UITabBarController {
+class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
 
     let centerButton = UIButton()
+    let homeIndex = 2
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // ✅ Apply custom U-dip tab bar
+        self.delegate = self
+
+        // ✅ Your custom dip tab bar
         setValue(UTabBarWithDip(), forKey: "tabBar")
 
         updateTabBarIcons()
         setupCenterButton()
 
-        // ✅ ✅ MySchool tab title color (#0B569A)
-        if let items = tabBar.items, items.count > 2 {
-
-            let mySchoolItem = items[2]
-
-            // Normal (gray)
-            mySchoolItem.setTitleTextAttributes([
-                .foregroundColor: UIColor.gray
-            ], for: .normal)
-
-            // Selected (#0B569A)
-            mySchoolItem.setTitleTextAttributes([
-                .foregroundColor: UIColor(
-                    red: 0.043, green: 0.337, blue: 0.604, alpha: 1
-                )
-            ], for: .selected)
-        }
+        updateCircleVisibility()
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        positionCenterButton()
+
+        // ✅ Keep circle aligned to tab bar always
+        centerButton.center = CGPoint(
+            x: tabBar.center.x,
+            y: tabBar.frame.origin.y - 30
+        )
+
+        updateCircleVisibility()
     }
 
-    // =========================================================
-    // ✅ YOUR ORIGINAL FUNCTION
-    // =========================================================
-    func updateTabBarIcons()  {
-        guard let url = UserManager.shared.user?.schools.first?.smallLogo else { return }
+    // ============================================================
+    // ✅ Tab bar middle icon should be invisible (fix duplicate issue)
+    // ============================================================
+    func updateTabBarIcons() {
+        guard let items = tabBar.items else { return }
 
-        Task {
-            if let tabBarItems = tabBar.items {
-                let url = URL(string: url)!
-                let processor = ResizingImageProcessor(referenceSize: CGSize(width: 28, height: 28), mode: .aspectFit)
-
-                do {
-                    let result = try await KingfisherManager.shared.retrieveImage(with: url, options: [.processor(processor)])
-                    let image = result.image.withRenderingMode(.alwaysOriginal)
-
-                    tabBarItems[2].image = image
-                    tabBarItems[2].selectedImage = image
-                } catch {
-                    print("❌ Failed to load image: \(error)")
-                }
-            }
-        }
+        let clear = UIImage()
+        items[homeIndex].image = clear
+        items[homeIndex].selectedImage = clear
     }
 
-    // =========================================================
-    // ✅ FLOATING CIRCLE BUTTON
-    // =========================================================
+    // ============================================================
+    // ✅ Floating Circle Button
+    // ============================================================
     func setupCenterButton() {
 
         let size: CGFloat = 55
@@ -94,49 +75,57 @@ class MainTabBarController: UITabBarController {
         centerButton.layer.shadowRadius = 12
         centerButton.layer.shadowOffset = CGSize(width: 0, height: 4)
 
-        centerButton.addTarget(self, action: #selector(selectCenterTab), for: .touchUpInside)
+        centerButton.addTarget(self, action: #selector(selectHomeTab), for: .touchUpInside)
 
+        // ✅ Must be added to MAIN VIEW so tabbar height never changes
         view.addSubview(centerButton)
     }
 
-    func positionCenterButton() {
-        centerButton.center = CGPoint(
-            x: tabBar.center.x,
-            y: tabBar.frame.origin.y - 30   // ✅ Perfect inside dip
-        )
+    @objc func selectHomeTab() {
+        selectedIndex = homeIndex
+        updateCircleVisibility()
     }
 
-    @objc func selectCenterTab() {
-        selectedIndex = 2
+    // ============================================================
+    // ✅ FINAL VISIBILITY LOGIC (OPTION A)
+    // ✅ Circle visible ALWAYS when tabbar visible
+    // ✅ Circle hidden ONLY when tabbar hidden
+    // ============================================================
+    func updateCircleVisibility() {
+
+        let tabBarVisible = (!tabBar.isHidden && tabBar.alpha > 0.01)
+
+        // ✅ Circle behaves exactly like tab bar (constant)
+        centerButton.isHidden = !tabBarVisible
+    }
+
+    // Tab switching
+    func tabBarController(_ tabBarController: UITabBarController,
+                          didSelect viewController: UIViewController) {
+
+        updateCircleVisibility()
     }
 }
 
 
-
 // =======================================================================
-// ✅ CUSTOM TAB BAR WITH U-DIP (FULLY FIXED POSITION)
+// ✅ CUSTOM U-DIP TAB BAR (UNCHANGED)
 // =======================================================================
 
 class UTabBarWithDip: UITabBar {
 
     private var shapeLayer: CAShapeLayer?
 
-    // ✅ FIXED → no up/down bouncing of the tab bar
     override func layoutSubviews() {
         super.layoutSubviews()
 
+        // This keeps the tab bar at correct location
         guard let superview = self.superview else { return }
 
         var f = self.frame
-
         let safeBottom = self.window?.safeAreaInsets.bottom ?? superview.safeAreaInsets.bottom
-
-        let desiredY = superview.bounds.height - f.height - safeBottom
-
-        if abs(f.origin.y - desiredY) > 0.5 {
-            f.origin.y = desiredY
-            self.frame = f
-        }
+        f.origin.y = superview.bounds.height - f.height - safeBottom
+        self.frame = f
     }
 
     override func draw(_ rect: CGRect) {
@@ -159,14 +148,14 @@ class UTabBarWithDip: UITabBar {
         } else {
             layer.insertSublayer(shape, at: 0)
         }
-        
+
         shapeLayer = shape
     }
 
     func createDipPath() -> CGPath {
 
         let width = bounds.width
-        let height: CGFloat = 125
+        let height: CGFloat = 60
         let center = width / 2
 
         let dipWidth: CGFloat = 110
@@ -179,22 +168,14 @@ class UTabBarWithDip: UITabBar {
         path.addQuadCurve(to: CGPoint(x: 0, y: cornerRadius),
                           controlPoint: CGPoint(x: 0, y: 0))
 
-        path.addLine(to: CGPoint(x: 0, y: height - cornerRadius))
-
-        path.addQuadCurve(to: CGPoint(x: cornerRadius, y: height),
-                          controlPoint: CGPoint(x: 0, y: height))
-
-        path.addLine(to: CGPoint(x: width - cornerRadius, y: height))
-
-        path.addQuadCurve(to: CGPoint(x: width, y: height - cornerRadius),
-                          controlPoint: CGPoint(x: width, y: height))
-
+        path.addLine(to: CGPoint(x: 0, y: height))
+        path.addLine(to: CGPoint(x: width, y: height))
         path.addLine(to: CGPoint(x: width, y: cornerRadius))
 
         path.addQuadCurve(to: CGPoint(x: width - cornerRadius, y: 0),
                           controlPoint: CGPoint(x: width, y: 0))
 
-        // ✅ U-shaped dip
+        // ✅ dip
         let startX = center + dipWidth / 2
         let endX   = center - dipWidth / 2
 
@@ -218,7 +199,7 @@ class UTabBarWithDip: UITabBar {
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         var s = super.sizeThatFits(size)
-        s.height = 60
+        s.height = 60   // ✅ your fixed height
         return s
     }
 }
