@@ -808,3 +808,75 @@ struct WordAnswer: Codable {
         case points
     }
 }
+
+
+// MARK: - Fee
+
+
+struct StudentFeeDetails: Codable {
+    let studentUUID: String
+    let studentID: String
+    let studentFeeID: String
+    let studentName: String
+    let studentImage: String
+    let gradeID: String
+    let gradeName: String
+    let sectionName: String
+    let academicYear: String
+    let totalFee: Double
+    let feePaid: Double
+    let pendingFee: Double
+    let totalFine: Double
+    let finePayable: Double
+    let finePaid: Double
+    let initialDiscount: Double
+    let specialDiscount: Double
+    let feeInstallments: [FeeInstallment]
+    
+    enum CodingKeys: String, CodingKey {
+        case studentUUID = "student_uuid"
+        case studentID = "student_id"
+        case studentFeeID = "student_fee_id"
+        case studentName = "student_name"
+        case studentImage = "student_image"
+        case gradeID = "grade_id"
+        case gradeName = "grade_name"
+        case sectionName = "section_name"
+        case academicYear = "academic_year"
+        case totalFee = "total_fee"
+        case feePaid = "fee_paid"
+        case pendingFee = "pending_fee"
+        case totalFine = "total_fine"
+        case finePayable = "fine_payable"
+        case finePaid = "fine_paid"
+        case initialDiscount = "initial_discount"
+        case specialDiscount = "special_discount"
+        case feeInstallments = "fee_installments"
+    }
+}
+
+struct FeeInstallment: Codable {
+    let installmentNo: Int
+    let amount: Double
+    let payableAmount: Double
+    let feePaid: Double
+    let initialDiscount: Double
+    let specialDiscount: Double
+    let fineAmount: Double
+    let fineDays: Int
+    let finePerDay: Double
+    let dueDate: TimeInterval
+    
+    enum CodingKeys: String, CodingKey {
+        case installmentNo = "installment_no"
+        case amount
+        case payableAmount = "payable_amount"
+        case feePaid = "fee_paid"
+        case initialDiscount = "initial_discount"
+        case specialDiscount = "special_discount"
+        case fineAmount = "fine_amount"
+        case fineDays = "fine_days"
+        case finePerDay = "fine_per_day"
+        case dueDate = "due_date"
+    }
+}

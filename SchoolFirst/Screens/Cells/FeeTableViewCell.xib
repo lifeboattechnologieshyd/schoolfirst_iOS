@@ -218,6 +218,9 @@
                                 </fragment>
                             </attributedString>
                         </buttonConfiguration>
+                        <connections>
+                            <action selector="onClickPartPayment:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="xPl-Gw-3OD"/>
+                        </connections>
                     </button>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hvl-A6-zaT">
                         <rect key="frame" x="207" y="303" width="175" height="48"/>
@@ -234,6 +237,9 @@
                                 </fragment>
                             </attributedString>
                         </buttonConfiguration>
+                        <connections>
+                            <action selector="onClickPayFull:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="Ayv-Xl-Osn"/>
+                        </connections>
                     </button>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vLn-ql-NCx">
                         <rect key="frame" x="16" y="371" width="366" height="18"/>
@@ -278,6 +284,12 @@
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
                 <outlet property="bgView" destination="dk6-6V-b83" id="cIq-BR-3Gb"/>
+                <outlet property="imgVw" destination="lAW-rn-lub" id="Wt1-ZT-3yu"/>
+                <outlet property="lblDueDate" destination="Lhv-aI-3aS" id="tfi-sP-b8e"/>
+                <outlet property="lblGrade" destination="xnQ-hP-Qeq" id="H6j-mA-Ikg"/>
+                <outlet property="lblInstallment" destination="3kb-Rt-vWH" id="m0G-iV-Po5"/>
+                <outlet property="lblName" destination="JnX-4d-yjg" id="o6c-Y7-KZW"/>
+                <outlet property="lblTotalFeeDue" destination="sKZ-g7-mic" id="yW3-oo-7Cv"/>
             </connections>
             <point key="canvasLocation" x="-42.748091603053432" y="146.83098591549296"/>
         </tableViewCell>

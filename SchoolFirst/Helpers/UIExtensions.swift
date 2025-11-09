@@ -10,13 +10,15 @@ import UIKit
 
 extension UIViewController {
     func showAlert(msg: String){
-        let alert = UIAlertController(title: "Alert", message: msg, preferredStyle: .alert)
-        let action = UIAlertAction(title: "Okay", style: .default) { action in
-        }
-        alert.addAction(action)
         DispatchQueue.main.async {
+            
+            let alert = UIAlertController(title: "Alert", message: msg, preferredStyle: .alert)
+            let action = UIAlertAction(title: "Okay", style: .default) { action in
+            }
+            alert.addAction(action)
             self.present(alert, animated: true)
         }
+        
     }
     func shareApp(from viewController: UIViewController) {
         let appLink = "https://apps.apple.com/us/app/schoolfirst/id6744517880"
