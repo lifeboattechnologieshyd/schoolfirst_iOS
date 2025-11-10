@@ -9,6 +9,7 @@ import UIKit
 
 class AssessmentsGradeSelectionVC: UIViewController {
     
+    @IBOutlet weak var completedAssessments: UIButton!
     @IBOutlet weak var colVw: UICollectionView!
     var grades = [GradeModel]()
     override func viewDidLoad() {
@@ -74,5 +75,11 @@ extension AssessmentsGradeSelectionVC : UICollectionViewDelegate, UICollectionVi
         vc?.grade_id = self.grades[indexPath.row].id
         self.navigationController?.pushViewController(vc!, animated: true)
     }
+    
+    @IBAction func onClickCompleted(_ sender: UIButton) {
+        let vc = storyboard?.instantiateViewController(identifier: "PastAssessmentsVC") as! PastAssessmentsVC
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+
     
 }

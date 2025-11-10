@@ -57,7 +57,7 @@ extension AssessmentsViewController: UITableViewDelegate, UITableViewDataSource 
             return
         }
         
-         let vc = storyboard?.instantiateViewController(identifier: "AssessmentsGradeSelectionVC") as! AssessmentsGradeSelectionVC
+         let vc = storyboard?.instantiateViewController(identifier: "SelectCurriculumVC") as! SelectCurriculumVC
         UserManager.shared.assessmentSelectedStudent = UserManager.shared.kids[indexPath.row]
         self.navigationController?.pushViewController(vc, animated: true)
     }
