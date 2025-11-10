@@ -8,17 +8,15 @@
 import UIKit
 
 class AddKidsCell: UITableViewCell {
-
+    
     @IBOutlet weak var addKidButton: UIButton!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
     
+    @IBAction func addKidButton(_ sender: UIButton) {
+        NotificationCenter.default.post(name: NSNotification.Name("AddKidTapped"), object: nil)
+    }
 }
+

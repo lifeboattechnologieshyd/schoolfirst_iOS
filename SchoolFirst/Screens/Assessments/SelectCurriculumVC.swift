@@ -14,7 +14,11 @@ class SelectCurriculumVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
+    }
+    
+    @IBAction func onClickParanpara(_ sender: UIButton) {
+         let vc = storyboard?.instantiateViewController(identifier: "AssessmentsGradeSelectionVC") as! AssessmentsGradeSelectionVC
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 }
+
