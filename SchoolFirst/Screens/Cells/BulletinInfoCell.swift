@@ -20,13 +20,12 @@ class BulletinInfoCell: UITableViewCell {
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
-        // Configure the view for the selected state
+        
     }
     
     func config(bulletin: Bulletin){
-        self.lblTitle.text = bulletin.title
-        self.txtViewDescription.text = bulletin.description
+        self.lblTitle.setHTML(bulletin.title, font: .lexend(.semiBold, size: 16))
+        self.txtViewDescription.setHTML(bulletin.description ?? "", font: .lexend(.regular, size: 14))
         self.imgVw.loadImage(url: bulletin.images?.first ?? "")
     }
-    
 }

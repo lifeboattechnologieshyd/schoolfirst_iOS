@@ -18,7 +18,6 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
 
         self.delegate = self
 
-        // ✅ Your custom dip tab bar
         setValue(UTabBarWithDip(), forKey: "tabBar")
 
         updateTabBarIcons()

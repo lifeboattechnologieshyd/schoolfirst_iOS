@@ -19,19 +19,22 @@ class NewsCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+//        lblTItle.setHTML("", font: .lexend(.semiBold, size: 16))
+//        lblDescription.setHTML("", font: .lexend(.regular, size: 14))
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
-        // Configure the view for the selected state
+        
     }
     
     func config(news: Bulletin) {
-        lblTItle.text = news.title
-        lblDescription.text = news.description
+        lblTItle.setHTML(news.title, font: .lexend(.bold, size: 16))
+        lblDescription.setHTML( news.description ?? "", font: .lexend(.regular, size: 14))
         imgVw.loadImage(url: news.images?.first ?? "")
+        lblTItle.font = .lexend(.semiBold, size: 16)
+        lblDescription.font = .lexend(.regular, size: 14)
         if let cats = news.categories {
             lblheading.text = "\(cats[0]) | \(news.approvedAt!.getTimeAgo())"
         }
