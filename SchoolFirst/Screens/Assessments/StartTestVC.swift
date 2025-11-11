@@ -17,4 +17,9 @@ class StartTestVC: UIViewController {
         
         
     }
+    @IBAction func onClickStartTest(_ sender: UIButton) {
+        let vc = storyboard?.instantiateViewController(identifier: "AllQuestionsVC") as? AllQuestionsVC
+        self.navigationController?.pushViewController(vc!, animated: true)
+    }
+  
 }
