@@ -19,13 +19,10 @@ class MainTabBarController: UITabBarController,
 
         self.delegate = self
 
-<<<<<<< HEAD
-        setValue(UTabBarWithDip(), forKey: "tabBar")
-=======
+
         // ✅ Use custom fixed tab bar
         let fixedTabBar = UTabBarFixedDip()
         setValue(fixedTabBar, forKey: "tabBar")
->>>>>>> bcb857823d88470db1c71c46ba58f3c143707d04
 
         setupCircleButton()
         disableMiddleTabItem()
@@ -241,11 +238,11 @@ class UTabBarFixedDip: UITabBar {
     func dipPath() -> CGPath {
 
         let w = bounds.width
-        let h: CGFloat = 75        // ✅ tab bar height
+        let h: CGFloat = 60        // ✅ tab bar height
         let mid = w / 2
 
         let dipW: CGFloat = 110
-        let dipD: CGFloat = 28     // ✅ dip depth
+        let dipD: CGFloat = 30     // ✅ dip depth
         let r: CGFloat = 26        // ✅ corner radius
 
         let p = UIBezierPath()
@@ -281,7 +278,7 @@ class UTabBarFixedDip: UITabBar {
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         var s = super.sizeThatFits(size)
-        s.height = 75        // ✅ Correct height
+        s.height = 60        // ✅ Correct height
         return s
     }
 }

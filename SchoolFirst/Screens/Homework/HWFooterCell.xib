@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="HWFooterCell" rowHeight="82" id="KGk-i7-Jjw" customClass="HWFooterCell" customModule="SF_Dev" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="417" height="82"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="417" height="82"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="hw_students" translatesAutoresizingMaskIntoConstraints="NO" id="1lh-Mb-F2l">
+                        <rect key="frame" x="16" y="8" width="16" height="12"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="12" id="4Br-M0-3ph"/>
+                            <constraint firstAttribute="width" constant="16" id="pHm-VF-dpH"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4X5-7d-MrR">
+                        <rect key="frame" x="48" y="6.6666666666666679" width="353" height="15"/>
+                        <attributedString key="attributedText">
+                            <fragment content="8 Students have completed this. Have you?">
+                                <attributes>
+                                    <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                </attributes>
+                            </fragment>
+                        </attributedString>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pah-hq-wn1">
+                        <rect key="frame" x="16" y="37.666666666666664" width="108" height="34.999999999999993"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="35" id="HUR-78-tr5"/>
+                        </constraints>
+                        <state key="normal" title="Button"/>
+                        <buttonConfiguration key="configuration" style="plain" title="Completed"/>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="Pah-hq-wn1" firstAttribute="leading" secondItem="1lh-Mb-F2l" secondAttribute="leading" id="Hj9-7T-rbe"/>
+                    <constraint firstItem="1lh-Mb-F2l" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="Wte-Nh-JDS"/>
+                    <constraint firstItem="1lh-Mb-F2l" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="dQl-ts-f6O"/>
+                    <constraint firstItem="4X5-7d-MrR" firstAttribute="leading" secondItem="1lh-Mb-F2l" secondAttribute="trailing" constant="16" id="k4C-1E-LgN"/>
+                    <constraint firstItem="Pah-hq-wn1" firstAttribute="top" secondItem="4X5-7d-MrR" secondAttribute="bottom" constant="16" id="qtd-hO-ty3"/>
+                    <constraint firstAttribute="trailing" secondItem="4X5-7d-MrR" secondAttribute="trailing" constant="16" id="r4i-XY-pG7"/>
+                    <constraint firstItem="4X5-7d-MrR" firstAttribute="centerY" secondItem="1lh-Mb-F2l" secondAttribute="centerY" id="wsa-fg-Gj2"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <point key="canvasLocation" x="64.885496183206101" y="33.098591549295776"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="hw_students" width="16" height="13"/>
+    </resources>
+</document>

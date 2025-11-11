@@ -1238,31 +1238,42 @@
                                     <constraint firstItem="P2I-Dp-iwV" firstAttribute="leading" secondItem="c2k-3h-YjM" secondAttribute="leading" constant="2" id="rfX-aF-HfC"/>
                                 </constraints>
                             </view>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sSn-Xi-xM4">
-                                <rect key="frame" x="118.33333333333333" y="417.66666666666669" width="156.66666666666669" height="17"/>
-                                <attributedString key="attributedText">
-                                    <fragment content="Oops! No data available ">
-                                        <attributes>
-                                            <font key="NSFont" metaFont="system" size="14"/>
-                                            <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
-                                        </attributes>
-                                    </fragment>
-                                </attributedString>
-                                <nil key="highlightedColor"/>
-                            </label>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="uEB-jH-jhZ">
+                                <rect key="frame" x="16" y="125" width="361" height="41"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="svJ-5I-CHS"/>
+                                </constraints>
+                                <segments>
+                                    <segment title="Previous"/>
+                                    <segment title="Today's"/>
+                                    <segment title="Upcoming"/>
+                                </segments>
+                            </segmentedControl>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Sbm-yr-3jZ">
+                                <rect key="frame" x="0.0" y="181" width="393" height="637"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="rPF-dj-z9W"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="Sbm-yr-3jZ" firstAttribute="top" secondItem="uEB-jH-jhZ" secondAttribute="bottom" constant="16" id="6at-p1-RQ3"/>
+                            <constraint firstItem="rPF-dj-z9W" firstAttribute="bottom" secondItem="Sbm-yr-3jZ" secondAttribute="bottom" id="7B9-7t-DVd"/>
+                            <constraint firstItem="uEB-jH-jhZ" firstAttribute="top" secondItem="c2k-3h-YjM" secondAttribute="bottom" constant="16" id="BxJ-R3-tS3"/>
                             <constraint firstItem="c2k-3h-YjM" firstAttribute="top" secondItem="rPF-dj-z9W" secondAttribute="top" id="LYA-lz-XJ7"/>
-                            <constraint firstItem="sSn-Xi-xM4" firstAttribute="centerX" secondItem="O64-gv-9hz" secondAttribute="centerX" id="aUY-ue-RGC"/>
-                            <constraint firstItem="sSn-Xi-xM4" firstAttribute="centerY" secondItem="O64-gv-9hz" secondAttribute="centerY" id="szt-y2-DTO"/>
+                            <constraint firstItem="Sbm-yr-3jZ" firstAttribute="leading" secondItem="rPF-dj-z9W" secondAttribute="leading" id="OjK-9I-sSD"/>
+                            <constraint firstItem="rPF-dj-z9W" firstAttribute="trailing" secondItem="Sbm-yr-3jZ" secondAttribute="trailing" id="icO-cu-69Q"/>
+                            <constraint firstItem="uEB-jH-jhZ" firstAttribute="leading" secondItem="rPF-dj-z9W" secondAttribute="leading" constant="16" id="jWh-Ud-lPl"/>
+                            <constraint firstItem="rPF-dj-z9W" firstAttribute="trailing" secondItem="uEB-jH-jhZ" secondAttribute="trailing" constant="16" id="lEy-fk-ssb"/>
                             <constraint firstAttribute="trailing" secondItem="c2k-3h-YjM" secondAttribute="trailing" id="tQw-56-XaD"/>
                             <constraint firstItem="c2k-3h-YjM" firstAttribute="leading" secondItem="rPF-dj-z9W" secondAttribute="leading" id="u6o-Ih-s9V"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="lblTItle" destination="Sgw-yQ-by9" id="12x-Ma-QEM"/>
+                        <outlet property="segmentControl" destination="uEB-jH-jhZ" id="z14-k0-GUO"/>
+                        <outlet property="tblVw" destination="Sbm-yr-3jZ" id="cii-BZ-Efw"/>
+                        <outlet property="topView" destination="c2k-3h-YjM" id="UlC-04-jgI"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wUO-5T-UYz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

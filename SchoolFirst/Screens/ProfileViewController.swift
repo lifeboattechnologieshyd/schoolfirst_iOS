@@ -109,7 +109,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         switch indexPath.section {
         case 0: return 145
         case 1: return 74
-        default: return 464
+        default: return 434
         }
     }
     

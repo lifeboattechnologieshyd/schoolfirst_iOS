@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="HWSubjectWiseCell" rowHeight="100" id="KGk-i7-Jjw" customClass="HWSubjectWiseCell" customModule="SF_Dev" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="415" height="100"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="415" height="100"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xvE-IS-ugx">
+                        <rect key="frame" x="8" y="4" width="399" height="92"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gqZ-3s-nMG">
+                                <rect key="frame" x="8" y="12" width="51" height="18"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="18" id="zgv-Jt-Dgx"/>
+                                </constraints>
+                                <attributedString key="attributedText">
+                                    <fragment content="English">
+                                        <attributes>
+                                            <font key="NSFont" size="14" name="Lexend-SemiBold"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ffb-OQ-dWz">
+                                <rect key="frame" x="8" y="38" width="383" height="46"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Chapter 4 - Finish all the questions after Chapter 4 in the textbook.">
+                                        <attributes>
+                                            <font key="NSFont" size="14" name="Lexend-Regular"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qhc-Cy-WVP">
+                                <rect key="frame" x="364" y="13" width="19" height="16"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="16" id="LGN-GI-vvC"/>
+                                    <constraint firstAttribute="width" constant="19" id="kP7-Q6-8kx"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="hw_check_mark"/>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="Qhc-Cy-WVP" secondAttribute="trailing" constant="16" id="5NN-IE-ZFK"/>
+                            <constraint firstItem="gqZ-3s-nMG" firstAttribute="top" secondItem="xvE-IS-ugx" secondAttribute="top" constant="12" id="FDv-fY-bMk"/>
+                            <constraint firstAttribute="trailing" secondItem="Ffb-OQ-dWz" secondAttribute="trailing" constant="8" id="Kjj-lK-WOm"/>
+                            <constraint firstAttribute="bottom" secondItem="Ffb-OQ-dWz" secondAttribute="bottom" constant="8" id="VR8-F9-ldz"/>
+                            <constraint firstItem="Ffb-OQ-dWz" firstAttribute="top" secondItem="gqZ-3s-nMG" secondAttribute="bottom" constant="8" id="WDQ-VF-lS7"/>
+                            <constraint firstItem="gqZ-3s-nMG" firstAttribute="leading" secondItem="xvE-IS-ugx" secondAttribute="leading" constant="8" id="ehl-Xk-klI"/>
+                            <constraint firstItem="Ffb-OQ-dWz" firstAttribute="leading" secondItem="xvE-IS-ugx" secondAttribute="leading" constant="8" id="hiS-9a-tzw"/>
+                            <constraint firstItem="Qhc-Cy-WVP" firstAttribute="centerY" secondItem="gqZ-3s-nMG" secondAttribute="centerY" id="zJy-oN-3C9"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="bottom" secondItem="xvE-IS-ugx" secondAttribute="bottom" constant="4" id="8ec-kU-i4B"/>
+                    <constraint firstItem="xvE-IS-ugx" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="4" id="QYc-wV-CPq"/>
+                    <constraint firstAttribute="trailing" secondItem="xvE-IS-ugx" secondAttribute="trailing" constant="8" id="nRh-ta-1EN"/>
+                    <constraint firstItem="xvE-IS-ugx" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="8" id="ywC-wK-2Ci"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="bgView" destination="xvE-IS-ugx" id="zC8-iL-gNs"/>
+            </connections>
+            <point key="canvasLocation" x="-29.770992366412212" y="45.070422535211272"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="hw_check_mark" width="19" height="16"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
