@@ -9,6 +9,7 @@ import UIKit
 
 class StartTestVC: UIViewController {
     
+    @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var topVw: UIView!
     @IBOutlet weak var starttestButton: UIButton!
     
@@ -21,5 +22,10 @@ class StartTestVC: UIViewController {
         let vc = storyboard?.instantiateViewController(identifier: "AllQuestionsVC") as? AllQuestionsVC
         self.navigationController?.pushViewController(vc!, animated: true)
     }
+    
+    @IBAction func onClickBack(_ sender: UIButton) {
+        self.navigationController?.popToRootViewController(animated: true)
+    }
+
   
 }
