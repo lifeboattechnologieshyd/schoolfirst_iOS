@@ -277,7 +277,7 @@ class UTabBarFixedDip: UITabBar {
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         var s = super.sizeThatFits(size)
-        s.height = 75        // ✅ Correct height
+        s.height = 60     // ✅ Correct height
         return s
     }
 }

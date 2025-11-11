@@ -9,6 +9,7 @@ import UIKit
 
 class SelectCurriculumVC: UIViewController {
     
+    @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var paranparaButton: UIButton!
     @IBOutlet weak var oxfordButton: UIButton!
     
@@ -20,5 +21,10 @@ class SelectCurriculumVC: UIViewController {
          let vc = storyboard?.instantiateViewController(identifier: "AssessmentsGradeSelectionVC") as! AssessmentsGradeSelectionVC
         self.navigationController?.pushViewController(vc, animated: true)
     }
+    
+    @IBAction func backButtonTapped(_ sender: UIButton) {
+        navigationController?.popViewController(animated: true)
+    }
 }
+
 
