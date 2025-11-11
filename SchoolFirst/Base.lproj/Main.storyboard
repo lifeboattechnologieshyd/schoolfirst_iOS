@@ -2423,107 +2423,13 @@
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="assessment_bg" translatesAutoresizingMaskIntoConstraints="NO" id="1M4-Q2-ui5">
                                         <rect key="frame" x="0.0" y="-63" width="393" height="857"/>
                                     </imageView>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AFe-cJ-hjW">
-                                        <rect key="frame" x="16" y="196" width="361" height="110"/>
-                                        <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Paranpara Curriculam" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dDX-4l-o1k">
-                                                <rect key="frame" x="13" y="12" width="212" height="20"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="20" id="dR8-ec-9lc"/>
-                                                </constraints>
-                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="A Curriculam designed by Expert Educators over a course of 40 years. Its specially calibrated for Indian Students." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8pf-ON-sd0">
-                                                <rect key="frame" x="13" y="44" width="301" height="51"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="51" id="lpR-Ea-NhM"/>
-                                                </constraints>
-                                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lcr-HK-shD">
-                                                <rect key="frame" x="325" y="10" width="24" height="24"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="24" id="HiC-i2-F5a"/>
-                                                    <constraint firstAttribute="width" constant="24" id="dl9-ho-1oA"/>
-                                                </constraints>
-                                                <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" image="next" title=" "/>
-                                                <connections>
-                                                    <action selector="onClickParanpara:" destination="z76-ZA-BlY" eventType="touchUpInside" id="rYa-Do-7PS"/>
-                                                </connections>
-                                            </button>
-                                        </subviews>
-                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="f53-eJ-gXq">
+                                        <rect key="frame" x="0.0" y="251.66666666666669" width="393" height="256"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstItem="8pf-ON-sd0" firstAttribute="top" secondItem="dDX-4l-o1k" secondAttribute="bottom" constant="12" id="19D-0K-bKf"/>
-                                            <constraint firstItem="8pf-ON-sd0" firstAttribute="leading" secondItem="dDX-4l-o1k" secondAttribute="leading" id="2Kj-aL-uTg"/>
-                                            <constraint firstAttribute="trailing" secondItem="8pf-ON-sd0" secondAttribute="trailing" constant="47" id="ELS-T6-sMY"/>
-                                            <constraint firstItem="dDX-4l-o1k" firstAttribute="top" secondItem="AFe-cJ-hjW" secondAttribute="top" constant="12" id="MsN-cI-aNH"/>
-                                            <constraint firstAttribute="trailing" secondItem="lcr-HK-shD" secondAttribute="trailing" constant="12" id="ZpG-vm-3r8"/>
-                                            <constraint firstAttribute="height" constant="110" id="pxJ-Cg-ZJR"/>
-                                            <constraint firstItem="lcr-HK-shD" firstAttribute="top" secondItem="AFe-cJ-hjW" secondAttribute="top" constant="10" id="uMv-gF-Hrv"/>
-                                            <constraint firstItem="dDX-4l-o1k" firstAttribute="leading" secondItem="AFe-cJ-hjW" secondAttribute="leading" constant="13" id="uQz-kV-uN8"/>
-                                            <constraint firstAttribute="trailing" secondItem="dDX-4l-o1k" secondAttribute="trailing" constant="136" id="wbf-dP-OXj"/>
+                                            <constraint firstAttribute="height" constant="256" id="q6J-An-xSa"/>
                                         </constraints>
-                                        <userDefinedRuntimeAttributes>
-                                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                                <real key="value" value="10"/>
-                                            </userDefinedRuntimeAttribute>
-                                        </userDefinedRuntimeAttributes>
-                                    </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="I6y-bR-3Pi">
-                                        <rect key="frame" x="16" y="318" width="361" height="110"/>
-                                        <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Oxford Curriculam" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f8R-Un-DhQ">
-                                                <rect key="frame" x="13" y="12" width="212" height="20"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="20" id="esw-GK-7Yo"/>
-                                                </constraints>
-                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" A Curriculam designed by Expert Educators over a course of 40 years. Its specially calibrated for Indian Students." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p1O-os-Py9">
-                                                <rect key="frame" x="13" y="44" width="301" height="51"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="51" id="XMs-ZW-C1n"/>
-                                                </constraints>
-                                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mQ4-bK-5cX">
-                                                <rect key="frame" x="325" y="10" width="24" height="24"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="24" id="XkY-Gm-ySm"/>
-                                                    <constraint firstAttribute="width" constant="24" id="ovl-YJ-Gwt"/>
-                                                </constraints>
-                                                <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" image="next" title=" "/>
-                                            </button>
-                                        </subviews>
-                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                        <constraints>
-                                            <constraint firstItem="p1O-os-Py9" firstAttribute="leading" secondItem="f8R-Un-DhQ" secondAttribute="leading" id="1y1-9z-FJS"/>
-                                            <constraint firstItem="f8R-Un-DhQ" firstAttribute="leading" secondItem="I6y-bR-3Pi" secondAttribute="leading" constant="13" id="BLJ-ab-g9z"/>
-                                            <constraint firstAttribute="trailing" secondItem="mQ4-bK-5cX" secondAttribute="trailing" constant="12" id="Gwi-9M-6QE"/>
-                                            <constraint firstItem="f8R-Un-DhQ" firstAttribute="top" secondItem="I6y-bR-3Pi" secondAttribute="top" constant="12" id="SVj-rm-mjq"/>
-                                            <constraint firstItem="p1O-os-Py9" firstAttribute="top" secondItem="f8R-Un-DhQ" secondAttribute="bottom" constant="12" id="Z6z-QI-mCF"/>
-                                            <constraint firstItem="mQ4-bK-5cX" firstAttribute="top" secondItem="I6y-bR-3Pi" secondAttribute="top" constant="10" id="c3X-CL-RG3"/>
-                                            <constraint firstAttribute="trailing" secondItem="p1O-os-Py9" secondAttribute="trailing" constant="47" id="cPP-uK-dtV"/>
-                                            <constraint firstAttribute="trailing" secondItem="f8R-Un-DhQ" secondAttribute="trailing" constant="136" id="kd6-yl-gKJ"/>
-                                            <constraint firstAttribute="height" constant="110" id="lpZ-j2-i3q"/>
-                                        </constraints>
-                                        <userDefinedRuntimeAttributes>
-                                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                                <real key="value" value="10"/>
-                                            </userDefinedRuntimeAttribute>
-                                        </userDefinedRuntimeAttributes>
-                                    </view>
+                                    </tableView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="14t-l3-ZgW">
                                         <rect key="frame" x="16" y="24" width="24" height="24"/>
                                         <constraints>
@@ -2536,21 +2442,27 @@
                                             <action selector="backButtonTapped:" destination="z76-ZA-BlY" eventType="touchUpInside" id="VGo-1b-cjX"/>
                                         </connections>
                                     </button>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="splash_img" translatesAutoresizingMaskIntoConstraints="NO" id="TZf-dW-2QJ">
+                                        <rect key="frame" x="121.66666666666669" y="189.66666666666666" width="150" height="38"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="150" id="JQW-CI-bHQ"/>
+                                            <constraint firstAttribute="height" constant="38" id="rrQ-0A-bvq"/>
+                                        </constraints>
+                                    </imageView>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstItem="1M4-Q2-ui5" firstAttribute="leading" secondItem="dti-AG-SMT" secondAttribute="leading" id="DaL-0d-gHE"/>
                                     <constraint firstAttribute="bottom" secondItem="1M4-Q2-ui5" secondAttribute="bottom" constant="-35" id="ESR-o5-64p"/>
-                                    <constraint firstItem="I6y-bR-3Pi" firstAttribute="top" secondItem="AFe-cJ-hjW" secondAttribute="bottom" constant="12" id="JmE-jb-ybK"/>
+                                    <constraint firstItem="f53-eJ-gXq" firstAttribute="centerY" secondItem="dti-AG-SMT" secondAttribute="centerY" id="JN2-vH-sLh"/>
                                     <constraint firstAttribute="trailing" secondItem="1M4-Q2-ui5" secondAttribute="trailing" id="K40-ov-1SI"/>
-                                    <constraint firstItem="I6y-bR-3Pi" firstAttribute="leading" secondItem="dti-AG-SMT" secondAttribute="leading" constant="16" id="NiB-In-MCy"/>
-                                    <constraint firstItem="AFe-cJ-hjW" firstAttribute="leading" secondItem="dti-AG-SMT" secondAttribute="leading" constant="16" id="R9r-sK-Gp6"/>
+                                    <constraint firstAttribute="trailing" secondItem="f53-eJ-gXq" secondAttribute="trailing" id="MbI-PA-IGR"/>
+                                    <constraint firstItem="TZf-dW-2QJ" firstAttribute="centerX" secondItem="1M4-Q2-ui5" secondAttribute="centerX" id="X3q-pK-cz1"/>
+                                    <constraint firstItem="f53-eJ-gXq" firstAttribute="leading" secondItem="dti-AG-SMT" secondAttribute="leading" id="cua-cH-YkY"/>
                                     <constraint firstItem="14t-l3-ZgW" firstAttribute="leading" secondItem="dti-AG-SMT" secondAttribute="leading" constant="16" id="h4U-Sx-EXh"/>
                                     <constraint firstItem="1M4-Q2-ui5" firstAttribute="top" secondItem="dti-AG-SMT" secondAttribute="top" constant="-63" id="k1R-ty-Al4"/>
                                     <constraint firstItem="14t-l3-ZgW" firstAttribute="top" secondItem="dti-AG-SMT" secondAttribute="top" constant="24" id="lNC-lD-97T"/>
-                                    <constraint firstItem="AFe-cJ-hjW" firstAttribute="top" secondItem="dti-AG-SMT" secondAttribute="top" constant="196" id="rXE-uX-0dE"/>
-                                    <constraint firstAttribute="trailing" secondItem="I6y-bR-3Pi" secondAttribute="trailing" constant="16" id="uol-h2-Xx3"/>
-                                    <constraint firstAttribute="trailing" secondItem="AFe-cJ-hjW" secondAttribute="trailing" constant="16" id="xfG-iv-4IF"/>
+                                    <constraint firstItem="f53-eJ-gXq" firstAttribute="top" secondItem="TZf-dW-2QJ" secondAttribute="bottom" constant="24" id="lrk-V9-LLb"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -2565,11 +2477,15 @@
                     </view>
                     <connections>
                         <outlet property="backButton" destination="14t-l3-ZgW" id="v2e-jv-Qqw"/>
-                        <outlet property="oxfordButton" destination="mQ4-bK-5cX" id="Itf-dO-Lva"/>
-                        <outlet property="paranparaButton" destination="lcr-HK-shD" id="WDa-NV-kJY"/>
+                        <outlet property="tblVw" destination="f53-eJ-gXq" id="AR3-8B-4He"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KWi-yh-217" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="o3J-sw-Lzt">
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="627"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                </tableView>
             </objects>
             <point key="canvasLocation" x="8532" y="-1264"/>
         </scene>
@@ -3301,7 +3217,6 @@
         <image name="india" width="32" height="32"/>
         <image name="login_img" width="395" height="263.33334350585938"/>
         <image name="logo" width="40" height="40"/>
-        <image name="next" width="24" height="24"/>
         <image name="profile_tab" width="20" height="20"/>
         <image name="splash_img" width="112" height="29"/>
         <image name="test_loading" width="229.33332824707031" height="191.66667175292969"/>
