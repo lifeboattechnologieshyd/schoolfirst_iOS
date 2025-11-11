@@ -9,6 +9,7 @@ import UIKit
 
 class AssessmentSubjectSelectionVC: UIViewController {
 
+    @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var colVw: UICollectionView!
     var grade_id = ""
     var subjects = [GradeSubject]()
@@ -49,6 +50,10 @@ class AssessmentSubjectSelectionVC: UIViewController {
         }
     }
 
+
+@IBAction func backButtonTapped(_ sender: UIButton) {
+    navigationController?.popViewController(animated: true)
+}
 }
 
 

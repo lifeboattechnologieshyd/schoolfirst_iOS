@@ -11,6 +11,7 @@ class AssessmentsViewController: UIViewController {
     
     @IBOutlet weak var tblVw: UITableView!
     
+    @IBOutlet weak var backButton: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -20,7 +21,11 @@ class AssessmentsViewController: UIViewController {
         tblVw.delegate = self
         tblVw.dataSource = self
     }
+    @IBAction func backButtonTapped(_ sender: UIButton) {
+        navigationController?.popViewController(animated: true)
+    }
 }
+
 
 extension AssessmentsViewController: UITableViewDelegate, UITableViewDataSource {
     

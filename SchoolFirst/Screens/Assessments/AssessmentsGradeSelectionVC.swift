@@ -9,6 +9,7 @@ import UIKit
 
 class AssessmentsGradeSelectionVC: UIViewController {
     
+    @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var completedAssessments: UIButton!
     @IBOutlet weak var colVw: UICollectionView!
     var grades = [GradeModel]()
@@ -80,6 +81,9 @@ extension AssessmentsGradeSelectionVC : UICollectionViewDelegate, UICollectionVi
         let vc = storyboard?.instantiateViewController(identifier: "PastAssessmentsVC") as! PastAssessmentsVC
         self.navigationController?.pushViewController(vc, animated: true)
     }
-
-    
+    @IBAction func backButtonTapped(_ sender: UIButton) {
+        navigationController?.popViewController(animated: true)
+    }
 }
+    
+
