@@ -17,12 +17,9 @@ class MainTabBarController: UITabBarController,
     override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = self
-<<<<<<< HEAD
-        // ✅ Use custom fixed tab bar
-=======
+
 
         // ✅ Apply custom non-moving tab bar
->>>>>>> 07481fd98b1bd4a7bdd3e36f24f8068dbe1ba2f7
         let fixedTabBar = UTabBarFixedDip()
         setValue(fixedTabBar, forKey: "tabBar")
 
@@ -64,15 +61,11 @@ class MainTabBarController: UITabBarController,
         }
     }
 
-<<<<<<< HEAD
-     // Setup floating circle button
-     func setupCircleButton() {
-=======
+
     // ------------------------------------------------------------
     // ✅ Setup floating circle button
     // ------------------------------------------------------------
     func setupCircleButton() {
->>>>>>> 07481fd98b1bd4a7bdd3e36f24f8068dbe1ba2f7
 
         let size: CGFloat = 62
         circleButton.frame = CGRect(x: 0, y: 0, width: size, height: size)
@@ -241,21 +234,13 @@ class UTabBarFixedDip: UITabBar {
     func dipPath() -> CGPath {
 
         let w = bounds.width
-<<<<<<< HEAD
         let h: CGFloat = 60        // ✅ tab bar height
         let mid = w / 2
 
         let dipW: CGFloat = 110
         let dipD: CGFloat = 30     // ✅ dip depth
         let r: CGFloat = 26        // ✅ corner radius
-=======
-        let h: CGFloat = 75
-        let mid = w / 2
 
-        let dipW: CGFloat = 110
-        let dipD: CGFloat = 28
-        let r: CGFloat = 26
->>>>>>> 07481fd98b1bd4a7bdd3e36f24f8068dbe1ba2f7
 
         let p = UIBezierPath()
 
@@ -289,11 +274,7 @@ class UTabBarFixedDip: UITabBar {
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         var s = super.sizeThatFits(size)
-<<<<<<< HEAD
         s.height = 60        // ✅ Correct height
-=======
-        s.height = 60
->>>>>>> 07481fd98b1bd4a7bdd3e36f24f8068dbe1ba2f7
         return s
     }
 }
