@@ -12,29 +12,39 @@ class MainTabBarController: UITabBarController,
 
     let circleButton = UIButton(type: .custom)
     let homeIndex = 2
-    let gapOffset: CGFloat = -10     // Gap between circle & tab bar
+    let gapOffset: CGFloat = -10   // Distance between circle & tab bar
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = self
+<<<<<<< HEAD
         // ✅ Use custom fixed tab bar
+=======
+
+        // ✅ Apply custom non-moving tab bar
+>>>>>>> 07481fd98b1bd4a7bdd3e36f24f8068dbe1ba2f7
         let fixedTabBar = UTabBarFixedDip()
         setValue(fixedTabBar, forKey: "tabBar")
 
         setupCircleButton()
         disableMiddleTabItem()
 
-        // ✅ Tell tab bar about circle for hitTest
+        // ✅ Attach circle reference for hitTest
         if let dip = tabBar as? UTabBarFixedDip {
             dip.circleButtonRef = circleButton
         }
 
-        // ✅ Assign delegate for all navigation controllers
+        // ✅ controller delegates for push/hide logic
         for vc in viewControllers ?? [] {
             if let nav = vc as? UINavigationController {
                 nav.delegate = self
             }
         }
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        positionCircle()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -43,13 +53,10 @@ class MainTabBarController: UITabBarController,
         updateVisibilityBasedOnDepth()
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        positionCircle()
-    }
-
-     //   Disable middle tab item
-     func disableMiddleTabItem() {
+    // ------------------------------------------------------------
+    // ✅ Disable the middle tab item to avoid duplicate icon
+    // ------------------------------------------------------------
+    func disableMiddleTabItem() {
         if let items = tabBar.items, items.count > homeIndex {
             items[homeIndex].isEnabled = false
             items[homeIndex].image = UIImage()
@@ -57,21 +64,30 @@ class MainTabBarController: UITabBarController,
         }
     }
 
+<<<<<<< HEAD
      // Setup floating circle button
      func setupCircleButton() {
+=======
+    // ------------------------------------------------------------
+    // ✅ Setup floating circle button
+    // ------------------------------------------------------------
+    func setupCircleButton() {
+>>>>>>> 07481fd98b1bd4a7bdd3e36f24f8068dbe1ba2f7
 
         let size: CGFloat = 62
         circleButton.frame = CGRect(x: 0, y: 0, width: size, height: size)
-        circleButton.layer.cornerRadius = size/2
+        circleButton.layer.cornerRadius = size / 2
         circleButton.backgroundColor = .white
 
         circleButton.setImage(UIImage(named: "oasis_logo"), for: .normal)
         circleButton.imageView?.contentMode = .scaleAspectFit
         circleButton.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
 
+        // ✅ Border hidden by default
         circleButton.layer.borderWidth = 3
         circleButton.layer.borderColor = UIColor.clear.cgColor
 
+        // Shadow
         circleButton.layer.shadowOpacity = 0.25
         circleButton.layer.shadowRadius = 10
         circleButton.layer.shadowOffset = CGSize(width: 0, height: 3)
@@ -90,9 +106,10 @@ class MainTabBarController: UITabBarController,
         )
     }
 
-     //   Circle tap → Navigate Home
-    //   ONLY here border becomes visible
-     @objc func circleTapped() {
+    // ------------------------------------------------------------
+    // ✅ Circle button tap → Go Home (root)
+    // ------------------------------------------------------------
+    @objc func circleTapped() {
 
         selectedIndex = homeIndex
 
@@ -100,7 +117,7 @@ class MainTabBarController: UITabBarController,
             nav.popToRootViewController(animated: false)
         }
 
-        //   Border only on circle tap
+        // ✅ Border visible ONLY when tapped
         circleButton.layer.borderColor = UIColor(
             red: 0.043, green: 0.337, blue: 0.604, alpha: 1
         ).cgColor
@@ -108,11 +125,9 @@ class MainTabBarController: UITabBarController,
         updateVisibilityBasedOnDepth()
     }
 
-    // ----------------------------------------------------------------------
-    // ✅ VISIBILITY LOGIC
-    // ✅ Root screen → show tab bar + circle
-    // ✅ Pushed screen → hide instantly (no flash)
-    // ----------------------------------------------------------------------
+    // ------------------------------------------------------------
+    // ✅ Visibility logic (NO FLASH, NO TAP on other screens)
+    // ------------------------------------------------------------
     func updateVisibilityBasedOnDepth() {
 
         guard let nav = viewControllers?[selectedIndex] as? UINavigationController else { return }
@@ -120,79 +135,67 @@ class MainTabBarController: UITabBarController,
         let isRoot = (nav.viewControllers.count == 1)
 
         if isRoot {
+            // ✅ SHOW circle + tab bar only on HOME
             tabBar.isHidden = false
             circleButton.isHidden = false
             circleButton.alpha = 1
+            circleButton.isUserInteractionEnabled = true   // ✅ Enable tap on home
 
         } else {
+            // ✅ HIDE both instantly on any pushed screen
             tabBar.isHidden = true
             circleButton.isHidden = true
             circleButton.alpha = 0
+            circleButton.isUserInteractionEnabled = false  // ✅ Disable tap anywhere else
         }
     }
 
-    // ----------------------------------------------------------------------
-    // ✅ Tab bar item tapped
-    // ✅ ALWAYS remove border here
-    // ----------------------------------------------------------------------
+    // ✅ Remove border on tab selection
     func tabBarController(_ tabBarController: UITabBarController,
                           didSelect viewController: UIViewController) {
 
-        // ❌ Clear border when user taps ANY tab bar item
         circleButton.layer.borderColor = UIColor.clear.cgColor
-
         updateVisibilityBasedOnDepth()
     }
 
-    // ----------------------------------------------------------------------
-    // ✅ NO FLASH FIX — Hide BEFORE push animation
-    // ----------------------------------------------------------------------
+    // ✅ Hide BEFORE push starts
     func navigationController(_ navigationController: UINavigationController,
                               willShow viewController: UIViewController,
                               animated: Bool) {
-
         DispatchQueue.main.async {
             self.updateVisibilityBasedOnDepth()
         }
     }
 
-    // Backup hide after push
+    // ✅ Backup
     func navigationController(_ navigationController: UINavigationController,
                               didShow viewController: UIViewController,
                               animated: Bool) {
-
         updateVisibilityBasedOnDepth()
     }
 }
 
 
 
-
- // ✅ FIXED TAB BAR WITH FRAME LOCK (NO MOVEMENT)
-// ✅ DIP SHAPE + CORRECT HEIGHT
- 
+///////////////////////////////////////////////////////////////
+// ✅ CUSTOM NON-MOVING TAB BAR WITH DIP
+///////////////////////////////////////////////////////////////
 class UTabBarFixedDip: UITabBar {
 
     var circleButtonRef: UIButton?
     private var shapeLayer: CAShapeLayer?
 
-    // ✅ LOCK FRAME — stops tab bar moving up/down EVER
+    // ✅ Always lock frame (no up/down movement)
     override var frame: CGRect {
         get { return super.frame }
         set {
             var fixed = newValue
-
             if let superview = super.superview {
                 let bottom = superview.safeAreaInsets.bottom
                 fixed.origin.y = superview.bounds.height - fixed.height - bottom
             }
-
             super.frame = fixed
         }
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
     }
 
     override func draw(_ rect: CGRect) {
@@ -200,7 +203,6 @@ class UTabBarFixedDip: UITabBar {
     }
 
     private func addShape() {
-
         let shape = CAShapeLayer()
         shape.path = dipPath()
         shape.fillColor = UIColor.white.cgColor
@@ -218,10 +220,13 @@ class UTabBarFixedDip: UITabBar {
         shapeLayer = shape
     }
 
-    // ✅ ONLY circle tappable in dip space
+    // ✅ FIX: Only allow circle tap when visible & enabled
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
 
-        if let circle = circleButtonRef {
+        if let circle = circleButtonRef,
+           !circle.isHidden,
+           circle.isUserInteractionEnabled {
+
             let converted = convert(point, to: circle)
 
             if circle.point(inside: converted, with: event) {
@@ -232,16 +237,25 @@ class UTabBarFixedDip: UITabBar {
         return super.hitTest(point, with: event)
     }
 
-    // ✅ DIP PATH — Perfect shape
+    // ✅ DIP SHAPE
     func dipPath() -> CGPath {
 
         let w = bounds.width
+<<<<<<< HEAD
         let h: CGFloat = 60        // ✅ tab bar height
         let mid = w / 2
 
         let dipW: CGFloat = 110
         let dipD: CGFloat = 30     // ✅ dip depth
         let r: CGFloat = 26        // ✅ corner radius
+=======
+        let h: CGFloat = 75
+        let mid = w / 2
+
+        let dipW: CGFloat = 110
+        let dipD: CGFloat = 28
+        let r: CGFloat = 26
+>>>>>>> 07481fd98b1bd4a7bdd3e36f24f8068dbe1ba2f7
 
         let p = UIBezierPath()
 
@@ -256,7 +270,6 @@ class UTabBarFixedDip: UITabBar {
         p.addQuadCurve(to: CGPoint(x: w-r, y: 0),
                        controlPoint: CGPoint(x: w, y: 0))
 
-        // DIP
         let start = mid + dipW/2
         let end   = mid - dipW/2
 
@@ -276,7 +289,11 @@ class UTabBarFixedDip: UITabBar {
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         var s = super.sizeThatFits(size)
+<<<<<<< HEAD
         s.height = 60        // ✅ Correct height
+=======
+        s.height = 60
+>>>>>>> 07481fd98b1bd4a7bdd3e36f24f8068dbe1ba2f7
         return s
     }
 }
