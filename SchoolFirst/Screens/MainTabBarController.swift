@@ -16,10 +16,7 @@ class MainTabBarController: UITabBarController,
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         self.delegate = self
-
-
         // ✅ Use custom fixed tab bar
         let fixedTabBar = UTabBarFixedDip()
         setValue(fixedTabBar, forKey: "tabBar")
@@ -60,7 +57,7 @@ class MainTabBarController: UITabBarController,
         }
     }
 
-     //   Setup floating circle button
+     // Setup floating circle button
      func setupCircleButton() {
 
         let size: CGFloat = 62
@@ -73,7 +70,7 @@ class MainTabBarController: UITabBarController,
         circleButton.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
 
         circleButton.layer.borderWidth = 3
-        circleButton.layer.borderColor = UIColor.clear.cgColor   // ✅ Always clear by default
+        circleButton.layer.borderColor = UIColor.clear.cgColor
 
         circleButton.layer.shadowOpacity = 0.25
         circleButton.layer.shadowRadius = 10
@@ -83,7 +80,8 @@ class MainTabBarController: UITabBarController,
 
         tabBar.addSubview(circleButton)
         tabBar.bringSubviewToFront(circleButton)
-    }
+
+     }
 
     func positionCircle() {
         circleButton.center = CGPoint(
