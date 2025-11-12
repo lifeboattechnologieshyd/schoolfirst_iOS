@@ -251,15 +251,11 @@ class UTabBarFixedDip: UITabBar {
         p.addLine(to: CGPoint(x: 0, y: h))
         p.addLine(to: CGPoint(x: w, y: h))
         p.addLine(to: CGPoint(x: w, y: r))
-
         p.addQuadCurve(to: CGPoint(x: w-r, y: 0),
                        controlPoint: CGPoint(x: w, y: 0))
-
         let start = mid + dipW/2
         let end   = mid - dipW/2
-
         p.addLine(to: CGPoint(x: start, y: 0))
-
         p.addQuadCurve(to: CGPoint(x: mid, y: dipD),
                        controlPoint: CGPoint(x: mid + dipW/4, y: dipD))
 
@@ -268,13 +264,12 @@ class UTabBarFixedDip: UITabBar {
 
         p.addLine(to: CGPoint(x: r, y: 0))
         p.close()
-
         return p.cgPath
     }
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         var s = super.sizeThatFits(size)
-        s.height = 60        // ✅ Correct height
+        s.height = 60
         return s
     }
 }

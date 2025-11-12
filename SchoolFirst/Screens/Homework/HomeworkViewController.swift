@@ -15,18 +15,54 @@ class HomeworkViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        getHomework()
         self.lblTItle.text = "HomeWork"
         self.segmentControl.applyCustomStyle()
+        segmentControl.selectedSegmentIndex = 1
         topView.addBottomShadow()
         tblVw.register(UINib(nibName: "HWHeaderCell", bundle: nil), forCellReuseIdentifier: "HWHeaderCell")
         tblVw.register(UINib(nibName: "HWSubjectWiseCell", bundle: nil), forCellReuseIdentifier: "HWSubjectWiseCell")
         tblVw.register(UINib(nibName: "HWFooterCell", bundle: nil), forCellReuseIdentifier: "HWFooterCell")
         tblVw.delegate = self
         tblVw.dataSource = self
-        
+//        HOMEWORK
     }
     @IBAction func onClickBack(_ sender: UIButton) {
         self.navigationController?.popViewController(animated: true)
+    }
+    
+    func getHomework(){
+//        var url = API.HOMEWORK
+        var url = API.HOMEWORK_PAST
+        if let gradeId = UserManager.shared.user?.schools.first?.students.first?.gradeID {
+            url += "grade_id=\(gradeId)"
+        }
+        url += "&start_date=2025-07-01&end_date=2025-10-31"
+        NetworkManager.shared.request(urlString: url,method: .GET) { (result: Result<APIResponse<[Homework]>, NetworkError>)  in
+            switch result {
+            case .success(let info):
+                if info.success {
+                    if let data = info.data {
+                       
+                    }
+                    DispatchQueue.main.async {
+                        self.tblVw.reloadData()
+                    }
+                }else{
+                    print(info.description)
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    switch error {
+                    case .noaccess:
+                        self.handleLogout()
+                    default:
+                        self.showAlert(msg: error.localizedDescription)
+                    }
+                }
+                
+            }
+        }
     }
 }
 
