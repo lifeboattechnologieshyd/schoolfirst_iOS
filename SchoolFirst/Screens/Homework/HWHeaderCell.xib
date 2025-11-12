@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="HWHeaderCell" rowHeight="66" id="KGk-i7-Jjw" customClass="HWHeaderCell" customModule="SF_Dev" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="66"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="66"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tht-7S-nZ0">
+                        <rect key="frame" x="16" y="8" width="288" height="20"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="20" id="Fnj-rS-c8A"/>
+                        </constraints>
+                        <attributedString key="attributedText">
+                            <fragment content="Homework Given on 10th Aug 2025">
+                                <attributes>
+                                    <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                </attributes>
+                            </fragment>
+                        </attributedString>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QMc-hN-4ET">
+                        <rect key="frame" x="16" y="36" width="288" height="18"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="18" id="U5n-I3-TQz"/>
+                        </constraints>
+                        <attributedString key="attributedText">
+                            <fragment content="Deadline: 12th Aug 2025">
+                                <attributes>
+                                    <font key="NSFont" size="14" name="Lexend-Regular"/>
+                                    <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                </attributes>
+                            </fragment>
+                        </attributedString>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="QMc-hN-4ET" firstAttribute="top" secondItem="Tht-7S-nZ0" secondAttribute="bottom" constant="8" id="2bb-NV-SGv"/>
+                    <constraint firstAttribute="trailing" secondItem="Tht-7S-nZ0" secondAttribute="trailing" constant="16" id="5Lb-7J-Vh9"/>
+                    <constraint firstItem="Tht-7S-nZ0" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="AR9-mz-YvC"/>
+                    <constraint firstAttribute="trailing" secondItem="QMc-hN-4ET" secondAttribute="trailing" constant="16" id="Emy-3K-pbn"/>
+                    <constraint firstItem="QMc-hN-4ET" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="VGM-6C-SxD"/>
+                    <constraint firstItem="Tht-7S-nZ0" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="kuO-jc-otf"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <point key="canvasLocation" x="-102.29007633587786" y="27.464788732394368"/>
+        </tableViewCell>
+    </objects>
+</document>

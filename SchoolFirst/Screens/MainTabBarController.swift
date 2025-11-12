@@ -16,8 +16,8 @@ class MainTabBarController: UITabBarController,
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         self.delegate = self
+
 
         // ✅ Apply custom non-moving tab bar
         let fixedTabBar = UTabBarFixedDip()
@@ -61,6 +61,7 @@ class MainTabBarController: UITabBarController,
         }
     }
 
+
     // ------------------------------------------------------------
     // ✅ Setup floating circle button
     // ------------------------------------------------------------
@@ -88,7 +89,8 @@ class MainTabBarController: UITabBarController,
 
         tabBar.addSubview(circleButton)
         tabBar.bringSubviewToFront(circleButton)
-    }
+
+     }
 
     func positionCircle() {
         circleButton.center = CGPoint(
@@ -232,12 +234,13 @@ class UTabBarFixedDip: UITabBar {
     func dipPath() -> CGPath {
 
         let w = bounds.width
-        let h: CGFloat = 75
+        let h: CGFloat = 60        // ✅ tab bar height
         let mid = w / 2
 
         let dipW: CGFloat = 110
-        let dipD: CGFloat = 28
-        let r: CGFloat = 26
+        let dipD: CGFloat = 30     // ✅ dip depth
+        let r: CGFloat = 26        // ✅ corner radius
+
 
         let p = UIBezierPath()
 
@@ -248,15 +251,11 @@ class UTabBarFixedDip: UITabBar {
         p.addLine(to: CGPoint(x: 0, y: h))
         p.addLine(to: CGPoint(x: w, y: h))
         p.addLine(to: CGPoint(x: w, y: r))
-
         p.addQuadCurve(to: CGPoint(x: w-r, y: 0),
                        controlPoint: CGPoint(x: w, y: 0))
-
         let start = mid + dipW/2
         let end   = mid - dipW/2
-
         p.addLine(to: CGPoint(x: start, y: 0))
-
         p.addQuadCurve(to: CGPoint(x: mid, y: dipD),
                        controlPoint: CGPoint(x: mid + dipW/4, y: dipD))
 
@@ -265,7 +264,6 @@ class UTabBarFixedDip: UITabBar {
 
         p.addLine(to: CGPoint(x: r, y: 0))
         p.close()
-
         return p.cgPath
     }
 

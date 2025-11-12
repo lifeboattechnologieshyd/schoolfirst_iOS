@@ -46,6 +46,10 @@ class UserManager {
     static let shared = UserManager()
     private init() {}
     var assessmentSelectedStudent : Student!
+    var assessmentCurriculum : Curriculum!
+    
+    
+    
     var curriculamSelectedStudent : Student!
     
     

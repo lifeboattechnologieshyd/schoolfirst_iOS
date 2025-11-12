@@ -342,11 +342,11 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
         case 1:
             let vc = storyboard?.instantiateViewController(identifier: "AssessmentsViewController") as! AssessmentsViewController
             navigationController?.pushViewController(vc, animated: true)
-//        case 2:
-//            let stbd = UIStoryboard(name: "PTips", bundle: nil)
-//            let vc = stbd.instantiateViewController(identifier: "PTipsViewController") as! PTipsViewController
-//            vc.isEdutain = false
-//            navigationController?.pushViewController(vc, animated: true)
+        case 2:
+            let stbd = UIStoryboard(name: "PTips", bundle: nil)
+            let vc = stbd.instantiateViewController(identifier: "PTipsViewController") as! PTipsViewController
+            vc.isEdutain = false
+            navigationController?.pushViewController(vc, animated: true)
         case 3:
            let stbd = UIStoryboard(name: "PTips", bundle: nil)
            let vc = stbd.instantiateViewController(identifier: "PTipsViewController") as! PTipsViewController
@@ -380,26 +380,26 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
                 case 0:
                     let vc = storyboard?.instantiateViewController(identifier: "MySchoolViewController") as! MySchoolViewController
                     navigationController?.pushViewController(vc, animated: true)
-               // case 1:
-                 //   let vc = storyboard?.instantiateViewController(identifier: "BulletinController") as! BulletinController
-                 //   navigationController?.pushViewController(vc, animated: true)
-             //   case 2:
-               //     let vc = storyboard?.instantiateViewController(identifier: "EventsViewController") as! EventsViewController
-               //     navigationController?.pushViewController(vc, animated: true)
-             //   case 3:
-              //      let stbd = UIStoryboard(name: "Attendance", bundle: nil)
-               //     let vc = stbd.instantiateViewController(identifier: "AttendanceViewController") as! AttendanceViewController
-               //     navigationController?.pushViewController(vc, animated: true)
-            //    case 4:
-                //    let vc = storyboard?.instantiateViewController(identifier: "HomeworkViewController") as! HomeworkViewController
-                //    navigationController?.pushViewController(vc, animated: true)
+                case 1:
+                    let vc = storyboard?.instantiateViewController(identifier: "BulletinController") as! BulletinController
+                    navigationController?.pushViewController(vc, animated: true)
+                case 2:
+                    let vc = storyboard?.instantiateViewController(identifier: "EventsViewController") as! EventsViewController
+                    navigationController?.pushViewController(vc, animated: true)
+                case 3:
+                    let stbd = UIStoryboard(name: "Attendance", bundle: nil)
+                    let vc = stbd.instantiateViewController(identifier: "AttendanceViewController") as! AttendanceViewController
+                    navigationController?.pushViewController(vc, animated: true)
+                case 4:
+                    let vc = storyboard?.instantiateViewController(identifier: "HomeworkViewController") as! HomeworkViewController
+                    navigationController?.pushViewController(vc, animated: true)
                 case 6:
                     let vc = storyboard?.instantiateViewController(identifier: "FeeViewController") as! FeeViewController
                     navigationController?.pushViewController(vc, animated: true)
-           //     case 8:
-            //        let stbd = UIStoryboard(name: "Gallery", bundle: nil)
-             //       let vc = stbd.instantiateViewController(identifier: "GalleryViewController") as! GalleryViewController
-              //      navigationController?.pushViewController(vc, animated: true)
+                case 8:
+                    let stbd = UIStoryboard(name: "Gallery", bundle: nil)
+                    let vc = stbd.instantiateViewController(identifier: "GalleryViewController") as! GalleryViewController
+                    navigationController?.pushViewController(vc, animated: true)
                 default:
                     break
                 }

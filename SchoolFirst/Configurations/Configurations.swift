@@ -72,10 +72,10 @@ struct API {
     static let BANNER = BASE_URL + "broadcast/banner?screen=Home"
     
     static let HOMEWORK = BASE_URL + "school/homework"
+    static let HOMEWORK_PAST = BASE_URL + "school/homework/past?"
     static let SCHOOL_INFO = BASE_URL + "school/info"
 
     static let NEWS = BASE_URL + "news/"
-    static let FEE = BASE_URL + "fees/get/fee"
     
     
     
@@ -103,6 +103,12 @@ struct API {
 
     // practice :
     
+    
+    
+    
+    // Fee
+    static let FEE_GET_DETAILS = BASE_URL + "fees/get/fee"
+
     
 
 }

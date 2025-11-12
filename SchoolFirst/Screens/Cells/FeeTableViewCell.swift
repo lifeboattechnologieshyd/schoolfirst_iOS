@@ -9,7 +9,20 @@ import UIKit
 
 class FeeTableViewCell: UITableViewCell {
 
+    @IBOutlet weak var lblName: UILabel!
+    @IBOutlet weak var lblGrade: UILabel!
+    @IBOutlet weak var imgVw: UIImageView!
     @IBOutlet weak var bgView: UIView!
+    
+    @IBOutlet weak var lblTotalFeeDue: UILabel!
+    
+    @IBOutlet weak var lblDueDate: UILabel!
+    
+    @IBOutlet weak var lblInstallment: UILabel!
+    
+    
+    
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -20,5 +33,21 @@ class FeeTableViewCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
+    
+    @IBAction func onClickPartPayment(_ sender: UIButton) {
+    }
+    
+    
+    @IBAction func onClickPayFull(_ sender: UIButton) {
+    }
+    
+    
+    func setup(details : StudentFeeDetails) {
+        self.lblName.text = details.studentName
+        self.lblGrade.text = details.gradeName
+        self.imgVw.loadImage(url: details.studentImage)
+        self.lblTotalFeeDue.text = "₹\(details.pendingFee.rounded())"
+    }
+    
     
 }

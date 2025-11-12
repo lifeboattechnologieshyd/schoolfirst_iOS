@@ -23,7 +23,7 @@ class AssessmentSubjectSelectionVC: UIViewController {
     
     
     func getSubjects() {
-        var subject_url = API.SUBJECTS + "\(grade_id)"
+        let subject_url = API.SUBJECTS + "\(grade_id)&curriculum=\(UserManager.shared.assessmentCurriculum.id)"
         NetworkManager.shared.request(urlString: subject_url,method: .GET) { (result: Result<APIResponse<[GradeSubject]>, NetworkError>)  in
             switch result {
             case .success(let info):
