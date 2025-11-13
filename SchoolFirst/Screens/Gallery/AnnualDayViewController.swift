@@ -14,17 +14,24 @@ class AnnualDayViewController: UIViewController {
     @IBOutlet weak var annualLbl: UILabel!
     @IBOutlet weak var topVw: UIView!
     @IBOutlet weak var colVw: UICollectionView!
+    
     var gallery : EventGallery!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         dateLbl.text = gallery.eventDate.convertTo()
         annualLbl.text = gallery.eventName
         topVw.addBottomShadow()
+        
         colVw.delegate = self
         colVw.dataSource = self
         
-        self.colVw.register(UINib(nibName: "AnnualCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "AnnualCollectionViewCell")
+        self.colVw.register(
+            UINib(nibName: "AnnualCollectionViewCell", bundle: nil),
+            forCellWithReuseIdentifier: "AnnualCollectionViewCell"
+        )
+        
         backButton.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
     }
     
@@ -39,25 +46,44 @@ extension AnnualDayViewController: UICollectionViewDelegate, UICollectionViewDat
         return gallery.images.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "AnnualCollectionViewCell", for: indexPath) as! AnnualCollectionViewCell
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: "AnnualCollectionViewCell",
+            for: indexPath
+        ) as! AnnualCollectionViewCell
+        
         cell.imgVw.loadImage(url: self.gallery.images[indexPath.row])
         return cell
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = (collectionView.frame.size.width-10)/2
-        return CGSize(width: width, height: width*0.575)
+        
+        let width = (collectionView.frame.size.width - 10) / 2
+        return CGSize(width: width, height: width * 0.575)
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
                         minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 10
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
                         minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 10
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let stbd = UIStoryboard(name: "Gallery", bundle: nil)
+        let vc = stbd.instantiateViewController(identifier: "ImageViewerVC") as! ImageViewerVC
+   
+        vc.passedImageURL = gallery.images[indexPath.row]
+        
+        navigationController?.pushViewController(vc, animated: true)
     }
 }

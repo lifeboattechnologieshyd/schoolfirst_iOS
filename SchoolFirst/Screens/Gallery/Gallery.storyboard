@@ -174,9 +174,75 @@
             </objects>
             <point key="canvasLocation" x="911" y="-35"/>
         </scene>
+        <!--Image ViewerVC-->
+        <scene sceneID="krH-rf-OXC">
+            <objects>
+                <viewController storyboardIdentifier="ImageViewerVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="83n-5v-7Pu" customClass="ImageViewerVC" customModule="SF_Dev" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="xAM-a2-zEu">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ogu-dH-p72">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="OXL-Ix-XBZ">
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </imageView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dYq-Yh-NGh">
+                                        <rect key="frame" x="347" y="67" width="30" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="30" id="CRq-JF-yhP"/>
+                                            <constraint firstAttribute="width" constant="30" id="Mcq-hj-OAF"/>
+                                        </constraints>
+                                        <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="xmark" catalog="system"/>
+                                        <connections>
+                                            <action selector="backTapped:" destination="83n-5v-7Pu" eventType="touchUpInside" id="Ub0-HS-mEJ"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="leading" secondItem="HAE-1m-91Y" secondAttribute="leading" id="6My-Gw-YGl"/>
+                                    <constraint firstItem="dYq-Yh-NGh" firstAttribute="top" secondItem="RE5-2J-6mO" secondAttribute="top" constant="67" id="8R6-oE-oIw"/>
+                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="width" secondItem="RE5-2J-6mO" secondAttribute="width" id="Nkd-gN-8pD"/>
+                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="bottom" secondItem="HAE-1m-91Y" secondAttribute="bottom" id="PTO-lJ-okz"/>
+                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="leading" secondItem="RE5-2J-6mO" secondAttribute="leading" id="SDq-A9-LJc"/>
+                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="trailing" secondItem="HAE-1m-91Y" secondAttribute="trailing" id="VDT-CL-E4F"/>
+                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="height" secondItem="RE5-2J-6mO" secondAttribute="height" id="WAr-X0-tyg"/>
+                                    <constraint firstItem="RE5-2J-6mO" firstAttribute="trailing" secondItem="OXL-Ix-XBZ" secondAttribute="trailing" id="cnC-0Q-H7l"/>
+                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="top" secondItem="RE5-2J-6mO" secondAttribute="top" id="dIj-G2-Ws0"/>
+                                    <constraint firstItem="RE5-2J-6mO" firstAttribute="bottom" secondItem="OXL-Ix-XBZ" secondAttribute="bottom" id="hMk-Xf-2hV"/>
+                                    <constraint firstItem="RE5-2J-6mO" firstAttribute="trailing" secondItem="dYq-Yh-NGh" secondAttribute="trailing" constant="16" id="hxu-Fw-f22"/>
+                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="top" secondItem="HAE-1m-91Y" secondAttribute="top" id="uwc-2X-ovg"/>
+                                </constraints>
+                                <viewLayoutGuide key="contentLayoutGuide" id="HAE-1m-91Y"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="RE5-2J-6mO"/>
+                            </scrollView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="meK-t1-fxo"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="Ogu-dH-p72" firstAttribute="leading" secondItem="meK-t1-fxo" secondAttribute="leading" id="DXl-WD-s6r"/>
+                            <constraint firstAttribute="bottom" secondItem="Ogu-dH-p72" secondAttribute="bottom" id="F4s-hv-Slz"/>
+                            <constraint firstItem="Ogu-dH-p72" firstAttribute="top" secondItem="xAM-a2-zEu" secondAttribute="top" id="e0k-gB-RqO"/>
+                            <constraint firstItem="Ogu-dH-p72" firstAttribute="trailing" secondItem="meK-t1-fxo" secondAttribute="trailing" id="qec-Vf-Piw"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="imageView" destination="OXL-Ix-XBZ" id="Mhg-iX-LIa"/>
+                        <outlet property="scrollView" destination="Ogu-dH-p72" id="7a6-3p-Lti"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="NfA-Ge-QR7" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1669.4656488549617" y="-35.211267605633807"/>
+        </scene>
     </scenes>
     <resources>
         <image name="arrow.backward" catalog="system" width="128" height="95"/>
+        <image name="xmark" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
