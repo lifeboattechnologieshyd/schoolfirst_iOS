@@ -28,10 +28,60 @@ class HomeworkViewController: UIViewController {
         self.navigationController?.popViewController(animated: true)
     }
     
+    @IBAction func onClickChangeSegment(_ sender: UISegmentedControl) {
+        if sender.selectedSegmentIndex == 0 {
+//            self.getPastHomework()
+        }else if sender.selectedSegmentIndex == 1 {
+            guard let hw = homework else {
+                print("api for today homework")
+                return
+            }
+        } else {
+            
+        }
+    }
     func getHomework(){
         var url = API.HOMEWORK
         if let gradeId = UserManager.shared.user?.schools.first?.students.first?.gradeID {
             url += "?grade_id=\(gradeId)"
+        }
+        NetworkManager.shared.request(urlString: url,method: .GET) { (result: Result<APIResponse<[Homework]>, NetworkError>)  in
+            switch result {
+            case .success(let info):
+                if info.success {
+                    if let data = info.data {
+                        DispatchQueue.main.async {
+                            if data.count > 0 {
+                                self.homework = data[0]
+                                self.tblVw.delegate = self
+                                self.tblVw.dataSource = self
+                                self.tblVw.reloadData()
+                            }
+                        }
+                    }
+                    
+                }else{
+                    print(info.description)
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    switch error {
+                    case .noaccess:
+                        self.handleLogout()
+                    default:
+                        self.showAlert(msg: error.localizedDescription)
+                    }
+                }
+                
+            }
+        }
+    }
+    
+    
+    func getPastHomework(){
+        var url = API.HOMEWORK_PAST
+        if let gradeId = UserManager.shared.user?.schools.first?.students.first?.gradeID {
+            url += "grade_id=\(gradeId)"
         }
         NetworkManager.shared.request(urlString: url,method: .GET) { (result: Result<APIResponse<[Homework]>, NetworkError>)  in
             switch result {
