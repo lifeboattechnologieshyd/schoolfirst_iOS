@@ -8,7 +8,9 @@
 import UIKit
 
 class HWFooterCell: UITableViewCell {
-
+    @IBOutlet weak var lblCount: UILabel!
+    
+    @IBOutlet weak var btnComplete: UIButton!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

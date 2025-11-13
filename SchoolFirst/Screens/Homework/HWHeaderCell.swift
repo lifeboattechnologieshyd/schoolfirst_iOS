@@ -8,7 +8,9 @@
 import UIKit
 
 class HWHeaderCell: UITableViewCell {
-
+    @IBOutlet weak var lbldate: UILabel!
+    
+    @IBOutlet weak var lbldeadline: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

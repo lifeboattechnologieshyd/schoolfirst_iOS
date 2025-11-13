@@ -21,9 +21,7 @@ class CurriculumSubjectController: UIViewController {
         topVw.addBottomShadow()
         self.colzvw.delegate = self
         self.colzvw.dataSource = self
-        
-        print(self.colzvw.frame.size)
-        print(self.colzvw.bounds)
+
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -83,9 +81,7 @@ extension CurriculumSubjectController : UICollectionViewDelegate, UICollectionVi
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        print(self.colzvw.frame.size.width-10)
-        print(self.colzvw.bounds.width-10)
-
+        
         return CGSize(width: (colzvw.bounds.width-10)/2, height: 140)
     }
     

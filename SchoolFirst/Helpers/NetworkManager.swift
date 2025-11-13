@@ -693,7 +693,7 @@ struct CurriculumCategory: Codable, Identifiable {
     let curriculumID: String
     let curriculumName: String
     let status: String
-    let gradeName: String
+    let gradeName: String?
 
     enum CodingKeys: String, CodingKey {
         case id

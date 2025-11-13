@@ -64,7 +64,7 @@ class DailyChallengeViewController:UIViewController, AlphabetKeyboardDelegate{
     
     func submitWord(){
         
-        var payload = [
+        let payload = [
             "user_answer":txtField.text!,
             "word_id":self.words[currentWordIndex].id
         ]
