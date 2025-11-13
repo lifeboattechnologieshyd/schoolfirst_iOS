@@ -26,14 +26,15 @@ class PastAssessmentsVC: UIViewController {
     }
     
     private func navigateToAllQuestions() {
-        let vc = storyboard?.instantiateViewController(identifier: "AllQuestionsVC") as! AllQuestionsVC
+        let sb = UIStoryboard(name: "Main", bundle: nil)
+        let vc = sb.instantiateViewController(withIdentifier: "AllQuestionsVC") as! AllQuestionsVC
         navigationController?.pushViewController(vc, animated: true)
     }
     
     
     @IBAction func backButtonTapped(_ sender: UIButton) {
-        navigationController?.popViewController(animated: true)
+        let sb = UIStoryboard(name: "Main", bundle: nil)
+        let vc = sb.instantiateViewController(withIdentifier: "AssessmentsViewController") as! AssessmentsViewController
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
-
-

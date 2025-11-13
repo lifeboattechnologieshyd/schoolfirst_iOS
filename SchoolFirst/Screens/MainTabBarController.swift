@@ -18,7 +18,6 @@ class MainTabBarController: UITabBarController,
         super.viewDidLoad()
         self.delegate = self
 
-
         // ✅ Apply custom non-moving tab bar
         let fixedTabBar = UTabBarFixedDip()
         setValue(fixedTabBar, forKey: "tabBar")
@@ -61,12 +60,10 @@ class MainTabBarController: UITabBarController,
         }
     }
 
-
     // ------------------------------------------------------------
     // ✅ Setup floating circle button
     // ------------------------------------------------------------
     func setupCircleButton() {
-
         let size: CGFloat = 62
         circleButton.frame = CGRect(x: 0, y: 0, width: size, height: size)
         circleButton.layer.cornerRadius = size / 2
@@ -89,8 +86,7 @@ class MainTabBarController: UITabBarController,
 
         tabBar.addSubview(circleButton)
         tabBar.bringSubviewToFront(circleButton)
-
-     }
+    }
 
     func positionCircle() {
         circleButton.center = CGPoint(
@@ -103,7 +99,6 @@ class MainTabBarController: UITabBarController,
     // ✅ Circle button tap → Go Home (root)
     // ------------------------------------------------------------
     @objc func circleTapped() {
-
         selectedIndex = homeIndex
 
         if let nav = viewControllers?[homeIndex] as? UINavigationController {
@@ -122,7 +117,6 @@ class MainTabBarController: UITabBarController,
     // ✅ Visibility logic (NO FLASH, NO TAP on other screens)
     // ------------------------------------------------------------
     func updateVisibilityBasedOnDepth() {
-
         guard let nav = viewControllers?[selectedIndex] as? UINavigationController else { return }
 
         let isRoot = (nav.viewControllers.count == 1)
@@ -143,11 +137,21 @@ class MainTabBarController: UITabBarController,
         }
     }
 
-    // ✅ Remove border on tab selection
+    // ------------------------------------------------------------
+    // ✅ NEW: Highlight circle when MySchool tab item tapped
+    // ------------------------------------------------------------
     func tabBarController(_ tabBarController: UITabBarController,
                           didSelect viewController: UIViewController) {
 
-        circleButton.layer.borderColor = UIColor.clear.cgColor
+        // ✅ When “MySchool” tab (center index) tapped → highlight border
+        if selectedIndex == homeIndex {
+            circleButton.layer.borderColor = UIColor(
+                red: 0.043, green: 0.337, blue: 0.604, alpha: 1
+            ).cgColor
+        } else {
+            circleButton.layer.borderColor = UIColor.clear.cgColor
+        }
+
         updateVisibilityBasedOnDepth()
     }
 
@@ -215,7 +219,6 @@ class UTabBarFixedDip: UITabBar {
 
     // ✅ FIX: Only allow circle tap when visible & enabled
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-
         if let circle = circleButtonRef,
            !circle.isHidden,
            circle.isUserInteractionEnabled {
@@ -226,13 +229,11 @@ class UTabBarFixedDip: UITabBar {
                 return circle
             }
         }
-
         return super.hitTest(point, with: event)
     }
 
     // ✅ DIP SHAPE
     func dipPath() -> CGPath {
-
         let w = bounds.width
         let h: CGFloat = 60        // ✅ tab bar height
         let mid = w / 2
@@ -240,7 +241,6 @@ class UTabBarFixedDip: UITabBar {
         let dipW: CGFloat = 110
         let dipD: CGFloat = 30     // ✅ dip depth
         let r: CGFloat = 26        // ✅ corner radius
-
 
         let p = UIBezierPath()
 
@@ -251,17 +251,15 @@ class UTabBarFixedDip: UITabBar {
         p.addLine(to: CGPoint(x: 0, y: h))
         p.addLine(to: CGPoint(x: w, y: h))
         p.addLine(to: CGPoint(x: w, y: r))
-        p.addQuadCurve(to: CGPoint(x: w-r, y: 0),
+        p.addQuadCurve(to: CGPoint(x: w - r, y: 0),
                        controlPoint: CGPoint(x: w, y: 0))
-        let start = mid + dipW/2
-        let end   = mid - dipW/2
+        let start = mid + dipW / 2
+        let end = mid - dipW / 2
         p.addLine(to: CGPoint(x: start, y: 0))
         p.addQuadCurve(to: CGPoint(x: mid, y: dipD),
-                       controlPoint: CGPoint(x: mid + dipW/4, y: dipD))
-
+                       controlPoint: CGPoint(x: mid + dipW / 4, y: dipD))
         p.addQuadCurve(to: CGPoint(x: end, y: 0),
-                       controlPoint: CGPoint(x: mid - dipW/4, y: dipD))
-
+                       controlPoint: CGPoint(x: mid - dipW / 4, y: dipD))
         p.addLine(to: CGPoint(x: r, y: 0))
         p.close()
         return p.cgPath

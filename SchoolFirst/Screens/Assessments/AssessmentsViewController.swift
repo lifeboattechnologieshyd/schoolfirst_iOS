@@ -10,21 +10,30 @@ import UIKit
 class AssessmentsViewController: UIViewController {
     
     @IBOutlet weak var tblVw: UITableView!
-    
     @IBOutlet weak var backButton: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-         tblVw.register(UINib(nibName: "KidsCell", bundle: nil), forCellReuseIdentifier: "KidsCell")
+        tblVw.register(UINib(nibName: "KidsCell", bundle: nil), forCellReuseIdentifier: "KidsCell")
         tblVw.register(UINib(nibName: "AddKidsCell", bundle: nil), forCellReuseIdentifier: "AddKidsCell")
         
         tblVw.delegate = self
         tblVw.dataSource = self
     }
-    @IBAction func backButtonTapped(_ sender: UIButton) {
-        navigationController?.popViewController(animated: true)
+    
+     @IBAction func backButtonTapped(_ sender: UIButton) {
+        for controller in navigationController?.viewControllers ?? [] {
+            if controller is HomeController {
+                navigationController?.popToViewController(controller, animated: true)
+                return
+            }
+        }
+        
+         navigationController?.popToRootViewController(animated: true)
     }
 }
+
 
 
 extension AssessmentsViewController: UITableViewDelegate, UITableViewDataSource {
