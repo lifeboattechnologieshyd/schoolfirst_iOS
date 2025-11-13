@@ -393,6 +393,10 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
                 case 4:
                     let vc = storyboard?.instantiateViewController(identifier: "HomeworkViewController") as! HomeworkViewController
                     navigationController?.pushViewController(vc, animated: true)
+                case 5:
+                    let stbd = UIStoryboard(name: "TimeTable", bundle: nil)
+                    let vc = stbd.instantiateViewController(identifier: "TimeTableViewController") as! TimeTableViewController
+                    navigationController?.pushViewController(vc, animated: true)
                 case 6:
                     let vc = storyboard?.instantiateViewController(identifier: "FeeViewController") as! FeeViewController
                     navigationController?.pushViewController(vc, animated: true)

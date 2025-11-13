@@ -54,7 +54,7 @@ class EdutainCell: UITableViewCell {
 
         time += "\(feed.language)"
         lblTime.text = time
-        lblTitle.text = feed.heading
+        lblTitle.setHTML(feed.heading)
         imgVw.loadImage(url: feed.image ?? "", placeHolderImage: "login_img")
         
         lblLikeCount.text = "\(feed.likesCount)"

@@ -25,19 +25,18 @@ class HomeworkViewController: UIViewController {
         tblVw.register(UINib(nibName: "HWFooterCell", bundle: nil), forCellReuseIdentifier: "HWFooterCell")
         tblVw.delegate = self
         tblVw.dataSource = self
-//        HOMEWORK
     }
     @IBAction func onClickBack(_ sender: UIButton) {
         self.navigationController?.popViewController(animated: true)
     }
     
     func getHomework(){
-//        var url = API.HOMEWORK
-        var url = API.HOMEWORK_PAST
+        var url = API.HOMEWORK
+//        var url = API.HOMEWORK_PAST
         if let gradeId = UserManager.shared.user?.schools.first?.students.first?.gradeID {
-            url += "grade_id=\(gradeId)"
+            url += "?grade_id=\(gradeId)"
         }
-        url += "&start_date=2025-07-01&end_date=2025-10-31"
+//        url += "&start_date=2025-07-01&end_date=2025-10-31"
         NetworkManager.shared.request(urlString: url,method: .GET) { (result: Result<APIResponse<[Homework]>, NetworkError>)  in
             switch result {
             case .success(let info):
