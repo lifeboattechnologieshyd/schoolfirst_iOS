@@ -111,7 +111,7 @@ extension UIView {
         )
         layer.shadowPath = UIBezierPath(rect: shadowRect).cgPath
     }
-
+    
     
     func applyCardShadow(
         cornerRadius: CGFloat = 8,
@@ -194,11 +194,40 @@ extension String {
         let predicate = NSPredicate(format: "SELF MATCHES %@", regex)
         return predicate.evaluate(with: self)
     }
+    /// converts yyyy-MM-dd type string into dd MM yyyy
     
-    /// converts yyyy-MM-dd type string into dd MMM yyyy
-    func convertTo() -> String{
+    func fromyyyyMMddtoDDMMYYYY() -> String {
         let inputFormatter = DateFormatter()
         inputFormatter.dateFormat = "yyyy-MM-dd"
+        inputFormatter.locale = Locale(identifier: "en_US_POSIX")
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "dd-MM-yyyy"
+        outputFormatter.locale = Locale(identifier: "en_US_POSIX")
+        guard let date = inputFormatter.date(from: self) else {
+            return self // fallback to original if parsing fails
+        }
+        return outputFormatter.string(from: date)
+    }
+    
+    /// converts yyyy-dd-MM type string into dd MM yyyy
+    
+    func toDDMMYYYY() -> String {
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "yyyy-dd-MM"
+        inputFormatter.locale = Locale(identifier: "en_US_POSIX")
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "dd-MM-yyyy"
+        outputFormatter.locale = Locale(identifier: "en_US_POSIX")
+        guard let date = inputFormatter.date(from: self) else {
+            return self // fallback to original if parsing fails
+        }
+        return outputFormatter.string(from: date)
+    }
+    
+    /// converts yyyy-MM-dd type string into dd MMM yyyy
+    func toddMMMyyyy() -> String{
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "yyyy-dd-MM"
         inputFormatter.locale = Locale(identifier: "en_US_POSIX")
         let outputFormatter = DateFormatter()
         outputFormatter.dateFormat = "dd MMM yyyy"
@@ -239,7 +268,7 @@ import Kingfisher
 
 struct RemoveAlphaProcessor: ImageProcessor {
     let identifier = "com.lifeboat.RemoveAlphaProcessor"
-
+    
     func process(item: ImageProcessItem, options: KingfisherParsedOptionsInfo) -> KFCrossPlatformImage? {
         switch item {
         case .image(let image):
@@ -407,97 +436,97 @@ extension UIColor {
 }
 
 extension UILabel {
-
+    
     /// Set HTML string to label as attributed text.
-        ///
-        /// - Parameters:
-        ///   - html: HTML string (may include <b>, <i>, <br>, <p>, <a>, <img> etc.)
-        ///   - font: optional font to apply as a base (preserves bold/italic traits)
-        ///   - color: optional color to apply as a base
-        ///   - lineBreakMode: optional lineBreakMode (defaults to label's current)
-        func setHTML(_ html: String,
-                     font baseFont: UIFont? = nil,
-                     color baseColor: UIColor? = nil,
-                     lineBreakMode: NSLineBreakMode? = nil) {
-            // Ensure UI work on main thread
-            let apply: (NSAttributedString?) -> Void = { [weak self] attributed in
-                guard let self = self else { return }
-                if let lineBreak = lineBreakMode {
-                    self.lineBreakMode = lineBreak
-                }
-                if let attributed = attributed {
-                    self.numberOfLines = 0
-                    self.attributedText = attributed
-                } else {
-                    // fallback to plain text if parsing fails
-                    self.text = html.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
-                }
+    ///
+    /// - Parameters:
+    ///   - html: HTML string (may include <b>, <i>, <br>, <p>, <a>, <img> etc.)
+    ///   - font: optional font to apply as a base (preserves bold/italic traits)
+    ///   - color: optional color to apply as a base
+    ///   - lineBreakMode: optional lineBreakMode (defaults to label's current)
+    func setHTML(_ html: String,
+                 font baseFont: UIFont? = nil,
+                 color baseColor: UIColor? = nil,
+                 lineBreakMode: NSLineBreakMode? = nil) {
+        // Ensure UI work on main thread
+        let apply: (NSAttributedString?) -> Void = { [weak self] attributed in
+            guard let self = self else { return }
+            if let lineBreak = lineBreakMode {
+                self.lineBreakMode = lineBreak
             }
-            
-            if Thread.isMainThread == false {
-                DispatchQueue.main.async { [weak self] in
-                    guard self != nil else { return }
-                    _ = self // capture self to silence unused warning in closure
-                }
+            if let attributed = attributed {
+                self.numberOfLines = 0
+                self.attributedText = attributed
+            } else {
+                // fallback to plain text if parsing fails
+                self.text = html.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
             }
-            
-            // Convert HTML -> Data
-            guard let data = html.data(using: .utf8) else {
-                apply(nil)
-                return
+        }
+        
+        if Thread.isMainThread == false {
+            DispatchQueue.main.async { [weak self] in
+                guard self != nil else { return }
+                _ = self // capture self to silence unused warning in closure
             }
-            
-            // Read options
-            let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
-                .documentType: NSAttributedString.DocumentType.html,
-                .characterEncoding: String.Encoding.utf8.rawValue
-            ]
-            
-            DispatchQueue.global(qos: .userInitiated).async {
-                // Parse HTML into NSAttributedString
-                let parsed: NSAttributedString?
-                do {
-                    let raw = try NSMutableAttributedString(
-                        data: data,
-                        options: options,
-                        documentAttributes: nil
-                    )
-                    // If a base font or color is provided, normalize fonts & colors while preserving traits
-                    if let baseFont = baseFont {
-                        raw.beginEditing()
-                        raw.enumerateAttribute(.font, in: NSRange(location: 0, length: raw.length), options: []) { value, range, _ in
-                            if let currentFont = value as? UIFont {
-                                // Preserve traits (bold/italic)
-                                let traits = currentFont.fontDescriptor.symbolicTraits
-                                if let descriptor = baseFont.fontDescriptor.withSymbolicTraits(traits) {
-                                    let newFont = UIFont(descriptor: descriptor, size: baseFont.pointSize)
-                                    raw.addAttribute(.font, value: newFont, range: range)
-                                } else {
-                                    raw.addAttribute(.font, value: baseFont, range: range)
-                                }
+        }
+        
+        // Convert HTML -> Data
+        guard let data = html.data(using: .utf8) else {
+            apply(nil)
+            return
+        }
+        
+        // Read options
+        let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
+            .documentType: NSAttributedString.DocumentType.html,
+            .characterEncoding: String.Encoding.utf8.rawValue
+        ]
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            // Parse HTML into NSAttributedString
+            let parsed: NSAttributedString?
+            do {
+                let raw = try NSMutableAttributedString(
+                    data: data,
+                    options: options,
+                    documentAttributes: nil
+                )
+                // If a base font or color is provided, normalize fonts & colors while preserving traits
+                if let baseFont = baseFont {
+                    raw.beginEditing()
+                    raw.enumerateAttribute(.font, in: NSRange(location: 0, length: raw.length), options: []) { value, range, _ in
+                        if let currentFont = value as? UIFont {
+                            // Preserve traits (bold/italic)
+                            let traits = currentFont.fontDescriptor.symbolicTraits
+                            if let descriptor = baseFont.fontDescriptor.withSymbolicTraits(traits) {
+                                let newFont = UIFont(descriptor: descriptor, size: baseFont.pointSize)
+                                raw.addAttribute(.font, value: newFont, range: range)
                             } else {
                                 raw.addAttribute(.font, value: baseFont, range: range)
                             }
+                        } else {
+                            raw.addAttribute(.font, value: baseFont, range: range)
                         }
-                        raw.endEditing()
                     }
-                    
-                    if let baseColor = baseColor {
-                        raw.addAttribute(.foregroundColor, value: baseColor, range: NSRange(location: 0, length: raw.length))
-                    }
-                    
-                    parsed = raw
-                } catch {
-                    parsed = nil
+                    raw.endEditing()
                 }
                 
-                // Apply on main thread
-                DispatchQueue.main.async {
-                    apply(parsed)
+                if let baseColor = baseColor {
+                    raw.addAttribute(.foregroundColor, value: baseColor, range: NSRange(location: 0, length: raw.length))
                 }
+                
+                parsed = raw
+            } catch {
+                parsed = nil
+            }
+            
+            // Apply on main thread
+            DispatchQueue.main.async {
+                apply(parsed)
             }
         }
-
+    }
+    
     
     func addPadding(top: CGFloat, left: CGFloat, bottom: CGFloat, right: CGFloat) {
         let paddingView = UIView()

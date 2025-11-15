@@ -20,7 +20,7 @@ class AnnualDayViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        dateLbl.text = gallery.eventDate.convertTo()
+        dateLbl.text = gallery.eventDate.fromyyyyMMddtoDDMMYYYY()
         annualLbl.text = gallery.eventName
         topVw.addBottomShadow()
         

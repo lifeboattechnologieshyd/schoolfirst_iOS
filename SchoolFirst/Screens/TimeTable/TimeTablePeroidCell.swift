@@ -1,16 +1,14 @@
 //
-//  HWHeaderCell.swift
+//  TimeTablePeroidCell.swift
 //  SchoolFirst
 //
-//  Created by Ranjith Padidala on 10/11/25.
+//  Created by Ranjith Padidala on 12/11/25.
 //
 
 import UIKit
 
-class HWHeaderCell: UITableViewCell {
-    @IBOutlet weak var lbldate: UILabel!
-    
-    @IBOutlet weak var lbldeadline: UILabel!
+class TimeTablePeroidCell: UITableViewCell {
+
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

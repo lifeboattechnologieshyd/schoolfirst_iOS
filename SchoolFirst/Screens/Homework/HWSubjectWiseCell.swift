@@ -10,6 +10,8 @@ import UIKit
 class HWSubjectWiseCell: UITableViewCell {
     @IBOutlet weak var bgView: UIView!
 
+    @IBOutlet weak var lblDescription: UILabel!
+    @IBOutlet weak var lblSubject: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
