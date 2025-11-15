@@ -11,6 +11,7 @@ class ProfileTableViewCell: UITableViewCell {
     @IBOutlet weak var bgView: UIView!
     
     @IBOutlet weak var shareView: UIView!
+    @IBOutlet weak var Edit: UIButton!
     @IBOutlet weak var lblMobile: UILabel!
     @IBOutlet weak var lblName: UILabel!
     @IBOutlet weak var imgView: UIImageView!

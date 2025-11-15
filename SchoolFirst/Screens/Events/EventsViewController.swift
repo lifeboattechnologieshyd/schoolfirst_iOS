@@ -12,13 +12,16 @@ class EventsViewController: UIViewController {
 
     @IBOutlet weak var tblVw: UITableView!
     @IBOutlet weak var headerView: UIView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         getMyEvents()
-        self.tblVw.register(UINib(nibName: "EventTableCell", bundle: nil), forCellReuseIdentifier: "EventTableCell")
+        
+        self.tblVw.register(UINib(nibName: "EventTableCell", bundle: nil),
+                            forCellReuseIdentifier: "EventTableCell")
+        
         tblVw.dataSource = self
         tblVw.delegate = self
-
     }
     
     override func viewDidLayoutSubviews() {
@@ -30,10 +33,12 @@ class EventsViewController: UIViewController {
         self.navigationController?.popViewController(animated: true)
     }
     
-    func getMyEvents(){
-
+    func getMyEvents() {
         let params: [String:Any] = [:]
-        NetworkManager.shared.request(urlString: API.EVENTS_GETEVENTS, method: .GET, parameters: params) { (result: Result<APIResponse<[Event]>, NetworkError>)  in
+        
+        NetworkManager.shared.request(urlString: API.EVENTS_GETEVENTS,
+                                      method: .GET,
+                                      parameters: params) { (result: Result<APIResponse<[Event]>, NetworkError>)  in
             switch result {
             case .success(let info):
                 if info.success {
@@ -44,36 +49,47 @@ class EventsViewController: UIViewController {
                     DispatchQueue.main.async {
                         self.tblVw.reloadData()
                     }
-                }else{
+                } else {
                     print(info.description)
                 }
+                
             case .failure(let error):
                 print(error.localizedDescription)
             }
         }
     }
-
 }
 
 extension EventsViewController : UITableViewDelegate, UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    
+    func tableView(_ tableView: UITableView,
+                   numberOfRowsInSection section: Int) -> Int {
         return events.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "EventTableCell", for: indexPath) as! EventTableCell
+    func tableView(_ tableView: UITableView,
+                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "EventTableCell",
+                                                 for: indexPath) as! EventTableCell
         cell.config(event: self.events[indexPath.row])
         return cell
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView,
+                   heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 155
     }
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        DispatchQueue.main.async {
-//            let vc = self.storyboard?.instantiateViewController(withIdentifier: "BulletinInfoViewController") as! BulletinInfoViewController
-//            vc.bulletin = self.events[indexPath.row]
-//            self.navigationController?.pushViewController(vc, animated: true)
-//        }
+    
+    func tableView(_ tableView: UITableView,
+                   didSelectRowAt indexPath: IndexPath) {
+        
+        let vc = self.storyboard?.instantiateViewController(
+            withIdentifier: "DetailsScreenVC"
+        ) as! DetailsScreenVC
+        
+        vc.selectedEvent = events[indexPath.row]   // 🔥 Pass selected event
+        
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 }

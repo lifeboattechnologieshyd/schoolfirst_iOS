@@ -132,6 +132,7 @@ extension LeaveHistoryViewController: UICollectionViewDelegate, UICollectionView
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: 72, height: 32)
     }
+    
 }
 
  

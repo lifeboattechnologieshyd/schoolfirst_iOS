@@ -202,15 +202,45 @@
                                             <action selector="backTapped:" destination="83n-5v-7Pu" eventType="touchUpInside" id="Ub0-HS-mEJ"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ODp-o9-VfI">
+                                        <rect key="frame" x="181" y="748" width="30" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="30" id="a1I-7H-4XK"/>
+                                            <constraint firstAttribute="height" constant="30" id="oHO-R7-epo"/>
+                                        </constraints>
+                                        <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="square.and.arrow.down" catalog="system"/>
+                                        <connections>
+                                            <action selector="backTapped:" destination="83n-5v-7Pu" eventType="touchUpInside" id="Zie-Eh-5tt"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ys7-hK-trb">
+                                        <rect key="frame" x="239" y="748" width="30" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="30" id="8qC-pQ-dz4"/>
+                                            <constraint firstAttribute="height" constant="30" id="QhA-ir-PRm"/>
+                                        </constraints>
+                                        <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="call"/>
+                                        <connections>
+                                            <action selector="backTapped:" destination="83n-5v-7Pu" eventType="touchUpInside" id="dYm-ih-ajN"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <constraints>
+                                    <constraint firstItem="ODp-o9-VfI" firstAttribute="top" secondItem="RE5-2J-6mO" secondAttribute="top" constant="748" id="1Vk-Pt-FNk"/>
                                     <constraint firstItem="OXL-Ix-XBZ" firstAttribute="leading" secondItem="HAE-1m-91Y" secondAttribute="leading" id="6My-Gw-YGl"/>
+                                    <constraint firstItem="ys7-hK-trb" firstAttribute="leading" secondItem="ODp-o9-VfI" secondAttribute="trailing" constant="28" id="88q-lO-AgF"/>
                                     <constraint firstItem="dYq-Yh-NGh" firstAttribute="top" secondItem="RE5-2J-6mO" secondAttribute="top" constant="67" id="8R6-oE-oIw"/>
                                     <constraint firstItem="OXL-Ix-XBZ" firstAttribute="width" secondItem="RE5-2J-6mO" secondAttribute="width" id="Nkd-gN-8pD"/>
                                     <constraint firstItem="OXL-Ix-XBZ" firstAttribute="bottom" secondItem="HAE-1m-91Y" secondAttribute="bottom" id="PTO-lJ-okz"/>
                                     <constraint firstItem="OXL-Ix-XBZ" firstAttribute="leading" secondItem="RE5-2J-6mO" secondAttribute="leading" id="SDq-A9-LJc"/>
+                                    <constraint firstItem="ODp-o9-VfI" firstAttribute="leading" secondItem="RE5-2J-6mO" secondAttribute="leading" constant="181" id="UyO-yz-bfv"/>
                                     <constraint firstItem="OXL-Ix-XBZ" firstAttribute="trailing" secondItem="HAE-1m-91Y" secondAttribute="trailing" id="VDT-CL-E4F"/>
                                     <constraint firstItem="OXL-Ix-XBZ" firstAttribute="height" secondItem="RE5-2J-6mO" secondAttribute="height" id="WAr-X0-tyg"/>
+                                    <constraint firstItem="ys7-hK-trb" firstAttribute="centerY" secondItem="ODp-o9-VfI" secondAttribute="centerY" id="Wml-fG-0Ea"/>
                                     <constraint firstItem="RE5-2J-6mO" firstAttribute="trailing" secondItem="OXL-Ix-XBZ" secondAttribute="trailing" id="cnC-0Q-H7l"/>
                                     <constraint firstItem="OXL-Ix-XBZ" firstAttribute="top" secondItem="RE5-2J-6mO" secondAttribute="top" id="dIj-G2-Ws0"/>
                                     <constraint firstItem="RE5-2J-6mO" firstAttribute="bottom" secondItem="OXL-Ix-XBZ" secondAttribute="bottom" id="hMk-Xf-2hV"/>
@@ -242,6 +272,8 @@
     </scenes>
     <resources>
         <image name="arrow.backward" catalog="system" width="128" height="95"/>
+        <image name="call" width="24" height="24"/>
+        <image name="square.and.arrow.down" catalog="system" width="114" height="128"/>
         <image name="xmark" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

@@ -7,12 +7,11 @@
 
 import UIKit
 
-
 class AttendanceCell: UITableViewCell {
     
     @IBOutlet weak var presentVw: UIView!
     @IBOutlet weak var attendanceLbl: UILabel!
-    @IBOutlet weak var progressVw: UIView! // Circular chart container
+    @IBOutlet weak var progressVw: UIView!
     @IBOutlet weak var absentVw: UIView!
     @IBOutlet weak var voiletVw: UIView!
     @IBOutlet weak var blueVw: UIView!
@@ -21,15 +20,18 @@ class AttendanceCell: UITableViewCell {
     @IBOutlet weak var requestleaveButton: UIButton!
     @IBOutlet weak var leavehistoryButton: UIButton!
     
-
     var presentCount: Int = 10
     var absentCount: Int = 16
-    var totalDays: Int = 26 // Sundays excluded
+    var totalDays: Int = 26
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
+<<<<<<< HEAD
          [blueVw, voiletVw, presentVw, absentVw].forEach {
+=======
+        [blueVw, voiletVw, abhiBgVw, shrvVw, presentVw, absentVw].forEach {
+>>>>>>> 0698f139be18b02910edde53427f4286a22a8e37
             $0?.layer.cornerRadius = 8
         }
         
@@ -40,14 +42,32 @@ class AttendanceCell: UITableViewCell {
         attendanceVw.layer.shadowRadius = 4
         attendanceVw.layer.masksToBounds = false
         
-    }
-
-     @IBAction func requestLeaveButtonTapped(_ sender: UIButton) {
+<<<<<<< HEAD
+=======
+        abhiBgVw.layer.cornerRadius = 25
+        abhiBgVw.layer.borderWidth = 1
+        abhiBgVw.layer.borderColor = UIColor(red: 11/255, green: 86/255, blue: 154/255, alpha: 1).cgColor
         
+        shrvVw.layer.cornerRadius = 25
+        shrvVw.layer.borderWidth = 1
+        shrvVw.layer.borderColor = UIColor(red: 203/255, green: 229/255, blue: 253/255, alpha: 1).cgColor
+>>>>>>> 0698f139be18b02910edde53427f4286a22a8e37
     }
 
+    @IBAction func requestLeaveButtonTapped(_ sender: UIButton) {
+
+        if let parentVC = self.parentViewController() {
+            let sb = UIStoryboard(name: "Attendance", bundle: nil)
+            let vc = sb.instantiateViewController(withIdentifier: "SubmitLeaveViewController") as! SubmitLeaveViewController
+            parentVC.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
     @IBAction func leaveHistoryButtonTapped(_ sender: UIButton) {
-        
+        if let parentVC = self.parentViewController() {
+            let sb = UIStoryboard(name: "Attendance", bundle: nil)
+            let vc = sb.instantiateViewController(withIdentifier: "LeaveHistoryViewController") as! LeaveHistoryViewController
+            parentVC.navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     override func layoutSubviews() {
@@ -55,7 +75,7 @@ class AttendanceCell: UITableViewCell {
         drawAttendanceChart()
     }
     
-     func drawAttendanceChart() {
+    func drawAttendanceChart() {
         guard totalDays > 0 else { return }
 
         progressVw.layer.sublayers?.forEach { $0.removeFromSuperlayer() }
@@ -65,7 +85,7 @@ class AttendanceCell: UITableViewCell {
         let radius = progressVw.bounds.width / 2 - 8
         let lineWidth: CGFloat = 12
 
-         let bgCircle = CAShapeLayer()
+        let bgCircle = CAShapeLayer()
         bgCircle.path = UIBezierPath(
             arcCenter: center,
             radius: radius,
@@ -78,22 +98,22 @@ class AttendanceCell: UITableViewCell {
         bgCircle.lineWidth = lineWidth
         progressVw.layer.addSublayer(bgCircle)
 
-         let presentFraction = CGFloat(presentCount) / CGFloat(totalDays)
+        let presentFraction = CGFloat(presentCount) / CGFloat(totalDays)
         let absentFraction = CGFloat(absentCount) / CGFloat(totalDays)
         var startAngle = -CGFloat.pi / 2
 
         if presentCount > 0 {
             let endAngle = startAngle + 2 * .pi * presentFraction
-            addSegment(from: startAngle, to: endAngle, color: UIColor(red: 15/255, green: 175/255, blue: 19/255, alpha: 1), center: center, radius: radius, lineWidth: lineWidth) // #0FAF13
+            addSegment(from: startAngle, to: endAngle, color: UIColor(red: 15/255, green: 175/255, blue: 19/255, alpha: 1), center: center, radius: radius, lineWidth: lineWidth)
             startAngle = endAngle
         }
 
         if absentCount > 0 {
             let endAngle = startAngle + 2 * .pi * absentFraction
-            addSegment(from: startAngle, to: endAngle, color: UIColor(red: 255/255, green: 0/255, blue: 25/255, alpha: 1), center: center, radius: radius, lineWidth: lineWidth) // #FF0019
+            addSegment(from: startAngle, to: endAngle, color: UIColor(red: 255/255, green: 0/255, blue: 25/255, alpha: 1), center: center, radius: radius, lineWidth: lineWidth)
         }
 
-         let presentPercent = Int((CGFloat(presentCount) / CGFloat(totalDays)) * 100)
+        let presentPercent = Int((CGFloat(presentCount) / CGFloat(totalDays)) * 100)
         let percentLabel = UILabel(frame: progressVw.bounds)
         percentLabel.text = "\(presentPercent)%"
         percentLabel.font = UIFont.boldSystemFont(ofSize: 20)
@@ -118,4 +138,3 @@ class AttendanceCell: UITableViewCell {
         progressVw.layer.addSublayer(segment)
     }
 }
-
