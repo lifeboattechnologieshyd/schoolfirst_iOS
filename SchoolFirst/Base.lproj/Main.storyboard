@@ -2837,6 +2837,76 @@
             </objects>
             <point key="canvasLocation" x="8437" y="158"/>
         </scene>
+        <!--Details ScreenVC-->
+        <scene sceneID="Hdp-d4-Lf0">
+            <objects>
+                <viewController storyboardIdentifier="DetailsScreenVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="hIM-f2-CD0" customClass="DetailsScreenVC" customModule="SF_Dev" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="y81-Vr-Q6Y">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="woV-0r-b43">
+                                <rect key="frame" x="0.0" y="59" width="393" height="50"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Fei-kb-f1F">
+                                        <rect key="frame" x="2" y="7.6666666666666714" width="49.333333333333336" height="35"/>
+                                        <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="arrow.backward" catalog="system" imagePlacement="leading"/>
+                                        <connections>
+                                            <action selector="onClickBack:" destination="Jyj-dK-dGd" eventType="touchUpInside" id="0bZ-gh-dPc"/>
+                                            <action selector="onClickBack:" destination="hIM-f2-CD0" eventType="touchUpInside" id="zv9-Ng-kiU"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AJt-VQ-awN">
+                                        <rect key="frame" x="133" y="15" width="127.33333333333331" height="20"/>
+                                        <attributedString key="attributedText">
+                                            <fragment content="Upcoming Events">
+                                                <attributes>
+                                                    <font key="NSFont" metaFont="system" size="16"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                                </attributes>
+                                            </fragment>
+                                        </attributedString>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="Fei-kb-f1F" firstAttribute="leading" secondItem="woV-0r-b43" secondAttribute="leading" constant="2" id="14A-ra-sUk"/>
+                                    <constraint firstItem="Fei-kb-f1F" firstAttribute="centerY" secondItem="woV-0r-b43" secondAttribute="centerY" id="EBK-IN-sg9"/>
+                                    <constraint firstItem="AJt-VQ-awN" firstAttribute="centerY" secondItem="Fei-kb-f1F" secondAttribute="centerY" id="PMh-dP-Lyv"/>
+                                    <constraint firstAttribute="height" constant="50" id="UvA-q1-iNx"/>
+                                    <constraint firstItem="AJt-VQ-awN" firstAttribute="centerX" secondItem="woV-0r-b43" secondAttribute="centerX" id="msr-mX-Pjl"/>
+                                </constraints>
+                            </view>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="a3a-fh-r3a">
+                                <rect key="frame" x="0.0" y="114" width="393" height="704"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="hbW-5b-voB"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="a3a-fh-r3a" firstAttribute="top" secondItem="woV-0r-b43" secondAttribute="bottom" constant="5" id="683-58-0Wk"/>
+                            <constraint firstItem="woV-0r-b43" firstAttribute="trailing" secondItem="hbW-5b-voB" secondAttribute="trailing" id="Gxr-4C-WUm"/>
+                            <constraint firstItem="a3a-fh-r3a" firstAttribute="leading" secondItem="hbW-5b-voB" secondAttribute="leading" id="S7R-SO-hbk"/>
+                            <constraint firstItem="woV-0r-b43" firstAttribute="leading" secondItem="hbW-5b-voB" secondAttribute="leading" id="c5F-uO-KWM"/>
+                            <constraint firstItem="hbW-5b-voB" firstAttribute="bottom" secondItem="a3a-fh-r3a" secondAttribute="bottom" id="lsS-M9-FA8"/>
+                            <constraint firstItem="hbW-5b-voB" firstAttribute="trailing" secondItem="a3a-fh-r3a" secondAttribute="trailing" id="r8Z-FD-FP9"/>
+                            <constraint firstItem="woV-0r-b43" firstAttribute="top" secondItem="hbW-5b-voB" secondAttribute="top" id="tcp-nw-lr8"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="backButton" destination="Fei-kb-f1F" id="xnz-Ph-EjO"/>
+                        <outlet property="tblVw" destination="a3a-fh-r3a" id="cHe-8u-ObZ"/>
+                        <outlet property="topVw" destination="woV-0r-b43" id="8dd-cm-NeY"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zYa-zQ-Kq5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="9251" y="158"/>
+        </scene>
         <!--Assessments Grade SelectionVC-->
         <scene sceneID="bes-3b-hTg">
             <objects>

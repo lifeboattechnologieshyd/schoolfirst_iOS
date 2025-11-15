@@ -19,8 +19,8 @@ class NewsCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-//        lblTItle.setHTML("", font: .lexend(.semiBold, size: 16))
-//        lblDescription.setHTML("", font: .lexend(.regular, size: 14))
+        lblTItle.setHTML("", font: .lexend(.semiBold, size: 16))
+        lblDescription.setHTML("", font: .lexend(.regular, size: 14))
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
