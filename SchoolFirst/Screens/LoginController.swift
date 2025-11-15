@@ -66,6 +66,7 @@ class LoginController: UIViewController {
             "password": self.txtFieldPassword.text!
         ]
         
+        print(payload)
         NetworkManager.shared.request(urlString: API.LOGIN, method: .POST, parameters: payload) { (result: Result<APIResponse<LoginResponse>, NetworkError>) in
             switch result {
             case .success(let info):

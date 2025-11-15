@@ -12,17 +12,16 @@ import FSCalendar
 
 class AttendanceViewController: UIViewController {
 
-    
     @IBOutlet weak var topVw: UIView!
     @IBOutlet weak var tblVw: UITableView!
     @IBOutlet weak var backButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         topVw.addBottomShadow(shadowOpacity: 0.15, shadowRadius: 3, shadowHeight: 4)
-            setupTableView()
-        }
+        self.setupTableView()
+        self.getAttandanceReport()
+    }
     private func setupTableView() {
         tblVw.delegate = self
         tblVw.dataSource = self
@@ -32,6 +31,34 @@ class AttendanceViewController: UIViewController {
         tblVw.register(UINib(nibName: "AttendanceCell", bundle: nil), forCellReuseIdentifier: "AttendanceCell")
         tblVw.register(UINib(nibName: "AttendanceTableViewCell", bundle: nil), forCellReuseIdentifier: "AttendanceTableViewCell")
         tblVw.register(UINib(nibName: "CalendarTableViewCell", bundle: nil), forCellReuseIdentifier: "CalendarTableViewCell")
+    }
+    
+    
+    func getAttandanceReport() {
+        var url = API.ATTENDANCE_STATS + "student_id=\(UserManager.shared.kids.first?.studentID ?? "")"
+        NetworkManager.shared.request(urlString: url, method: .GET) { (result: Result<APIResponse<[GradeModel]>, NetworkError>)  in
+            switch result {
+            case .success(let info):
+                if info.success {
+                    if let data = info.data {
+                        DispatchQueue.main.async {
+//                            self.colVw.reloadData()
+                        }
+                    }
+                }else{
+                    print(info.description)
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    switch error {
+                    case .noaccess:
+                        self.handleLogout()
+                    default:
+                        self.showAlert(msg: error.localizedDescription)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -64,7 +91,7 @@ class AttendanceViewController: UIViewController {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.row {
-        case 0: return 378
+        case 0: return 295
         case 1: return 50
         case 2: return 480
         default: return 60

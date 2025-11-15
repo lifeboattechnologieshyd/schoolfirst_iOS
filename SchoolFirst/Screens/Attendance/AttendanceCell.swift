@@ -10,22 +10,16 @@ import UIKit
 
 class AttendanceCell: UITableViewCell {
     
-    @IBOutlet weak var abhiLbl: UILabel!
-    @IBOutlet weak var abhiBgVw: UIView!
     @IBOutlet weak var presentVw: UIView!
     @IBOutlet weak var attendanceLbl: UILabel!
     @IBOutlet weak var progressVw: UIView! // Circular chart container
     @IBOutlet weak var absentVw: UIView!
-    @IBOutlet weak var shrvVw: UIView!
     @IBOutlet weak var voiletVw: UIView!
-    @IBOutlet weak var shrvImg: UIImageView!
     @IBOutlet weak var blueVw: UIView!
     @IBOutlet weak var attendanceVw: UIView!
     @IBOutlet weak var greenImg: UIImageView!
     @IBOutlet weak var requestleaveButton: UIButton!
     @IBOutlet weak var leavehistoryButton: UIButton!
-    @IBOutlet weak var shrvLbl: UILabel!
-    @IBOutlet weak var abhiImg: UIImageView!
     
 
     var presentCount: Int = 10
@@ -35,24 +29,17 @@ class AttendanceCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-         [blueVw, voiletVw, abhiBgVw, shrvVw, presentVw, absentVw].forEach {
+         [blueVw, voiletVw, presentVw, absentVw].forEach {
             $0?.layer.cornerRadius = 8
         }
         
-         attendanceVw.layer.cornerRadius = 14
+        attendanceVw.layer.cornerRadius = 14
         attendanceVw.layer.shadowColor = UIColor.black.cgColor
         attendanceVw.layer.shadowOpacity = 0.2
         attendanceVw.layer.shadowOffset = CGSize(width: 0, height: 2)
         attendanceVw.layer.shadowRadius = 4
         attendanceVw.layer.masksToBounds = false
         
-         abhiBgVw.layer.cornerRadius = 25
-        abhiBgVw.layer.borderWidth = 1
-        abhiBgVw.layer.borderColor = UIColor(red: 11/255, green: 86/255, blue: 154/255, alpha: 1).cgColor // #0B569A
-        
-        shrvVw.layer.cornerRadius = 25
-        shrvVw.layer.borderWidth = 1
-        shrvVw.layer.borderColor = UIColor(red: 203/255, green: 229/255, blue: 253/255, alpha: 1).cgColor // #CBE5FD
     }
 
      @IBAction func requestLeaveButtonTapped(_ sender: UIButton) {

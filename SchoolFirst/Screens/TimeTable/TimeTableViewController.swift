@@ -14,12 +14,42 @@ class TimeTableViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         topView.addBottomShadow()
+        getTimeTable()
         tblVw.register(UINib(nibName: "TimeTableSessionCell", bundle: nil), forCellReuseIdentifier: "TimeTableSessionCell")
         tblVw.register(UINib(nibName: "TimeTablePeroidCell", bundle: nil), forCellReuseIdentifier: "TimeTablePeroidCell")
         tblVw.delegate = self
         tblVw.dataSource = self
-        
 
+    }
+    
+    func getTimeTable(){
+        guard let grade = UserManager.shared.kids.first?.gradeID else {
+            return
+        }
+        var url = API.ATTENDANCE_TIMETABLE + "date=\(Date().toddMMYYYY())&grade_id=\(grade)"
+        NetworkManager.shared.request(urlString: url, method: .GET) { (result: Result<APIResponse<[GradeModel]>, NetworkError>)  in
+            switch result {
+            case .success(let info):
+                if info.success {
+                    if let data = info.data {
+                        DispatchQueue.main.async {
+                            
+                        }
+                    }
+                }else{
+                    print(info.description)
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    switch error {
+                    case .noaccess:
+                        self.handleLogout()
+                    default:
+                        self.showAlert(msg: error.localizedDescription)
+                    }
+                }
+            }
+        }
     }
     
     @IBAction func onClickBack(_ sender: Any) {

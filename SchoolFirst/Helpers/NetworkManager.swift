@@ -208,9 +208,9 @@ struct Student: Codable {
     let image: String?
     let fatherName: String
     let motherName: String
-    let dob: String
+    let dob: String?
     let address: String?
-    let mobile: String
+    let mobile: String?
     let grade: String
     let gradeID: String
     let section: String

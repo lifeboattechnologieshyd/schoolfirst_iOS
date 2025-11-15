@@ -335,25 +335,40 @@ extension Date {
         let now = Date()
         let secondsAgo = Int(now.timeIntervalSince(self))
         
-        let minute = 60
-        let hour = 60 * minute
-        let day = 24 * hour
-        let week = 7 * day
-        let month = 30 * day
+//        let minute = 60
+//        let hour = 60 * minute
+//        let day = 24 * hour
+//        let week = 7 * day
+//        let month = 30 * day
         
-        if secondsAgo < minute {
-            return "\(secondsAgo) sec ago"
-        } else if secondsAgo < hour {
-            return "\(secondsAgo / minute) min ago"
-        } else if secondsAgo < day {
-            return "\(secondsAgo / hour) hr ago"
-        } else if secondsAgo < week {
-            return "\(secondsAgo / day) day ago"
-        } else if secondsAgo < month {
-            return "\(secondsAgo / week) week ago"
+        if secondsAgo < 60 {
+            return "just now"
+        } else if secondsAgo < 3600 {
+            let minutes = secondsAgo / 60
+            return minutes == 1 ? "1 min ago" : "\(minutes) mins ago"
+        } else if secondsAgo < 86400 {
+            let hours = secondsAgo / 3600
+            return hours == 1 ? "1 hr ago" : "\(hours) hrs ago"
+        } else if secondsAgo < 604800 {
+            let days = secondsAgo / 86400
+            return days == 1 ? "1 day ago" : "\(days) days ago"
+        } else if secondsAgo < 2_592_000 {
+            let weeks = secondsAgo / 604800
+            return weeks == 1 ? "1 week ago" : "\(weeks) weeks ago"
+        } else if secondsAgo < 31_536_000 {
+            let months = secondsAgo / 2_592_000
+            return months == 1 ? "1 month ago" : "\(months) months ago"
         } else {
-            return "\(secondsAgo / month) month ago"
+            let years = secondsAgo / 31_536_000
+            return years == 1 ? "1 year ago" : "\(years) years ago"
         }
+    }
+    
+    func toddMMYYYY() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd-MM-yyyy"
+        let formattedDateString = dateFormatter.string(from: self)
+        return formattedDateString
     }
 }
 import UIKit
@@ -587,6 +602,52 @@ extension UITextView {
                 self.attributedText = attributed
                 self.textAlignment = .natural
             }
+        }
+    }
+}
+
+extension NSAttributedString {
+    /// Converts HTML string into an attributed string with custom font family applied
+    static func fromHTML(_ html: String,
+                         regularFont: UIFont,
+                         boldFont: UIFont? = nil,
+                         italicFont: UIFont? = nil,
+                         textColor: UIColor = .label) -> NSAttributedString? {
+        
+        // Step 1: convert to data
+        guard let data = html.data(using: .utf8) else { return nil }
+        
+        // Step 2: parse HTML to attributed string
+        let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
+            .documentType: NSAttributedString.DocumentType.html,
+            .characterEncoding: String.Encoding.utf8.rawValue
+        ]
+        
+        do {
+            let raw = try NSMutableAttributedString(data: data, options: options, documentAttributes: nil)
+            
+            // Step 3: Replace fonts with your Lexend variants
+            raw.enumerateAttribute(.font, in: NSRange(location: 0, length: raw.length)) { value, range, _ in
+                guard let oldFont = value as? UIFont else { return }
+                let traits = oldFont.fontDescriptor.symbolicTraits
+                
+                if traits.contains(.traitBold), let boldFont = boldFont {
+                    raw.addAttribute(.font, value: boldFont, range: range)
+                } else if traits.contains(.traitItalic), let italicFont = italicFont {
+                    raw.addAttribute(.font, value: italicFont, range: range)
+                } else {
+                    raw.addAttribute(.font, value: regularFont, range: range)
+                }
+            }
+            
+            // Step 4: Ensure correct text color
+            raw.addAttribute(.foregroundColor, value: textColor, range: NSRange(location: 0, length: raw.length))
+            
+            return raw
+            
+        } catch {
+            print("❌ HTML parse error:", error)
+            return nil
         }
     }
 }

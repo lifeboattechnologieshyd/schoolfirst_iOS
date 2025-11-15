@@ -45,18 +45,23 @@ class EdutainCell: UITableViewCell {
     
     func setup(feed: Feed) {
         lblDescription.font = UIFont.lexend(.regular, size: 14)
-        lblDescription.text = feed.description
+        lblDescription.attributedText = NSAttributedString.fromHTML(feed.description,
+                                                                    regularFont: .lexend(.regular, size: 14),
+                                                                    boldFont: .lexend(.semiBold, size: 14),
+                                                                    italicFont: .lexend(.regular, size: 14),
+                                                                    textColor: .black)
+        lblTitle.attributedText = NSAttributedString.fromHTML(feed.heading,
+                                                                    regularFont: .lexend(.semiBold, size: 14),
+                                                                    boldFont: .lexend(.semiBold, size: 14),
+                                                                    italicFont: .lexend(.regular, size: 14),
+                                                                    textColor: .black)
         var time = "\(feed.approvedTime!.getTimeAgo()) | "
-
         if feed.duration > 0 {
             time += "\(feed.duration) | "
         }
-
         time += "\(feed.language)"
         lblTime.text = time
-        lblTitle.setHTML(feed.heading)
         imgVw.loadImage(url: feed.image ?? "", placeHolderImage: "login_img")
-        
         lblLikeCount.text = "\(feed.likesCount)"
     }
     

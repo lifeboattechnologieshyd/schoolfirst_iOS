@@ -45,7 +45,8 @@ class EdutainmentController: UIViewController {
     
     
     func getEdutainment(){
-        NetworkManager.shared.request(urlString: API.EDUTAIN_FEED,method: .GET) { (result: Result<APIResponse<[Feed]>, NetworkError>)  in
+        var url = API.EDUTAIN_FEED + "f_category=Diy"
+        NetworkManager.shared.request(urlString: url,method: .GET) { (result: Result<APIResponse<[Feed]>, NetworkError>)  in
             switch result {
             case .success(let info):
                 if info.success {
@@ -83,7 +84,6 @@ class EdutainmentController: UIViewController {
             }
         }
     }
-    
 }
 
 extension EdutainmentController : UITableViewDelegate, UITableViewDataSource {
