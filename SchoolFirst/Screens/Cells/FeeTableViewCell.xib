@@ -87,7 +87,7 @@
                         <rect key="frame" x="16" y="110" width="366" height="177"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZsI-B6-YTB">
-                                <rect key="frame" x="16.000000000000007" y="16" width="96.666666666666686" height="41"/>
+                                <rect key="frame" x="16.000000000000007" y="16" width="96.666666666666686" height="21.666666666666671"/>
                                 <attributedString key="attributedText">
                                     <fragment content="Fee Payable">
                                         <attributes>
@@ -98,13 +98,13 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="itk-7E-Sjl">
-                                <rect key="frame" x="16" y="73" width="334" height="88"/>
+                                <rect key="frame" x="16" y="53.66666666666665" width="334" height="107.33333333333331"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="pyq-Up-b6Z">
-                                        <rect key="frame" x="0.0" y="0.0" width="334" height="24"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="334" height="30.333333333333332"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Rh-az-jaX">
-                                                <rect key="frame" x="0.0" y="0.0" width="163" height="24"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="163" height="30.333333333333332"/>
                                                 <attributedString key="attributedText">
                                                     <fragment content="Total Fee Due">
                                                         <attributes>
@@ -116,7 +116,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sKZ-g7-mic">
-                                                <rect key="frame" x="171" y="0.0" width="163" height="24"/>
+                                                <rect key="frame" x="171" y="0.0" width="163" height="30.333333333333332"/>
                                                 <attributedString key="attributedText">
                                                     <fragment content="₹35,000">
                                                         <attributes>
@@ -130,10 +130,10 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="xe5-EI-aP9">
-                                        <rect key="frame" x="0.0" y="32" width="334" height="24"/>
+                                        <rect key="frame" x="0.0" y="38.333333333333343" width="334" height="30.666666666666671"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z96-bf-BLh">
-                                                <rect key="frame" x="0.0" y="0.0" width="163" height="24"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="163" height="30.666666666666668"/>
                                                 <attributedString key="attributedText">
                                                     <fragment content="Due Date">
                                                         <attributes>
@@ -144,25 +144,35 @@
                                                 </attributedString>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lhv-aI-3aS">
-                                                <rect key="frame" x="171" y="0.0" width="163" height="24"/>
-                                                <attributedString key="attributedText">
-                                                    <fragment content="23 Oct 2025">
-                                                        <attributes>
-                                                            <font key="NSFont" metaFont="system" size="16"/>
-                                                            <paragraphStyle key="NSParagraphStyle" alignment="right" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
-                                                        </attributes>
-                                                    </fragment>
-                                                </attributedString>
-                                                <nil key="highlightedColor"/>
-                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YjB-fL-Dk6">
+                                                <rect key="frame" x="171" y="0.0" width="163" height="30.666666666666668"/>
+                                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain">
+                                                    <attributedString key="attributedTitle">
+                                                        <fragment content="    23Jul2025">
+                                                            <attributes>
+                                                                <color key="NSColor" red="0.01365214646464652" green="0.01365214646464652" blue="0.01365214646464652" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                <font key="NSFont" size="16" name="Helvetica"/>
+                                                                <paragraphStyle key="NSParagraphStyle" alignment="right" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                                            </attributes>
+                                                        </fragment>
+                                                    </attributedString>
+                                                </buttonConfiguration>
+                                                <connections>
+                                                    <action selector="onClickDueDate:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="IH0-Yo-oDO"/>
+                                                </connections>
+                                            </button>
                                         </subviews>
+                                        <constraints>
+                                            <constraint firstAttribute="trailing" secondItem="YjB-fL-Dk6" secondAttribute="trailing" constant="16" id="iFf-rv-7WB"/>
+                                        </constraints>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="tPl-Bg-xHW">
-                                        <rect key="frame" x="0.0" y="64" width="334" height="24"/>
+                                        <rect key="frame" x="0.0" y="77" width="334" height="30.333333333333329"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yxN-nw-YZn">
-                                                <rect key="frame" x="0.0" y="0.0" width="163" height="24"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="163" height="30.333333333333332"/>
                                                 <attributedString key="attributedText">
                                                     <fragment content="Installment">
                                                         <attributes>
@@ -174,7 +184,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3kb-Rt-vWH">
-                                                <rect key="frame" x="171" y="0.0" width="163" height="24"/>
+                                                <rect key="frame" x="171" y="0.0" width="163" height="30.333333333333332"/>
                                                 <attributedString key="attributedText">
                                                     <fragment content="2/3">
                                                         <attributes>
@@ -188,6 +198,9 @@
                                         </subviews>
                                     </stackView>
                                 </subviews>
+                                <constraints>
+                                    <constraint firstItem="YjB-fL-Dk6" firstAttribute="trailing" secondItem="sKZ-g7-mic" secondAttribute="trailing" id="Wm9-bd-4ew"/>
+                                </constraints>
                             </stackView>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -283,9 +296,9 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="DueDate" destination="YjB-fL-Dk6" id="Bs0-qb-A6G"/>
                 <outlet property="bgView" destination="dk6-6V-b83" id="cIq-BR-3Gb"/>
                 <outlet property="imgVw" destination="lAW-rn-lub" id="Wt1-ZT-3yu"/>
-                <outlet property="lblDueDate" destination="Lhv-aI-3aS" id="tfi-sP-b8e"/>
                 <outlet property="lblGrade" destination="xnQ-hP-Qeq" id="H6j-mA-Ikg"/>
                 <outlet property="lblInstallment" destination="3kb-Rt-vWH" id="m0G-iV-Po5"/>
                 <outlet property="lblName" destination="JnX-4d-yjg" id="o6c-Y7-KZW"/>
