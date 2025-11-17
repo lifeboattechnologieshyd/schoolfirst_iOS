@@ -9,13 +9,19 @@ import UIKit
 
 class BulletinController: UIViewController {
     var newsList: [Bulletin] = []
-
+    
+    var isLoading = false
+    var isLastPage = false
+    var page = 1
+    var page_size = 10
+    
     @IBOutlet weak var headerView: UIView!
     @IBOutlet weak var tblVw: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.getNews()
         self.tblVw.register(UINib(nibName: "NewsCell", bundle: nil), forCellReuseIdentifier: "NewsCell")
+        self.getNews()
+        
         tblVw.dataSource = self
         tblVw.delegate = self
     }
@@ -25,16 +31,33 @@ class BulletinController: UIViewController {
     }
     
     func getNews(){
+        guard !isLoading else { return }
+        isLoading = true
+        
         var url = API.NEWS
         if let gradeId = UserManager.shared.user?.schools.first?.students.first?.gradeID {
-            url += "?grade_id=\(gradeId)&page=1&page_size=10"
+            url += "?grade_id=\(gradeId)&page=\(page)&page_size=\(page_size)"
         }
         NetworkManager.shared.request(urlString: url,method: .GET) { (result: Result<APIResponse<[Bulletin]>, NetworkError>)  in
+            self.isLoading = false
+            
             switch result {
             case .success(let info):
                 if info.success {
+                    
                     if let data = info.data {
-                        self.newsList = data
+                        if data.isEmpty {
+                            self.isLastPage = true
+                            return
+                        }
+                        self.newsList.append(contentsOf: data)
+                        for i in 0..<self.newsList.count {
+                            self.newsList[i].prepareHTMLForRendering()
+                        }
+                    }
+                    else{
+                        self.isLastPage = true
+                        return
                     }
                     DispatchQueue.main.async {
                         self.tblVw.reloadData()
@@ -81,6 +104,21 @@ extension BulletinController : UITableViewDelegate, UITableViewDataSource {
             vc.bulletin = self.newsList[indexPath.row]
             self.navigationController?.pushViewController(vc, animated: true)
         }
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.frame.size.height
+        if offsetY > contentHeight - height - 200 {
+            loadNextPage()
+        }
+    }
+    
+    func loadNextPage() {
+        guard !isLoading, !isLastPage else { return }
+        self.page += 1
+        getNews()
     }
 }
 

@@ -19,8 +19,10 @@ class NewsCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        lblTItle.setHTML("", font: .lexend(.semiBold, size: 16))
-        lblDescription.setHTML("", font: .lexend(.regular, size: 14))
+        lblDescription.numberOfLines = 0
+        lblDescription.lineBreakMode = .byWordWrapping
+        lblDescription.setContentCompressionResistancePriority(.required, for: .vertical)
+        lblTItle.numberOfLines = 0
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -30,15 +32,24 @@ class NewsCell: UITableViewCell {
     }
     
     func config(news: Bulletin) {
-        lblTItle.setHTML(news.title, font: .lexend(.bold, size: 16))
-        lblDescription.setHTML( news.description ?? "", font: .lexend(.regular, size: 14))
-        imgVw.loadImage(url: news.images?.first ?? "")
-        lblTItle.font = .lexend(.semiBold, size: 16)
-        lblDescription.font = .lexend(.regular, size: 14)
+        lblDescription.attributedText = news.cachedDescriptionHTML
+        lblTItle.attributedText = news.cachedTitleHTML
+        
+        self.imgVw.loadImage(url: news.images?.first ?? "")
         if let cats = news.categories {
-            lblheading.text = "\(cats[0]) | \(news.approvedAt!.getTimeAgo())"
+            self.lblheading.text = "\(news.approvedAt!.getTimeAgo())"
         }
+        self.lblDescription.sizeToFit()
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        lblTItle.attributedText = nil
+        lblDescription.attributedText = nil
+        lblheading.text = nil
+        imgVw.image = nil
+    }
+
     
     @IBAction func onClickReadMore(_ sender: Any) {
         

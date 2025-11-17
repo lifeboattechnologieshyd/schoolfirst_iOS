@@ -187,13 +187,93 @@ extension UIFont {
         return UIFont(name: style.rawValue, size: size) ?? UIFont.systemFont(ofSize: size)
     }
 }
+import Photos
 
 extension String {
+
+    func downloadImage() {
+        guard let url = URL(string: self) else { return }
+        
+        // Download image data
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
+                print("❌ Download error:", error.localizedDescription)
+                return
+            }
+            
+            guard let data = data, let image = UIImage(data: data) else {
+                print("❌ Invalid image data")
+                return
+            }
+            
+            // Save to Photos
+            DispatchQueue.main.async {
+                PHPhotoLibrary.requestAuthorization { status in
+                    if status == .authorized || status == .limited {
+                        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+                        print("✅ Image saved to gallery")
+                    } else {
+                        print("⚠️ Permission denied to save image")
+                    }
+                }
+            }
+        }.resume()
+    }
+
+    
     func isValidIndianMobile() -> Bool {
         let regex = "^[6-9]\\d{9}$"
         let predicate = NSPredicate(format: "SELF MATCHES %@", regex)
         return predicate.evaluate(with: self)
     }
+    
+    func to12HourTime() -> String {
+            let inputFormatter = DateFormatter()
+            inputFormatter.dateFormat = "HH:mm:ss"
+            inputFormatter.locale = Locale(identifier: "en_US_POSIX")
+
+            let outputFormatter = DateFormatter()
+            outputFormatter.dateFormat = "hh:mm a"
+            outputFormatter.locale = Locale(identifier: "en_US_POSIX")
+
+            guard let date = inputFormatter.date(from: self) else {
+                return self
+            }
+            return outputFormatter.string(from: date)
+        }
+    
+    /// converts yyyy-MM-dd type string into dd MMM, yyyy
+
+    func fromyyyyMMddtoDDMMMYYYY() -> String {
+           let inputFormatter = DateFormatter()
+           inputFormatter.dateFormat = "yyyy-MM-dd"
+           inputFormatter.locale = Locale(identifier: "en_US_POSIX")
+
+           let outputFormatter = DateFormatter()
+           outputFormatter.dateFormat = "dd MMM, yyyy"
+           outputFormatter.locale = Locale(identifier: "en_IN")  // or .current
+
+           guard let date = inputFormatter.date(from: self) else {
+               return self
+           }
+           return outputFormatter.string(from: date)
+       }
+    
+    func fromyyyyMMddtoDDMMM() -> String {
+           let inputFormatter = DateFormatter()
+           inputFormatter.dateFormat = "yyyy-MM-dd"
+           inputFormatter.locale = Locale(identifier: "en_US_POSIX")
+
+           let outputFormatter = DateFormatter()
+           outputFormatter.dateFormat = "dd MMM"
+           outputFormatter.locale = Locale(identifier: "en_IN")  // or .current
+
+           guard let date = inputFormatter.date(from: self) else {
+               return self
+           }
+           return outputFormatter.string(from: date)
+       }
+    
     /// converts yyyy-MM-dd type string into dd MM yyyy
     
     func fromyyyyMMddtoDDMMYYYY() -> String {
@@ -208,6 +288,8 @@ extension String {
         }
         return outputFormatter.string(from: date)
     }
+    
+    
     
     /// converts yyyy-dd-MM type string into dd MM yyyy
     
@@ -302,7 +384,43 @@ struct RemoveAlphaProcessor: ImageProcessor {
 
 extension UIImageView {
     
-    func loadImage(url: String, placeHolderImage: String = "SchoolFirst"){
+    
+    func loadImage(url: String, placeHolderImage: String = "SchoolFirst") {
+        guard let url = URL(string: url) else {
+            self.image = UIImage(named: placeHolderImage)
+            return
+        }
+        
+        DispatchQueue.main.async {
+            let size = self.bounds.size
+            
+            let finalSize = (size.width > 0 && size.height > 0)
+            ? size
+            : CGSize(width: UIScreen.main.bounds.width / 3,
+                     height: UIScreen.main.bounds.width / 3)
+            
+            let processor = DownsamplingImageProcessor(size: finalSize)
+            
+            self.kf.indicatorType = .activity
+            
+            self.kf.setImage(
+                with: url,
+                placeholder: UIImage(named: placeHolderImage),
+                options: [
+                    .processor(processor),
+                    .scaleFactor(UIScreen.main.scale),
+                    .transition(.fade(0.2)),
+                    .cacheOriginalImage,
+                    .memoryCacheExpiration(.days(21)),
+                    .diskCacheExpiration(.days(30))
+                ]
+            )
+        }
+    }
+    
+    
+    /// as of now not using as this is downloading image if cell is being reused.
+    func loadImage2(url: String, placeHolderImage: String = "SchoolFirst"){
         let downsample = DownsamplingImageProcessor(size: self.bounds.size)
         let removeAlpha = RemoveAlphaProcessor()
         let combined = downsample |> removeAlpha

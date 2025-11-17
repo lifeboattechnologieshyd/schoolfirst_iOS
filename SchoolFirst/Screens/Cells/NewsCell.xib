@@ -18,14 +18,17 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="qmg-yd-9dv">
-                        <rect key="frame" x="247" y="30.666666666666671" width="130" height="70"/>
+                        <rect key="frame" x="247" y="39" width="130" height="70"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="70" id="5bz-Zy-v4n"/>
                             <constraint firstAttribute="width" constant="130" id="cll-f6-ItV"/>
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="q2g-HH-ePs">
-                        <rect key="frame" x="16" y="6" width="361" height="18.666666666666668"/>
+                        <rect key="frame" x="16" y="6" width="361" height="20"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="20" id="N3z-7y-WBS"/>
+                        </constraints>
                         <attributedString key="attributedText">
                             <fragment content="Enrollments for Annual Trips have begun">
                                 <attributes>
@@ -36,7 +39,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VDi-IP-xKS">
-                        <rect key="frame" x="16" y="30.666666666666671" width="219" height="20.333333333333329"/>
+                        <rect key="frame" x="16" y="32" width="219" height="20.333333333333329"/>
                         <attributedString key="attributedText">
                             <fragment content="News">
                                 <attributes>
@@ -58,7 +61,10 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="Check out the schedule of this year’s annual trip…" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y8A-mL-gw0">
-                        <rect key="frame" x="16" y="57" width="225" height="58"/>
+                        <rect key="frame" x="16" y="58.333333333333343" width="225" height="56.666666666666657"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="56.670000000000002" id="5hf-CE-EY3"/>
+                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -92,12 +98,12 @@
                     <constraint firstItem="q2g-HH-ePs" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="C5O-Cg-mZi"/>
                     <constraint firstAttribute="trailing" secondItem="qmg-yd-9dv" secondAttribute="trailing" constant="16" id="Kt6-ha-eST"/>
                     <constraint firstItem="n9i-hP-hyO" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="M8U-nY-qDG"/>
+                    <constraint firstItem="qmg-yd-9dv" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="QKP-l9-nws"/>
                     <constraint firstItem="qmg-yd-9dv" firstAttribute="leading" secondItem="VDi-IP-xKS" secondAttribute="trailing" constant="12" id="SYf-fR-HSR"/>
                     <constraint firstAttribute="bottom" secondItem="n9i-hP-hyO" secondAttribute="bottom" constant="12" id="Sun-kg-k1W"/>
                     <constraint firstItem="qmg-yd-9dv" firstAttribute="leading" secondItem="Y8A-mL-gw0" secondAttribute="trailing" constant="6" id="e1N-ML-a23"/>
                     <constraint firstItem="VDi-IP-xKS" firstAttribute="top" secondItem="q2g-HH-ePs" secondAttribute="bottom" constant="6" id="mu8-NQ-0Sl"/>
                     <constraint firstItem="q2g-HH-ePs" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="6" id="o7r-E9-XeZ"/>
-                    <constraint firstItem="qmg-yd-9dv" firstAttribute="top" secondItem="q2g-HH-ePs" secondAttribute="bottom" constant="6" id="vad-kG-yhn"/>
                     <constraint firstAttribute="trailing" secondItem="q2g-HH-ePs" secondAttribute="trailing" constant="16" id="y1k-9R-Mym"/>
                 </constraints>
                 <userDefinedRuntimeAttributes>

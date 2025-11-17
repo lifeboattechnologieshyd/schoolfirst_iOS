@@ -41,7 +41,7 @@ class EventTableCell: UITableViewCell {
         self.eventImageView.loadImage(url: event.image)
         self.lblTitle.text = event.name
         self.lblDescription.text = event.description
-        self.lblDate.text = event.date + " | " + event.time
+        self.lblDate.text = event.date.fromyyyyMMddtoDDMMMYYYY() + " | " + event.time.to12HourTime()
     }
     
 }

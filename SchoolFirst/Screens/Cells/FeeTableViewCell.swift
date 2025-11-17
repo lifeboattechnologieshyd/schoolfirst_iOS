@@ -18,24 +18,24 @@ class FeeTableViewCell: UITableViewCell {
     @IBOutlet weak var DueDate: UIButton!
     @IBOutlet weak var lblInstallment: UILabel!
     
-    var onClickPartPayment: (() -> Void)?
-    var onClickPayFull: (() -> Void)?
-    var onClickDueDate: (() -> Void)?
+    var onPartPayment: (() -> Void)?
+    var onPayFull: (() -> Void)?
+    var onDueDate: (() -> Void)?
 
     override func awakeFromNib() {
         super.awakeFromNib()
     }
 
     @IBAction func onClickPartPayment(_ sender: UIButton) {
-        onClickPartPayment?()
+        onPartPayment?()
     }
     
     @IBAction func onClickPayFull(_ sender: UIButton) {
-        onClickPayFull?()
+        onPayFull?()
     }
 
     @IBAction func onClickDueDate(_ sender: UIButton) {
-        onClickDueDate?()      // ⭐ trigger navigation
+        onDueDate?()      // ⭐ trigger navigation
     }
     
     func setup(details : StudentFeeDetails) {

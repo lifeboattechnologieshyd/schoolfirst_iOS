@@ -27,11 +27,8 @@ class AttendanceCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-<<<<<<< HEAD
          [blueVw, voiletVw, presentVw, absentVw].forEach {
-=======
-        [blueVw, voiletVw, abhiBgVw, shrvVw, presentVw, absentVw].forEach {
->>>>>>> 0698f139be18b02910edde53427f4286a22a8e37
+
             $0?.layer.cornerRadius = 8
         }
         
@@ -42,16 +39,7 @@ class AttendanceCell: UITableViewCell {
         attendanceVw.layer.shadowRadius = 4
         attendanceVw.layer.masksToBounds = false
         
-<<<<<<< HEAD
-=======
-        abhiBgVw.layer.cornerRadius = 25
-        abhiBgVw.layer.borderWidth = 1
-        abhiBgVw.layer.borderColor = UIColor(red: 11/255, green: 86/255, blue: 154/255, alpha: 1).cgColor
-        
-        shrvVw.layer.cornerRadius = 25
-        shrvVw.layer.borderWidth = 1
-        shrvVw.layer.borderColor = UIColor(red: 203/255, green: 229/255, blue: 253/255, alpha: 1).cgColor
->>>>>>> 0698f139be18b02910edde53427f4286a22a8e37
+
     }
 
     @IBAction func requestLeaveButtonTapped(_ sender: UIButton) {

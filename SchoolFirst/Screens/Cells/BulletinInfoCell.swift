@@ -24,8 +24,8 @@ class BulletinInfoCell: UITableViewCell {
     }
     
     func config(bulletin: Bulletin){
-        self.lblTitle.setHTML(bulletin.title, font: .lexend(.semiBold, size: 16))
-        self.txtViewDescription.setHTML(bulletin.description ?? "", font: .lexend(.regular, size: 14))
+        self.lblTitle.attributedText = bulletin.cachedTitleHTML
+        self.txtViewDescription.attributedText = bulletin.cachedDescriptionHTML
         self.imgVw.loadImage(url: bulletin.images?.first ?? "")
     }
 }

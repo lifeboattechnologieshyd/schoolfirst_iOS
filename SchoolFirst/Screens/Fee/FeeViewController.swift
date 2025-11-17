@@ -77,7 +77,7 @@ extension FeeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView,
                    numberOfRowsInSection section: Int) -> Int {
 
-        return fee_details.count * 2
+        return fee_details.count
     }
     
     func tableView(_ tableView: UITableView,
@@ -93,11 +93,11 @@ extension FeeViewController: UITableViewDelegate, UITableViewDataSource {
         cell.bgView.applyCardShadow()
         cell.setup(details: fee_details[actualIndex])
         
-        cell.onClickPartPayment = {
+        cell.onPartPayment = {
             self.goToPartPayment()
         }
         
-        cell.onClickDueDate = {
+        cell.onDueDate = {
             let sb = UIStoryboard(name: "Main", bundle: nil)
             let vc = sb.instantiateViewController(
                 withIdentifier: "SchoolFeesVC"

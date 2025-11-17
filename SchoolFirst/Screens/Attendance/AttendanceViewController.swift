@@ -42,7 +42,7 @@ class AttendanceViewController: UIViewController {
                 if info.success {
                     if let data = info.data {
                         DispatchQueue.main.async {
-//                            self.colVw.reloadData()
+
                         }
                     }
                 }else{

@@ -409,7 +409,15 @@ struct Banner: Codable {
     }
 }
 
-struct Bulletin: Codable {
+
+// MARK: - Cache Keys Using Associated Objects
+private struct BulletinHTMLCacheKeys {
+    static var descKey = "BulletinHTMLCacheKeys_descKey"
+    static var titleKey = "BulletinHTMLCacheKeys_titleKey"
+}
+
+
+class Bulletin: Codable {
     let id: String
     let title: String
     let description: String?
@@ -455,6 +463,55 @@ struct Bulletin: Codable {
         case approvedAt = "approved_at"
         case isLiked = "is_liked"
     }
+}
+
+extension Bulletin {
+    var cachedDescriptionHTML: NSAttributedString? {
+        get {
+            objc_getAssociatedObject(self, &BulletinHTMLCacheKeys.descKey) as? NSAttributedString
+        }
+        set {
+            objc_setAssociatedObject(self,
+                                     &BulletinHTMLCacheKeys.descKey,
+                                     newValue,
+                                     .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
+    
+    // MARK: - Cached Title HTML
+    var cachedTitleHTML: NSAttributedString? {
+        get {
+            objc_getAssociatedObject(self, &BulletinHTMLCacheKeys.titleKey) as? NSAttributedString
+        }
+        set {
+            objc_setAssociatedObject(self,
+                                     &BulletinHTMLCacheKeys.titleKey,
+                                     newValue,
+                                     .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
+    func prepareHTMLForRendering() {
+        // Convert description HTML
+        if let desc = self.description {
+            self.cachedDescriptionHTML = NSAttributedString.fromHTML(
+                desc,
+                regularFont: .lexend(.regular, size: 12),
+                boldFont: .lexend(.semiBold, size: 14),
+                italicFont: .lexend(.regular, size: 14),
+                textColor: .black
+            )
+        }
+        
+        // Convert title HTML
+        self.cachedTitleHTML = NSAttributedString.fromHTML(
+            self.title,
+            regularFont: .lexend(.semiBold, size: 16),
+            boldFont: .lexend(.semiBold, size: 16),
+            italicFont: .lexend(.regular, size: 14),
+            textColor: .black
+        )
+    }
+    
 }
 
 struct Homework: Codable {

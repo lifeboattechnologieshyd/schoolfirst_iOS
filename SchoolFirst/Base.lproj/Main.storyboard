@@ -2204,19 +2204,23 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oWT-DF-VoO">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="jCS-Kc-ier">
+                                <rect key="frame" x="0.0" y="111" width="393" height="707"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="chb-f0-0nF">
                                 <rect key="frame" x="0.0" y="59" width="393" height="50"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8I5-NA-oil">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DyI-cu-2CT">
                                         <rect key="frame" x="2" y="7.6666666666666714" width="49.333333333333336" height="35"/>
                                         <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="arrow.backward" catalog="system" imagePlacement="leading"/>
                                         <connections>
-                                            <action selector="onClickBack:" destination="XZ4-AW-4qM" eventType="touchUpInside" id="KIX-rh-oqL"/>
+                                            <action selector="onClickBack:" destination="XZ4-AW-4qM" eventType="touchUpInside" id="Hig-AE-odh"/>
                                         </connections>
                                     </button>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rbn-P6-zQt">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BlE-nq-OFf">
                                         <rect key="frame" x="142.66666666666666" y="15" width="107.66666666666666" height="20"/>
                                         <attributedString key="attributedText">
                                             <fragment content="School Bulletin">
@@ -2231,32 +2235,28 @@
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
-                                    <constraint firstItem="Rbn-P6-zQt" firstAttribute="centerY" secondItem="8I5-NA-oil" secondAttribute="centerY" id="6kZ-DW-3m3"/>
-                                    <constraint firstAttribute="height" constant="50" id="IIW-tz-bPk"/>
-                                    <constraint firstItem="8I5-NA-oil" firstAttribute="centerY" secondItem="oWT-DF-VoO" secondAttribute="centerY" id="Kcy-fI-Tmm"/>
-                                    <constraint firstItem="8I5-NA-oil" firstAttribute="leading" secondItem="oWT-DF-VoO" secondAttribute="leading" constant="2" id="SVe-Ur-JIx"/>
-                                    <constraint firstItem="Rbn-P6-zQt" firstAttribute="centerX" secondItem="oWT-DF-VoO" secondAttribute="centerX" id="swZ-da-aBm"/>
+                                    <constraint firstItem="BlE-nq-OFf" firstAttribute="centerX" secondItem="chb-f0-0nF" secondAttribute="centerX" id="KOh-yP-vaH"/>
+                                    <constraint firstItem="DyI-cu-2CT" firstAttribute="leading" secondItem="chb-f0-0nF" secondAttribute="leading" constant="2" id="NhN-GZ-Miw"/>
+                                    <constraint firstItem="DyI-cu-2CT" firstAttribute="centerY" secondItem="chb-f0-0nF" secondAttribute="centerY" id="a9p-t1-6k7"/>
+                                    <constraint firstAttribute="height" constant="50" id="oDq-xS-sKW"/>
+                                    <constraint firstItem="BlE-nq-OFf" firstAttribute="centerY" secondItem="DyI-cu-2CT" secondAttribute="centerY" id="p7D-gA-4En"/>
                                 </constraints>
                             </view>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="jCS-Kc-ier">
-                                <rect key="frame" x="0.0" y="114" width="393" height="704"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                            </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="9jE-ZW-Um8"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="jCS-Kc-ier" firstAttribute="top" secondItem="oWT-DF-VoO" secondAttribute="bottom" constant="5" id="4YV-gx-kNL"/>
-                            <constraint firstItem="oWT-DF-VoO" firstAttribute="trailing" secondItem="9jE-ZW-Um8" secondAttribute="trailing" id="d8y-C5-cSV"/>
-                            <constraint firstItem="oWT-DF-VoO" firstAttribute="leading" secondItem="9jE-ZW-Um8" secondAttribute="leading" id="hCT-cK-yZF"/>
+                            <constraint firstItem="chb-f0-0nF" firstAttribute="trailing" secondItem="9jE-ZW-Um8" secondAttribute="trailing" id="3O8-kd-udI"/>
+                            <constraint firstItem="chb-f0-0nF" firstAttribute="leading" secondItem="9jE-ZW-Um8" secondAttribute="leading" id="Qgm-d3-RBw"/>
+                            <constraint firstItem="jCS-Kc-ier" firstAttribute="top" secondItem="chb-f0-0nF" secondAttribute="bottom" constant="2" id="WjC-qb-eKp"/>
                             <constraint firstItem="9jE-ZW-Um8" firstAttribute="trailing" secondItem="jCS-Kc-ier" secondAttribute="trailing" id="jFh-qt-jHm"/>
                             <constraint firstItem="9jE-ZW-Um8" firstAttribute="bottom" secondItem="jCS-Kc-ier" secondAttribute="bottom" id="mp6-Vg-gQk"/>
-                            <constraint firstItem="oWT-DF-VoO" firstAttribute="top" secondItem="9jE-ZW-Um8" secondAttribute="top" id="rYv-K3-TiT"/>
+                            <constraint firstItem="chb-f0-0nF" firstAttribute="top" secondItem="9jE-ZW-Um8" secondAttribute="top" id="tbc-0U-tBO"/>
                             <constraint firstItem="jCS-Kc-ier" firstAttribute="leading" secondItem="9jE-ZW-Um8" secondAttribute="leading" id="w5q-PD-eKF"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="headerView" destination="oWT-DF-VoO" id="HAl-k1-JU1"/>
+                        <outlet property="headerView" destination="chb-f0-0nF" id="xiD-nU-SuY"/>
                         <outlet property="tblVw" destination="jCS-Kc-ier" id="7lh-Tb-nor"/>
                     </connections>
                 </viewController>

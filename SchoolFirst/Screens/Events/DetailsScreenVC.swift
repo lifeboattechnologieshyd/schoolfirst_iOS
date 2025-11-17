@@ -49,8 +49,12 @@ extension DetailsScreenVC: UITableViewDelegate, UITableViewDataSource {
             withIdentifier: "DetailsCell",
             for: indexPath
         ) as! DetailsCell
-
-     
+        cell.imgVw.loadImage(url: selectedEvent?.image ?? "")
+        cell.lblDate.text = selectedEvent?.date.fromyyyyMMddtoDDMMMYYYY()
+        cell.lblDateDesign.text = selectedEvent?.date.fromyyyyMMddtoDDMMM()
+        cell.lblTime.text = selectedEvent?.time.to12HourTime()
+        cell.titleLbl.text = selectedEvent?.name
+        cell.desTv.text = selectedEvent?.description
         return cell
     }
 

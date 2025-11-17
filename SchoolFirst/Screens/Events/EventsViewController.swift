@@ -88,8 +88,7 @@ extension EventsViewController : UITableViewDelegate, UITableViewDataSource {
             withIdentifier: "DetailsScreenVC"
         ) as! DetailsScreenVC
         
-        vc.selectedEvent = events[indexPath.row]   // 🔥 Pass selected event
-        
+        vc.selectedEvent = events[indexPath.row]        
         self.navigationController?.pushViewController(vc, animated: true)
     }
 }
