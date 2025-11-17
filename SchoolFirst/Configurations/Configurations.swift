@@ -119,6 +119,7 @@ struct API {
     // Attandance :
     
     static let ATTENDANCE_STATS = BASE_URL + "attendance/student/attendance?"
+    static let ATTENDANCE_LEAVE_HISTORY = BASE_URL + "attendance/leave/history?"
     static let ATTENDANCE_TIMETABLE = BASE_URL + "attendance/timetable?"
 
 

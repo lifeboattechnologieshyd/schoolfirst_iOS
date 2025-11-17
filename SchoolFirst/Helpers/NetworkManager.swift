@@ -661,6 +661,8 @@ struct GradeSubject: Codable {
     }
 }
 
+
+
 struct Lesson: Codable {
     let id: String
     let lessonName: String
@@ -935,5 +937,54 @@ struct FeeInstallment: Codable {
         case fineDays = "fine_days"
         case finePerDay = "fine_per_day"
         case dueDate = "due_date"
+    }
+}
+
+
+
+class Attendance : Codable {
+    let attendanceId: String
+    let studentId: String
+    let gradeId: String
+    let totalDays: Int
+    let absentDays: Int
+    let presentDays: Int
+
+    enum CodingKeys: String, CodingKey {
+        case attendanceId = "attendance_id"
+        case studentId = "student_id"
+        case gradeId = "grade_id"
+        case totalDays = "total_days"
+        case absentDays = "absent_days"
+        case presentDays = "present_days"
+    }
+}
+
+
+struct Leave: Codable, Identifiable {
+    let id: String
+    let studentId: String
+    let gradeId: String
+    let fromDate: String
+    let toDate: String
+    let totalDays: Double
+    let reasonType: String?
+    let reason: String?
+    let leaveStatus: String?
+    let teacherRemarks: String?
+    let leaveDays: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case studentId = "student_id"
+        case gradeId = "grade_id"
+        case fromDate = "from_date"
+        case toDate = "to_date"
+        case totalDays = "total_days"
+        case reasonType = "reason_type"
+        case reason
+        case leaveStatus = "leave_status"
+        case teacherRemarks = "teacher_remarks"
+        case leaveDays = "leave_days"
     }
 }

@@ -50,9 +50,9 @@ import FSCalendar
     }
 
     private func setupLabels() {
-        monthLabel.font = UIFont.systemFont(ofSize: 10, weight: .semibold)
-        dateLabel.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
-        weekdayLabel.font = UIFont.systemFont(ofSize: 10, weight: .semibold)
+        monthLabel.font = .lexend(.semiBold, size: 10)
+        dateLabel.font = .lexend(.semiBold, size: 12)
+        weekdayLabel.font = .lexend(.semiBold, size: 10)
 
         [monthLabel, dateLabel, weekdayLabel].forEach {
             $0.textAlignment = .center
@@ -128,18 +128,18 @@ import FSCalendar
 
         halfLayer.addSublayer(topLayer)
         halfLayer.addSublayer(bottomLayer)
-
         [monthLabel, dateLabel, weekdayLabel].forEach { $0.textColor = .white }
     }
 }
 
- struct Attendance {
+ struct DayAttendanceStats {
     var present: [Int]
     var absent: [Int]
     var half: [Int]
 }
 
  class CalendarTableViewCell: UITableViewCell, FSCalendarDelegate, FSCalendarDataSource {
+     var onSelectMonth: ((Date) -> Void)?
 
     @IBOutlet weak var bgVw: UIView!
 
@@ -182,9 +182,9 @@ import FSCalendar
         return label
     }()
 
-    var monthlyAttendance: [String: Attendance] = [
-        "2025-10": Attendance(present: [2,4,6,7,8], absent: [1,5], half: [9,10]),
-        "2025-11": Attendance(present: [1,5,3], absent: [4,5], half: [6])
+    var monthlyAttendance: [String: DayAttendanceStats] = [
+        "2025-10": DayAttendanceStats(present: [2,4,6,7,8], absent: [1,5], half: [9,10]),
+        "2025-11": DayAttendanceStats(present: [1,5,3], absent: [4,5], half: [6])
     ]
 
     override func awakeFromNib() {
@@ -261,6 +261,7 @@ import FSCalendar
         if let newPage = Calendar.current.date(byAdding: components, to: currentPage) {
             calendar.setCurrentPage(newPage, animated: true)
             updateMonthLabel()
+            self.onSelectMonth?(newPage)
         }
     }
 
@@ -281,41 +282,26 @@ import FSCalendar
         formatter.dateFormat = "yyyy-MM"
         let monthKey = formatter.string(from: date)
 
-        // Custom UIColor from hex
-        func hexColor(_ hex: String) -> UIColor {
-            var hexString = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-            if hexString.hasPrefix("#") { hexString.removeFirst() }
-            var rgb: UInt64 = 0
-            Scanner(string: hexString).scanHexInt64(&rgb)
-            return UIColor(
-                red: CGFloat((rgb & 0xFF0000) >> 16) / 255.0,
-                green: CGFloat((rgb & 0x00FF00) >> 8) / 255.0,
-                blue: CGFloat(rgb & 0x0000FF) / 255.0,
-                alpha: 1.0
-            )
-        }
-
         // Apply attendance colors
         if let attendance = monthlyAttendance[monthKey] {
             if attendance.present.contains(day) {
-                cell.setFullDayColor(hexColor("#0FAF13"))
+                cell.setFullDayColor(UIColor(hex: "#0FAF13")!)
             } else if attendance.absent.contains(day) {
-                cell.setFullDayColor(hexColor("#FF0019"))
+                cell.setFullDayColor(UIColor(hex: "#FF0019")!)
             } else if attendance.half.contains(day) {
-                cell.setHalfDayColors(topColor: hexColor("#FF0019"), bottomColor: hexColor("#0FAF13"))
+                cell.setHalfDayColors(topColor: UIColor(hex: "#0FAF13")!, bottomColor: UIColor(hex: "#FF0019")!)
             } else if weekday == 1 {
-                cell.setFullDayColor(hexColor("#0B569A"))
+                cell.setFullDayColor(UIColor(hex: "#0B569A")!)
             } else {
-                cell.setFullDayColor(hexColor("#CBE5FD"))
+                cell.setFullDayColor(UIColor(hex: "#CBE5FD")!)
             }
         } else {
             if weekday == 1 {
-                cell.setFullDayColor(hexColor("#0B569A"))
+                cell.setFullDayColor(UIColor(hex: "#0B569A")!)
             } else {
-                cell.setFullDayColor(hexColor("#CBE5FD"))
+                cell.setFullDayColor(UIColor(hex: "#CBE5FD")!)
             }
         }
-
         return cell
     }
 }
