@@ -9,71 +9,119 @@ import UIKit
 
 class ImageViewerVC: UIViewController, UIScrollViewDelegate {
     
+    @IBOutlet weak var shareButton: UIButton!
+    @IBOutlet weak var downloadButton: UIButton!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var imageView: UIImageView!
     
     var passedImageURL: String?
-    var imageHeightConstraint: NSLayoutConstraint?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        view.backgroundColor = .black
+        
+        view.backgroundColor = .white
+        scrollView.backgroundColor = .white
+        imageView.backgroundColor = .white
         
         scrollView.delegate = self
         scrollView.minimumZoomScale = 1.0
         scrollView.maximumZoomScale = 5.0
         
-         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.translatesAutoresizingMaskIntoConstraints = true
         
         loadImage()
     }
     
-     func loadImage() {
+    @IBAction func shareTapped(_ sender: UIButton) {
+        guard let image = imageView.image else {
+            print("No image to share")
+            return
+        }
+        
+        let activityVC = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+        activityVC.popoverPresentationController?.sourceView = sender
+        
+        present(activityVC, animated: true)
+    }
+    
+    @IBAction func downloadTapped(_ sender: UIButton) {
+        guard let image = imageView.image else {
+            print("No image found")
+            return
+        }
+        
+        UIImageWriteToSavedPhotosAlbum(
+            image,
+            self,
+            #selector(saveCompleted(_:didFinishSavingWithError:contextInfo:)),
+            nil
+        )
+    }
+    
+    @objc func saveCompleted(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        if error != nil {
+            let alert = UIAlertController(title: "Error", message: "Image could not be saved.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+        } else {
+            let alert = UIAlertController(title: "Saved!", message: "Image saved to Photos.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+        }
+    }
+    
+    func loadImage() {
         guard let urlString = passedImageURL,
               let url = URL(string: urlString) else { return }
         
         URLSession.shared.dataTask(with: url) { data, _, _ in
-            guard let data = data, let img = UIImage(data: data) else { return }
+            guard let d = data, let img = UIImage(data: d) else { return }
             
             DispatchQueue.main.async {
                 self.imageView.image = img
+                self.imageView.contentMode = .scaleAspectFit
                 
-                // Remove previous dynamic height constraint if exists
-                self.imageHeightConstraint?.isActive = false
-                
-                // Calculate height based on aspect ratio
                 let screenWidth = self.view.frame.width
                 let newHeight = screenWidth * (img.size.height / img.size.width)
                 
-                // Create and activate new height constraint
-                self.imageHeightConstraint = self.imageView.heightAnchor
-                    .constraint(equalToConstant: newHeight)
-                self.imageHeightConstraint?.isActive = true
+                self.imageView.frame = CGRect(
+                    x: 0,
+                    y: 0,
+                    width: screenWidth,
+                    height: newHeight
+                )
                 
-                self.view.layoutIfNeeded()
+                self.scrollView.contentSize = self.imageView.frame.size
+                self.centerImage()
             }
         }.resume()
     }
     
-     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return imageView
     }
     
-    // Center image while zooming
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        let imageView = self.imageView!
-        
-        let offsetX = max((scrollView.bounds.size.width - scrollView.contentSize.width) * 0.5, 0)
-        let offsetY = max((scrollView.bounds.size.height - scrollView.contentSize.height) * 0.5, 0)
-        
-        imageView.center = CGPoint(
-            x: scrollView.contentSize.width * 0.5 + offsetX,
-            y: scrollView.contentSize.height * 0.5 + offsetY
-        )
+        centerImage()
     }
     
+    func centerImage() {
+        let imageViewSize = imageView.frame.size
+        let scrollViewSize = scrollView.bounds.size
+        
+        let verticalInset = max(0, (scrollViewSize.height - imageViewSize.height) / 2)
+        let horizontalInset = max(0, (scrollViewSize.width - imageViewSize.width) / 2)
+        
+        scrollView.contentInset = UIEdgeInsets(
+            top: verticalInset,
+            left: horizontalInset,
+            bottom: verticalInset,
+            right: horizontalInset
+        )
+    }
+
     @IBAction func backTapped(_ sender: UIButton) {
         navigationController?.popViewController(animated: true)
     }
 }
+

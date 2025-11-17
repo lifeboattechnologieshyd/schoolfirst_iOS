@@ -203,7 +203,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ODp-o9-VfI">
-                                        <rect key="frame" x="293" y="806" width="30" height="30"/>
+                                        <rect key="frame" x="289" y="790" width="30" height="30"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="LHr-N0-bFF"/>
                                             <constraint firstAttribute="width" constant="30" id="zER-2r-cmJ"/>
@@ -211,9 +211,12 @@
                                         <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="square.and.arrow.down" catalog="system"/>
+                                        <connections>
+                                            <action selector="downloadTapped:" destination="83n-5v-7Pu" eventType="touchUpInside" id="cxn-z6-rI6"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ys7-hK-trb">
-                                        <rect key="frame" x="339" y="806" width="30" height="30"/>
+                                        <rect key="frame" x="339" y="790" width="30" height="30"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="CJF-9Z-Y1O"/>
                                             <constraint firstAttribute="width" constant="30" id="XMv-Rd-mFK"/>
@@ -221,13 +224,16 @@
                                         <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="share"/>
+                                        <connections>
+                                            <action selector="shareTapped:" destination="83n-5v-7Pu" eventType="touchUpInside" id="QmH-K6-gPm"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="OXL-Ix-XBZ" firstAttribute="trailing" secondItem="HAE-1m-91Y" secondAttribute="trailing" constant="393" id="7WL-Zu-EUZ"/>
                                     <constraint firstItem="dYq-Yh-NGh" firstAttribute="top" secondItem="RE5-2J-6mO" secondAttribute="top" constant="67" id="8R6-oE-oIw"/>
                                     <constraint firstItem="ODp-o9-VfI" firstAttribute="centerY" secondItem="ys7-hK-trb" secondAttribute="centerY" id="Cn8-df-c5y"/>
-                                    <constraint firstItem="ys7-hK-trb" firstAttribute="leading" secondItem="ODp-o9-VfI" secondAttribute="trailing" constant="16" id="DPQ-z9-RZy"/>
+                                    <constraint firstItem="ys7-hK-trb" firstAttribute="leading" secondItem="ODp-o9-VfI" secondAttribute="trailing" constant="20" id="DPQ-z9-RZy"/>
                                     <constraint firstItem="RE5-2J-6mO" firstAttribute="bottom" secondItem="OXL-Ix-XBZ" secondAttribute="bottom" id="bRg-AL-9A4"/>
                                     <constraint firstItem="RE5-2J-6mO" firstAttribute="trailing" secondItem="ys7-hK-trb" secondAttribute="trailing" constant="24" id="eqG-xg-F9d"/>
                                     <constraint firstItem="OXL-Ix-XBZ" firstAttribute="top" secondItem="HAE-1m-91Y" secondAttribute="top" id="hQX-M6-tsa"/>
@@ -237,7 +243,7 @@
                                     <constraint firstItem="OXL-Ix-XBZ" firstAttribute="bottom" secondItem="RE5-2J-6mO" secondAttribute="bottom" id="rKK-0A-KMh"/>
                                     <constraint firstItem="OXL-Ix-XBZ" firstAttribute="width" secondItem="RE5-2J-6mO" secondAttribute="width" id="w3v-HQ-iZ3"/>
                                     <constraint firstItem="OXL-Ix-XBZ" firstAttribute="centerX" secondItem="Ogu-dH-p72" secondAttribute="centerX" id="wcG-Sh-JdL"/>
-                                    <constraint firstItem="RE5-2J-6mO" firstAttribute="bottom" secondItem="ys7-hK-trb" secondAttribute="bottom" constant="16" id="xkx-FS-7nu"/>
+                                    <constraint firstItem="RE5-2J-6mO" firstAttribute="bottom" secondItem="ys7-hK-trb" secondAttribute="bottom" constant="32" id="xkx-FS-7nu"/>
                                 </constraints>
                                 <viewLayoutGuide key="contentLayoutGuide" id="HAE-1m-91Y"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="RE5-2J-6mO"/>
@@ -257,8 +263,10 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="downloadButton" destination="ODp-o9-VfI" id="iBy-1g-jrl"/>
                         <outlet property="imageView" destination="OXL-Ix-XBZ" id="Mhg-iX-LIa"/>
                         <outlet property="scrollView" destination="Ogu-dH-p72" id="7a6-3p-Lti"/>
+                        <outlet property="shareButton" destination="ys7-hK-trb" id="I9o-7Q-gV3"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NfA-Ge-QR7" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
