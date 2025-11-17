@@ -21,7 +21,10 @@ class DetailsCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        
+        desTv.isScrollEnabled = false
+        
+        
     }
     
 }
-

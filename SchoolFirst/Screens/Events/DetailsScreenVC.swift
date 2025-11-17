@@ -19,7 +19,6 @@ class DetailsScreenVC: UIViewController {
         
         topVw.addBottomShadow()
 
-
         tblVw.register(
             UINib(nibName: "DetailsCell", bundle: nil),
             forCellReuseIdentifier: "DetailsCell"
@@ -27,12 +26,14 @@ class DetailsScreenVC: UIViewController {
 
         tblVw.delegate = self
         tblVw.dataSource = self
+        
+         tblVw.rowHeight = UITableView.automaticDimension
+        tblVw.estimatedRowHeight = 200
     }
     
     @IBAction func onClickBack(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
     }
-  
 }
 
 extension DetailsScreenVC: UITableViewDelegate, UITableViewDataSource {
@@ -49,18 +50,14 @@ extension DetailsScreenVC: UITableViewDelegate, UITableViewDataSource {
             withIdentifier: "DetailsCell",
             for: indexPath
         ) as! DetailsCell
+        
         cell.imgVw.loadImage(url: selectedEvent?.image ?? "")
         cell.lblDate.text = selectedEvent?.date.fromyyyyMMddtoDDMMMYYYY()
         cell.lblDateDesign.text = selectedEvent?.date.fromyyyyMMddtoDDMMM()
         cell.lblTime.text = selectedEvent?.time.to12HourTime()
         cell.titleLbl.text = selectedEvent?.name
         cell.desTv.text = selectedEvent?.description
-        return cell
-    }
-
-    func tableView(_ tableView: UITableView,
-                   heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 800
         
+        return cell
     }
 }

@@ -26,13 +26,57 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         setupKeyboardManager()
         setupNavigationBar()
 
+        checkForUpdate()
+
         Analytics.logEvent("app_launched", parameters: nil)
         Crashlytics.crashlytics().log("App launched successfully")
 
         return true
     }
 
-     private func configureFirebase() {
+    func checkForUpdate() {
+        let appID = "6744517880"
+        let url = URL(string: "https://itunes.apple.com/lookup?id=\(appID)")!
+
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            guard
+                let data = data,
+                let result = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                let results = result["results"] as? [[String: Any]],
+                let info = results.first,
+                let appStoreVersion = info["version"] as? String,
+                let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+            else { return }
+
+            if appStoreVersion.compare(currentVersion, options: .numeric) == .orderedDescending {
+                DispatchQueue.main.async {
+                    self.showUpdateAlert(appID: appID)
+                }
+            }
+        }.resume()
+    }
+
+    func showUpdateAlert(appID: String) {
+        let alert = UIAlertController(
+            title: "Update Available",
+            message: "A new version of the app is available. Please update for the best experience.",
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "Update Now", style: .default, handler: { _ in
+            if let url = URL(string: "https://apps.apple.com/app/id\(appID)") {
+                UIApplication.shared.open(url)
+            }
+        }))
+
+        alert.addAction(UIAlertAction(title: "Later", style: .cancel))
+
+        DispatchQueue.main.async {
+            UIApplication.shared.windows.first?.rootViewController?.present(alert, animated: true)
+        }
+    }
+
+    private func configureFirebase() {
         if let filePath = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
            let options = FirebaseOptions(contentsOfFile: filePath) {
             FirebaseApp.configure(options: options)
@@ -44,7 +88,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         Messaging.messaging().delegate = self
     }
 
-     private func setupPushNotifications(application: UIApplication) {
+    private func setupPushNotifications(application: UIApplication) {
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
             print("🔔 Push permission granted: \(granted)")
@@ -59,12 +103,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         let token = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
         print("📱 APNs token: \(token)")
         Messaging.messaging().apnsToken = deviceToken
 
-        // ✅ Subscribe to topics only after APNs token is available
         subscribeToFirebaseTopics()
     }
 
@@ -72,7 +115,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         print("❌ Failed to register for remote notifications: \(error.localizedDescription)")
     }
 
-     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let token = fcmToken else {
             print("⚠️ No FCM token received.")
             return
@@ -85,7 +128,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         #endif
     }
 
-     private func subscribeToFirebaseTopics() {
+    private func subscribeToFirebaseTopics() {
         let topics = ["ALL", "iOS"]
 
         for topic in topics {
@@ -99,7 +142,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-     func userNotificationCenter(
+    func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
@@ -107,13 +150,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         completionHandler([.banner, .sound, .badge])
     }
 
-     private func setupKeyboardManager() {
+    // ---------------------------------------------------------
+    // MARK: KEYBOARD MANAGER
+    // ---------------------------------------------------------
+
+    private func setupKeyboardManager() {
         IQKeyboardManager.shared.isEnabled = true
         IQKeyboardManager.shared.enableAutoToolbar = true
         IQKeyboardManager.shared.resignOnTouchOutside = true
     }
 
-     private func setupNavigationBar() {
+
+    private func setupNavigationBar() {
         if #available(iOS 15.0, *) {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()
@@ -125,7 +173,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-     func application(
+   
+    func application(
         _ application: UIApplication,
         configurationForConnecting connectingSceneSession: UISceneSession,
         options: UIScene.ConnectionOptions
@@ -135,4 +184,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {}
 }
-

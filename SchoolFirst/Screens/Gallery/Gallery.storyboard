@@ -199,7 +199,7 @@
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="xmark" catalog="system"/>
                                         <connections>
-                                            <action selector="backTapped:" destination="83n-5v-7Pu" eventType="touchUpInside" id="V7t-0S-dqz"/>
+                                            <action selector="backTapped:" destination="83n-5v-7Pu" eventType="touchUpInside" id="Nwf-eK-TUs"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ODp-o9-VfI">
@@ -211,9 +211,6 @@
                                         <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="square.and.arrow.down" catalog="system"/>
-                                        <connections>
-                                            <action selector="onClickDownload:" destination="83n-5v-7Pu" eventType="touchUpInside" id="4Vw-sM-wlD"/>
-                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ys7-hK-trb">
                                         <rect key="frame" x="339" y="806" width="30" height="30"/>
@@ -224,28 +221,22 @@
                                         <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="share"/>
-                                        <connections>
-                                            <action selector="backTapped:" destination="83n-5v-7Pu" eventType="touchUpInside" id="dYm-ih-ajN"/>
-                                            <action selector="onClickShare:" destination="83n-5v-7Pu" eventType="touchUpInside" id="A80-FB-3VK"/>
-                                        </connections>
                                     </button>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="leading" secondItem="HAE-1m-91Y" secondAttribute="leading" id="6My-Gw-YGl"/>
+                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="trailing" secondItem="HAE-1m-91Y" secondAttribute="trailing" constant="393" id="7WL-Zu-EUZ"/>
                                     <constraint firstItem="dYq-Yh-NGh" firstAttribute="top" secondItem="RE5-2J-6mO" secondAttribute="top" constant="67" id="8R6-oE-oIw"/>
                                     <constraint firstItem="ODp-o9-VfI" firstAttribute="centerY" secondItem="ys7-hK-trb" secondAttribute="centerY" id="Cn8-df-c5y"/>
                                     <constraint firstItem="ys7-hK-trb" firstAttribute="leading" secondItem="ODp-o9-VfI" secondAttribute="trailing" constant="16" id="DPQ-z9-RZy"/>
-                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="width" secondItem="RE5-2J-6mO" secondAttribute="width" id="Nkd-gN-8pD"/>
-                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="bottom" secondItem="HAE-1m-91Y" secondAttribute="bottom" id="PTO-lJ-okz"/>
-                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="leading" secondItem="RE5-2J-6mO" secondAttribute="leading" id="SDq-A9-LJc"/>
-                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="trailing" secondItem="HAE-1m-91Y" secondAttribute="trailing" id="VDT-CL-E4F"/>
-                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="height" secondItem="RE5-2J-6mO" secondAttribute="height" id="WAr-X0-tyg"/>
-                                    <constraint firstItem="RE5-2J-6mO" firstAttribute="trailing" secondItem="OXL-Ix-XBZ" secondAttribute="trailing" id="cnC-0Q-H7l"/>
-                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="top" secondItem="RE5-2J-6mO" secondAttribute="top" id="dIj-G2-Ws0"/>
+                                    <constraint firstItem="RE5-2J-6mO" firstAttribute="bottom" secondItem="OXL-Ix-XBZ" secondAttribute="bottom" id="bRg-AL-9A4"/>
                                     <constraint firstItem="RE5-2J-6mO" firstAttribute="trailing" secondItem="ys7-hK-trb" secondAttribute="trailing" constant="24" id="eqG-xg-F9d"/>
-                                    <constraint firstItem="RE5-2J-6mO" firstAttribute="bottom" secondItem="OXL-Ix-XBZ" secondAttribute="bottom" id="hMk-Xf-2hV"/>
+                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="top" secondItem="HAE-1m-91Y" secondAttribute="top" id="hQX-M6-tsa"/>
                                     <constraint firstItem="RE5-2J-6mO" firstAttribute="trailing" secondItem="dYq-Yh-NGh" secondAttribute="trailing" constant="16" id="hxu-Fw-f22"/>
-                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="top" secondItem="HAE-1m-91Y" secondAttribute="top" id="uwc-2X-ovg"/>
+                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="leading" secondItem="HAE-1m-91Y" secondAttribute="leading" id="ozO-oU-yvs"/>
+                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="bottom" secondItem="HAE-1m-91Y" secondAttribute="bottom" constant="852" id="pcO-aD-pab"/>
+                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="bottom" secondItem="RE5-2J-6mO" secondAttribute="bottom" id="rKK-0A-KMh"/>
+                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="width" secondItem="RE5-2J-6mO" secondAttribute="width" id="w3v-HQ-iZ3"/>
+                                    <constraint firstItem="OXL-Ix-XBZ" firstAttribute="centerX" secondItem="Ogu-dH-p72" secondAttribute="centerX" id="wcG-Sh-JdL"/>
                                     <constraint firstItem="RE5-2J-6mO" firstAttribute="bottom" secondItem="ys7-hK-trb" secondAttribute="bottom" constant="16" id="xkx-FS-7nu"/>
                                 </constraints>
                                 <viewLayoutGuide key="contentLayoutGuide" id="HAE-1m-91Y"/>
@@ -255,10 +246,14 @@
                         <viewLayoutGuide key="safeArea" id="meK-t1-fxo"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="Ogu-dH-p72" firstAttribute="leading" secondItem="meK-t1-fxo" secondAttribute="leading" id="DXl-WD-s6r"/>
-                            <constraint firstAttribute="bottom" secondItem="Ogu-dH-p72" secondAttribute="bottom" id="F4s-hv-Slz"/>
-                            <constraint firstItem="Ogu-dH-p72" firstAttribute="top" secondItem="xAM-a2-zEu" secondAttribute="top" id="e0k-gB-RqO"/>
-                            <constraint firstItem="Ogu-dH-p72" firstAttribute="trailing" secondItem="meK-t1-fxo" secondAttribute="trailing" id="qec-Vf-Piw"/>
+                            <constraint firstItem="Ogu-dH-p72" firstAttribute="centerX" secondItem="xAM-a2-zEu" secondAttribute="centerX" id="9cS-VF-48Z"/>
+                            <constraint firstItem="Ogu-dH-p72" firstAttribute="trailing" secondItem="meK-t1-fxo" secondAttribute="trailing" id="FeX-hO-4UV"/>
+                            <constraint firstItem="Ogu-dH-p72" firstAttribute="leading" secondItem="meK-t1-fxo" secondAttribute="leading" id="GvH-ux-lzT"/>
+                            <constraint firstItem="Ogu-dH-p72" firstAttribute="top" secondItem="xAM-a2-zEu" secondAttribute="top" id="NpT-Qd-FcZ"/>
+                            <constraint firstAttribute="bottom" secondItem="Ogu-dH-p72" secondAttribute="bottom" id="Re0-sV-rHL"/>
+                            <constraint firstItem="Ogu-dH-p72" firstAttribute="centerY" secondItem="xAM-a2-zEu" secondAttribute="centerY" id="Yqc-uy-bik"/>
+                            <constraint firstItem="Ogu-dH-p72" firstAttribute="leading" secondItem="meK-t1-fxo" secondAttribute="leading" id="c8w-cA-hlg"/>
+                            <constraint firstItem="Ogu-dH-p72" firstAttribute="top" secondItem="xAM-a2-zEu" secondAttribute="topMargin" constant="-59" id="q8g-3h-ehX"/>
                         </constraints>
                     </view>
                     <connections>
