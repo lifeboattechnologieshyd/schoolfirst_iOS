@@ -9,25 +9,24 @@ import UIKit
 
 class AttendanceCell: UITableViewCell {
     
+    @IBOutlet weak var lblAbsentDays: UILabel!
     @IBOutlet weak var presentVw: UIView!
+    @IBOutlet weak var presentdays: UILabel!
     @IBOutlet weak var attendanceLbl: UILabel!
     @IBOutlet weak var progressVw: UIView!
     @IBOutlet weak var absentVw: UIView!
-    @IBOutlet weak var voiletVw: UIView!
-    @IBOutlet weak var blueVw: UIView!
     @IBOutlet weak var attendanceVw: UIView!
-    @IBOutlet weak var greenImg: UIImageView!
     @IBOutlet weak var requestleaveButton: UIButton!
     @IBOutlet weak var leavehistoryButton: UIButton!
     
-    var presentCount: Int = 10
-    var absentCount: Int = 16
-    var totalDays: Int = 26
+    var presentCount: Int = 0
+    var absentCount: Int = 0
+    var totalDays: Int = 0
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
-         [blueVw, voiletVw, presentVw, absentVw].forEach {
+         [presentVw, absentVw].forEach {
 
             $0?.layer.cornerRadius = 8
         }
@@ -60,6 +59,15 @@ class AttendanceCell: UITableViewCell {
 
     override func layoutSubviews() {
         super.layoutSubviews()
+        drawAttendanceChart()
+    }
+    
+    func setupcell(attendance : Attendance){
+        self.lblAbsentDays.text = "\(attendance.absentDays)"
+        self.presentdays.text = "\(attendance.presentDays)"
+        presentCount = attendance.presentDays
+        absentCount = attendance.absentDays
+        totalDays = presentCount + absentCount
         drawAttendanceChart()
     }
     
