@@ -26,7 +26,7 @@ class KidSelectionCell: UICollectionViewCell {
     }
     
     func setup(student: Student, isSelected : Bool){
-        lblNAme.text = "For \(student.name)"
+        lblNAme.text = "\(student.name)"
         lblGrade.text = student.grade
         imgVw.loadImage(url: student.image ?? "")
         bgView.layer.borderColor = isSelected ? UIColor.primary.cgColor : UIColor(hex: "#CBE5FD")?.cgColor

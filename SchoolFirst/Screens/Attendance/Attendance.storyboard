@@ -19,19 +19,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="z4y-hH-tvv">
-                                <rect key="frame" x="0.0" y="109" width="393" height="709"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <color key="separatorColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <color key="sectionIndexColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <color key="sectionIndexBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <color key="sectionIndexTrackingBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                        <color key="value" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                            </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="88P-e3-SqL">
                                 <rect key="frame" x="0.0" y="59" width="393" height="50"/>
                                 <subviews>
@@ -64,29 +51,59 @@
                                     <constraint firstItem="Omq-aO-CWB" firstAttribute="leading" secondItem="1Nw-vg-F9A" secondAttribute="trailing" constant="8" id="h8x-np-fDz"/>
                                 </constraints>
                             </view>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="z4y-hH-tvv">
+                                <rect key="frame" x="0.0" y="185" width="393" height="667"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="separatorColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="sectionIndexColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="sectionIndexBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="sectionIndexTrackingBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                        <color key="value" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </tableView>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="zY8-TC-h6J">
+                                <rect key="frame" x="0.0" y="111" width="393" height="74"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="74" id="eje-w0-bb4"/>
+                                </constraints>
+                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" automaticEstimatedItemSize="YES" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="OnU-94-NXb">
+                                    <size key="itemSize" width="128" height="128"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells/>
+                            </collectionView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="z4y-hH-tvv" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="50" id="HoF-g2-jlw"/>
+                            <constraint firstItem="z4y-hH-tvv" firstAttribute="top" secondItem="zY8-TC-h6J" secondAttribute="bottom" id="IM6-5w-Z8a"/>
                             <constraint firstItem="88P-e3-SqL" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="JOh-9T-n3d"/>
-                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="z4y-hH-tvv" secondAttribute="trailing" id="RPb-C1-5M8"/>
-                            <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="z4y-hH-tvv" secondAttribute="bottom" id="Uuo-Qp-dU0"/>
+                            <constraint firstItem="zY8-TC-h6J" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="Nya-r1-oo1"/>
+                            <constraint firstItem="z4y-hH-tvv" firstAttribute="trailing" secondItem="vDu-zF-Fre" secondAttribute="trailing" id="Sfe-t8-PdW"/>
+                            <constraint firstItem="zY8-TC-h6J" firstAttribute="top" secondItem="88P-e3-SqL" secondAttribute="bottom" constant="2" id="WgI-ZR-sj7"/>
+                            <constraint firstAttribute="bottom" secondItem="z4y-hH-tvv" secondAttribute="bottom" id="XLx-1y-pIX"/>
+                            <constraint firstItem="88P-e3-SqL" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="Y8f-dI-NPa"/>
                             <constraint firstItem="88P-e3-SqL" firstAttribute="trailing" secondItem="vDu-zF-Fre" secondAttribute="trailing" id="bRa-ei-uYF"/>
-                            <constraint firstItem="z4y-hH-tvv" firstAttribute="top" secondItem="88P-e3-SqL" secondAttribute="bottom" id="gMq-it-2nu"/>
-                            <constraint firstItem="z4y-hH-tvv" firstAttribute="leading" secondItem="1Nw-vg-F9A" secondAttribute="trailing" constant="-51.333333333333336" id="rbr-TT-Yhd"/>
-                            <constraint firstItem="z4y-hH-tvv" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="zV5-DK-L5i"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="zY8-TC-h6J" secondAttribute="trailing" id="cye-ue-2fX"/>
+                            <constraint firstItem="z4y-hH-tvv" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="z1m-L7-mGG"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="backButton" destination="1Nw-vg-F9A" id="8ec-BH-Q9s"/>
+                        <outlet property="colVw" destination="zY8-TC-h6J" id="5Jf-My-dmj"/>
                         <outlet property="tblVw" destination="z4y-hH-tvv" id="cgC-n8-SrX"/>
                         <outlet property="topVw" destination="88P-e3-SqL" id="qJs-Sp-5QZ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="131" y="-27"/>
+            <point key="canvasLocation" x="130.53435114503816" y="-27.464788732394368"/>
         </scene>
         <!--Submit Leave View Controller-->
         <scene sceneID="tAV-NI-p0b">

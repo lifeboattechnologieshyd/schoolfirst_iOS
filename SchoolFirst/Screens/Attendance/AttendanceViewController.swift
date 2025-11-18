@@ -12,10 +12,12 @@ import FSCalendar
 
 class AttendanceViewController: UIViewController {
     
+    @IBOutlet weak var colVw: UICollectionView!
     @IBOutlet weak var topVw: UIView!
     @IBOutlet weak var tblVw: UITableView!
     @IBOutlet weak var backButton: UIButton!
-    
+    var selected_student = 0
+    var selected_date = Date()
     var leaves = [Leave]()
     var attendanceDetails : Attendance!
     var monthlyAttendance = [String: DayAttendanceStats]()
@@ -30,6 +32,11 @@ class AttendanceViewController: UIViewController {
         tblVw.dataSource = self
         tblVw.separatorStyle = .none
         tblVw.allowsSelection = false
+        
+        self.colVw.register(UINib(nibName: "KidSelectionCell", bundle: nil), forCellWithReuseIdentifier: "KidSelectionCell")
+
+        colVw.delegate = self
+        colVw.dataSource = self
         
         tblVw.register(UINib(nibName: "AttendanceCell", bundle: nil), forCellReuseIdentifier: "AttendanceCell")
         tblVw.register(UINib(nibName: "AttendanceTableViewCell", bundle: nil), forCellReuseIdentifier: "AttendanceTableViewCell")
@@ -50,7 +57,7 @@ class AttendanceViewController: UIViewController {
     
     
     func getAttandanceReport() {
-        let url = API.ATTENDANCE_STATS + "student_id=\(UserManager.shared.kids.first?.studentID ?? "")"
+        let url = API.ATTENDANCE_STATS + "student_id=\(UserManager.shared.kids[selected_student].studentID)"
         NetworkManager.shared.request(urlString: url, method: .GET) { (result: Result<APIResponse<Attendance>, NetworkError>)  in
             switch result {
             case .success(let info):
@@ -167,15 +174,15 @@ class AttendanceViewController: UIViewController {
     
     func getLeaveDetails(date: Date){
         let (sd,ed) = getMonthStartEnd(from: date)
-        let url = API.ATTENDANCE_LEAVE_HISTORY + "student_id=\(UserManager.shared.kids.first?.studentID ?? "")"+"&start_date=\(sd)&end_date=\(ed)"
+        let url = API.ATTENDANCE_LEAVE_HISTORY + "student_id=\(UserManager.shared.kids[selected_student].studentID)"+"&start_date=\(sd)&end_date=\(ed)"
         NetworkManager.shared.request(urlString: url, method: .GET) { (result: Result<APIResponse<[Leave]>, NetworkError>)  in
             switch result {
             case .success(let info):
                 if info.success {
                     if let data = info.data {
                         self.leaves = data
-                        var key = self.toYearMonth(date)
-                        var values = self.generateDayAttendanceStats(leaves: data, month: date)
+                        let key = self.toYearMonth(date)
+                        let values = self.generateDayAttendanceStats(leaves: data, month: date)
                         self.monthlyAttendance = [key: values]
                         DispatchQueue.main.async {
                             self.setupTableView()
@@ -202,7 +209,7 @@ class AttendanceViewController: UIViewController {
 extension AttendanceViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return 2
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -212,21 +219,19 @@ extension AttendanceViewController: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "AttendanceCell", for: indexPath) as! AttendanceCell
             cell.setupcell(attendance: attendanceDetails)
             return cell
-            
+            //        case 2:
+            //            let cell = tableView.dequeueReusableCell(withIdentifier: "AttendanceTableViewCell", for: indexPath) as! AttendanceTableViewCell
+            //            cell.colVw.reloadData()
+            //            return cell
         case 1:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "AttendanceTableViewCell", for: indexPath) as! AttendanceTableViewCell
-            cell.colVw.reloadData()
-            return cell
-            
-        case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: "CalendarTableViewCell", for: indexPath) as! CalendarTableViewCell
             cell.monthlyAttendance = self.monthlyAttendance
             cell.calendar.reloadData()
             cell.onSelectMonth = { date in
+                self.selected_date = date
                 self.getLeaveDetails(date: date)
             }
             return cell
-            
         default:
             return UITableViewCell()
         }
@@ -240,10 +245,9 @@ extension AttendanceViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.row {
-        case 0: return 370
-        case 1: return 0
-        case 2: return 480
-        default: return 60
+        case 0: return 295
+        case 1: return 480
+        default: return 0
         }
     }
     
@@ -252,4 +256,36 @@ extension AttendanceViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
+
+extension AttendanceViewController  : UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return UserManager.shared.kids.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "KidSelectionCell", for: indexPath) as! KidSelectionCell
+        cell.setup(student: UserManager.shared.kids[indexPath.row], isSelected: selected_student ==  indexPath.row)
+        return cell
+    }
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        selected_student = indexPath.row
+        colVw.reloadData()
+        collectionView.scrollToItem(
+                at: indexPath,
+                at: .centeredHorizontally,
+                animated: true
+            )
+        getAttandanceReport()
+        self.getLeaveDetails(date: self.selected_date)
+    }
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        colVw.reloadData()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = (collectionView.frame.size.width-10)/2
+        return CGSize(width: width, height: 74)
+    }
+}
 
