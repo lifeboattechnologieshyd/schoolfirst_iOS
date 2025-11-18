@@ -361,11 +361,14 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
             let stbd = UIStoryboard(name: "VocabBees", bundle: nil)
             let vc = stbd.instantiateViewController(identifier: "VocabBeesViewController") as! VocabBeesViewController
             navigationController?.pushViewController(vc, animated: true)
-     //   case 7:
-      //      print("EdStore")
-       //     let stbd = UIStoryboard(name: "EdStore", bundle: nil)
-        //    let vc = stbd.instantiateViewController(identifier: "EdStoreViewController") as! EdStoreViewController
-        //    navigationController?.pushViewController(vc, animated: true)
+        case 7:
+            print("EdStore")
+            let vc = storyboard?.instantiateViewController(identifier: "ComingSoonVC") as! ComingSoonVC
+           navigationController?.pushViewController(vc, animated: true)
+        case 8:
+            print("Ask Us")
+            let vc = storyboard?.instantiateViewController(identifier: "ComingSoonVC") as! ComingSoonVC
+           navigationController?.pushViewController(vc, animated: true)
         default:
             print("Courses")
         }
@@ -400,6 +403,10 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
                 case 6:
                     let vc = storyboard?.instantiateViewController(identifier: "FeeViewController") as! FeeViewController
                     navigationController?.pushViewController(vc, animated: true)
+                case 7:
+                    print("School Bus")
+                    let vc = storyboard?.instantiateViewController(identifier: "ComingSoonVC") as! ComingSoonVC
+                   navigationController?.pushViewController(vc, animated: true)
                 case 8:
                     let stbd = UIStoryboard(name: "Gallery", bundle: nil)
                     let vc = stbd.instantiateViewController(identifier: "GalleryViewController") as! GalleryViewController

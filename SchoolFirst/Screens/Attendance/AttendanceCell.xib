@@ -20,13 +20,13 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Line Calender" translatesAutoresizingMaskIntoConstraints="NO" id="8gs-Gu-Fye">
-                        <rect key="frame" x="0.0" y="270" width="372" height="15"/>
+                        <rect key="frame" x="0.0" y="354" width="372" height="15"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="15" id="AG5-GX-vPj"/>
                         </constraints>
                     </imageView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9Qf-By-PMN">
-                        <rect key="frame" x="16" y="0.0" width="340" height="190"/>
+                        <rect key="frame" x="16" y="84" width="340" height="190"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" Attendance Snapshot" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aR8-46-Tvh">
                                 <rect key="frame" x="78" y="12" width="200" height="20"/>
@@ -136,7 +136,7 @@
                         </constraints>
                     </view>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6a8-u5-SYq">
-                        <rect key="frame" x="16" y="206" width="162" height="48"/>
+                        <rect key="frame" x="16" y="290" width="162" height="48"/>
                         <color key="backgroundColor" red="0.79607843140000001" green="0.8980392157" blue="0.99215686270000003" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="48" id="d4Y-iT-ol1"/>
@@ -148,7 +148,7 @@
                         </connections>
                     </button>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="l5f-V2-rux">
-                        <rect key="frame" x="194" y="206" width="162" height="48"/>
+                        <rect key="frame" x="194" y="290" width="162" height="48"/>
                         <color key="backgroundColor" name="primaryColor"/>
                         <color key="tintColor" red="0.99516242740000005" green="0.94719189410000004" blue="0.01824968494" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <state key="normal" title="Button"/>
@@ -169,7 +169,7 @@
                     <constraint firstAttribute="trailing" secondItem="l5f-V2-rux" secondAttribute="trailing" constant="16" id="aOm-Af-UbT"/>
                     <constraint firstItem="l5f-V2-rux" firstAttribute="centerY" secondItem="6a8-u5-SYq" secondAttribute="centerY" id="dl8-Vd-fLO"/>
                     <constraint firstItem="l5f-V2-rux" firstAttribute="height" secondItem="6a8-u5-SYq" secondAttribute="height" id="eQ7-VL-8mB"/>
-                    <constraint firstItem="9Qf-By-PMN" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="g0s-aK-Unj"/>
+                    <constraint firstItem="9Qf-By-PMN" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="84" id="g0s-aK-Unj"/>
                     <constraint firstAttribute="trailing" secondItem="9Qf-By-PMN" secondAttribute="trailing" constant="16" id="hgk-tQ-3f2"/>
                     <constraint firstItem="9Qf-By-PMN" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="uEc-e0-Tkc"/>
                     <constraint firstItem="8gs-Gu-Fye" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="wMP-OY-81D"/>
