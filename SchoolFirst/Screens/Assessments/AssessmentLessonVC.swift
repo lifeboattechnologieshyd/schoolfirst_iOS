@@ -74,6 +74,7 @@ extension AssessmentLessonVC: UITableViewDelegate, UITableViewDataSource  {
         cell.onSelectingLesson = { index in
             print("selected row")
             self.lessons[index].selected.toggle()
+            UserManager.shared.assessment_selected_lesson_ids.append(self.lessons[index].id)
             cell.btnSelect.setImage(UIImage(named: "lesson_selection"), for: .normal)
             self.tblVw.reloadData()
         }
@@ -86,5 +87,8 @@ extension AssessmentLessonVC: UITableViewDelegate, UITableViewDataSource  {
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 56
+    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        UserManager.shared.assessment_selected_lesson_ids.append(self.lessons[indexPath.row].id)
     }
 }

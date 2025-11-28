@@ -41,7 +41,7 @@ class FeeTableViewCell: UITableViewCell {
     func setup(details : StudentFeeDetails) {
         self.lblName.text = details.studentName
         self.lblGrade.text = details.gradeName
-        self.imgVw.loadImage(url: details.studentImage)
+        self.imgVw.loadImage(url: details.studentImage ?? "")
         self.lblTotalFeeDue.text = "₹\(details.pendingFee.rounded())"
     }
 }

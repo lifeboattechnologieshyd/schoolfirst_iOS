@@ -76,6 +76,7 @@ extension AssessmentSubjectSelectionVC : UICollectionViewDelegate, UICollectionV
         let vc = storyboard?.instantiateViewController(identifier: "AssessmentLessonVC") as? AssessmentLessonVC
         vc?.grade_id = grade_id
         vc?.subject_id = self.subjects[indexPath.row].id
+        UserManager.shared.assessment_selected_subject = self.subjects[indexPath.row]
         self.navigationController?.pushViewController(vc!, animated: true)
     }
     

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="AssessmentCardCell" rowHeight="181" id="KGk-i7-Jjw" customClass="AssessmentCardCell" customModule="SF_Dev" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="396" height="181"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="396" height="181"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="csp-JU-lwd">
+                        <rect key="frame" x="0.0" y="2" width="396" height="169"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="person.crop.circle" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="lVc-hM-G04">
+                                <rect key="frame" x="359" y="5.6666666666666661" width="32" height="30.666666666666671"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="32" id="IuP-qj-xCe"/>
+                                    <constraint firstAttribute="width" constant="32" id="OEQ-CM-uEo"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="c5l-ZM-gtc">
+                                <rect key="frame" x="12" y="17" width="343" height="20"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Test on Trigonometry">
+                                        <attributes>
+                                            <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZsI-GY-h0e">
+                                <rect key="frame" x="12" y="45" width="379" height="35"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Its a focused test designed to help students practice angles, ratios, and trigonometric…">
+                                        <attributes>
+                                            <font key="NSFont" size="14" name="Lexend-Regular"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="H2d-Xk-Wvh">
+                                <rect key="frame" x="221" y="132" width="167" height="32"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="32" id="yoG-G1-wS9"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="next" imagePlacement="trailing" title="SEE ANSWERS" imagePadding="4">
+                                    <fontDescription key="titleFontDescription" name="Lexend-Regular" family="Lexend" pointSize="16"/>
+                                    <color key="baseForegroundColor" name="primaryColor"/>
+                                </buttonConfiguration>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                        <real key="value" value="1"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                        <color key="value" red="0.79607843137254897" green="0.89803921568627454" blue="0.99215686274509807" alpha="1" colorSpace="calibratedRGB"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="16"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="onClickSeeAnswers:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="CPg-UK-7jf"/>
+                                </connections>
+                            </button>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.80000000000000004" translatesAutoresizingMaskIntoConstraints="NO" id="BZa-0y-E62">
+                                <rect key="frame" x="12" y="92" width="379" height="6"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="6" id="0s5-jD-gEG"/>
+                                </constraints>
+                                <color key="progressTintColor" name="secondaryColor"/>
+                                <color key="trackTintColor" name="primaryColor"/>
+                            </progressView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="baz-IX-Dhu">
+                                <rect key="frame" x="12" y="106" width="379" height="18"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="18" id="TpD-yc-8Ox"/>
+                                </constraints>
+                                <attributedString key="attributedText">
+                                    <fragment content="You’ve scored 67/100">
+                                        <attributes>
+                                            <font key="NSFont" size="14" name="Lexend-Regular"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="lVc-hM-G04" secondAttribute="trailing" constant="5" id="8kE-C8-1ge"/>
+                            <constraint firstItem="BZa-0y-E62" firstAttribute="leading" secondItem="ZsI-GY-h0e" secondAttribute="leading" id="8m0-8u-dNa"/>
+                            <constraint firstAttribute="trailing" secondItem="H2d-Xk-Wvh" secondAttribute="trailing" constant="8" id="9iQ-kr-vSZ"/>
+                            <constraint firstItem="BZa-0y-E62" firstAttribute="top" secondItem="ZsI-GY-h0e" secondAttribute="bottom" constant="12" id="Dxw-fh-NBU"/>
+                            <constraint firstItem="c5l-ZM-gtc" firstAttribute="leading" secondItem="csp-JU-lwd" secondAttribute="leading" constant="12" id="EKR-vQ-wiu"/>
+                            <constraint firstItem="baz-IX-Dhu" firstAttribute="top" secondItem="BZa-0y-E62" secondAttribute="bottom" constant="8" id="FCz-fC-Kxo"/>
+                            <constraint firstItem="ZsI-GY-h0e" firstAttribute="top" secondItem="c5l-ZM-gtc" secondAttribute="bottom" constant="8" id="JC6-9v-nEV"/>
+                            <constraint firstItem="ZsI-GY-h0e" firstAttribute="leading" secondItem="c5l-ZM-gtc" secondAttribute="leading" id="Mci-25-USI"/>
+                            <constraint firstItem="baz-IX-Dhu" firstAttribute="leading" secondItem="BZa-0y-E62" secondAttribute="leading" id="Mnu-mU-ROo"/>
+                            <constraint firstItem="BZa-0y-E62" firstAttribute="trailing" secondItem="ZsI-GY-h0e" secondAttribute="trailing" id="Pud-n4-oje"/>
+                            <constraint firstItem="H2d-Xk-Wvh" firstAttribute="top" secondItem="baz-IX-Dhu" secondAttribute="bottom" constant="8" id="RZz-iv-2ub"/>
+                            <constraint firstItem="ZsI-GY-h0e" firstAttribute="trailing" secondItem="lVc-hM-G04" secondAttribute="trailing" id="Xrw-zn-HqU"/>
+                            <constraint firstItem="lVc-hM-G04" firstAttribute="top" secondItem="csp-JU-lwd" secondAttribute="top" constant="5" id="Zy7-ty-9cU"/>
+                            <constraint firstItem="lVc-hM-G04" firstAttribute="leading" secondItem="c5l-ZM-gtc" secondAttribute="trailing" constant="4" id="l0Y-gv-DD9"/>
+                            <constraint firstItem="baz-IX-Dhu" firstAttribute="trailing" secondItem="BZa-0y-E62" secondAttribute="trailing" id="lmt-Gf-2cL"/>
+                            <constraint firstItem="c5l-ZM-gtc" firstAttribute="bottom" secondItem="lVc-hM-G04" secondAttribute="bottom" id="nal-ly-LfO"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="8"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </view>
+                </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="csp-JU-lwd" secondAttribute="trailing" id="2Fl-OZ-qkD"/>
+                    <constraint firstItem="csp-JU-lwd" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="2" id="Giu-DW-AQY"/>
+                    <constraint firstItem="csp-JU-lwd" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="Tib-EN-axD"/>
+                    <constraint firstAttribute="bottom" secondItem="csp-JU-lwd" secondAttribute="bottom" constant="10" id="pzE-Ok-fw5"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="btnSeeAns" destination="H2d-Xk-Wvh" id="XV0-v5-WSK"/>
+                <outlet property="imgStudent" destination="lVc-hM-G04" id="JT4-9T-hOX"/>
+                <outlet property="lblDescription" destination="ZsI-GY-h0e" id="oyN-Ey-ryC"/>
+                <outlet property="lblScore" destination="baz-IX-Dhu" id="gd5-Sw-JXa"/>
+                <outlet property="lblTitle" destination="c5l-ZM-gtc" id="ZHw-M5-zaM"/>
+                <outlet property="progressView" destination="BZa-0y-E62" id="ajx-gF-3wY"/>
+            </connections>
+            <point key="canvasLocation" x="-41.221374045801525" y="67.957746478873247"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="next" width="24" height="24"/>
+        <image name="person.crop.circle" catalog="system" width="128" height="123"/>
+        <namedColor name="primaryColor">
+            <color red="0.043137254901960784" green="0.33725490196078434" blue="0.60392156862745094" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="secondaryColor">
+            <color red="0.99607843137254903" green="0.94901960784313721" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

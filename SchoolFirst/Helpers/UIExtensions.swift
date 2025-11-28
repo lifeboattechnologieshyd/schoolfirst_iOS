@@ -675,6 +675,37 @@ extension UILabel {
         paddingView.backgroundColor = self.backgroundColor
         self.backgroundColor = .clear
     }
+    func setTyping(text: String, charInterval: TimeInterval = 0.06) {
+        self.text = ""
+        var index = 0
+        let characters = Array(text)
+        
+        Timer.scheduledTimer(withTimeInterval: charInterval, repeats: true) { timer in
+            if index < characters.count {
+                self.text?.append(characters[index])
+                index += 1
+            } else {
+                timer.invalidate()
+            }
+        }
+    }
+    
+    func animateTyping(text: String, interval: TimeInterval = 0.06, completion: (() -> Void)? = nil) {
+        self.text = ""
+        var index = 0
+        let characters = Array(text)
+
+        Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { timer in
+            if index < characters.count {
+                self.text?.append(characters[index])
+                index += 1
+            } else {
+                timer.invalidate()
+                completion?()
+            }
+        }
+    }
+    
 }
 
 extension UITextView {

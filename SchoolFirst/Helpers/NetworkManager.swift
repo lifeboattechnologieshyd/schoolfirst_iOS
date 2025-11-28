@@ -97,6 +97,7 @@ class NetworkManager {
                     }
                 }
             } catch {
+                print(error.localizedDescription)
                 completion(.failure(.decodingError(error.localizedDescription)))
             }
         }.resume()
@@ -829,7 +830,7 @@ struct WordInfo: Codable {
     let definitionVoice: String
     let originVoice: String
     let usageVoice: String
-    let date: String
+    let date: String?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -851,20 +852,20 @@ struct WordInfo: Codable {
 }
 
 struct WordAnswer: Codable {
-    let id: String
     let wordId: String
     let userAnswer: String
     let correctAnswer: String
     let isCorrect: Bool
     let points: Int
-
+    let earned_points: Int
+    let total_points: Int
+    
     enum CodingKeys: String, CodingKey {
-        case id
         case wordId = "word_id"
         case userAnswer = "user_answer"
         case correctAnswer = "correct_answer"
         case isCorrect = "is_correct"
-        case points
+        case points, earned_points, total_points
     }
 }
 
@@ -877,7 +878,7 @@ struct StudentFeeDetails: Codable {
     let studentID: String
     let studentFeeID: String
     let studentName: String
-    let studentImage: String
+    let studentImage: String?
     let gradeID: String
     let gradeName: String
     let sectionName: String
@@ -986,5 +987,154 @@ struct Leave: Codable, Identifiable {
         case leaveStatus = "leave_status"
         case teacherRemarks = "teacher_remarks"
         case leaveDays = "leave_days"
+    }
+}
+
+
+struct Assessment: Codable {
+    let id: String
+    let gradeID: String
+    let gradeName: String
+    let subjectID: String
+    let subjectName: String
+    let name: String
+    let description: String
+    let numberOfQuestions: Int
+    let attemptedQuestions: Int
+    let isEvaluationRequired: Bool
+    let totalMarks: Int
+    let status: String
+    let questions: [AssessmentQuestion]
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case gradeID = "grade_id"
+        case gradeName = "grade_name"
+        case subjectID = "subject_id"
+        case subjectName = "subject_name"
+        case name
+        case description
+        case numberOfQuestions = "number_of_questions"
+        case attemptedQuestions = "attempted_questions"
+        case isEvaluationRequired = "is_evaluation_required"
+        case totalMarks = "total_marks"
+        case status
+        case questions
+    }
+}
+
+struct AssessmentQuestion: Codable {
+    let id: String
+    let questionType: String
+    let question: String
+    let options: [String]
+    let answer: String
+    let description: String
+    let marks: Int
+    let subjectID: String
+    let gradeID: String
+    let hint: String
+    let skillTested: String
+    let levelOfDifficulty: Int
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case questionType = "question_type"
+        case question
+        case options
+        case answer
+        case description
+        case marks
+        case subjectID = "subject_id"
+        case gradeID = "grade_id"
+        case hint
+        case skillTested = "skill_tested"
+        case levelOfDifficulty = "level_of_difficulty"
+    }
+}
+class AssessmentAnswerResponse: Codable {
+    let id: String
+    let questionId: String
+    let assessmentId: String
+    let userId: String
+    let studentId: String
+    let userAnswer: String
+    let isCorrect: Bool
+    let marks: Int
+    let totalMarks: Int
+    let attemptedQuestions: Int
+    let totalQuestions: Int
+    let assessmentStatus: String
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case questionId = "question_id"
+        case assessmentId = "assessment_id"
+        case userId = "user_id"
+        case studentId = "student_id"
+        case userAnswer = "user_answer"
+        case isCorrect = "is_correct"
+        case marks
+        case totalMarks = "total_marks"
+        case attemptedQuestions = "attempted_questions"
+        case totalQuestions = "total_questions"
+        case assessmentStatus = "assessment_status"
+    }
+}
+struct AssessmentSummary: Codable {
+    let assessmentId: String
+    let assessmentName: String
+    let description: String
+//    let answer: String
+    let numberOfQuestions: Int
+    let totalMarks: Int
+    let studentMarks: Int
+    let status: String
+
+    enum CodingKeys: String, CodingKey {
+        case assessmentId = "assessment_id"
+        case assessmentName = "assessment_name"
+        case description
+//        case answer
+        case numberOfQuestions = "number_of_questions"
+        case totalMarks = "total_marks"
+        case studentMarks = "student_marks"
+        case status
+    }
+}
+
+struct AssessmentQuestionHistoryDetails: Codable {
+    let id: String
+    let assessmentId: String
+    let questionId: String
+    let questionName: String
+    let questionType: String
+    let options: [String]
+    let correctAnswer: String
+    let description: String?
+    let answerDescription: String?
+    let questionMarks: Int
+    let userId: String
+    let studentId: String
+    let userAnswer: String?
+    let isCorrect: Bool
+    let marks: Int
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case assessmentId = "assessment_id"
+        case questionId = "question_id"
+        case questionName = "question_name"
+        case questionType = "question_type"
+        case options
+        case correctAnswer = "correct_answer"
+        case description
+        case answerDescription = "answer_description"
+        case questionMarks = "question_marks"
+        case userId = "user_id"
+        case studentId = "student_id"
+        case userAnswer = "user_answer"
+        case isCorrect = "is_correct"
+        case marks
     }
 }

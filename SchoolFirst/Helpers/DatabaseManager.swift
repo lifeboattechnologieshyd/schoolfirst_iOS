@@ -47,6 +47,11 @@ class UserManager {
     private init() {}
     var assessmentSelectedStudent : Student!
     var assessmentCurriculum : Curriculum!
+    var assessment_selected_grade : GradeModel!
+    var assessment_selected_subject : GradeSubject!
+    var assessment_selected_lesson_ids = [String]()
+    var assessment_created_assessment : Assessment!
+
     
     
     

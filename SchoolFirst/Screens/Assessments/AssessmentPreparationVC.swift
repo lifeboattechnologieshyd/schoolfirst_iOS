@@ -14,25 +14,41 @@ class AssessmentPreparationVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         playLottieFile()
+        createAssessment()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-            self.goToStartTestVC()
-        }
-    }
+   
     
     
     func createAssessment() {
+        
+        print( UserManager.shared.assessment_selected_grade.id)
+        print( UserManager.shared.assessment_selected_subject.id)
+        print( UserManager.shared.assessmentSelectedStudent.studentID)
+
+        print( UserManager.shared.assessment_selected_lesson_ids.first!)
+        
+        
+        
+        let payload: [String:Any] = [
+            "grade_id": UserManager.shared.assessment_selected_grade.id,
+            "subject_id":UserManager.shared.assessment_selected_subject.id,
+            "lesson_ids":UserManager.shared.assessment_selected_lesson_ids,
+            "student_id":UserManager.shared.assessmentSelectedStudent.studentID
+        ]
+        print(payload)
+        
         let subject_url = API.ASSESSMENT_CREATE
-        NetworkManager.shared.request(urlString: subject_url,method: .GET) { (result: Result<APIResponse<[GradeSubject]>, NetworkError>)  in
+        NetworkManager.shared.request(urlString: subject_url,method: .POST, parameters: payload) { (result: Result<APIResponse<[Assessment]>, NetworkError>)  in
             switch result {
             case .success(let info):
                 if info.success {
                     if let data = info.data {
                         DispatchQueue.main.async {
-//                            self.colVw.reloadData()
+                            if data.count > 0 {
+                                UserManager.shared.assessment_created_assessment = data[0]
+                                self.goToStartTestVC()
+                            }
                         }
                     }
                 }else{
@@ -45,6 +61,7 @@ class AssessmentPreparationVC: UIViewController {
                         self.handleLogout()
                     default:
                         self.showAlert(msg: error.localizedDescription)
+                        self.navigationController?.popViewController(animated: true)
                     }
                 }
             }

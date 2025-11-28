@@ -47,23 +47,41 @@
                                 </constraints>
                             </view>
                             <tableView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="gdH-VJ-aqa">
-                                <rect key="frame" x="0.0" y="111" width="393" height="741"/>
+                                <rect key="frame" x="0.0" y="185" width="393" height="667"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="ETp-BB-7mX">
+                                <rect key="frame" x="0.0" y="111" width="393" height="74"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="74" id="qM3-ue-UXh"/>
+                                </constraints>
+                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="4BF-y6-PRB">
+                                    <size key="itemSize" width="128" height="128"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells/>
+                            </collectionView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="gdH-VJ-aqa" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="8My-ay-22s"/>
-                            <constraint firstItem="gdH-VJ-aqa" firstAttribute="top" secondItem="h7g-DM-e3f" secondAttribute="bottom" constant="2" id="Cbs-M9-d1u"/>
+                            <constraint firstItem="ETp-BB-7mX" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="6g5-Pg-hZh"/>
+                            <constraint firstAttribute="bottom" secondItem="gdH-VJ-aqa" secondAttribute="bottom" id="GHi-h9-fzi"/>
                             <constraint firstItem="h7g-DM-e3f" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="GHn-HN-8ha"/>
                             <constraint firstItem="h7g-DM-e3f" firstAttribute="trailing" secondItem="vDu-zF-Fre" secondAttribute="trailing" id="LCW-gd-sGw"/>
-                            <constraint firstAttribute="bottom" secondItem="gdH-VJ-aqa" secondAttribute="bottom" id="Qic-hT-Zcy"/>
+                            <constraint firstItem="ETp-BB-7mX" firstAttribute="top" secondItem="h7g-DM-e3f" secondAttribute="bottom" constant="2" id="Obo-32-uai"/>
+                            <constraint firstItem="gdH-VJ-aqa" firstAttribute="trailing" secondItem="vDu-zF-Fre" secondAttribute="trailing" id="QCW-k8-3bt"/>
+                            <constraint firstItem="gdH-VJ-aqa" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="aZ2-rh-fMU"/>
                             <constraint firstItem="h7g-DM-e3f" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="ckc-l5-ETW"/>
-                            <constraint firstItem="gdH-VJ-aqa" firstAttribute="trailing" secondItem="vDu-zF-Fre" secondAttribute="trailing" id="v65-Ip-X0s"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="ETp-BB-7mX" secondAttribute="trailing" id="lvQ-dB-2IY"/>
+                            <constraint firstItem="gdH-VJ-aqa" firstAttribute="top" secondItem="ETp-BB-7mX" secondAttribute="bottom" id="qTZ-Up-Fwk"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="colVw" destination="ETp-BB-7mX" id="ASV-jw-AQw"/>
                         <outlet property="tblVw" destination="gdH-VJ-aqa" id="I57-Fo-72y"/>
                         <outlet property="topView" destination="h7g-DM-e3f" id="mn9-mt-v15"/>
                     </connections>

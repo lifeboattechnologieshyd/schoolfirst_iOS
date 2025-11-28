@@ -31,13 +31,7 @@ class AttendanceCell: UITableViewCell {
             $0?.layer.cornerRadius = 8
         }
         
-        attendanceVw.layer.cornerRadius = 14
-        attendanceVw.layer.shadowColor = UIColor.black.cgColor
-        attendanceVw.layer.shadowOpacity = 0.2
-        attendanceVw.layer.shadowOffset = CGSize(width: 0, height: 2)
-        attendanceVw.layer.shadowRadius = 4
-        attendanceVw.layer.masksToBounds = false
-        
+        attendanceVw.addCardShadow()
 
     }
 

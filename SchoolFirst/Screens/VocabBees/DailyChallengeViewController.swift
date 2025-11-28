@@ -8,21 +8,17 @@
 import  UIKit
 import AVFoundation
 
-class DailyChallengeViewController:UIViewController, AlphabetKeyboardDelegate{
+class DailyChallengeViewController:UIViewController {
     var player: AVPlayer?
     var playerObserver: Any?
     
     @IBOutlet weak var slider: UISlider!
     @IBOutlet weak var txtField: UITextField!
     @IBOutlet weak var lblTitle: UILabel!
-    @IBOutlet weak var lblQuestions: UILabel!
-    
-    @IBOutlet weak var keyboardView: AlphabetKeyboardView!
     @IBOutlet weak var btnBack: UIButton!
 
+    @IBOutlet weak var lblWordsCount: UILabel!
     var typedText: String = ""
-    
-    
     var words = [WordInfo]()
     
     var totalWords = 10
@@ -31,10 +27,19 @@ class DailyChallengeViewController:UIViewController, AlphabetKeyboardDelegate{
             updateProgressLabel()
         }
     }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        getWords()
+        self.slider.minimumValue = 0
+        self.slider.maximumValue = 10
+        updateProgressLabel()
+    }
+    
     func updateProgressLabel() {
         
         DispatchQueue.main.async {
-            self.lblQuestions.text = "\(self.currentWordIndex) / \(self.totalWords)"
+            self.lblWordsCount.text = "\(self.currentWordIndex + 1) / \(self.totalWords)"
+            self.slider.value = Float((self.currentWordIndex + 1)/10)
         }
     }
     
@@ -49,12 +54,34 @@ class DailyChallengeViewController:UIViewController, AlphabetKeyboardDelegate{
     
     @IBAction func onTapListen(_ sender: UIButton) {
         self.setupPlayer()
+    }
+   
+    
+    @IBAction func onClickDefination(_ sender: UITapGestureRecognizer) {
+        self.playWordAudio(url: self.words[self.currentWordIndex].definitionVoice)
         
     }
-    @IBAction func onTapListen2(_ sender: UIButton) {
-        self.setupPlayer()
+    
+    
+    @IBAction func onClickOrigin(_ sender: UITapGestureRecognizer) {
+        self.playWordAudio(url: self.words[self.currentWordIndex].originVoice)
+
     }
     
+    
+    @IBAction func onClickUsage(_ sender: UITapGestureRecognizer) {
+        self.playWordAudio(url: self.words[self.currentWordIndex].usageVoice)
+
+    }
+    
+    
+    @IBAction func onClickOther(_ sender: UITapGestureRecognizer) {
+        self.playWordAudio(url: self.words[self.currentWordIndex].othersVoice)
+    }
+    
+    @IBAction func onClickSkip(_ sender: UIButton) {
+        self.submitWord()
+    }
     
     func setupPlayer(){
         DispatchQueue.main.async {
@@ -65,8 +92,10 @@ class DailyChallengeViewController:UIViewController, AlphabetKeyboardDelegate{
     func submitWord(){
         
         let payload = [
-            "user_answer":txtField.text!,
-            "word_id":self.words[currentWordIndex].id
+            "answer":txtField.text ?? "",
+            "word_id":self.words[currentWordIndex].id,
+            "grade_id":UserManager.shared.vocabBee_selected_grade.id,
+            "student_id": UserManager.shared.vocabBee_selected_student.studentID
         ]
         
         NetworkManager.shared.request(urlString: API.VOCABEE_SUBMIT_WORD, method: .POST, parameters: payload) { (result: Result<APIResponse<WordAnswer>, NetworkError>)  in
@@ -79,11 +108,11 @@ class DailyChallengeViewController:UIViewController, AlphabetKeyboardDelegate{
                             DispatchQueue.main.async {
                                 self.txtField.text = ""
                                 self.typedText = ""
-                                self.updateProgressLabel()
                                 self.setupPlayer()
                             }
                         }
                         if self.currentWordIndex == self.totalWords-1 {
+                            print("daily challenge completed")
                             // showCompletionAlert()
                         }
                     }
@@ -103,13 +132,13 @@ class DailyChallengeViewController:UIViewController, AlphabetKeyboardDelegate{
         }
     }
     
-    func showResultPopup(word: String) {
-        let popup = VocabBeeResultPopup.instantiate()
-//        popup.wordLabel.text = word
-//        popup.levelLabel.text = "Level \(level) → Level \(nextLevel)"
-//        popup.messageLabel.text = "Congratulations! You’re in Level \(nextLevel)"
-        popup.show(on: self.view)
-    }
+//    func showResultPopup(word: String) {
+//        let popup = VocabBeeResultPopup.instantiate()
+////        popup.wordLabel.text = word
+////        popup.levelLabel.text = "Level \(level) → Level \(nextLevel)"
+////        popup.messageLabel.text = "Congratulations! You’re in Level \(nextLevel)"
+//        popup.show(on: self.view)
+//    }
     
     func getWords(){
         let url = API.VOCABEE_GET_WORDS_BY_DATES + "?student_id=\(UserManager.shared.vocabBee_selected_student.studentID)&grade=\(UserManager.shared.vocabBee_selected_grade.id)&date=\(UserManager.shared.vocabBee_selected_date.date)"
@@ -120,6 +149,8 @@ class DailyChallengeViewController:UIViewController, AlphabetKeyboardDelegate{
                 if info.success {
                     if let data = info.data {
                         self.words = data
+                        self.totalWords =  self.words.count
+                        self.currentWordIndex = 0
                     }
                     DispatchQueue.main.async {
                         self.setupPlayer()
@@ -163,30 +194,4 @@ class DailyChallengeViewController:UIViewController, AlphabetKeyboardDelegate{
             NotificationCenter.default.removeObserver(observer)
         }
     }
-    
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        keyboardView.delegate = self
-        getWords()
-        updateProgressLabel()
-    }
-    
-    
-    
-    func didTapLetter(_ letter: String) {
-        typedText.append(letter)
-        txtField.text = typedText
-    }
-    
-    func didTapDelete() {
-        guard !typedText.isEmpty else { return }
-        typedText.removeLast()
-        txtField.text = typedText
-    }
-    
-    func didTapSubmit() {
-        print("Submitted: \(typedText)")
-    }
-    
 }

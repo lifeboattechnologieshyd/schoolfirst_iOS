@@ -1,5 +1,5 @@
 //
-//  DailyChallengeViewController.swift
+//  PracticeGameController.swift
 //  SchoolFirst
 //
 //  Created by Lifeboat on 22/10/25.
@@ -8,35 +8,25 @@
 import  UIKit
 import AVFoundation
 
-class PracticeGameController:UIViewController, AlphabetKeyboardDelegate{
+class PracticeGameController: UIViewController {
     var player: AVPlayer?
     var playerObserver: Any?
     
-    @IBOutlet weak var slider: UISlider!
     @IBOutlet weak var txtField: UITextField!
     @IBOutlet weak var lblTitle: UILabel!
-    @IBOutlet weak var lblQuestions: UILabel!
-    
-    @IBOutlet weak var keyboardView: AlphabetKeyboardView!
     @IBOutlet weak var btnBack: UIButton!
 
-    var typedText: String = ""
+    @IBOutlet weak var lblWordsCount: UILabel!
+    var word_info : WordInfo!
     
     
-    var words = [WordInfo]()
-    
-    var totalWords = 10
-    var currentWordIndex = 0 {
-        didSet {
-            updateProgressLabel()
-        }
-    }
-    func updateProgressLabel() {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        getWords()
         
-        DispatchQueue.main.async {
-            self.lblQuestions.text = "\(self.currentWordIndex) / \(self.totalWords)"
-        }
     }
+    
+    
     
      @IBAction func onClickBack(_ sender: UIButton) {
         navigationController?.popViewController(animated: true)
@@ -49,24 +39,50 @@ class PracticeGameController:UIViewController, AlphabetKeyboardDelegate{
     
     @IBAction func onTapListen(_ sender: UIButton) {
         self.setupPlayer()
-        
     }
-    @IBAction func onTapListen2(_ sender: UIButton) {
-        self.setupPlayer()
+   
+    
+    @IBAction func onClickDefination(_ sender: UITapGestureRecognizer) {
+        self.playWordAudio(url: self.word_info.definitionVoice)
+
     }
+    
+    
+    @IBAction func onClickOrigin(_ sender: UITapGestureRecognizer) {
+        self.playWordAudio(url: self.word_info.originVoice)
+    }
+    
+    
+    @IBAction func onClickUsage(_ sender: UITapGestureRecognizer) {
+        self.playWordAudio(url: self.word_info.usageVoice)
+
+    }
+    
+    
+    @IBAction func onClickOther(_ sender: UITapGestureRecognizer) {
+        self.playWordAudio(url: self.word_info.othersVoice)
+
+    }
+    
+    @IBAction func onClickSkip(_ sender: UIButton) {
+        self.submitWord()
+    }
+    
+    
     
     
     func setupPlayer(){
         DispatchQueue.main.async {
-            self.playWordAudio(url: self.words[self.currentWordIndex].pronunciation)
+            self.playWordAudio(url: self.word_info.pronunciation)
         }
     }
     
     func submitWord(){
-        
-        var payload = [
-            "user_answer":txtField.text!,
-            "word_id":self.words[currentWordIndex].id
+        let payload = [
+            "answer":txtField.text ?? "",
+            "word_id":self.word_info.id,
+            "grade_id":UserManager.shared.vocabBee_selected_grade.id,
+            "student_id": UserManager.shared.vocabBee_selected_student.studentID
         ]
         
         NetworkManager.shared.request(urlString: API.VOCABEE_SUBMIT_WORD, method: .POST, parameters: payload) { (result: Result<APIResponse<WordAnswer>, NetworkError>)  in
@@ -74,17 +90,9 @@ class PracticeGameController:UIViewController, AlphabetKeyboardDelegate{
             case .success(let info):
                 if info.success {
                     if let data = info.data {
-                        if self.currentWordIndex < self.totalWords-1 {
-                            self.currentWordIndex += 1
-                            DispatchQueue.main.async {
-                                self.txtField.text = ""
-                                self.typedText = ""
-                                self.updateProgressLabel()
-                                self.setupPlayer()
-                            }
-                        }
-                        if self.currentWordIndex == self.totalWords-1 {
-                            // showCompletionAlert()
+                        DispatchQueue.main.async {
+                            self.txtField.text = ""
+//                            self.setupPlayer()
                         }
                     }
                 }else{
@@ -103,23 +111,23 @@ class PracticeGameController:UIViewController, AlphabetKeyboardDelegate{
         }
     }
     
-    func showResultPopup(word: String) {
-        let popup = VocabBeeResultPopup.instantiate()
-//        popup.wordLabel.text = word
-//        popup.levelLabel.text = "Level \(level) → Level \(nextLevel)"
-//        popup.messageLabel.text = "Congratulations! You’re in Level \(nextLevel)"
-        popup.show(on: self.view)
-    }
+//    func showResultPopup(word: String) {
+//        let popup = VocabBeeResultPopup.instantiate()
+////        popup.wordLabel.text = word
+////        popup.levelLabel.text = "Level \(level) → Level \(nextLevel)"
+////        popup.messageLabel.text = "Congratulations! You’re in Level \(nextLevel)"
+//        popup.show(on: self.view)
+//    }
     
     func getWords(){
-        let url = API.VOCABEE_GET_WORDS_BY_DATES + "?student_id=\(UserManager.shared.vocabBee_selected_student.studentID)&grade=\(UserManager.shared.vocabBee_selected_grade.id)"
+        let url = API.VOCABEE_GET_PRACTISE_WORDS + "?student_id=\(UserManager.shared.vocabBee_selected_student.studentID)&grade=\(UserManager.shared.vocabBee_selected_grade.id)"
         
-        NetworkManager.shared.request(urlString: url, method: .GET) { (result: Result<APIResponse<[WordInfo]>, NetworkError>)  in
+        NetworkManager.shared.request(urlString: url, method: .GET) { (result: Result<APIResponse<WordInfo>, NetworkError>)  in
             switch result {
             case .success(let info):
                 if info.success {
                     if let data = info.data {
-                        self.words = data
+                        self.word_info = data
                     }
                     DispatchQueue.main.async {
                         self.setupPlayer()
@@ -163,30 +171,5 @@ class PracticeGameController:UIViewController, AlphabetKeyboardDelegate{
             NotificationCenter.default.removeObserver(observer)
         }
     }
-    
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        keyboardView.delegate = self
-        getWords()
-        updateProgressLabel()
-    }
-    
-    
-    
-    func didTapLetter(_ letter: String) {
-        typedText.append(letter)
-        txtField.text = typedText
-    }
-    
-    func didTapDelete() {
-        guard !typedText.isEmpty else { return }
-        typedText.removeLast()
-        txtField.text = typedText
-    }
-    
-    func didTapSubmit() {
-        print("Submitted: \(typedText)")
-    }
-    
 }
+

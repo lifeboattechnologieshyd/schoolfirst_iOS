@@ -245,8 +245,8 @@ extension AttendanceViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.row {
-        case 0: return 295
-        case 1: return 480
+        case 0: return 290
+        case 1: return 472
         default: return 0
         }
     }

@@ -74,6 +74,7 @@ extension AssessmentsGradeSelectionVC : UICollectionViewDelegate, UICollectionVi
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let vc = storyboard?.instantiateViewController(identifier: "AssessmentSubjectSelectionVC") as? AssessmentSubjectSelectionVC
         vc?.grade_id = self.grades[indexPath.row].id
+        UserManager.shared.assessment_selected_grade = self.grades[indexPath.row]
         self.navigationController?.pushViewController(vc!, animated: true)
     }
     

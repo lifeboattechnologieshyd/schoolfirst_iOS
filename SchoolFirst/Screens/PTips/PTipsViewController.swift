@@ -32,11 +32,10 @@ class PTipsViewController: UIViewController {
         }else{
             self.getEdutainment(text: "Ptips")
             lblTitle.text = "Ptips"
-
         }
         tblView.dataSource = self
         tblView.delegate = self
-        
+
     }
     
     

@@ -5,182 +5,267 @@
 //  Created by Lifeboat on 08/11/25.
 //
 import UIKit
+import Lottie
 
 class QuestionVC: UIViewController {
-
-    @IBOutlet weak var secondPopupVw: UIView!
+    
+    @IBOutlet weak var lottieViewImage: LottieAnimationView!
+    @IBOutlet weak var resultPopup: UIView!
     @IBOutlet weak var scoreVw: UIView!
     @IBOutlet weak var scoreNumberLbl: UILabel!
     @IBOutlet weak var totalLbl: UILabel!
-    @IBOutlet weak var progressVw: UIProgressView!
+    @IBOutlet weak var slider: UISlider!
     @IBOutlet weak var viewanswersButton: UIButton!
-    @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var bgView: UIView!
+    @IBOutlet weak var lblQuestionNumber: UILabel!
+    @IBOutlet weak var lblQuestion: UILabel!
+    @IBOutlet weak var lblDesciption: UILabel!
+    @IBOutlet weak var stackViewOptions: UIStackView!
+    @IBOutlet weak var optionAView: UIView!
+    @IBOutlet weak var lblTitleA: UILabel!
+    @IBOutlet weak var lblOptionA: UILabel!
+    @IBOutlet weak var optionBView: UIView!
+    @IBOutlet weak var lblTitleB: UILabel!
+    @IBOutlet weak var lblOptionB: UILabel!
+    @IBOutlet weak var optionCView: UIView!
+    @IBOutlet weak var lblTitleC: UILabel!
+    @IBOutlet weak var lblOptionC: UILabel!
+    @IBOutlet weak var optionDView: UIView!
+    @IBOutlet weak var lblTitleD: UILabel!
+    @IBOutlet weak var lblOptionD: UILabel!
+    @IBOutlet weak var optionHintView: UIView!
+    @IBOutlet weak var lblTitleHint: UILabel!
+    @IBOutlet weak var lblOptionHint: UILabel!
+    
+    
+    @IBOutlet weak var lblMarks: UILabel!
+    
+    
+    @IBOutlet weak var lblTotalMarks: UILabel!
+    
+    var current_question = 0
+    
+    let slashLayer = CAShapeLayer()
 
-    struct MCQ {
-        let number: Int
-        let question: String
-        let description: String?
-        let options: [String]
-        let correctAnswer: Int
-    }
-
-    var questions: [MCQ] = []
-    var correctAnswers = 0
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        collectionView.register(
-            UINib(nibName: "QuestionCell", bundle: nil),
-            forCellWithReuseIdentifier: "QuestionCell"
-        )
-
-        collectionView.delegate = self
-        collectionView.dataSource = self
+        lblOptionA.text = ""
+        lblOptionB.text = ""
+        lblOptionC.text = ""
+        lblOptionD.text = ""
+        lblOptionHint.text = ""
         
-        collectionView.isPagingEnabled = true
-        collectionView.isScrollEnabled = false
+        self.lblDesciption.text = ""
+        self.stackViewOptions.isHidden = true
+        self.resultPopup.isHidden = true
+        self.setupQuestionsView()
+
+        drawSlash()
+    }
+    
+    func changeQuestion() {
+        lblQuestionNumber.text = "Question \(current_question+1)/\(UserManager.shared.assessment_created_assessment.numberOfQuestions)"
+        lblQuestion.animateTyping(text: UserManager.shared.assessment_created_assessment.questions[current_question].question) {
+            self.lblDesciption.animateTyping(text: UserManager.shared.assessment_created_assessment.questions[self.current_question].description) {
+                // after a sec
+                self.lblOptionA.text = UserManager.shared.assessment_created_assessment.questions[self.current_question].options[0]
+                self.lblOptionB.text = UserManager.shared.assessment_created_assessment.questions[self.current_question].options[1]
+                self.lblOptionC.text = UserManager.shared.assessment_created_assessment.questions[self.current_question].options[2]
+                self.lblOptionD.text = UserManager.shared.assessment_created_assessment.questions[self.current_question].options[3]
+                self.lblOptionHint.text = "I do not know"
+                self.stackViewOptions.isHidden = false
+            }
+            
+        }
+    }
+    
+    func setupQuestionsView() {
+        bgView.layer.cornerRadius = 16
+        lblTitleA.text = "A"
+        lblTitleA.layer.cornerRadius = lblTitleA.frame.size.width/2
+        lblTitleB.layer.cornerRadius = lblTitleB.frame.size.width/2
+        lblTitleC.layer.cornerRadius = lblTitleC.frame.size.width/2
+        lblTitleD.layer.cornerRadius = lblTitleD.frame.size.width/2
+        lblTitleHint.layer.cornerRadius = lblTitleHint.frame.size.width/2
         
-        loadQuestions()
-        secondPopupVw.isHidden = true
-
-        viewanswersButton.addTarget(self, action: #selector(viewAnswersTapped(_:)), for: .touchUpInside)
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-            layout.scrollDirection = .horizontal
-            layout.minimumLineSpacing = 0
-            layout.itemSize = collectionView.bounds.size
-            layout.invalidateLayout()
+        lblTitleHint.layer.masksToBounds = true
+        lblTitleD.layer.masksToBounds = true
+        lblTitleC.layer.masksToBounds = true
+        lblTitleB.layer.masksToBounds = true
+        lblTitleA.layer.masksToBounds = true
+        
+        lblTitleB.text = "B"
+        lblTitleC.text = "C"
+        lblTitleD.text = "D"
+        lblTitleHint.text = "E"
+        
+        for (index, view) in stackViewOptions.arrangedSubviews.enumerated() {
+            view.tag = index
+            view.isUserInteractionEnabled = true
+            
+            let tap = UITapGestureRecognizer(target: self, action: #selector(optionTapped(_:)))
+            view.addGestureRecognizer(tap)
         }
-
-        // Circle
-        scoreVw.layer.cornerRadius = scoreVw.frame.height / 2
-        scoreVw.layer.borderWidth = 4
-        scoreVw.layer.borderColor = UIColor(red: 11/255, green: 86/255, blue: 154/255, alpha: 1).cgColor
-        scoreVw.clipsToBounds = true
+        changeQuestion()
     }
-
-    func loadQuestions() {
-        questions = [
-            MCQ(number: 1, question: "What is 2 + 2?", description: "Basic Addition", options: ["1","2","3","4","5"], correctAnswer: 3),
-            MCQ(number: 2, question: "Which planet is red?", description: "Mars is red", options: ["Mercury","Mars","Earth","Jupiter","Venus"], correctAnswer: 1),
-            MCQ(number: 3, question: "Largest Ocean?", description: "Starts with P", options: ["Indian","Arctic","Atlantic","Pacific","None"], correctAnswer: 3),
-            MCQ(number: 4, question: "Sample Q4?", description: nil, options: ["A","B","C","D","E"], correctAnswer: 0),
-            MCQ(number: 5, question: "Sample Q5?", description: nil, options: ["A","B","C","D","E"], correctAnswer: 1),
-            MCQ(number: 6, question: "Sample Q6?", description: nil, options: ["A","B","C","D","E"], correctAnswer: 2),
-            MCQ(number: 7, question: "Sample Q7?", description: nil, options: ["A","B","C","D","E"], correctAnswer: 0),
-            MCQ(number: 8, question: "Sample Q8?", description: nil, options: ["A","B","C","D","E"], correctAnswer: 1),
-            MCQ(number: 9, question: "Sample Q9?", description: nil, options: ["A","B","C","D","E"], correctAnswer: 3),
-            MCQ(number: 10, question: "Sample Q10?", description: nil, options: ["A","B","C","D","E"], correctAnswer: 4),
-            MCQ(number: 11, question: "Sample Q11?", description: nil, options: ["A","B","C","D","E"], correctAnswer: 2),
-            MCQ(number: 12, question: "Sample Q12?", description: nil, options: ["A","B","C","D","E"], correctAnswer: 1)
-        ]
+    
+    
+    func attemptAns(ans: String, index: Int){
+        var url = API.ASSESSMENT_ATTEMPT
+        var payload  =
+        ["question_id":"\(UserManager.shared.assessment_created_assessment.questions[self.current_question].id)","assessment_id":"\(UserManager.shared.assessment_created_assessment.id)","student_id":"\(UserManager.shared.assessmentSelectedStudent.studentID)",
+         "answer":ans]
+        
+        NetworkManager.shared.request(urlString: url,method: .POST, parameters: payload) { (result: Result<APIResponse<AssessmentAnswerResponse>, NetworkError>)  in
+            switch result {
+            case .success(let info):
+                if info.success {
+                    if let data = info.data {
+                        DispatchQueue.main.async {
+                            self.highlightSelection(at: index, resp: data)
+                        }
+                    }
+                }else{
+                    print(info.description)
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    switch error {
+                    case .noaccess:
+                        self.handleLogout()
+                    default:
+                        self.showAlert(msg: error.localizedDescription)
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                }
+            }
+        }
+        
     }
-
-    @objc func optionTapped(_ sender: UIButton) {
-
-        let qIndex = sender.tag / 10
-        let oIndex = sender.tag % 10
-
-        if oIndex == questions[qIndex].correctAnswer {
-            correctAnswers += 1
-        }
-
-        // Last question → show popup
-        if qIndex == questions.count - 1 {
-            showSecondPopup()
-            return
-        }
-
-        let nextX = collectionView.bounds.width * CGFloat(qIndex + 1)
-
-        UIView.animate(withDuration: 0.3) {
-            self.collectionView.contentOffset.x = nextX
-        }
-    }
-
-    func showSecondPopup() {
-
-        secondPopupVw.isHidden = false
-        secondPopupVw.isUserInteractionEnabled = true   // ⭐ allows touches on popup
-        view.bringSubviewToFront(secondPopupVw)
-
-        scoreNumberLbl.text = "\(correctAnswers)"
-        totalLbl.text = "\(questions.count)"
-
-        progressVw.setProgress(Float(correctAnswers) / Float(questions.count), animated: true)
-
-        secondPopupVw.alpha = 0
-        secondPopupVw.transform = CGAffineTransform(scaleX: 0.7, y: 0.7)
-
-        UIView.animate(withDuration: 0.3,
-                       delay: 0,
-                       usingSpringWithDamping: 0.8,
-                       initialSpringVelocity: 0.4,
-                       options: .curveEaseInOut) {
-
-            self.secondPopupVw.alpha = 1
-            self.secondPopupVw.transform = .identity
+    
+    @objc func optionTapped(_ sender: UITapGestureRecognizer) {
+        guard let view = sender.view else { return }
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.prepare()
+        generator.impactOccurred()
+        print("Option tapped: \(view.tag)")
+        UIView.animate(withDuration: 0.1,
+                       animations: {
+            view.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+        },
+                       completion: { _ in
+            UIView.animate(withDuration: 0.1) {
+                view.transform = .identity
+            }
+        })
+        if view.tag == 4 {
+            // hint
+            self.attemptAns(ans: "", index: view.tag)
+        }else {
+            let selected_ans = UserManager.shared.assessment_created_assessment.questions[self.current_question].options[view.tag]
+            self.attemptAns(ans: selected_ans, index: view.tag)
         }
     }
-
-    @IBAction func viewAnswersTapped(_ sender: UIButton) {
-        print("VIEW ANSWERS BUTTON PRESSED")
-
-        let sb = UIStoryboard(name: "Main", bundle: nil)
-
-        if let vc = sb.instantiateViewController(withIdentifier: "PastAssessmentsVC") as? PastAssessmentsVC {
-            print("Navigation working")
-            self.navigationController?.pushViewController(vc, animated: true)
-        } else {
-            print("PastAssessmentsVC NOT FOUND. Check storyboard ID.")
+    
+    func highlightSelection(at index: Int, resp: AssessmentAnswerResponse) {
+        let ans = UserManager.shared.assessment_created_assessment.questions[self.current_question].answer
+        switch index {
+        case 0:
+            self.lblTitleA.backgroundColor = .white
+            self.lblTitleA.textColor = .primary
+            self.lblOptionA.textColor = .yellow
+            self.optionAView.backgroundColor = ans == lblOptionA.text ? .primary : .red
+        case 1:
+            self.lblTitleB.backgroundColor = .white
+            self.lblTitleB.textColor = .primary
+            self.lblOptionB.textColor = .yellow
+            self.optionBView.backgroundColor = ans == lblOptionB.text ? .primary : .red
+            
+        case 2:
+            self.lblTitleC.backgroundColor = .white
+            self.lblTitleC.textColor = .primary
+            self.lblOptionC.textColor = .yellow
+            self.optionCView.backgroundColor = ans == lblOptionC.text ? .primary : .red
+            
+        case 3:
+            self.lblTitleD.backgroundColor = .white
+            self.lblTitleD.textColor = .primary
+            self.lblOptionD.textColor = .yellow
+            self.optionDView.backgroundColor = ans == lblOptionD.text ? .primary : .red
+            
+        case 4:
+            self.lblTitleHint.backgroundColor = .white
+            self.lblTitleHint.textColor = .primary
+            self.lblOptionHint.textColor = .yellow
+            self.optionHintView.backgroundColor = .red
+            
+        default:
+            break
+        }
+        
+        
+        print(self.current_question)
+        print(UserManager.shared.assessment_created_assessment.numberOfQuestions)
+        if UserManager.shared.assessment_created_assessment.numberOfQuestions > current_question+1 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                for (_, v) in self.stackViewOptions.arrangedSubviews.enumerated() {
+                    v.backgroundColor = .systemBackground
+                    v.layer.borderColor = UIColor.primary.cgColor
+                }
+                self.lblDesciption.text = ""
+                self.stackViewOptions.isHidden = true
+                self.lblTitleA.backgroundColor = .primary
+                self.lblTitleA.textColor = .secondary
+                self.lblOptionA.textColor = .black
+                
+                self.lblTitleB.backgroundColor = .primary
+                self.lblTitleB.textColor = .secondary
+                self.lblOptionB.textColor = .black
+                
+                self.lblTitleC.backgroundColor = .primary
+                self.lblTitleC.textColor = .secondary
+                self.lblOptionC.textColor = .black
+                
+                self.lblTitleD.backgroundColor = .primary
+                self.lblTitleD.textColor = .secondary
+                self.lblOptionD.textColor = .black
+                
+                self.lblTitleHint.backgroundColor = .primary
+                self.lblTitleHint.textColor = .secondary
+                self.lblOptionHint.textColor = .black
+                
+                self.current_question += 1
+                self.changeQuestion()
+            }
+        }else{
+            self.bgView.isHidden = true
+            self.resultPopup.isHidden = false
+            self.slider.maximumValue = Float(UserManager.shared.assessment_created_assessment.totalMarks)
+            self.slider.value = Float(resp.totalMarks)
+            self.lblMarks.text = "\(resp.totalMarks)"
+            self.lblTotalMarks.text = "\((UserManager.shared.assessment_created_assessment.totalMarks))"
         }
     }
+    
+    @IBAction func onClickAnswers(_ sender: UIButton) {
+        let vc = storyboard?.instantiateViewController(withIdentifier: "AllQuestionsVC") as! AllQuestionsVC
+        vc.assessmentId = UserManager.shared.assessment_created_assessment.id
+        vc.is_back_to_root = true
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func drawSlash() {
+        slashLayer.removeFromSuperlayer()
+        let path = UIBezierPath()
+        path.move(to: CGPoint(x: scoreVw.bounds.width * 0.20, y: scoreVw.bounds.height * 0.85))
+        path.addLine(to: CGPoint(x: scoreVw.bounds.width * 0.85, y: scoreVw.bounds.height * 0.20))
+        slashLayer.path = path.cgPath
+        slashLayer.strokeColor = UIColor.primary.cgColor
+        slashLayer.lineWidth = 4
+        scoreVw.layer.addSublayer(slashLayer)
+    }
+    
 }
 
-extension QuestionVC: UICollectionViewDataSource, UICollectionViewDelegate {
 
-    func collectionView(_ collectionView: UICollectionView,
-                        numberOfItemsInSection section: Int) -> Int {
-        return questions.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView,
-                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: "QuestionCell",
-            for: indexPath
-        ) as! QuestionCell
-
-        cell.resetOptions()   // ⭐ FIX OVERLAPS + OLD STATE BUG
-
-        let q = questions[indexPath.item]
-
-        cell.QuestionNo.text = "Question \(q.number)/\(questions.count)"
-        cell.Question.text = q.question
-        cell.Description.text = q.description ?? ""
-
-        let buttons = [cell.optionA, cell.optionB, cell.optionC, cell.optionD, cell.optionE]
-
-        for (i, btn) in buttons.enumerated() {
-            btn?.tag = (indexPath.item * 10) + i
-            btn?.removeTarget(nil, action: nil, for: .allEvents)
-            btn?.addTarget(self, action: #selector(optionTapped(_:)), for: .touchUpInside)
-        }
-
-        return cell
-    }
-}
-
-extension QuestionVC: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return collectionView.bounds.size
-    }
-}

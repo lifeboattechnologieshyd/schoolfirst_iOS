@@ -98,11 +98,12 @@ struct API {
     
     static let VOCABEE_GET_DATES = BASE_URL + "vocabee/words/history"
     static let VOCABEE_GET_WORDS_BY_DATES = BASE_URL + "vocabee/daily/words"
-    static let VOCABEE_SUBMIT_WORD = BASE_URL + "vocabee/word"
+    static let VOCABEE_SUBMIT_WORD = BASE_URL + "vocabee/attempt/words"
     
 
     // practice :
-    
+    static let VOCABEE_GET_PRACTISE_WORDS = BASE_URL + "vocabee/get/word"
+
     
     
     
@@ -113,6 +114,9 @@ struct API {
     
     
     static let ASSESSMENT_CREATE = BASE_URL + "assessments/create/assessments"
+    static let ASSESSMENT_ATTEMPT = BASE_URL + "assessments/attempt/assessment"
+    static let ASSESSMENT_HISTORY = BASE_URL + "assessments/past/assessments"
+    static let ASSESSMENT_HISTORY_ANSWERS = BASE_URL + "assessments/myanswers"
 
     
     
