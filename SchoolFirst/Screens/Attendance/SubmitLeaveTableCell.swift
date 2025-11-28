@@ -8,7 +8,7 @@
 import UIKit
 
 class SubmitLeaveTableCell: UITableViewCell, UIPickerViewDelegate, UIPickerViewDataSource {
-
+    
     @IBOutlet weak var dateVw: UIView!
     @IBOutlet weak var sessionVw: UIView!
     @IBOutlet weak var todateVw: UIView!
@@ -40,17 +40,17 @@ class SubmitLeaveTableCell: UITableViewCell, UIPickerViewDelegate, UIPickerViewD
         super.awakeFromNib()
 
         colVw.register(
-            UINib(nibName: "GradeCollectionCell", bundle: nil),
-            forCellWithReuseIdentifier: "GradeCollectionCell"
+            UINib(nibName: "KidSelectionCell", bundle: nil),
+            forCellWithReuseIdentifier: "KidSelectionCell"
         )
 
         colVw.delegate = self
         colVw.dataSource = self
+     
 
         hideAllViews()
         clearHighlights()
 
-        // ⭐ APPLY DROPSHADOWS HERE
         issueTf.applyDropShadow()
         todateTf.applyDropShadow()
         dateTf.applyDropShadow()
@@ -183,23 +183,22 @@ extension SubmitLeaveTableCell: UICollectionViewDelegate, UICollectionViewDataSo
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
         return collectionView.dequeueReusableCell(
-            withReuseIdentifier: "GradeCollectionCell",
+            withReuseIdentifier: "KidSelectionCell",
             for: indexPath
-        ) as! GradeCollectionCell
+        ) as! KidSelectionCell
     }
 
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
 
-        return CGSize(width: 160, height: 54)
+        return CGSize(width: 210, height: 80)
     }
 }
 
 
 extension UIView {
     func applyDropShadow() {
-        self.layer.cornerRadius = 10
         self.layer.shadowColor = UIColor.black.cgColor
         self.layer.shadowOpacity = 0.12
         self.layer.shadowRadius = 6
