@@ -10,7 +10,6 @@ import UIKit
 class TimeTableViewController: UIViewController {
     @IBOutlet weak var colVw: UICollectionView!
     @IBOutlet weak var tblVw: UITableView!
-    
     @IBOutlet weak var topView: UIView!
     
     var selected_student = 0
@@ -86,7 +85,6 @@ extension TimeTableViewController : UITableViewDelegate, UITableViewDataSource {
         return indexPath.row == 0 ? 48 : 88
     }
 }
-
 
 extension TimeTableViewController  : UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

@@ -55,7 +55,7 @@ class EdutainCell: UITableViewCell {
                                                                     boldFont: .lexend(.semiBold, size: 14),
                                                                     italicFont: .lexend(.regular, size: 14),
                                                                     textColor: .black)
-        var time = "\(feed.approvedTime!.getTimeAgo()) | "
+        var time = "\(feed.approvedTime?.getTimeAgo() ?? "Just now") | "
         if feed.duration > 0 {
             time += "\(feed.duration) | "
         }

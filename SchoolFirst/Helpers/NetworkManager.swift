@@ -822,9 +822,9 @@ struct WordInfo: Codable {
     let points: Int
     let usage: String
     let origin: String
-    let partsOfSpeech: String
+    let partsOfSpeech: String?
     let others: String
-    let othersVoice: String
+    let othersVoice: String = ""
     let pronunciation: String
     let partsOfSpeechVoice: String
     let definitionVoice: String
@@ -973,8 +973,7 @@ struct Leave: Codable, Identifiable {
     let reason: String?
     let leaveStatus: String?
     let teacherRemarks: String?
-    let leaveDays: Int?
-
+    let leaveDays: [String: LeaveDay]
     enum CodingKeys: String, CodingKey {
         case id
         case studentId = "student_id"
@@ -989,6 +988,17 @@ struct Leave: Codable, Identifiable {
         case leaveDays = "leave_days"
     }
 }
+
+struct LeaveDay: Codable {
+    let dayType: String
+    let sessionType: String
+
+    enum CodingKeys: String, CodingKey {
+        case dayType = "day_type"
+        case sessionType = "session_type"
+    }
+}
+
 
 
 struct Assessment: Codable {

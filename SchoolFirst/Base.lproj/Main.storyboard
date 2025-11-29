@@ -2152,43 +2152,60 @@
                                 </constraints>
                             </view>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="uEB-jH-jhZ">
-                                <rect key="frame" x="16" y="125" width="361" height="41"/>
+                                <rect key="frame" x="16" y="197" width="361" height="41"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="svJ-5I-CHS"/>
                                 </constraints>
                                 <segments>
                                     <segment title="Previous"/>
                                     <segment title="Today's"/>
-                                    <segment title="Upcoming"/>
                                 </segments>
                                 <connections>
                                     <action selector="onClickChangeSegment:" destination="BO4-f5-oMW" eventType="valueChanged" id="vdA-tw-RbH"/>
                                 </connections>
                             </segmentedControl>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Sbm-yr-3jZ">
-                                <rect key="frame" x="0.0" y="181" width="393" height="637"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="OJq-S5-taX">
+                                <rect key="frame" x="0.0" y="239" width="393" height="579"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="k8s-L6-wNM">
+                                <rect key="frame" x="0.0" y="111" width="393" height="74"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="74" id="rfC-G7-rfX"/>
+                                </constraints>
+                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" automaticEstimatedItemSize="YES" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="MJt-Q9-hz7">
+                                    <size key="itemSize" width="128" height="128"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells/>
+                            </collectionView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="rPF-dj-z9W"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="Sbm-yr-3jZ" firstAttribute="top" secondItem="uEB-jH-jhZ" secondAttribute="bottom" constant="16" id="6at-p1-RQ3"/>
-                            <constraint firstItem="rPF-dj-z9W" firstAttribute="bottom" secondItem="Sbm-yr-3jZ" secondAttribute="bottom" id="7B9-7t-DVd"/>
-                            <constraint firstItem="uEB-jH-jhZ" firstAttribute="top" secondItem="c2k-3h-YjM" secondAttribute="bottom" constant="16" id="BxJ-R3-tS3"/>
+                            <constraint firstItem="OJq-S5-taX" firstAttribute="leading" secondItem="rPF-dj-z9W" secondAttribute="leading" id="5OF-bw-fnL"/>
                             <constraint firstItem="c2k-3h-YjM" firstAttribute="top" secondItem="rPF-dj-z9W" secondAttribute="top" id="LYA-lz-XJ7"/>
-                            <constraint firstItem="Sbm-yr-3jZ" firstAttribute="leading" secondItem="rPF-dj-z9W" secondAttribute="leading" id="OjK-9I-sSD"/>
-                            <constraint firstItem="rPF-dj-z9W" firstAttribute="trailing" secondItem="Sbm-yr-3jZ" secondAttribute="trailing" id="icO-cu-69Q"/>
+                            <constraint firstItem="rPF-dj-z9W" firstAttribute="trailing" secondItem="k8s-L6-wNM" secondAttribute="trailing" id="QMb-AR-u3A"/>
+                            <constraint firstItem="k8s-L6-wNM" firstAttribute="leading" secondItem="O64-gv-9hz" secondAttribute="leading" id="ch7-qh-26N"/>
                             <constraint firstItem="uEB-jH-jhZ" firstAttribute="leading" secondItem="rPF-dj-z9W" secondAttribute="leading" constant="16" id="jWh-Ud-lPl"/>
+                            <constraint firstItem="rPF-dj-z9W" firstAttribute="trailing" secondItem="OJq-S5-taX" secondAttribute="trailing" id="jc6-ij-Usc"/>
                             <constraint firstItem="rPF-dj-z9W" firstAttribute="trailing" secondItem="uEB-jH-jhZ" secondAttribute="trailing" constant="16" id="lEy-fk-ssb"/>
+                            <constraint firstItem="uEB-jH-jhZ" firstAttribute="top" secondItem="k8s-L6-wNM" secondAttribute="bottom" constant="12" id="nUf-V8-1QN"/>
+                            <constraint firstItem="rPF-dj-z9W" firstAttribute="bottom" secondItem="OJq-S5-taX" secondAttribute="bottom" id="o1A-PY-rv4"/>
+                            <constraint firstItem="k8s-L6-wNM" firstAttribute="top" secondItem="c2k-3h-YjM" secondAttribute="bottom" constant="2" id="pta-fN-XGg"/>
                             <constraint firstAttribute="trailing" secondItem="c2k-3h-YjM" secondAttribute="trailing" id="tQw-56-XaD"/>
                             <constraint firstItem="c2k-3h-YjM" firstAttribute="leading" secondItem="rPF-dj-z9W" secondAttribute="leading" id="u6o-Ih-s9V"/>
+                            <constraint firstItem="OJq-S5-taX" firstAttribute="top" secondItem="uEB-jH-jhZ" secondAttribute="bottom" constant="2" id="yRc-BV-H9w"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="colVw" destination="k8s-L6-wNM" id="w0p-0I-fgK"/>
                         <outlet property="lblTItle" destination="Sgw-yQ-by9" id="12x-Ma-QEM"/>
                         <outlet property="segmentControl" destination="uEB-jH-jhZ" id="z14-k0-GUO"/>
-                        <outlet property="tblVw" destination="Sbm-yr-3jZ" id="cii-BZ-Efw"/>
+                        <outlet property="tblVw" destination="OJq-S5-taX" id="k3s-8w-jnx"/>
                         <outlet property="topView" destination="c2k-3h-YjM" id="UlC-04-jgI"/>
                     </connections>
                 </viewController>

@@ -258,7 +258,24 @@ import FSCalendar
         let currentPage = calendar.currentPage
         var components = DateComponents()
         components.month = isNext ? 1 : -1
+        
         if let newPage = Calendar.current.date(byAdding: components, to: currentPage) {
+            
+            // 🚫 Block future months
+            let today = Date()
+            let calendarSystem = Calendar.current
+            
+            // Check if newPage is in a future month
+            if isNext {
+                let newMonth = calendarSystem.dateComponents([.year, .month], from: newPage)
+                let currentMonth = calendarSystem.dateComponents([.year, .month], from: today)
+                
+                // If trying to go beyond current month, stop
+                if (newMonth.year! > currentMonth.year!) ||
+                    (newMonth.year! == currentMonth.year! && newMonth.month! > currentMonth.month!) {
+                    return
+                }
+            }
             calendar.setCurrentPage(newPage, animated: true)
             updateMonthLabel()
             self.onSelectMonth?(newPage)
