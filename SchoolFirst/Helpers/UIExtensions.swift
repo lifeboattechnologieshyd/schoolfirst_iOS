@@ -227,6 +227,14 @@ extension String {
         return predicate.evaluate(with: self)
     }
     
+    var isValidEmail: Bool {
+        // Simple & reliable regex for most apps
+        let regex = #"^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"#
+        return NSPredicate(format: "SELF MATCHES %@", regex).evaluate(with: self)
+    }
+    
+    
+    
     func to12HourTime() -> String {
             let inputFormatter = DateFormatter()
             inputFormatter.dateFormat = "HH:mm:ss"

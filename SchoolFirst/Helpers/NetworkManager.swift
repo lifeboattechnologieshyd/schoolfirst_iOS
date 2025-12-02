@@ -112,6 +112,20 @@ struct APIResponse<T: Decodable>: Decodable {
     let total : Int?
     let description: String
     let data: T?
+    
+    enum CodingKeys: String, CodingKey {
+        case success, errorCode, description, total, data
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        success = try container.decode(Bool.self, forKey: .success)
+        errorCode = try container.decode(Int.self, forKey: .errorCode)
+        description = try container.decode(String.self, forKey: .description)
+        total = try? container.decode(Int.self, forKey: .total)
+        // 👇 This safely handles {} or missing fields
+        data = try? container.decodeIfPresent(T.self, forKey: .data)
+    }
 }
 
 

@@ -34,16 +34,28 @@ class OTPViewController: UIViewController {
         imgVw.play()
     }
     @IBAction func onClickSubmit(_ sender: UIButton) {
+        
         if txtFieldOTP.hasText && txtFieldOTP.text?.count == 4 {
-            verifyOtp()
+            if mobile.isValidEmail {
+                self.verifyOtpwithEmail()
+            }else {
+                verifyOtp()
+
+            }
         }else {
             self.showAlert(msg: "Please enter Valid OTP")
         }
     }
     
     func setupLabel() {
-        let message = "A 4 Digit OTP has been sent to +91 \(mobile)"
-        let boldParts = ["4 Digit OTP", "+91 \(mobile)"]
+        var message = "A 4 Digit OTP has been sent to +91 \(mobile)"
+        var boldParts = ["4 Digit OTP", "+91 \(mobile)"]
+
+        if mobile.isValidEmail {
+            message = "A 4 Digit OTP has been sent to \(mobile)"
+            boldParts = ["4 Digit OTP", "\(mobile)"]
+
+        }
         let attributedString = NSMutableAttributedString(
             string: message,
             attributes: [
@@ -59,6 +71,39 @@ class OTPViewController: UIViewController {
             }
         }
         lblMobile.attributedText = attributedString
+    }
+    // authentication/email/verify-otp
+    
+    func verifyOtpwithEmail(){
+        let payload = [
+            "email": mobile,
+            "otp": self.txtFieldOTP.text!,
+            "device_id":"",
+            "fcm_id":"",
+            "device_os":"iOS"
+        ]
+        
+        NetworkManager.shared.request(urlString: API.EMAIL_OTP, method: .POST, parameters: payload) { (result: Result<APIResponse<LoginResponse>, NetworkError>) in
+            switch result {
+            case .success(let info):
+                if info.success {
+                    DispatchQueue.main.async {
+                        UserDefaults.standard.set(info.data!.accessToken, forKey: "ACCESSTOKEN")
+                        UserDefaults.standard.set(info.data!.refreshToken, forKey: "REFRESHTOKEN")
+                        UserDefaults.standard.set(true, forKey: "LOGGEDIN")
+                        UserManager.shared.saveUser(user: info.data!.user)
+                        let vc = self.storyboard?.instantiateViewController(withIdentifier: "SetPasswordController") as? SetPasswordController
+                        self.navigationController?.pushViewController(vc!, animated: true)
+                    }
+                }else{
+                    self.showAlert(msg: info.description)
+                }
+                break
+            case .failure(_):
+                self.showAlert(msg: "Oops")
+                break
+            }
+        }
     }
     
     func verifyOtp(){
@@ -80,7 +125,7 @@ class OTPViewController: UIViewController {
                         self.navigationController?.pushViewController(vc!, animated: true)
                     }
                 }else{
-                    self.showAlert(msg: "Login Failed")
+                    self.showAlert(msg: info.description)
                 }
                 break
             case .failure(_):

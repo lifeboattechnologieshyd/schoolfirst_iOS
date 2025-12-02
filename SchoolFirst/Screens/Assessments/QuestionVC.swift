@@ -103,7 +103,6 @@ class QuestionVC: UIViewController {
         for (index, view) in stackViewOptions.arrangedSubviews.enumerated() {
             view.tag = index
             view.isUserInteractionEnabled = true
-            
             let tap = UITapGestureRecognizer(target: self, action: #selector(optionTapped(_:)))
             view.addGestureRecognizer(tap)
         }
@@ -165,6 +164,9 @@ class QuestionVC: UIViewController {
         }else {
             let selected_ans = UserManager.shared.assessment_created_assessment.questions[self.current_question].options[view.tag]
             self.attemptAns(ans: selected_ans, index: view.tag)
+        }
+        for view in stackViewOptions.arrangedSubviews {
+            view.isUserInteractionEnabled = false
         }
     }
     

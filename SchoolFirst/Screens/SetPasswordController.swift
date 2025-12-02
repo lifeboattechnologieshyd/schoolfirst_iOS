@@ -18,6 +18,10 @@ class SetPasswordController: UIViewController {
         
     }
     
+    @IBAction func onClickBack(_ sender: Any) {
+        self.navigationController?.popViewController(animated: true)
+    }
+    
     func playLottieFile() {
         let animation = LottieAnimation.named("login.json")
         lottieView.animation = animation

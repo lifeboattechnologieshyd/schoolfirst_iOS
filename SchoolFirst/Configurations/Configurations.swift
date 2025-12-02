@@ -51,9 +51,11 @@ struct API {
     
     
     static let SENDOTP = BASE_URL + "user/authentication/mobile/send-otp"
+    static let EMAIL_SENDOTP = BASE_URL + "user/authentication/email/send-otp"
     static let LOGIN = BASE_URL + "user/authentication/login"
     
     static let VERIFY_OTP = BASE_URL + "user/authentication/mobile/verify-otp"
+    static let EMAIL_OTP = BASE_URL + "user/authentication/email/verify-otp"
     static let SET_PASSWORD = BASE_URL + "user/authentication/set-password"
     
     static let ONLINE_COURSES = BASE_URL + "courses/online/courses"
