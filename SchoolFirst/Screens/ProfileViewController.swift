@@ -93,6 +93,20 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
 //                self?.confirmation()
             }
             
+            cell.onTermsTapped = {
+                let vc = self.storyboard?.instantiateViewController(identifier: "WebViewController") as? WebViewController
+                vc?.type = "TC"
+                self.navigationController?.pushViewController(vc!, animated: true)
+
+            }
+            
+            cell.onPrivacyTapped = {
+                DispatchQueue.main.async {
+                    let vc = self.storyboard?.instantiateViewController(identifier: "WebViewController") as? WebViewController
+                    vc?.type = "PP"
+                    self.navigationController?.pushViewController(vc!, animated: true)
+                }
+            }
             
             cell.onLogoutTapped = { [weak self] in
                 self?.logoutConfirmation()

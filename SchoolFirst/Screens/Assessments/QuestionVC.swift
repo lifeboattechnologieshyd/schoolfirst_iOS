@@ -41,6 +41,10 @@ class QuestionVC: UIViewController {
     @IBOutlet weak var lblMarks: UILabel!
     
     
+    @IBOutlet weak var lblPercentage: UILabel!
+    @IBOutlet weak var lblSkipAns: UILabel!
+    @IBOutlet weak var lblwrongAns: UILabel!
+    @IBOutlet weak var lblCorrectAns: UILabel!
     @IBOutlet weak var lblTotalMarks: UILabel!
     
     var current_question = 0
@@ -62,6 +66,16 @@ class QuestionVC: UIViewController {
         self.setupQuestionsView()
 
         drawSlash()
+    }
+    
+    
+    @IBAction func onClickHome() {
+        self.navigationController?.popToRootViewController(animated: true)
+    }
+    
+    @IBAction func onClickPlayMore() {
+        let vc = storyboard?.instantiateViewController(identifier: "AssessmentsViewController") as! AssessmentsViewController
+        self.navigationController?.popToViewController(vc, animated: true)
     }
     
     func changeQuestion() {
@@ -108,11 +122,58 @@ class QuestionVC: UIViewController {
         }
         changeQuestion()
     }
+    func displayResultPopup(){
+        self.bgView.isHidden = true
+        self.resultPopup.isHidden = false
+        self.slider.maximumValue = Float(UserManager.shared.assessment_created_assessment.totalMarks)
+        self.lblTotalMarks.text = "\((UserManager.shared.assessment_created_assessment.totalMarks))"
+    }
     
+    func getStats(){
+        let payload = [
+            "assessment_id":"\(UserManager.shared.assessment_created_assessment.id)",
+            "student_id":"\(UserManager.shared.assessmentSelectedStudent.studentID)"
+        ]
+        NetworkManager.shared.request(urlString: API.ASSESSMENT_RESULTS,method: .POST, parameters: payload) { (result: Result<APIResponse<AssessmentResult>, NetworkError>)  in
+            switch result {
+            case .success(let info):
+                if info.success {
+                    if let data = info.data {
+                        DispatchQueue.main.async {
+                            self.displayResultPopup()
+                            self.slider.value = Float(data.studentMarks)
+                            self.slider.maximumValue = Float(data.totalMarks)
+                            var percentage = Int(Float(data.studentMarks)/Float(data.totalMarks) * 100)
+                            self.lblPercentage.text = "\(percentage) %"
+
+                            self.slider.minimumValue = 0
+                            self.lblMarks.text = "\(data.studentMarks)"
+                            self.lblTotalMarks.text = "\(data.totalMarks)"
+                            self.lblwrongAns.text = "\(data.wrongQuestions)"
+                            self.lblCorrectAns.text = "\(data.correctQuestions)"
+                            self.lblSkipAns.text = "\(data.skippedQuestions)"
+                        }
+                    }
+                }else{
+                    print(info.description)
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    switch error {
+                    case .noaccess:
+                        self.handleLogout()
+                    default:
+                        self.showAlert(msg: error.localizedDescription)
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                }
+            }
+        }
+    }
     
     func attemptAns(ans: String, index: Int){
-        var url = API.ASSESSMENT_ATTEMPT
-        var payload  =
+        let url = API.ASSESSMENT_ATTEMPT
+        let payload  =
         ["question_id":"\(UserManager.shared.assessment_created_assessment.questions[self.current_question].id)","assessment_id":"\(UserManager.shared.assessment_created_assessment.id)","student_id":"\(UserManager.shared.assessmentSelectedStudent.studentID)",
          "answer":ans]
         
@@ -122,7 +183,7 @@ class QuestionVC: UIViewController {
                 if info.success {
                     if let data = info.data {
                         DispatchQueue.main.async {
-                            self.highlightSelection(at: index, resp: data)
+                            self.highlightSelection(at: index)
                         }
                     }
                 }else{
@@ -170,49 +231,42 @@ class QuestionVC: UIViewController {
         }
     }
     
-    func highlightSelection(at index: Int, resp: AssessmentAnswerResponse) {
+    func highlightSelection(at index: Int) {
         let ans = UserManager.shared.assessment_created_assessment.questions[self.current_question].answer
         switch index {
         case 0:
-            self.lblTitleA.backgroundColor = .white
-            self.lblTitleA.textColor = .primary
-            self.lblOptionA.textColor = .yellow
-            self.optionAView.backgroundColor = ans == lblOptionA.text ? .primary : .red
+            self.optionAView.backgroundColor = ans == lblOptionA.text ? UIColor(hex: "00BB00") : UIColor(hex: "#FFA700")
         case 1:
-            self.lblTitleB.backgroundColor = .white
-            self.lblTitleB.textColor = .primary
-            self.lblOptionB.textColor = .yellow
-            self.optionBView.backgroundColor = ans == lblOptionB.text ? .primary : .red
+            self.optionBView.backgroundColor = ans == lblOptionB.text ? UIColor(hex: "00BB00") : UIColor(hex: "#FFA700")
             
         case 2:
-            self.lblTitleC.backgroundColor = .white
-            self.lblTitleC.textColor = .primary
-            self.lblOptionC.textColor = .yellow
-            self.optionCView.backgroundColor = ans == lblOptionC.text ? .primary : .red
+            self.optionCView.backgroundColor = ans == lblOptionC.text ? UIColor(hex: "00BB00") : UIColor(hex: "#FFA700")
             
         case 3:
-            self.lblTitleD.backgroundColor = .white
-            self.lblTitleD.textColor = .primary
-            self.lblOptionD.textColor = .yellow
-            self.optionDView.backgroundColor = ans == lblOptionD.text ? .primary : .red
+            self.optionDView.backgroundColor = ans == lblOptionD.text ? UIColor(hex: "00BB00") : UIColor(hex: "#FFA700")
             
         case 4:
-            self.lblTitleHint.backgroundColor = .white
-            self.lblTitleHint.textColor = .primary
-            self.lblOptionHint.textColor = .yellow
-            self.optionHintView.backgroundColor = .red
+            self.optionHintView.backgroundColor = UIColor(hex: "#FFA700")
             
         default:
             break
         }
-        
-        
-        print(self.current_question)
+        if ans == lblOptionA.text {
+            self.optionAView.backgroundColor = UIColor(hex: "00BB00")
+        } else if ans == lblOptionB.text {
+            self.optionBView.backgroundColor = UIColor(hex: "00BB00")
+        } else if ans == lblOptionC.text {
+            self.optionCView.backgroundColor = UIColor(hex: "00BB00")
+        } else if ans == lblOptionD.text {
+            self.optionDView.backgroundColor = UIColor(hex: "00BB00")
+        }
         print(UserManager.shared.assessment_created_assessment.numberOfQuestions)
         if UserManager.shared.assessment_created_assessment.numberOfQuestions > current_question+1 {
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                
                 for (_, v) in self.stackViewOptions.arrangedSubviews.enumerated() {
                     v.backgroundColor = .systemBackground
+                    v.isUserInteractionEnabled = true
                     v.layer.borderColor = UIColor.primary.cgColor
                 }
                 self.lblDesciption.text = ""
@@ -241,12 +295,7 @@ class QuestionVC: UIViewController {
                 self.changeQuestion()
             }
         }else{
-            self.bgView.isHidden = true
-            self.resultPopup.isHidden = false
-            self.slider.maximumValue = Float(UserManager.shared.assessment_created_assessment.totalMarks)
-            self.slider.value = Float(resp.totalMarks)
-            self.lblMarks.text = "\(resp.totalMarks)"
-            self.lblTotalMarks.text = "\((UserManager.shared.assessment_created_assessment.totalMarks))"
+            self.getStats()
         }
     }
     

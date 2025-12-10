@@ -13,6 +13,7 @@ class AssessmentsGradeSelectionVC: UIViewController {
     @IBOutlet weak var completedAssessments: UIButton!
     @IBOutlet weak var colVw: UICollectionView!
     var grades = [GradeModel]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.getGrades()

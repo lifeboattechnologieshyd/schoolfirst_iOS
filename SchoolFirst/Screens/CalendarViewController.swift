@@ -13,8 +13,7 @@ class CalendarViewController: UIViewController {
     
     @IBOutlet weak var imgProfile: UIImageView!
     @IBOutlet weak var imgVw: UIImageView!
-    
-    
+
     @IBOutlet weak var dateSelectionView: MonthHeaderView!
     
     @IBOutlet weak var tblVw: UITableView!
@@ -26,7 +25,7 @@ class CalendarViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.imgVw.loadImage(url: UserManager.shared.user?.schools.first?.fullLogo ?? "", placeHolderImage: "")
-
+        
         if let cal = DBManager.shared.calender {
             self.calender.append(cal)
         }
@@ -44,7 +43,7 @@ class CalendarViewController: UIViewController {
         
         self.colVw.delegate = self
         self.colVw.dataSource = self
-
+        
         self.tblVw.delegate = self
         self.tblVw.dataSource = self
     }

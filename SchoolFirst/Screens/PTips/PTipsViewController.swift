@@ -60,6 +60,8 @@ class PTipsViewController: UIViewController {
             switch result {
             case .success(let info):
                 if info.success {
+                    print("data fetching for table \(info.data)")
+
                     if let data = info.data {
                         self.feed = data
                     }
@@ -78,6 +80,8 @@ class PTipsViewController: UIViewController {
 
 extension PTipsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        print("reloading table \(feed.count)")
+
         return self.feed.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

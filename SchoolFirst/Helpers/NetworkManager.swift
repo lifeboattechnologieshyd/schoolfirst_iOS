@@ -86,6 +86,7 @@ class NetworkManager {
                     if (200...399).contains(httpResponse.statusCode)  {
                         print("✅ Success: Status code is \(httpResponse.statusCode)")
                         let decodedData = try JSONDecoder().decode(APIResponse<T>.self, from: data)
+                        print(decodedData)
                         completion(.success(decodedData))
                     }else {
                         if httpResponse.statusCode == 401 {
@@ -291,6 +292,7 @@ struct Feed: Codable {
     let video: String?
     let youtubeVideo: String?
     let description: String
+    let description_2: String?
     let likesCount: Int
     let commentsCount: Int
     let whatsappShareCount: Int
@@ -300,10 +302,15 @@ struct Feed: Codable {
     let approvedBy: String?
     let approvedTime: String?
     let status: String
+    let skill_tested: String?
+    let lesson: String?
+    let subject: String?
+    let grade_id: String?
+    let serial_number: Int
     let isLiked: Bool
 
     enum CodingKeys: String, CodingKey {
-        case id, heading, trending, categories, image, remarks, video, description, language, duration, status
+        case id, heading, trending, categories, image, remarks, video, description, language, duration, status, description_2, serial_number, grade_id, subject, lesson, skill_tested
         case feedType = "feed_type"
         case schoolId = "school_id"
         case youtubeVideo = "youtube_video"
@@ -837,8 +844,8 @@ struct WordInfo: Codable {
     let usage: String
     let origin: String
     let partsOfSpeech: String?
-    let others: String
-    let othersVoice: String = ""
+    let others: String?
+    let othersVoice: String?
     let pronunciation: String
     let partsOfSpeechVoice: String
     let definitionVoice: String
@@ -867,7 +874,7 @@ struct WordInfo: Codable {
 
 struct WordAnswer: Codable {
     let wordId: String
-    let userAnswer: String
+    let userAnswer: String?
     let correctAnswer: String
     let isCorrect: Bool
     let points: Int
@@ -1127,6 +1134,32 @@ struct AssessmentSummary: Codable {
     }
 }
 
+
+struct AssessmentResult: Codable {
+    let assessmentID: String
+    let studentID: String
+    let status: String
+    let totalMarks: Int
+    let studentMarks: Int
+    let attemptedQuestions: Int
+    let correctQuestions: Int
+    let wrongQuestions: Int
+    let skippedQuestions: Int
+
+    enum CodingKeys: String, CodingKey {
+        case assessmentID = "assessment_id"
+        case studentID = "student_id"
+        case status
+        case totalMarks = "total_marks"
+        case studentMarks = "student_marks"
+        case attemptedQuestions = "attempted_questions"
+        case correctQuestions = "correct_questions"
+        case wrongQuestions = "wrong_questions"
+        case skippedQuestions = "skipped_questions"
+    }
+}
+
+
 struct AssessmentQuestionHistoryDetails: Codable {
     let id: String
     let assessmentId: String
@@ -1153,7 +1186,7 @@ struct AssessmentQuestionHistoryDetails: Codable {
         case options
         case correctAnswer = "correct_answer"
         case description
-        case answerDescription = "answer_description"
+        case answerDescription = "ans_description"
         case questionMarks = "question_marks"
         case userId = "user_id"
         case studentId = "student_id"
@@ -1162,3 +1195,29 @@ struct AssessmentQuestionHistoryDetails: Codable {
         case marks
     }
 }
+
+struct TimetableResponse: Decodable {
+    let date: String
+    let weekday: String
+    let schedule: [ScheduleItem]
+}
+
+struct ScheduleItem: Decodable {
+    let id: String
+    let session_name: String
+    let session_type: String
+    let session_start_time: String
+    let session_end_time: String
+    let session_icon: String?
+    let session_duration: Int
+    let timetable_id: String?
+    let teacher_name: String?
+    let subject_name: String?
+    let day: String?
+    let start_display: String
+    let session_number: Int?
+    let now: Bool
+}
+
+
+

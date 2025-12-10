@@ -62,12 +62,12 @@ class FeeViewController: UIViewController {
     }
     
     func goToPartPayment() {
-        let sb = UIStoryboard(name: "Main", bundle: nil)
-        let vc = sb.instantiateViewController(
-            withIdentifier: "FeePartPaymentVC"
-        ) as! FeePartPaymentVC
-        
-        navigationController?.pushViewController(vc, animated: true)
+//        let sb = UIStoryboard(name: "Main", bundle: nil)
+//        let vc = sb.instantiateViewController(
+//            withIdentifier: "FeePartPaymentVC"
+//        ) as! FeePartPaymentVC
+//        
+//        navigationController?.pushViewController(vc, animated: true)
     }
 }
     
@@ -87,23 +87,19 @@ extension FeeViewController: UITableViewDelegate, UITableViewDataSource {
             withIdentifier: "FeeTableViewCell",
             for: indexPath
         ) as! FeeTableViewCell
-        
         let actualIndex = indexPath.row % fee_details.count
-        
         cell.bgView.applyCardShadow()
         cell.setup(details: fee_details[actualIndex])
-        
         cell.onPartPayment = {
             self.goToPartPayment()
         }
-        
         cell.onDueDate = {
-            let sb = UIStoryboard(name: "Main", bundle: nil)
-            let vc = sb.instantiateViewController(
-                withIdentifier: "SchoolFeesVC"
-            ) as! SchoolFeesVC
-            
-            self.navigationController?.pushViewController(vc, animated: true)
+//            let sb = UIStoryboard(name: "Main", bundle: nil)
+//            let vc = sb.instantiateViewController(
+//                withIdentifier: "SchoolFeesVC"
+//            ) as! SchoolFeesVC
+//            
+//            self.navigationController?.pushViewController(vc, animated: true)
         }
         
         return cell

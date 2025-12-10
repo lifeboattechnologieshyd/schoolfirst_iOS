@@ -14,17 +14,20 @@ class ProfileOthersCell: UITableViewCell {
     @IBOutlet weak var stackView: UIStackView!
     var onClickDelete: (() -> Void)?
     var onLogoutTapped: (() -> Void)?
+    
+    var onPrivacyTapped: (() -> Void)?
+    var onTermsTapped: (() -> Void)?
+    var onRateUsTapped: (() -> Void)?
+    var onContactUsTapped: (() -> Void)?
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
         bgView.applyCardShadow()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
-        // Configure the view for the selected state
     }
     
     @IBAction func onClickDelete(_ sender: UIButton) {
@@ -32,6 +35,19 @@ class ProfileOthersCell: UITableViewCell {
     }
     @IBAction func onClickLogout(_ sender: UIButton) {
         onLogoutTapped?()
+    }
+    
+    @IBAction func onClickPrivacy(_ sender: UIButton) {
+        onPrivacyTapped?()
+    }
+    @IBAction func onClickTerms(_ sender: UIButton) {
+        onTermsTapped?()
+    }
+    @IBAction func onClickRateUs(_ sender: UIButton) {
+        onRateUsTapped?()
+    }
+    @IBAction func onClickContactUs(_ sender: UIButton) {
+        onContactUsTapped?()
     }
 }
 

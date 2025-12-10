@@ -317,7 +317,7 @@ extension String {
     /// converts yyyy-MM-dd type string into dd MMM yyyy
     func toddMMMyyyy() -> String{
         let inputFormatter = DateFormatter()
-        inputFormatter.dateFormat = "yyyy-dd-MM"
+        inputFormatter.dateFormat = "yyyy-MM-dd"
         inputFormatter.locale = Locale(identifier: "en_US_POSIX")
         let outputFormatter = DateFormatter()
         outputFormatter.dateFormat = "dd MMM yyyy"
@@ -714,6 +714,8 @@ extension UILabel {
         }
     }
     
+    
+    
 }
 
 extension UITextView {
@@ -806,5 +808,22 @@ extension NSAttributedString {
             print("❌ HTML parse error:", error)
             return nil
         }
+    }
+}
+
+
+
+
+class PillLabel: UILabel {
+    var contentInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+
+    override func drawText(in rect: CGRect) {
+        super.drawText(in: rect.inset(by: contentInsets))
+    }
+
+    override var intrinsicContentSize: CGSize {
+        let size = super.intrinsicContentSize
+        return CGSize(width: size.width + contentInsets.left + contentInsets.right,
+                      height: size.height + contentInsets.top + contentInsets.bottom)
     }
 }

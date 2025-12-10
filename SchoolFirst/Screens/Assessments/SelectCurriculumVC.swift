@@ -49,7 +49,6 @@ class SelectCurriculumVC: UIViewController, UITableViewDelegate, UITableViewData
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = storyboard?.instantiateViewController(identifier: "AssessmentsGradeSelectionVC") as! AssessmentsGradeSelectionVC
-        UserManager.shared.assessmentCurriculum = self.types[indexPath.row]
         self.navigationController?.pushViewController(vc, animated: true)
     }
     

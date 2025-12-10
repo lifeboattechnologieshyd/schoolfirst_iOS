@@ -49,9 +49,23 @@
                     </stackView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QlJ-ak-6Sa">
                         <rect key="frame" x="104" y="7" width="48" height="48"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="lEi-e4-soK">
+                                <rect key="frame" x="0.0" y="0.0" width="48" height="48"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="24"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </imageView>
+                        </subviews>
                         <color key="backgroundColor" red="0.82352941176470584" green="0.83137254901960778" blue="0.84705882352941175" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="48" id="7sB-CX-ndI"/>
+                            <constraint firstAttribute="trailing" secondItem="lEi-e4-soK" secondAttribute="trailing" id="M0v-62-kLc"/>
+                            <constraint firstItem="lEi-e4-soK" firstAttribute="leading" secondItem="QlJ-ak-6Sa" secondAttribute="leading" id="OH2-fC-W5e"/>
+                            <constraint firstAttribute="bottom" secondItem="lEi-e4-soK" secondAttribute="bottom" id="P0u-ls-hBN"/>
+                            <constraint firstItem="lEi-e4-soK" firstAttribute="top" secondItem="QlJ-ak-6Sa" secondAttribute="top" id="Sqe-B4-Ps8"/>
                             <constraint firstAttribute="height" constant="48" id="c4x-Hd-yHP"/>
                         </constraints>
                         <userDefinedRuntimeAttributes>
@@ -112,6 +126,12 @@
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="imgView" destination="lEi-e4-soK" id="xTw-eD-0mo"/>
+                <outlet property="lblDuration" destination="maB-tD-3kO" id="Vvh-sJ-LFn"/>
+                <outlet property="lblSessionName" destination="Knv-u2-SfG" id="muo-OW-p47"/>
+                <outlet property="lblStartTime" destination="sSN-YV-qQl" id="UBD-f2-kmL"/>
+            </connections>
             <point key="canvasLocation" x="85.496183206106863" y="26.056338028169016"/>
         </tableViewCell>
     </objects>

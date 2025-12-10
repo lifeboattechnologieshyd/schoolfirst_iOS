@@ -19,10 +19,24 @@
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9uw-IY-Lfv">
                         <rect key="frame" x="104" y="20.333333333333329" width="48" height="48"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3ev-E3-DH3">
+                                <rect key="frame" x="0.0" y="0.0" width="48" height="48"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="24"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </imageView>
+                        </subviews>
                         <color key="backgroundColor" red="0.79607843137254897" green="0.89803921568627454" blue="0.99215686274509807" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
+                            <constraint firstAttribute="bottom" secondItem="3ev-E3-DH3" secondAttribute="bottom" id="3Ae-69-kso"/>
                             <constraint firstAttribute="height" constant="48" id="85x-lC-eng"/>
+                            <constraint firstItem="3ev-E3-DH3" firstAttribute="leading" secondItem="9uw-IY-Lfv" secondAttribute="leading" id="H9H-Bn-6LB"/>
+                            <constraint firstItem="3ev-E3-DH3" firstAttribute="top" secondItem="9uw-IY-Lfv" secondAttribute="top" id="jHP-kZ-mVq"/>
                             <constraint firstAttribute="width" constant="48" id="pNt-6u-gvh"/>
+                            <constraint firstAttribute="trailing" secondItem="3ev-E3-DH3" secondAttribute="trailing" id="qmE-bO-47f"/>
                         </constraints>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
@@ -41,26 +55,28 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HBH-zY-aFU">
                         <rect key="frame" x="176" y="16.333333333333329" width="162" height="56"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="fjT-48-slL">
-                                <rect key="frame" x="12" y="0.0" width="150" height="56"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="fjT-48-slL">
+                                <rect key="frame" x="12" y="6" width="150" height="44"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="43m-Pc-zBh">
-                                        <rect key="frame" x="0.0" y="0.0" width="150" height="26"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="150" height="23.666666666666668"/>
                                         <attributedString key="attributedText">
                                             <fragment content=" Assembly">
                                                 <attributes>
                                                     <font key="NSFont" size="14" name="Lexend-SemiBold"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SVj-Ss-REj">
-                                        <rect key="frame" x="0.0" y="30" width="150" height="26"/>
+                                        <rect key="frame" x="0.0" y="23.666666666666671" width="150" height="20.333333333333329"/>
                                         <attributedString key="attributedText">
                                             <fragment content="Jayanthi Teacher">
                                                 <attributes>
                                                     <font key="NSFont" size="12" name="Lexend-Light"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
@@ -71,10 +87,10 @@
                         </subviews>
                         <color key="backgroundColor" red="0.79607843140000001" green="0.8980392157" blue="0.99215686270000003" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstItem="fjT-48-slL" firstAttribute="top" secondItem="HBH-zY-aFU" secondAttribute="top" id="AhS-nl-6p9"/>
+                            <constraint firstItem="fjT-48-slL" firstAttribute="top" secondItem="HBH-zY-aFU" secondAttribute="top" constant="6" id="AhS-nl-6p9"/>
                             <constraint firstItem="fjT-48-slL" firstAttribute="leading" secondItem="HBH-zY-aFU" secondAttribute="leading" constant="12" id="JrT-gG-INf"/>
                             <constraint firstAttribute="trailing" secondItem="fjT-48-slL" secondAttribute="trailing" id="WBS-8J-aRo"/>
-                            <constraint firstAttribute="bottom" secondItem="fjT-48-slL" secondAttribute="bottom" id="gRM-v1-QP6"/>
+                            <constraint firstAttribute="bottom" secondItem="fjT-48-slL" secondAttribute="bottom" constant="6" id="gRM-v1-QP6"/>
                             <constraint firstAttribute="height" constant="56" id="xuG-fU-1e6"/>
                         </constraints>
                         <userDefinedRuntimeAttributes>
@@ -147,6 +163,14 @@
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="bottomLine" destination="Zxt-Wm-2Ri" id="wf9-aH-Eob"/>
+                <outlet property="imgView" destination="3ev-E3-DH3" id="jaV-zj-Rka"/>
+                <outlet property="lblDuration" destination="Rfh-Dm-sRy" id="q3Z-IJ-ZWQ"/>
+                <outlet property="lblSessionName" destination="43m-Pc-zBh" id="bmh-GF-UNv"/>
+                <outlet property="lblStartTime" destination="3WK-tm-0ka" id="Ijp-2L-0S2"/>
+                <outlet property="lblTeacherName" destination="SVj-Ss-REj" id="cE0-WY-klN"/>
+            </connections>
             <point key="canvasLocation" x="-6.1068702290076331" y="35.211267605633807"/>
         </tableViewCell>
     </objects>

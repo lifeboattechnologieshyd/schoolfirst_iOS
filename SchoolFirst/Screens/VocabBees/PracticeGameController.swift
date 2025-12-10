@@ -60,8 +60,9 @@ class PracticeGameController: UIViewController {
     
     
     @IBAction func onClickOther(_ sender: UITapGestureRecognizer) {
-        self.playWordAudio(url: self.word_info.othersVoice)
-
+        if let ov = self.word_info.othersVoice {
+            self.playWordAudio(url: ov)
+        }
     }
     
     @IBAction func onClickSkip(_ sender: UIButton) {

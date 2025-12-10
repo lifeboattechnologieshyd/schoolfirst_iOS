@@ -76,7 +76,9 @@ class DailyChallengeViewController:UIViewController {
     
     
     @IBAction func onClickOther(_ sender: UITapGestureRecognizer) {
-        self.playWordAudio(url: self.words[self.currentWordIndex].othersVoice)
+        if let ov = self.words[self.currentWordIndex].othersVoice {
+            self.playWordAudio(url: ov)
+        }
     }
     
     @IBAction func onClickSkip(_ sender: UIButton) {
@@ -140,7 +142,7 @@ class DailyChallengeViewController:UIViewController {
 //        popup.show(on: self.view)
 //    }
     
-    func getWords(){
+    func getWords() {
         let url = API.VOCABEE_GET_WORDS_BY_DATES + "?student_id=\(UserManager.shared.vocabBee_selected_student.studentID)&grade=\(UserManager.shared.vocabBee_selected_grade.id)&date=\(UserManager.shared.vocabBee_selected_date.date)"
         
         NetworkManager.shared.request(urlString: url, method: .GET) { (result: Result<APIResponse<[WordInfo]>, NetworkError>)  in
@@ -153,7 +155,9 @@ class DailyChallengeViewController:UIViewController {
                         self.currentWordIndex = 0
                     }
                     DispatchQueue.main.async {
-                        self.setupPlayer()
+                        if self.totalWords > 0 {
+                            self.setupPlayer()
+                        }
                     }
                 }else{
                     print(info.description)

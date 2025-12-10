@@ -46,7 +46,7 @@ class UserManager {
     static let shared = UserManager()
     private init() {}
     var assessmentSelectedStudent : Student!
-    var assessmentCurriculum : Curriculum!
+//    var assessmentCurriculum : Curriculum!
     var assessment_selected_grade : GradeModel!
     var assessment_selected_subject : GradeSubject!
     var assessment_selected_lesson_ids = [String]()

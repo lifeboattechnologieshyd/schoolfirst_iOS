@@ -94,7 +94,7 @@ class HomeworkViewController: UIViewController {
     func getPastHomework(){
         self.past_homework.removeAll()
         var url = API.HOMEWORK_PAST
-        url += "?grade_id=\(UserManager.shared.kids[selected_student].gradeID)"
+        url += "grade_id=\(UserManager.shared.kids[selected_student].gradeID)"
         NetworkManager.shared.request(urlString: url,method: .GET) { (result: Result<APIResponse<[Homework]>, NetworkError>)  in
             switch result {
             case .success(let info):

@@ -74,7 +74,7 @@ class QuestionOneCell: UITableViewCell {
     
     func changeQuestion(row : Int,  question: AssessmentQuestionHistoryDetails, ques: Int = 15) {
         lblQuestionNumber.text = "Question \(row+1)/\(ques)"
-        lblScore.text = "Score  \(question.isCorrect ? question.marks : 0)/\(question.marks)"
+        lblScore.text = "Score  \(question.isCorrect ? question.marks : 0)/\(question.questionMarks)"
         btnAnswer.setImage(question.isCorrect ? UIImage(named: "check-2") : UIImage(named: "redNo"), for: .normal)
         lblQuestion.text = question.questionName
         lblDesciption.text = question.answerDescription
@@ -84,23 +84,23 @@ class QuestionOneCell: UITableViewCell {
         self.lblOptionC.text = question.options[2]
         self.lblOptionD.text = question.options[3]
         
-        self.optionAView.backgroundColor = question.options[0] == question.correctAnswer ? UIColor(hex: "#00BB00") : question.userAnswer == question.options[0] ? UIColor(hex: "#EE4E5E") : .white
-        self.optionBView.backgroundColor = question.options[1] == question.correctAnswer ? UIColor(hex: "#00BB00") : question.userAnswer == question.options[1] ? UIColor(hex: "#EE4E5E") : .white
-        self.optionCView.backgroundColor = question.options[2] == question.correctAnswer ? UIColor(hex: "#00BB00") : question.userAnswer == question.options[2] ? UIColor(hex: "#EE4E5E") : .white
-        self.optionDView.backgroundColor = question.options[3] == question.correctAnswer ? UIColor(hex: "#00BB00") : question.userAnswer == question.options[3] ? UIColor(hex: "#EE4E5E") : .white
+        self.optionAView.backgroundColor = question.options[0] == question.correctAnswer ? UIColor(hex: "#00BB00") : question.userAnswer == question.options[0] ? UIColor(hex: "#FFA700") : .white
+        self.optionBView.backgroundColor = question.options[1] == question.correctAnswer ? UIColor(hex: "#00BB00") : question.userAnswer == question.options[1] ? UIColor(hex: "#FFA700") : .white
+        self.optionCView.backgroundColor = question.options[2] == question.correctAnswer ? UIColor(hex: "#00BB00") : question.userAnswer == question.options[2] ? UIColor(hex: "#FFA700") : .white
+        self.optionDView.backgroundColor = question.options[3] == question.correctAnswer ? UIColor(hex: "#00BB00") : question.userAnswer == question.options[3] ? UIColor(hex: "#FFA700") : .white
         
         self.lblTitleA.backgroundColor = question.options[0] == question.correctAnswer ? .white : question.userAnswer == question.options[0] ? .white : .primary
         self.lblTitleB.backgroundColor = question.options[1] == question.correctAnswer ? .white : question.userAnswer == question.options[1] ? .white : .primary
         self.lblTitleC.backgroundColor = question.options[2] == question.correctAnswer ? .white : question.userAnswer == question.options[2] ? .white : .primary
         self.lblTitleD.backgroundColor = question.options[3] == question.correctAnswer ? .white : question.userAnswer == question.options[3] ? .white : .primary
         
-        self.lblTitleA.textColor = question.options[0] == question.correctAnswer ? .primary : question.userAnswer == question.options[0] ? .primary : .secondary
+        self.lblTitleA.textColor = question.options[0] == question.correctAnswer ? UIColor(hex: "#00BB00") : question.userAnswer == question.options[0] ? UIColor(hex: "#FFA700") : .secondary
         
-        self.lblTitleB.textColor = question.options[1] == question.correctAnswer ? .primary : question.userAnswer == question.options[1] ? .primary : .secondary
+        self.lblTitleB.textColor = question.options[1] == question.correctAnswer ? UIColor(hex: "#00BB00") : question.userAnswer == question.options[1] ? UIColor(hex: "#FFA700") : .secondary
         
-        self.lblTitleC.textColor = question.options[2] == question.correctAnswer ? .primary : question.userAnswer == question.options[2] ? .primary : .secondary
+        self.lblTitleC.textColor = question.options[2] == question.correctAnswer ? UIColor(hex: "#00BB00") : question.userAnswer == question.options[2] ? UIColor(hex: "#FFA700") : .secondary
         
-        self.lblTitleD.textColor = question.options[3] == question.correctAnswer ? .primary : question.userAnswer == question.options[3] ? .primary : .secondary
+        self.lblTitleD.textColor = question.options[3] == question.correctAnswer ? UIColor(hex: "#00BB00") : question.userAnswer == question.options[3] ? UIColor(hex: "#FFA700") : .secondary
         
     }
 }

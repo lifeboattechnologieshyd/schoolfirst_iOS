@@ -296,17 +296,65 @@
                                     <action selector="onClickDelete:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="FTN-eh-Q4T"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oRi-LP-d1A">
+                                <rect key="frame" x="0.0" y="309" width="384" height="103"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain"/>
+                                <connections>
+                                    <action selector="onClickPrivacy:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="GzB-gR-juZ"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dqJ-Z2-N13">
+                                <rect key="frame" x="0.0" y="206" width="384" height="103"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain"/>
+                                <connections>
+                                    <action selector="onClickTerms:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="8eo-lX-hkd"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aHL-3z-aYb">
+                                <rect key="frame" x="0.0" y="103" width="384" height="103"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain"/>
+                                <connections>
+                                    <action selector="onClickRateUs:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="Dwb-35-hwF"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GVK-NE-O0c">
+                                <rect key="frame" x="0.0" y="0.0" width="384" height="103"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain"/>
+                                <connections>
+                                    <action selector="onClickContactUs:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="gjM-oU-AAn"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="MzP-78-iV8" secondAttribute="trailing" id="5LM-rM-E62"/>
+                            <constraint firstItem="dqJ-Z2-N13" firstAttribute="bottom" secondItem="ZcB-WD-UWT" secondAttribute="bottom" id="DYP-cK-Wny"/>
                             <constraint firstItem="WRd-ah-9Bm" firstAttribute="bottom" secondItem="2ew-9c-AJH" secondAttribute="bottom" id="Fsn-no-kiE"/>
+                            <constraint firstItem="dqJ-Z2-N13" firstAttribute="top" secondItem="ZcB-WD-UWT" secondAttribute="top" id="GvT-Bi-vHy"/>
+                            <constraint firstItem="GVK-NE-O0c" firstAttribute="trailing" secondItem="F7L-5G-OhN" secondAttribute="trailing" id="IOH-JW-wO2"/>
+                            <constraint firstItem="GVK-NE-O0c" firstAttribute="bottom" secondItem="F7L-5G-OhN" secondAttribute="bottom" id="JSW-5p-kGq"/>
+                            <constraint firstItem="aHL-3z-aYb" firstAttribute="bottom" secondItem="1WS-t7-HHG" secondAttribute="bottom" id="KG7-v9-aHL"/>
+                            <constraint firstItem="aHL-3z-aYb" firstAttribute="leading" secondItem="1WS-t7-HHG" secondAttribute="leading" id="MAK-ZQ-Cv2"/>
+                            <constraint firstItem="oRi-LP-d1A" firstAttribute="bottom" secondItem="reh-bc-UkW" secondAttribute="bottom" id="Mxf-7X-RP1"/>
+                            <constraint firstItem="aHL-3z-aYb" firstAttribute="trailing" secondItem="1WS-t7-HHG" secondAttribute="trailing" id="PA2-Kd-URN"/>
+                            <constraint firstItem="oRi-LP-d1A" firstAttribute="leading" secondItem="reh-bc-UkW" secondAttribute="leading" id="Rp9-kW-CND"/>
                             <constraint firstItem="WRd-ah-9Bm" firstAttribute="trailing" secondItem="2ew-9c-AJH" secondAttribute="trailing" id="Y5d-ob-d05"/>
                             <constraint firstAttribute="bottom" secondItem="MzP-78-iV8" secondAttribute="bottom" id="Ya9-MA-iRj"/>
                             <constraint firstItem="WRd-ah-9Bm" firstAttribute="leading" secondItem="2ew-9c-AJH" secondAttribute="leading" id="ZX7-A7-5VT"/>
+                            <constraint firstItem="dqJ-Z2-N13" firstAttribute="trailing" secondItem="ZcB-WD-UWT" secondAttribute="trailing" id="Zud-8E-SCw"/>
                             <constraint firstItem="WRd-ah-9Bm" firstAttribute="top" secondItem="2ew-9c-AJH" secondAttribute="top" id="hVZ-J8-Zi7"/>
+                            <constraint firstItem="oRi-LP-d1A" firstAttribute="top" secondItem="reh-bc-UkW" secondAttribute="top" id="nh5-p4-5ex"/>
                             <constraint firstItem="MzP-78-iV8" firstAttribute="leading" secondItem="98F-Vm-KCk" secondAttribute="leading" id="qAI-06-9oK"/>
+                            <constraint firstItem="dqJ-Z2-N13" firstAttribute="leading" secondItem="ZcB-WD-UWT" secondAttribute="leading" id="qjl-Uy-Z30"/>
+                            <constraint firstItem="GVK-NE-O0c" firstAttribute="leading" secondItem="F7L-5G-OhN" secondAttribute="leading" id="t5T-hT-VSr"/>
+                            <constraint firstItem="oRi-LP-d1A" firstAttribute="trailing" secondItem="reh-bc-UkW" secondAttribute="trailing" id="u5R-P5-Jmh"/>
+                            <constraint firstItem="GVK-NE-O0c" firstAttribute="top" secondItem="F7L-5G-OhN" secondAttribute="top" id="vht-T5-Zfz"/>
                             <constraint firstItem="MzP-78-iV8" firstAttribute="top" secondItem="98F-Vm-KCk" secondAttribute="top" id="yaw-gA-7Fo"/>
+                            <constraint firstItem="aHL-3z-aYb" firstAttribute="top" secondItem="1WS-t7-HHG" secondAttribute="top" id="zSE-gG-gOK"/>
                         </constraints>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">

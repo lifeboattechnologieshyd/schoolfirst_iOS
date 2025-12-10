@@ -112,13 +112,13 @@ struct API {
     // Fee
     static let FEE_GET_DETAILS = BASE_URL + "fees/get/fee"
     
-    
-    
-    
     static let ASSESSMENT_CREATE = BASE_URL + "assessments/create/assessments"
     static let ASSESSMENT_ATTEMPT = BASE_URL + "assessments/attempt/assessment"
     static let ASSESSMENT_HISTORY = BASE_URL + "assessments/past/assessments"
     static let ASSESSMENT_HISTORY_ANSWERS = BASE_URL + "assessments/myanswers"
+    
+    
+    static let ASSESSMENT_RESULTS = BASE_URL + "assessments/result"
 
     
     
