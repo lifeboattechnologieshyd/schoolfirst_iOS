@@ -827,3 +827,25 @@ class PillLabel: UILabel {
                       height: size.height + contentInsets.top + contentInsets.bottom)
     }
 }
+extension UIButton {
+    func loadImage(url: String, placeholder: UIImage? = nil) {
+        // Set placeholder if provided
+        if let placeholder = placeholder {
+            self.setImage(placeholder, for: .normal)
+        } else {
+            self.setImage(nil, for: .normal)
+        }
+        
+        guard let imageUrl = URL(string: url) else { return }
+
+        // Fetch image asynchronously
+        URLSession.shared.dataTask(with: imageUrl) { data, _, error in
+            guard let data = data, error == nil,
+                  let image = UIImage(data: data) else { return }
+
+            DispatchQueue.main.async {
+                self.setImage(image, for: .normal)
+            }
+        }.resume()
+    }
+}

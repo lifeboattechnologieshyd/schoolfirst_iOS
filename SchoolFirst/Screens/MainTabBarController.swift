@@ -9,46 +9,49 @@ import UIKit
 class MainTabBarController: UITabBarController,
                             UITabBarControllerDelegate,
                             UINavigationControllerDelegate {
-
+    
     let circleButton = UIButton(type: .custom)
     let homeIndex = 2
     let gapOffset: CGFloat = -10   // Distance between circle & tab bar
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = self
-
+        
         // ✅ Apply custom non-moving tab bar
         let fixedTabBar = UTabBarFixedDip()
         setValue(fixedTabBar, forKey: "tabBar")
-
+        
         setupCircleButton()
         disableMiddleTabItem()
-
+        
         // ✅ Attach circle reference for hitTest
         if let dip = tabBar as? UTabBarFixedDip {
             dip.circleButtonRef = circleButton
         }
-
+        
         // ✅ controller delegates for push/hide logic
         for vc in viewControllers ?? [] {
             if let nav = vc as? UINavigationController {
                 nav.delegate = self
             }
         }
+        
+        // ✅ Update middle tab title & circle image dynamically
+        updateMiddleTabTitleAndImage()
     }
-
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         positionCircle()
     }
-
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         positionCircle()
         updateVisibilityBasedOnDepth()
     }
-
+    
     // ------------------------------------------------------------
     // ✅ Disable the middle tab item to avoid duplicate icon
     // ------------------------------------------------------------
@@ -59,7 +62,7 @@ class MainTabBarController: UITabBarController,
             items[homeIndex].selectedImage = UIImage()
         }
     }
-
+    
     // ------------------------------------------------------------
     // ✅ Setup floating circle button
     // ------------------------------------------------------------
@@ -68,66 +71,66 @@ class MainTabBarController: UITabBarController,
         circleButton.frame = CGRect(x: 0, y: 0, width: size, height: size)
         circleButton.layer.cornerRadius = size / 2
         circleButton.backgroundColor = .white
-
+        
         circleButton.setImage(UIImage(named: "oasis_logo"), for: .normal)
         circleButton.imageView?.contentMode = .scaleAspectFit
         circleButton.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-
+        
         // ✅ Border hidden by default
         circleButton.layer.borderWidth = 3
         circleButton.layer.borderColor = UIColor.clear.cgColor
-
+        
         // Shadow
         circleButton.layer.shadowOpacity = 0.25
         circleButton.layer.shadowRadius = 10
         circleButton.layer.shadowOffset = CGSize(width: 0, height: 3)
-
+        
         circleButton.addTarget(self, action: #selector(circleTapped), for: .touchUpInside)
-
+        
         tabBar.addSubview(circleButton)
         tabBar.bringSubviewToFront(circleButton)
     }
-
+    
     func positionCircle() {
         circleButton.center = CGPoint(
             x: tabBar.bounds.midX,
             y: tabBar.bounds.minY + gapOffset
         )
     }
-
+    
     // ------------------------------------------------------------
     // ✅ Circle button tap → Go Home (root)
     // ------------------------------------------------------------
     @objc func circleTapped() {
         selectedIndex = homeIndex
-
+        
         if let nav = viewControllers?[homeIndex] as? UINavigationController {
             nav.popToRootViewController(animated: false)
         }
-
+        
         // ✅ Border visible ONLY when tapped
         circleButton.layer.borderColor = UIColor(
             red: 0.043, green: 0.337, blue: 0.604, alpha: 1
         ).cgColor
-
+        
         updateVisibilityBasedOnDepth()
     }
-
+    
     // ------------------------------------------------------------
     // ✅ Visibility logic (NO FLASH, NO TAP on other screens)
     // ------------------------------------------------------------
     func updateVisibilityBasedOnDepth() {
         guard let nav = viewControllers?[selectedIndex] as? UINavigationController else { return }
-
+        
         let isRoot = (nav.viewControllers.count == 1)
-
+        
         if isRoot {
             // ✅ SHOW circle + tab bar only on HOME
             tabBar.isHidden = false
             circleButton.isHidden = false
             circleButton.alpha = 1
             circleButton.isUserInteractionEnabled = true   // ✅ Enable tap on home
-
+            
         } else {
             // ✅ HIDE both instantly on any pushed screen
             tabBar.isHidden = true
@@ -136,13 +139,13 @@ class MainTabBarController: UITabBarController,
             circleButton.isUserInteractionEnabled = false  // ✅ Disable tap anywhere else
         }
     }
-
+    
     // ------------------------------------------------------------
     // ✅ NEW: Highlight circle when MySchool tab item tapped
     // ------------------------------------------------------------
     func tabBarController(_ tabBarController: UITabBarController,
                           didSelect viewController: UIViewController) {
-
+        
         // ✅ When “MySchool” tab (center index) tapped → highlight border
         if selectedIndex == homeIndex {
             circleButton.layer.borderColor = UIColor(
@@ -151,10 +154,10 @@ class MainTabBarController: UITabBarController,
         } else {
             circleButton.layer.borderColor = UIColor.clear.cgColor
         }
-
+        
         updateVisibilityBasedOnDepth()
     }
-
+    
     // ✅ Hide BEFORE push starts
     func navigationController(_ navigationController: UINavigationController,
                               willShow viewController: UIViewController,
@@ -163,16 +166,44 @@ class MainTabBarController: UITabBarController,
             self.updateVisibilityBasedOnDepth()
         }
     }
-
+    
     // ✅ Backup
     func navigationController(_ navigationController: UINavigationController,
                               didShow viewController: UIViewController,
                               animated: Bool) {
         updateVisibilityBasedOnDepth()
     }
+    
+    // ------------------------------------------------------------
+    // ✅ NEW: Update middle tab title & circle image dynamically
+    // ------------------------------------------------------------
+    func updateMiddleTabTitleAndImage() {
+        let isSchoolUser = (UserManager.shared.user?.schools.count ?? 0) > 0
+        
+        // ✅ Update tab bar item title for the nav controller
+        if let nav = viewControllers?[homeIndex] as? UINavigationController {
+            nav.tabBarItem.title = isSchoolUser ? "MySchool" : "MyPlan"
+            nav.tabBarItem.image = nil
+            nav.tabBarItem.selectedImage = nil
+        }
+        
+        // ✅ Update circle button image
+        if isSchoolUser {
+            if let logoURL = UserManager.shared.user?.schools.first?.smallLogo {
+                circleButton.loadImage(url: logoURL) // your image loader extension
+            }
+        } else {
+            circleButton.setImage(UIImage(named: "MyPlan"), for: .normal)
+        }
+        
+        // ✅ Remove any button title (important!)
+        circleButton.setTitle("", for: .normal)
+        
+        // Force the tab bar to refresh
+        tabBar.setNeedsLayout()
+        tabBar.layoutIfNeeded()
+    }
 }
-
-
 
 ///////////////////////////////////////////////////////////////
 // ✅ CUSTOM NON-MOVING TAB BAR WITH DIP
@@ -271,4 +302,3 @@ class UTabBarFixedDip: UITabBar {
         return s
     }
 }
-
