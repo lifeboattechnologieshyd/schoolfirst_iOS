@@ -7,17 +7,26 @@
 
 import  UIKit
 import AVFoundation
+import Lottie
+
 
 class DailyChallengeViewController:UIViewController {
     var player: AVPlayer?
     var playerObserver: Any?
     
+    @IBOutlet weak var viewLottie: LottieAnimationView!
     @IBOutlet weak var slider: UISlider!
     @IBOutlet weak var txtField: UITextField!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var btnBack: UIButton!
-
+    
+    @IBOutlet weak var resultView: UIView!
+    
+    @IBOutlet weak var lblActualSpelling: UILabel!
+    
     @IBOutlet weak var lblWordsCount: UILabel!
+    
+    
     var typedText: String = ""
     var words = [WordInfo]()
     
@@ -27,16 +36,41 @@ class DailyChallengeViewController:UIViewController {
             updateProgressLabel()
         }
     }
+    
+    @IBAction func onClickExit(_ sender: UIButton) {
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    @IBAction func onClickNextWord(_ sender: UIButton) {
+        self.resultView.isHidden = true
+        self.currentWordIndex += 1
+        DispatchQueue.main.async {
+            self.txtField.text = ""
+            self.typedText = ""
+            self.setupPlayer()
+        }
+    }
+    
+    func playLottieFile(){
+        let animation = LottieAnimation.named("vocabbee_success.json")
+        viewLottie.animation = animation
+        viewLottie.contentMode = .scaleAspectFit
+        viewLottie.loopMode = .loop
+        viewLottie.animationSpeed = 1.0
+        viewLottie.play()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.resultView.isHidden = true
         getWords()
         self.slider.minimumValue = 0
         self.slider.maximumValue = 10
         updateProgressLabel()
+        playLottieFile()
     }
     
     func updateProgressLabel() {
-        
         DispatchQueue.main.async {
             self.lblWordsCount.text = "\(self.currentWordIndex + 1) / \(self.totalWords)"
             self.slider.value = Float((self.currentWordIndex + 1)/10)
@@ -49,7 +83,6 @@ class DailyChallengeViewController:UIViewController {
     
     @IBAction func onClickSubmit(_ sender: UIButton) {
         self.submitWord()
-        
     }
     
     @IBAction func onTapListen(_ sender: UIButton) {
@@ -59,19 +92,16 @@ class DailyChallengeViewController:UIViewController {
     
     @IBAction func onClickDefination(_ sender: UITapGestureRecognizer) {
         self.playWordAudio(url: self.words[self.currentWordIndex].definitionVoice)
-        
     }
     
     
     @IBAction func onClickOrigin(_ sender: UITapGestureRecognizer) {
         self.playWordAudio(url: self.words[self.currentWordIndex].originVoice)
-
     }
     
     
     @IBAction func onClickUsage(_ sender: UITapGestureRecognizer) {
         self.playWordAudio(url: self.words[self.currentWordIndex].usageVoice)
-
     }
     
     
@@ -106,11 +136,14 @@ class DailyChallengeViewController:UIViewController {
                 if info.success {
                     if let data = info.data {
                         if self.currentWordIndex < self.totalWords-1 {
-                            self.currentWordIndex += 1
                             DispatchQueue.main.async {
-                                self.txtField.text = ""
-                                self.typedText = ""
-                                self.setupPlayer()
+                                if data.isCorrect {
+                                    self.lblActualSpelling.text = data.correctAnswer
+                                    self.resultView.isHidden = false
+                                }else{
+                                    
+                                    
+                                }
                             }
                         }
                         if self.currentWordIndex == self.totalWords-1 {
@@ -133,15 +166,7 @@ class DailyChallengeViewController:UIViewController {
             }
         }
     }
-    
-//    func showResultPopup(word: String) {
-//        let popup = VocabBeeResultPopup.instantiate()
-////        popup.wordLabel.text = word
-////        popup.levelLabel.text = "Level \(level) → Level \(nextLevel)"
-////        popup.messageLabel.text = "Congratulations! You’re in Level \(nextLevel)"
-//        popup.show(on: self.view)
-//    }
-    
+        
     func getWords() {
         let url = API.VOCABEE_GET_WORDS_BY_DATES + "?student_id=\(UserManager.shared.vocabBee_selected_student.studentID)&grade=\(UserManager.shared.vocabBee_selected_grade.id)&date=\(UserManager.shared.vocabBee_selected_date.date)"
         
