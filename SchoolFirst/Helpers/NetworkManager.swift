@@ -1218,6 +1218,22 @@ struct ScheduleItem: Decodable {
     let session_number: Int?
     let now: Bool
 }
+struct VocabBeeStatistics: Codable {
+    let total_questions: Int?
+    let correct_answers: Int?
+    let wrong_answers: Int?
+    let total_points: Int?
+    let last_answer_points: Int?
+    let level: Int?
+    let total_words: Int?
+}
 
-
-
+    enum CodingKeys: String, CodingKey {
+        case totalQuestions = "total_questions"
+        case correctAnswers = "correct_answers"
+        case wrongAnswers = "wrong_answers"
+        case totalPoints = "total_points"
+        case lastAnswerPoints = "last_answer_points"
+        case level
+        case totalWords = "total_words"
+    }

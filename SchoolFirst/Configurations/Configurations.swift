@@ -66,6 +66,7 @@ struct API {
     static let EVENTS_GETEVENTS = BASE_URL + "events/events"
     
     
+    static let VOCABEE_STATISTICS = BASE_URL + "vocabee/get/statistics"
     
     
     static let BROADCAST_CALENDER = BASE_URL + "broadcast/calendar/"
@@ -76,7 +77,7 @@ struct API {
     static let HOMEWORK = BASE_URL + "school/homework"
     static let HOMEWORK_PAST = BASE_URL + "school/homework/past?"
     static let SCHOOL_INFO = BASE_URL + "school/info"
-
+    
     static let NEWS = BASE_URL + "news/"
     
     
@@ -102,10 +103,10 @@ struct API {
     static let VOCABEE_GET_WORDS_BY_DATES = BASE_URL + "vocabee/daily/words"
     static let VOCABEE_SUBMIT_WORD = BASE_URL + "vocabee/attempt/words"
     
-
+    
     // practice :
     static let VOCABEE_GET_PRACTISE_WORDS = BASE_URL + "vocabee/get/word"
-
+    
     
     
     
@@ -119,7 +120,7 @@ struct API {
     
     
     static let ASSESSMENT_RESULTS = BASE_URL + "assessments/result"
-
+    
     
     
     // Attandance :
@@ -127,8 +128,5 @@ struct API {
     static let ATTENDANCE_STATS = BASE_URL + "attendance/student/attendance?"
     static let ATTENDANCE_LEAVE_HISTORY = BASE_URL + "attendance/leave/history?"
     static let ATTENDANCE_TIMETABLE = BASE_URL + "attendance/timetable?"
-
-
     
-
 }
