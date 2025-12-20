@@ -14,6 +14,7 @@ class VocabBeesViewController: UIViewController {
     @IBOutlet weak var BackButton: UIButton!
     
     var vocabBeeStats: VocabBeeStatistics?
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,8 +32,21 @@ class VocabBeesViewController: UIViewController {
         
         tblVw.delegate = self
         tblVw.dataSource = self
+        
+//        NotificationCenter.default.addObserver(
+//            self,
+//            selector: #selector(updateStatsLocally(_:)),
+//            name: .vocabBeeStatsUpdated,
+//            object: nil
+//        )
+
     }
-    
+//    var didOptimisticUpdate = false
+
+
+
+
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         fetchVocabBeeStatistics()
@@ -53,6 +67,11 @@ class VocabBeesViewController: UIViewController {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let response):
+//                    if self?.didOptimisticUpdate == true {
+//                        self?.didOptimisticUpdate = false
+//                        return
+//                    }
+
                     print("📊 API Response: \(response)")
                     
                     if let statsArray = response.data, let stats = statsArray.first {

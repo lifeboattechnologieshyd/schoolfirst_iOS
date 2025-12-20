@@ -111,3 +111,4 @@ struct PasswordValidator {
         return nil
     }
 }
+

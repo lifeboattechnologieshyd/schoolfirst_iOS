@@ -158,6 +158,8 @@ class PracticeGameController: UIViewController {
                         self.wordsCompleted += 1
                         self.updateWordsCount()
                         
+                       
+    
                         self.bottomlbl.isHidden = true
                         self.topLbl.isHidden = true
 
