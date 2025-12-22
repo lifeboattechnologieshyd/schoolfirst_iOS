@@ -13,12 +13,16 @@ class PracticeGameController: UIViewController {
     
     var player: AVPlayer?
     var playerObserver: Any?
+    var timer: Timer?
+    var remainingSeconds: Int = 60
+
     
     @IBOutlet weak var txtField: UITextField!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var btnBack: UIButton!
     @IBOutlet weak var lblWordsCount: UILabel!
     
+    @IBOutlet weak var timerLbl: UILabel!
     @IBOutlet weak var congratsLbl: UILabel!
     @IBOutlet weak var bottomlbl: UILabel!
     @IBOutlet weak var resultView: UIView!
@@ -37,11 +41,16 @@ class PracticeGameController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        let gradeName = UserManager.shared.vocabBee_selected_grade.name ?? "Grade"
+        lblTitle.text = "Practice | \(gradeName)"
+
         resultView.isHidden = true
         lblEnteredSpelling.isHidden = true
         updateWordsCount()
         getWords()
     }
+
     
     func updateWordsCount() {
         lblWordsCount.text = "Words: \(wordsCompleted)"
@@ -117,8 +126,11 @@ class PracticeGameController: UIViewController {
             print("⚠️ No word available for player")
             return
         }
+
+        startTimer() // ✅ compiler will find it now
         playWordAudio(url: word.pronunciation)
     }
+
     
     func submitWord() {
         guard let word = word_info else {
@@ -162,11 +174,31 @@ class PracticeGameController: UIViewController {
                         self.topLbl.isHidden = true
                         self.playSuccessLottie()
                         self.congratsLbl.text = "Congratulations! Try new word"
+
+                        // Show message
+                        self.lblEnteredSpelling.text = "You’ve got it right!"
+                        self.lblEnteredSpelling.font = self.txtField.font // ✅ match user's font
+                        self.lblEnteredSpelling.textColor = .black
                         self.lblEnteredSpelling.textAlignment = .center
                         self.lblEnteredSpelling.numberOfLines = 0
                         self.lblEnteredSpelling.isHidden = false
-                        self.lblActualSpelling.font = UIFont.boldSystemFont(ofSize: 28)
 
+                        // Show actual correct word in same style as user entered word
+                        let userFont = self.txtField.font ?? UIFont.systemFont(ofSize: 24)
+                        let correctAttr = NSAttributedString(
+                            string: data.correctAnswer.uppercased(),
+                            attributes: [
+                                .font: userFont,
+                                .foregroundColor: UIColor.black
+                            ]
+                        )
+                        
+                        self.lblActualSpelling.attributedText = correctAttr
+                        self.lblActualSpelling.textAlignment = .center
+                        self.lblActualSpelling.isHidden = false
+                        self.lblActualSpelling.font = UIFont.boldSystemFont(ofSize: 24)
+
+                    
                     } else {
                         self.viewLottie.stop()
                         self.viewLottie.isHidden = true
@@ -197,12 +229,19 @@ class PracticeGameController: UIViewController {
                         self.lblEnteredSpelling.textAlignment = .center
                         self.lblEnteredSpelling.isHidden = false
 
-                        self.lblActualSpelling.text = data.correctAnswer.uppercased()
-                        self.lblActualSpelling.font = UIFont(name: "Lora-Bold", size: 32)
-                        self.lblActualSpelling.textColor = .black
+                        // Use same font as user entered in txtField
+                        let userFont = self.txtField.font ?? UIFont.systemFont(ofSize: 24)
+                        let correctWordAttr = NSAttributedString(
+                            string: data.correctAnswer,
+                            attributes: [
+                                .font: userFont,
+                                .foregroundColor: UIColor.black
+                            ]
+                        )
+                        self.lblActualSpelling.attributedText = correctWordAttr
                         self.lblActualSpelling.textAlignment = .center
                         self.lblActualSpelling.isHidden = false
-
+                        self.lblActualSpelling.font = UIFont.boldSystemFont(ofSize: 24)
                         self.bottomlbl.textAlignment = .center
                     }
 
@@ -296,7 +335,7 @@ class PracticeGameController: UIViewController {
             print("❌ Invalid audio URL")
             return
         }
-        
+
         if let observer = playerObserver {
             NotificationCenter.default.removeObserver(observer)
             playerObserver = nil
@@ -316,6 +355,38 @@ class PracticeGameController: UIViewController {
         player?.play()
         print("🔊 Playing audio...")
     }
+
+    // ⏱ TIMER FUNCTIONS (CLASS LEVEL)
+
+    func startTimer() {
+        stopTimer()
+        remainingSeconds = 60
+        timerLbl.text = "\(remainingSeconds) Seconds Left..."
+
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] t in
+            guard let self = self else { return }
+
+            self.remainingSeconds -= 1
+            self.timerLbl.text = "\(self.remainingSeconds) Seconds Left..."
+
+            if self.remainingSeconds <= 0 {
+                t.invalidate()
+                self.timer = nil
+                self.autoSubmitEmptyAnswer()
+            }
+        }
+    }
+
+    func stopTimer() {
+        timer?.invalidate()
+        timer = nil
+    }
+
+    func autoSubmitEmptyAnswer() {
+        txtField.text = ""
+        submitWord()
+    }
+
 
     func playSuccessLottie() {
         viewLottie.animation = LottieAnimation.named("vocabbee_success")

@@ -13,6 +13,9 @@ class DailyChallengeViewController: UIViewController {
     
     var player: AVPlayer?
     var playerObserver: Any?
+    var timer: Timer?
+    var remainingSeconds: Int = 60
+
     
     @IBOutlet weak var viewLottie: LottieAnimationView!
     @IBOutlet weak var slider: UISlider!
@@ -21,6 +24,7 @@ class DailyChallengeViewController: UIViewController {
     @IBOutlet weak var btnBack: UIButton!
     @IBOutlet weak var audioButtonsStackView: UIStackView!
     
+    @IBOutlet weak var timerLbl: UILabel!
     @IBOutlet weak var congratsLbl: UILabel!
     @IBOutlet weak var bottomlbl: UILabel!
     @IBOutlet weak var topLbl: UILabel!
@@ -54,6 +58,9 @@ class DailyChallengeViewController: UIViewController {
         slider.minimumValue = 0
         slider.maximumValue = 10
         viewLottie.isHidden = true
+        lblTitle.text = "Daily Challenge - \(UserManager.shared.vocabBee_selected_date.date)"
+        timerLbl.text = "60 Seconds Left..."
+
         getWords()
     }
     
@@ -86,6 +93,7 @@ class DailyChallengeViewController: UIViewController {
     }
     
     @IBAction func onClickNextWord(_ sender: UIButton) {
+        self.stopTimer()
         resetResultView()
         
         guard currentWordIndex + 1 < totalWords else {
@@ -103,6 +111,7 @@ class DailyChallengeViewController: UIViewController {
     }
     
     @IBAction func onClickSkip(_ sender: UIButton) {
+        self.stopTimer()
         guard hasValidWord else { return }
         resetResultView()
         
@@ -177,6 +186,7 @@ class DailyChallengeViewController: UIViewController {
             print("⚠️ Invalid word index for setupPlayer: \(currentWordIndex)")
             return
         }
+        startTimer()
         playWordAudio(url: words[currentWordIndex].pronunciation)
     }
     
@@ -185,16 +195,19 @@ class DailyChallengeViewController: UIViewController {
             print("❌ Invalid audio URL")
             return
         }
-        
+
         // Remove previous observer
         if let observer = playerObserver {
             NotificationCenter.default.removeObserver(observer)
             playerObserver = nil
         }
-        
+
         let playerItem = AVPlayerItem(url: audioURL)
         player = AVPlayer(playerItem: playerItem)
-        
+
+        // ✅ START PLAYING
+        player?.play()
+
         playerObserver = NotificationCenter.default.addObserver(
             forName: .AVPlayerItemDidPlayToEndTime,
             object: playerItem,
@@ -202,10 +215,37 @@ class DailyChallengeViewController: UIViewController {
         ) { _ in
             print("✅ Audio finished playing")
         }
-        
-        player?.play()
-        print("🔊 Playing audio...")
     }
+
+    func startTimer() {
+        // Reset first
+        stopTimer()
+        remainingSeconds = 60
+        timerLbl.text = "\(remainingSeconds) Seconds Left..."
+        
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] t in
+            guard let self = self else { return }
+            self.remainingSeconds -= 1
+            self.timerLbl.text = "\(self.remainingSeconds) Seconds Left..."
+            
+            if self.remainingSeconds <= 0 {
+                t.invalidate()
+                self.timer = nil
+                self.autoSubmitEmptyAnswer()
+            }
+        }
+    }
+    func autoSubmitEmptyAnswer() {
+        txtField.text = "" // Ensure text is empty
+        submitWord()      // This will call the same submitWord logic
+    }
+
+
+    func stopTimer() {
+        timer?.invalidate()
+        timer = nil
+    }
+
     
     func submitWord() {
         guard hasValidWord else {
@@ -229,10 +269,12 @@ class DailyChallengeViewController: UIViewController {
         ) { (result: Result<APIResponse<WordAnswer>, NetworkError>) in
             
             DispatchQueue.main.async {
+                self.stopTimer()
                 switch result {
                     
                 case .success(let info):
                     guard info.success, let data = info.data else {
+                        
                         self.showAlert(msg: info.description ?? "Something went wrong")
                         return
                     }
