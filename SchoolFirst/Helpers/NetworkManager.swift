@@ -1237,3 +1237,21 @@ struct VocabBeeStatistics: Codable {
         case level
         case totalWords = "total_words"
     }
+struct VocabBeeWordResponse: Codable {
+    let id: String
+    let wordID: String
+    let userAnswer: String?        
+    let correctAnswer: String
+    let isCorrect: Bool
+    let points: Int
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case wordID = "word_id"
+        case userAnswer = "user_answer"
+        case correctAnswer = "correct_answer"
+        case isCorrect = "is_correct"
+        case points
+    }
+}
+

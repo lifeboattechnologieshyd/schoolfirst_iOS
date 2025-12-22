@@ -126,63 +126,52 @@ class PracticeGameController: UIViewController {
             return
         }
         
-        let enteredText = txtField.text ?? ""
-        
+        let enteredText = txtField.text?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased() ?? ""
+
+        // ✅ FIX: Use "user_answer" key instead of "answer"
         let payload: [String: Any] = [
-            "answer": enteredText,
+            "user_answer": enteredText,
             "word_id": word.id,
             "grade_id": UserManager.shared.vocabBee_selected_grade.id,
             "student_id": UserManager.shared.vocabBee_selected_student.studentID
         ]
         
         NetworkManager.shared.request(
-            urlString: API.VOCABEE_SUBMIT_WORD,
+            urlString: API.VOCABEE_PRACTICE_SUBMIT,
             method: .POST,
             parameters: payload
-        ) { (result: Result<APIResponse<WordAnswer>, NetworkError>) in
-            
+        ) { [weak self] (result: Result<APIResponse<VocabBeeWordResponse>, NetworkError>) in
+
+            guard let self = self else { return } // avoid retain cycles
             DispatchQueue.main.async {
                 switch result {
-                    
                 case .success(let info):
                     guard info.success, let data = info.data else {
                         self.showAlert(msg: info.description ?? "Something went wrong")
                         return
                     }
-                    
+
                     self.resultView.isHidden = false
-                
-                    
+
                     if data.isCorrect {
-                        // CORRECT ANSWER
                         self.wordsCompleted += 1
                         self.updateWordsCount()
-                        
-                       
-    
                         self.bottomlbl.isHidden = true
                         self.topLbl.isHidden = true
-
-                        // Play Success Lottie
                         self.playSuccessLottie()
-                        
-                        
                         self.congratsLbl.text = "Congratulations! Try new word"
-                       // self.lblEnteredSpelling.attributedText = fullText
                         self.lblEnteredSpelling.textAlignment = .center
                         self.lblEnteredSpelling.numberOfLines = 0
                         self.lblEnteredSpelling.isHidden = false
-                        
-                          self.lblActualSpelling.font = UIFont.boldSystemFont(ofSize: 28)
-                        
-                    } else {
+                        self.lblActualSpelling.font = UIFont.boldSystemFont(ofSize: 28)
 
+                    } else {
                         self.viewLottie.stop()
                         self.viewLottie.isHidden = true
 
-                        self.resultView.isHidden = false
-
-                        let wrongText = self.txtField.text ?? ""
+                        let wrongText = self.txtField.text ?? ""  // ✅ use self
                         self.congratsLbl.text = "That’s Okay! Try the next word!"
                         self.topLbl.text = "Oops! You got it wrong"
                         self.topLbl.textAlignment = .center
@@ -201,7 +190,7 @@ class PracticeGameController: UIViewController {
                         self.bottomlbl.textAlignment = .center
                         self.bottomlbl.numberOfLines = 0
                         self.bottomlbl.isHidden = false
-                       
+
                         self.lblEnteredSpelling.text = "Correct Spelling is as follows!"
                         self.lblEnteredSpelling.font = UIFont(name: "Lexend-Medium", size: 16)
                         self.lblEnteredSpelling.textColor = .black
@@ -209,7 +198,7 @@ class PracticeGameController: UIViewController {
                         self.lblEnteredSpelling.isHidden = false
 
                         self.lblActualSpelling.text = data.correctAnswer.uppercased()
-                        self.lblEnteredSpelling.font = UIFont(name: "Lora-Bold", size: 32)
+                        self.lblActualSpelling.font = UIFont(name: "Lora-Bold", size: 32)
                         self.lblActualSpelling.textColor = .black
                         self.lblActualSpelling.textAlignment = .center
                         self.lblActualSpelling.isHidden = false
@@ -217,7 +206,6 @@ class PracticeGameController: UIViewController {
                         self.bottomlbl.textAlignment = .center
                     }
 
-                    
                 case .failure(let error):
                     switch error {
                     case .noaccess:
@@ -228,7 +216,9 @@ class PracticeGameController: UIViewController {
                 }
             }
         }
+
     }
+
 
     func getWords() {
         
