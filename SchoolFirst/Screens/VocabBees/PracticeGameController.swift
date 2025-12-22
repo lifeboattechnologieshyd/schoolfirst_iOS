@@ -15,6 +15,8 @@ class PracticeGameController: UIViewController {
     var playerObserver: Any?
     var timer: Timer?
     var remainingSeconds: Int = 60
+    var isTimeOutSubmission: Bool = false
+
 
     
     @IBOutlet weak var txtField: UITextField!
@@ -65,8 +67,10 @@ class PracticeGameController: UIViewController {
             showAlert(msg: "No word available")
             return
         }
+        isTimeOutSubmission = false
         submitWord()
     }
+
     
     @IBAction func onClickSkip(_ sender: UIButton) {
         guard hasWord else { return }
@@ -142,7 +146,6 @@ class PracticeGameController: UIViewController {
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .lowercased() ?? ""
 
-        // ✅ FIX: Use "user_answer" key instead of "answer"
         let payload: [String: Any] = [
             "user_answer": enteredText,
             "word_id": word.id,
@@ -168,6 +171,7 @@ class PracticeGameController: UIViewController {
                     self.resultView.isHidden = false
 
                     if data.isCorrect {
+
                         self.wordsCompleted += 1
                         self.updateWordsCount()
                         self.bottomlbl.isHidden = true
@@ -177,13 +181,13 @@ class PracticeGameController: UIViewController {
 
                         // Show message
                         self.lblEnteredSpelling.text = "You’ve got it right!"
-                        self.lblEnteredSpelling.font = self.txtField.font // ✅ match user's font
+                        self.lblEnteredSpelling.font = self.txtField.font
                         self.lblEnteredSpelling.textColor = .black
                         self.lblEnteredSpelling.textAlignment = .center
                         self.lblEnteredSpelling.numberOfLines = 0
                         self.lblEnteredSpelling.isHidden = false
 
-                        // Show actual correct word in same style as user entered word
+                        // Show actual correct word
                         let userFont = self.txtField.font ?? UIFont.systemFont(ofSize: 24)
                         let correctAttr = NSAttributedString(
                             string: data.correctAnswer.uppercased(),
@@ -192,20 +196,27 @@ class PracticeGameController: UIViewController {
                                 .foregroundColor: UIColor.black
                             ]
                         )
-                        
+
                         self.lblActualSpelling.attributedText = correctAttr
                         self.lblActualSpelling.textAlignment = .center
                         self.lblActualSpelling.isHidden = false
                         self.lblActualSpelling.font = UIFont.boldSystemFont(ofSize: 24)
 
-                    
                     } else {
+
                         self.viewLottie.stop()
                         self.viewLottie.isHidden = true
 
-                        let wrongText = self.txtField.text ?? ""  // ✅ use self
-                        self.congratsLbl.text = "That’s Okay! Try the next word!"
-                        self.topLbl.text = "Oops! You got it wrong"
+                        let wrongText = self.txtField.text ?? ""
+
+                        if self.isTimeOutSubmission {
+                            self.congratsLbl.text = "Time’s up! ⏰"
+                            self.topLbl.text = "You ran out of time"
+                        } else {
+                            self.congratsLbl.text = "That’s Okay! Try the next word!"
+                            self.topLbl.text = "Oops! You got it wrong"
+                        }
+
                         self.topLbl.textAlignment = .center
                         self.topLbl.isHidden = false
 
@@ -229,7 +240,6 @@ class PracticeGameController: UIViewController {
                         self.lblEnteredSpelling.textAlignment = .center
                         self.lblEnteredSpelling.isHidden = false
 
-                        // Use same font as user entered in txtField
                         let userFont = self.txtField.font ?? UIFont.systemFont(ofSize: 24)
                         let correctWordAttr = NSAttributedString(
                             string: data.correctAnswer,
@@ -238,11 +248,11 @@ class PracticeGameController: UIViewController {
                                 .foregroundColor: UIColor.black
                             ]
                         )
+
                         self.lblActualSpelling.attributedText = correctWordAttr
                         self.lblActualSpelling.textAlignment = .center
                         self.lblActualSpelling.isHidden = false
                         self.lblActualSpelling.font = UIFont.boldSystemFont(ofSize: 24)
-                        self.bottomlbl.textAlignment = .center
                     }
 
                 case .failure(let error):
@@ -383,6 +393,7 @@ class PracticeGameController: UIViewController {
     }
 
     func autoSubmitEmptyAnswer() {
+        isTimeOutSubmission = true
         txtField.text = ""
         submitWord()
     }
