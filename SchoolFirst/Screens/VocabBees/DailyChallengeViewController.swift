@@ -129,7 +129,8 @@ class DailyChallengeViewController: UIViewController {
     
     @IBAction func onTapListen(_ sender: UIButton) {
         guard hasValidWord else { return }
-        setupPlayer()
+        playWordAudio(url: words[currentWordIndex].pronunciation)
+
     }
     
     @IBAction func onClickDefination(_ sender: UITapGestureRecognizer) {
