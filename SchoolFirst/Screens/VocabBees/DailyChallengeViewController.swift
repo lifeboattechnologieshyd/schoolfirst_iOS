@@ -60,7 +60,7 @@ class DailyChallengeViewController: UIViewController {
         slider.minimumValue = 0
         slider.maximumValue = 10
         viewLottie.isHidden = true
-        lblTitle.text = "Daily Challenge - \(UserManager.shared.vocabBee_selected_date.date)"
+        lblTitle.text = "Daily Challenge - \(UserManager.shared.vocabBee_selected_date.date.fromyyyyMMddtoDDMMYYYY())"
         timerLbl.text = "60 Seconds Left..."
 
         getWords()
@@ -129,7 +129,8 @@ class DailyChallengeViewController: UIViewController {
     
     @IBAction func onTapListen(_ sender: UIButton) {
         guard hasValidWord else { return }
-        setupPlayer()
+        playWordAudio(url: words[currentWordIndex].pronunciation)
+
     }
     
     @IBAction func onClickDefination(_ sender: UITapGestureRecognizer) {
