@@ -38,24 +38,29 @@
                                             <action selector="backButtonTapped:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="zGk-cB-Nxv"/>
                                         </connections>
                                     </button>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" INSPIRO WALLS" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4RW-cm-KTN">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" INSPIRO WALLS" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4RW-cm-KTN">
                                         <rect key="frame" x="44" y="4" width="136" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="YpX-SR-DR5"/>
                                             <constraint firstAttribute="width" constant="136" id="ohs-6B-0hF"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
+                                        <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="16"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Delivery to Warangal - Pin: 293994" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1t6-Es-eNh">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1t6-Es-eNh">
                                         <rect key="frame" x="44" y="27" width="200" height="16"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="200" id="Rx7-E6-71C"/>
                                             <constraint firstAttribute="height" constant="16" id="lO4-Zd-udX"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                        <nil key="textColor"/>
+                                        <attributedString key="attributedText">
+                                            <fragment content="Delivery to Warangal - Pin: 293994">
+                                                <attributes>
+                                                    <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                                </attributes>
+                                            </fragment>
+                                        </attributedString>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wcg-dm-kof">
@@ -69,7 +74,7 @@
                                             <attributedString key="attributedTitle">
                                                 <fragment content="Change">
                                                     <attributes>
-                                                        <font key="NSFont" metaFont="systemLight" size="12"/>
+                                                        <font key="NSFont" size="12" name="Lexend-Light"/>
                                                         <font key="NSOriginalFont" size="12" name="Helvetica"/>
                                                     </attributes>
                                                 </fragment>
@@ -155,14 +160,19 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" Delivery to Warangal - Pin: 293994" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fnQ-92-hCd">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fnQ-92-hCd">
                                         <rect key="frame" x="44" y="27" width="200" height="16"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="200" id="bbL-kR-NP2"/>
                                             <constraint firstAttribute="height" constant="16" id="ig4-tl-k6S"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                        <nil key="textColor"/>
+                                        <attributedString key="attributedText">
+                                            <fragment content=" Delivery to Warangal - Pin: 293994">
+                                                <attributes>
+                                                    <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                                </attributes>
+                                            </fragment>
+                                        </attributedString>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fof-QL-yHv">
@@ -201,17 +211,16 @@
                                 <rect key="frame" x="0.0" y="746" width="393" height="72"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" ₹200" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qU6-E2-dh9">
-                                        <rect key="frame" x="16" y="16" width="44" height="20"/>
+                                        <rect key="frame" x="16" y="16" width="43" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="Cml-m0-N0s"/>
-                                            <constraint firstAttribute="width" constant="44" id="ich-Ue-ObQ"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Incl. GST" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iNV-p7-fkg">
-                                        <rect key="frame" x="70" y="19" width="50" height="14"/>
+                                        <rect key="frame" x="69" y="19" width="50" height="14"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="50" id="Ip3-Hy-MFY"/>
                                             <constraint firstAttribute="height" constant="14" id="zqT-Ez-jwO"/>
@@ -220,14 +229,20 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="View Price Break-up" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fuc-Lu-8M7">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fuc-Lu-8M7">
                                         <rect key="frame" x="16" y="40" width="124" height="14"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="124" id="NEh-y7-PKn"/>
                                             <constraint firstAttribute="height" constant="14" id="gAn-KX-rFc"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="system" weight="light" pointSize="15"/>
-                                        <color key="textColor" red="0.14991122479999999" green="0.33004361389999998" blue="0.58626025920000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <attributedString key="attributedText">
+                                            <fragment content="View Price Break-up">
+                                                <attributes>
+                                                    <color key="NSColor" red="0.14991122479999999" green="0.33004361389999998" blue="0.58626025920000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                                    <font key="NSFont" size="12" name="Lexend-Light"/>
+                                                </attributes>
+                                            </fragment>
+                                        </attributedString>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5Ln-YN-YmP">
@@ -240,7 +255,15 @@
                                                     <constraint firstAttribute="height" constant="20" id="r3h-Qv-emt"/>
                                                 </constraints>
                                                 <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="BUY NOW">
+                                                <buttonConfiguration key="configuration" style="plain">
+                                                    <attributedString key="attributedTitle">
+                                                        <fragment content="BUY NOW">
+                                                            <attributes>
+                                                                <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                                                <font key="NSOriginalFont" size="12" name="Helvetica"/>
+                                                            </attributes>
+                                                        </fragment>
+                                                    </attributedString>
                                                     <color key="baseForegroundColor" red="0.99516242740000005" green="0.94719189410000004" blue="0.01824968494" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 </buttonConfiguration>
                                                 <connections>
@@ -255,6 +278,11 @@
                                             <constraint firstAttribute="width" constant="200" id="o1D-k2-P3A"/>
                                             <constraint firstItem="V5e-3k-AKS" firstAttribute="top" secondItem="5Ln-YN-YmP" secondAttribute="top" constant="14" id="xuu-wF-MGN"/>
                                         </constraints>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                                <real key="value" value="5"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
                                     </view>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -346,14 +374,19 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" Just one step away!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LWA-WQ-zgp">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LWA-WQ-zgp">
                                         <rect key="frame" x="44" y="27" width="200" height="16"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="16" id="Yis-7O-hLA"/>
                                             <constraint firstAttribute="width" constant="200" id="ip6-ud-Cug"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                        <nil key="textColor"/>
+                                        <attributedString key="attributedText">
+                                            <fragment content=" Just one step away!">
+                                                <attributes>
+                                                    <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                                </attributes>
+                                            </fragment>
+                                        </attributedString>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
@@ -372,23 +405,28 @@
                                 <rect key="frame" x="0.0" y="746" width="393" height="72"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" ₹236" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OgT-bz-xSB">
-                                        <rect key="frame" x="16" y="16" width="44" height="20"/>
+                                        <rect key="frame" x="16" y="16" width="43" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="5dF-cT-iJB"/>
-                                            <constraint firstAttribute="width" constant="44" id="8jZ-Oi-RwB"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Free Shipping!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hea-kd-7vj">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hea-kd-7vj">
                                         <rect key="frame" x="16" y="40" width="124" height="14"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="124" id="PlH-4y-yYq"/>
                                             <constraint firstAttribute="height" constant="14" id="a0q-W1-2Lg"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="system" weight="light" pointSize="15"/>
-                                        <color key="textColor" red="0.14991122479999999" green="0.33004361389999998" blue="0.58626025920000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <attributedString key="attributedText">
+                                            <fragment content="Free Shipping!">
+                                                <attributes>
+                                                    <color key="NSColor" red="0.14991122479999999" green="0.33004361389999998" blue="0.58626025920000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                                    <font key="NSFont" size="12" name="Lexend-Light"/>
+                                                </attributes>
+                                            </fragment>
+                                        </attributedString>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="flp-AY-zu3">
@@ -401,11 +439,19 @@
                                                     <constraint firstAttribute="height" constant="20" id="PMA-lc-1Rw"/>
                                                 </constraints>
                                                 <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="MAKE PAYMENT">
+                                                <buttonConfiguration key="configuration" style="plain">
+                                                    <attributedString key="attributedTitle">
+                                                        <fragment content="MAKE PAYMENT">
+                                                            <attributes>
+                                                                <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                                                <font key="NSOriginalFont" size="12" name="Helvetica"/>
+                                                            </attributes>
+                                                        </fragment>
+                                                    </attributedString>
                                                     <color key="baseForegroundColor" red="0.99516242740000005" green="0.94719189410000004" blue="0.01824968494" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 </buttonConfiguration>
                                                 <connections>
-                                                    <action selector="buyNowButtonTapped:" destination="wYb-qD-aKY" eventType="touchUpInside" id="5h8-fq-VWa"/>
+                                                    <action selector="makepaymentBtnTapped:" destination="Ml8-DT-sYp" eventType="touchUpInside" id="stE-90-VhS"/>
                                                 </connections>
                                             </button>
                                         </subviews>
@@ -416,6 +462,11 @@
                                             <constraint firstItem="nzI-wm-dfV" firstAttribute="leading" secondItem="flp-AY-zu3" secondAttribute="leading" constant="16" id="gXF-u1-JzD"/>
                                             <constraint firstAttribute="width" constant="200" id="oA0-wg-aG3"/>
                                         </constraints>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                                <real key="value" value="5"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
                                     </view>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -452,7 +503,10 @@
                     </view>
                     <connections>
                         <outlet property="backButton" destination="qcn-cQ-nSR" id="kf5-GT-UQh"/>
+                        <outlet property="finalPriceLbl" destination="OgT-bz-xSB" id="m5R-47-dCb"/>
+                        <outlet property="makepaymentBtn" destination="nzI-wm-dfV" id="TFC-3P-agP"/>
                         <outlet property="tableView" destination="UBV-7A-wjc" id="jBZ-Tg-c6X"/>
+                        <outlet property="topbarVw" destination="c4y-BJ-ZHB" id="Z80-qL-M8Q"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QWl-3d-5w4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

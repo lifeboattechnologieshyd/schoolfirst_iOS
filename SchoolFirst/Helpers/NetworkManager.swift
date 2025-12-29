@@ -1254,4 +1254,171 @@ struct VocabBeeWordResponse: Codable {
         case points
     }
 }
+struct Product: Decodable {
+    let id: String
+    let itemName: String
+    let itemDescription: String
+    let thumbnailImage: String
+    let listOfImages: [String]
+    let mrp: String
+    let finalPrice: String
+    let discountTag: String?
+    let highlights: [String]?
+    let isTrending: Bool
+    let variants: Variants?
 
+    enum CodingKeys: String, CodingKey {
+        case id
+        case itemName = "item_name"
+        case itemDescription = "item_description"
+        case thumbnailImage = "thumbnail_image"
+        case listOfImages = "list_of_images"
+        case mrp
+        case finalPrice = "final_price"
+        case discountTag = "discount_tag"
+        case highlights
+        case isTrending = "is_trending"
+        case variants
+    }
+}
+struct Variants: Decodable {
+    let color: [String]?
+    let size: [String]?
+    let type: [String]?
+}
+
+// MARK: - Delivery Info
+struct DeliveryInfo {
+    let fullName: String
+    let contactNumber: String
+    let houseNo: String
+    let street: String
+    let landmark: String
+    let city: String
+    let state: String
+    let pinCode: String
+    let country: String
+}
+
+// MARK: - Create Order Response
+struct CreateOrderResponseModel: Codable {
+    let id: String?
+    let orderId: String?
+    let orderStatus: String?
+    let paymentSessionId: String?
+    let paymentLink: String?
+    let message: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case orderId = "order_id"
+        case orderStatus = "order_status"
+        case paymentSessionId = "payment_session_id"
+        case paymentLink = "payment_link"
+        case message
+    }
+
+    
+    var getOrderId: String? {
+        return orderId ?? id
+    }
+}
+struct CashfreeOrderResponse: Codable {
+    let cfOrderId: String?
+    let orderId: String?
+    let paymentSessionId: String?
+    let orderStatus: String?
+    let orderAmount: Double?
+    let orderCurrency: String?
+    let orderExpiryTime: String?
+    
+    // For error response
+    let message: String?
+    let code: String?
+    let type: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case cfOrderId = "cf_order_id"
+        case orderId = "order_id"
+        case paymentSessionId = "payment_session_id"
+        case orderStatus = "order_status"
+        case orderAmount = "order_amount"
+        case orderCurrency = "order_currency"
+        case orderExpiryTime = "order_expiry_time"
+        case message, code, type
+    }
+}
+
+struct CreateAddressResponseModel: Codable {
+    let id: String?
+    let addressId: String?
+    let message: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case addressId = "address_id"
+        case message
+    }
+}
+
+struct FullAddress: Codable {
+    let street: String?
+    let country: String?
+    let village: String?
+    let district: String?
+    let houseNo: String?
+    let landmark: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case street, country, village, district, landmark
+        case houseNo = "house_no"
+    }
+}
+
+struct AddressModel: Codable {
+    let id: String
+    let userId: String?
+    let contactNumber: Int?
+    let fullName: String?
+    let fullAddress: FullAddress?
+    let mobile: Int?
+    let placeName: String?
+    let stateName: String?
+    let pinCode: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case userId = "user_id"
+        case contactNumber = "contact_number"
+        case fullName = "full_name"
+        case fullAddress = "full_address"
+        case mobile
+        case placeName = "place_name"
+        case stateName = "state_name"
+        case pinCode = "pin_code"
+    }
+}
+
+struct FeePaymentRequest: Codable {
+    let studentFeeId: String
+    let installmentNumber: Int
+    let amount: Double
+    
+    enum CodingKeys: String, CodingKey {
+        case studentFeeId = "student_fee_id"
+        case installmentNumber = "installment_number"
+        case amount
+    }
+}
+
+struct FeePaymentResponse: Codable {
+    let cfOrderId: String
+    let paymentSessionId: String
+    let orderId: String
+    
+    enum CodingKeys: String, CodingKey {
+        case cfOrderId = "cf_order_id"
+        case paymentSessionId = "payment_session_id"
+        case orderId = "order_id"
+    }
+}

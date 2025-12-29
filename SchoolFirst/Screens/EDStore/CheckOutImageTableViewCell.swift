@@ -9,6 +9,7 @@ import UIKit
 
 class CheckOutImageTableViewCell: UITableViewCell {
 
+    @IBOutlet weak var imgVw: UIImageView!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

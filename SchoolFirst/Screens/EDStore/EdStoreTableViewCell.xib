@@ -20,38 +20,45 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ETG-Ni-8lH">
                         <rect key="frame" x="16" y="16" width="361" height="246"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Edpic" translatesAutoresizingMaskIntoConstraints="NO" id="KZ5-7E-BNZ">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="KZ5-7E-BNZ">
                                 <rect key="frame" x="0.0" y="0.0" width="361" height="180"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="180" id="vFD-cc-2eY"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" Interesting Quote about Education &amp; Entertainment" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Krq-4y-QIk">
-                                <rect key="frame" x="12" y="190" width="228" height="48"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Krq-4y-QIk">
+                                <rect key="frame" x="12" y="190" width="263.66666666666669" height="48"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="48" id="cOd-qd-bOq"/>
-                                    <constraint firstAttribute="width" constant="228" id="tpW-Cp-HcF"/>
+                                    <constraint firstAttribute="height" constant="48" id="px6-iy-fKl"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <nil key="textColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment content=" Interesting Quote about Education &amp; Entertainment">
+                                        <attributes>
+                                            <color key="NSColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <font key="NSFont" size="14" name="Lexend-Regular"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" ₹200" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gd6-lk-bWP">
-                                <rect key="frame" x="266" y="190" width="50" height="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gd6-lk-bWP">
+                                <rect key="frame" x="305" y="190" width="44" height="20"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="20" id="G4w-0c-IEE"/>
-                                    <constraint firstAttribute="width" constant="50" id="llB-FR-Q6I"/>
+                                    <constraint firstAttribute="height" constant="20" id="TH5-dq-N8X"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
-                                <color key="textColor" red="0.1759343743" green="0.39617854359999999" blue="0.23679262400000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <attributedString key="attributedText">
+                                    <fragment content=" ₹200">
+                                        <attributes>
+                                            <color key="NSColor" red="0.1759343743" green="0.39617854359999999" blue="0.23679262400000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                            <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="15% OFF" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9bc-9z-D9u">
-                                <rect key="frame" x="265" y="213" width="52" height="14"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="14" id="1XT-lI-Vnj"/>
-                                    <constraint firstAttribute="width" constant="52" id="HT5-GO-d9m"/>
-                                </constraints>
+                                <rect key="frame" x="301.66666666666669" y="213" width="50.666666666666686" height="14"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <color key="textColor" red="0.1759343743" green="0.39617854359999999" blue="0.23679262400000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <nil key="highlightedColor"/>
@@ -59,16 +66,18 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="gd6-lk-bWP" firstAttribute="top" secondItem="Krq-4y-QIk" secondAttribute="top" id="3bI-hF-WTD"/>
-                            <constraint firstItem="9bc-9z-D9u" firstAttribute="top" secondItem="gd6-lk-bWP" secondAttribute="bottom" constant="3" id="CPj-zr-eas"/>
+                            <constraint firstItem="gd6-lk-bWP" firstAttribute="top" secondItem="Krq-4y-QIk" secondAttribute="top" id="9qf-6V-XOi"/>
+                            <constraint firstItem="Krq-4y-QIk" firstAttribute="top" secondItem="KZ5-7E-BNZ" secondAttribute="bottom" constant="10" id="Aap-vB-6j6"/>
+                            <constraint firstItem="9bc-9z-D9u" firstAttribute="leading" secondItem="Krq-4y-QIk" secondAttribute="trailing" constant="26" id="DVU-tB-Fsu"/>
+                            <constraint firstAttribute="trailing" secondItem="gd6-lk-bWP" secondAttribute="trailing" constant="12" id="MoC-P2-D06"/>
+                            <constraint firstItem="9bc-9z-D9u" firstAttribute="top" secondItem="gd6-lk-bWP" secondAttribute="bottom" constant="3" id="NIf-AT-2UX"/>
                             <constraint firstAttribute="trailing" secondItem="KZ5-7E-BNZ" secondAttribute="trailing" id="NLh-Qf-XIB"/>
-                            <constraint firstItem="Krq-4y-QIk" firstAttribute="leading" secondItem="ETG-Ni-8lH" secondAttribute="leading" constant="12" id="Nmh-46-JS1"/>
-                            <constraint firstItem="Krq-4y-QIk" firstAttribute="top" secondItem="KZ5-7E-BNZ" secondAttribute="bottom" constant="10" id="RRU-NJ-2xw"/>
-                            <constraint firstItem="9bc-9z-D9u" firstAttribute="centerX" secondItem="gd6-lk-bWP" secondAttribute="centerX" id="SOY-TG-s2g"/>
+                            <constraint firstAttribute="trailing" secondItem="gd6-lk-bWP" secondAttribute="trailing" constant="12" id="QNZ-cB-3y9"/>
                             <constraint firstAttribute="height" constant="246" id="VUT-Bm-Y5x"/>
+                            <constraint firstItem="Krq-4y-QIk" firstAttribute="leading" secondItem="ETG-Ni-8lH" secondAttribute="leading" constant="12" id="cSb-Yl-c0X"/>
                             <constraint firstItem="KZ5-7E-BNZ" firstAttribute="top" secondItem="ETG-Ni-8lH" secondAttribute="top" id="eFF-tY-Gyv"/>
+                            <constraint firstItem="9bc-9z-D9u" firstAttribute="centerX" secondItem="gd6-lk-bWP" secondAttribute="centerX" id="gxi-Su-nhA"/>
                             <constraint firstItem="KZ5-7E-BNZ" firstAttribute="leading" secondItem="ETG-Ni-8lH" secondAttribute="leading" id="kjA-gA-L0F"/>
-                            <constraint firstItem="gd6-lk-bWP" firstAttribute="leading" secondItem="Krq-4y-QIk" secondAttribute="trailing" constant="26" id="wcL-Nv-a3R"/>
                         </constraints>
                     </view>
                 </subviews>
@@ -83,14 +92,11 @@
             <connections>
                 <outlet property="bgVw" destination="ETG-Ni-8lH" id="tsq-1c-6Yu"/>
                 <outlet property="discountLbl" destination="9bc-9z-D9u" id="Yjw-OF-XgS"/>
-                <outlet property="edLbl" destination="Krq-4y-QIk" id="6nF-uU-cyr"/>
                 <outlet property="imgVw" destination="KZ5-7E-BNZ" id="CgF-zy-Phl"/>
-                <outlet property="priceLbl" destination="gd6-lk-bWP" id="Su7-4J-roH"/>
+                <outlet property="priceLbl" destination="gd6-lk-bWP" id="ZH1-LV-e4p"/>
+                <outlet property="titleLbl" destination="Krq-4y-QIk" id="hUo-g6-p4L"/>
             </connections>
             <point key="canvasLocation" x="185.49618320610685" y="72.535211267605632"/>
         </tableViewCell>
     </objects>
-    <resources>
-        <image name="Edpic" width="1344" height="744"/>
-    </resources>
 </document>

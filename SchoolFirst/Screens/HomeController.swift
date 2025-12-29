@@ -363,8 +363,9 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
             navigationController?.pushViewController(vc, animated: true)
         case 7:
             print("EdStore")
-            let vc = storyboard?.instantiateViewController(identifier: "ComingSoonVC") as! ComingSoonVC
-           navigationController?.pushViewController(vc, animated: true)
+            let stbd = UIStoryboard(name: "EdStore", bundle: nil)
+            let vc = stbd.instantiateViewController(identifier: "EdStoreViewController") as! EdStoreViewController
+            navigationController?.pushViewController(vc, animated: true)
         case 8:
             print("Ask Us")
             let vc = storyboard?.instantiateViewController(identifier: "ComingSoonVC") as! ComingSoonVC

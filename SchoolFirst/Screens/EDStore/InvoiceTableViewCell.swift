@@ -36,15 +36,9 @@ class InvoiceTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        // Style invoice view
-        invoiceVw.layer.cornerRadius = 8
-        invoiceVw.layer.borderWidth = 1
-        invoiceVw.layer.borderColor = UIColor(hex: "#0B569A")!.cgColor
-        invoiceVw.layer.masksToBounds = true
-        
+
         // Add separator lines
         addSeparatorLine(below: discountLbl, color: UIColor(hex: "#CDE1D7")!)
-        addSeparatorLine(below: finalpriceLbl, color: UIColor(hex: "#CDE1D7")!)
         addSeparatorLine(below: shippingLbl, color: UIColor(hex: "#CDE1D7")!)
         addSeparatorLine(below: totalamountLbl, color: UIColor(hex: "#CDE1D7")!)
     }
@@ -53,7 +47,6 @@ class InvoiceTableViewCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
     
-    // MARK: - Separator Line Helper
     private func addSeparatorLine(below view: UIView, color: UIColor, height: CGFloat = 1) {
         let line = UIView()
         line.backgroundColor = color

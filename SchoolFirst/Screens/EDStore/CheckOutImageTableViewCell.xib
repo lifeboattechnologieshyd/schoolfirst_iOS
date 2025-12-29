@@ -17,7 +17,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="409" height="204"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Edpic" translatesAutoresizingMaskIntoConstraints="NO" id="MC4-vK-uLw">
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Edpic" translatesAutoresizingMaskIntoConstraints="NO" id="MC4-vK-uLw">
                         <rect key="frame" x="16" y="16" width="377" height="180"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="180" id="YiU-TQ-I7V"/>
@@ -37,6 +37,9 @@
                     <color key="value" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 </userDefinedRuntimeAttribute>
             </userDefinedRuntimeAttributes>
+            <connections>
+                <outlet property="imgVw" destination="MC4-vK-uLw" id="GNr-IE-1qh"/>
+            </connections>
             <point key="canvasLocation" x="196.18320610687022" y="45.070422535211272"/>
         </tableViewCell>
     </objects>

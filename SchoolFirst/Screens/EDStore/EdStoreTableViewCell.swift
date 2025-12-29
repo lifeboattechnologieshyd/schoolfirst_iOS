@@ -15,7 +15,7 @@ protocol EdStoreCellDelegate: AnyObject {
 class EdStoreTableViewCell: UITableViewCell {
     
     @IBOutlet weak var bgVw: UIView!
-    @IBOutlet weak var edLbl: UILabel!
+    @IBOutlet weak var titleLbl: UILabel!
     @IBOutlet weak var priceLbl: UILabel!
     @IBOutlet weak var discountLbl: UILabel!
     @IBOutlet weak var imgVw: UIImageView!
@@ -37,3 +37,4 @@ class EdStoreTableViewCell: UITableViewCell {
             delegate?.didTapImage(in: self)
         }
     }
+

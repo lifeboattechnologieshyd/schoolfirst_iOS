@@ -4,22 +4,21 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
-        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="InvoiceTableViewCell" rowHeight="440" id="KGk-i7-Jjw" customClass="InvoiceTableViewCell" customModule="SF_Dev" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="510" height="440"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="InvoiceTableViewCell" rowHeight="431" id="KGk-i7-Jjw" customClass="InvoiceTableViewCell" customModule="SF_Dev" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="358" height="431"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="510" height="440"/>
+                <rect key="frame" x="0.0" y="0.0" width="358" height="431"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jDL-lZ-nGQ">
-                        <rect key="frame" x="16" y="12" width="478" height="344"/>
+                        <rect key="frame" x="16" y="12" width="326" height="344"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="invoice" translatesAutoresizingMaskIntoConstraints="NO" id="n2p-wM-vkY">
                                 <rect key="frame" x="12" y="20" width="22" height="24"/>
@@ -28,171 +27,246 @@
                                     <constraint firstAttribute="height" constant="24" id="TZR-ei-ZXb"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="INVOICE DETAILS" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="N3B-SX-fRo">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="N3B-SX-fRo">
                                 <rect key="frame" x="42" y="22" width="150" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="qar-k2-np3"/>
-                                    <constraint firstAttribute="width" constant="150" id="xQx-vC-LW1"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
-                                <nil key="textColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="INVOICE DETAILS">
+                                        <attributes>
+                                            <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="MRP / Original Price" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QBe-p1-S7H">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QBe-p1-S7H">
                                 <rect key="frame" x="12" y="72" width="158" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="fJt-mJ-S7P"/>
-                                    <constraint firstAttribute="width" constant="158" id="qnq-tc-uvH"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <nil key="textColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="MRP / Original Price">
+                                        <attributes>
+                                            <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Less: Special Discount" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aup-Mc-yw8">
-                                <rect key="frame" x="12" y="104" width="170" height="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aup-Mc-yw8">
+                                <rect key="frame" x="12" y="104" width="171.33333333333334" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="Cc1-li-PVl"/>
-                                    <constraint firstAttribute="width" constant="170" id="eOw-ug-xgO"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <color key="textColor" red="0.14991122479999999" green="0.33004361389999998" blue="0.58626025920000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Less: Special Discount">
+                                        <attributes>
+                                            <color key="NSColor" red="0.14991122479999999" green="0.33004361389999998" blue="0.58626025920000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                            <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="₹1000" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OaG-FG-lpS">
-                                <rect key="frame" x="308" y="72" width="50" height="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OaG-FG-lpS">
+                                <rect key="frame" x="268" y="72" width="46" height="20"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="20" id="8qH-dl-1g5"/>
-                                    <constraint firstAttribute="width" constant="50" id="lpJ-Jf-VuO"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <nil key="textColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="₹1000">
+                                        <attributes>
+                                            <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="- ₹800" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VUZ-zW-i2F">
-                                <rect key="frame" x="308" y="104" width="50" height="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VUZ-zW-i2F">
+                                <rect key="frame" x="268.66666666666669" y="104" width="45.333333333333314" height="20"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="hR1-es-srG"/>
-                                    <constraint firstAttribute="height" constant="20" id="tOf-I9-yP5"/>
+                                    <constraint firstAttribute="height" constant="20" id="JGf-Cs-FHx"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <color key="textColor" red="0.14991122479999999" green="0.33004361389999998" blue="0.58626025920000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="- ₹800">
+                                        <attributes>
+                                            <color key="NSColor" red="0.14991122479999999" green="0.33004361389999998" blue="0.58626025920000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                            <font key="NSFont" size="15" name="Lexend-Regular"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Final Price (Excl GST)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GOw-2R-kN9">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GOw-2R-kN9">
                                 <rect key="frame" x="12" y="156" width="174" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="VJm-dG-Cl9"/>
                                     <constraint firstAttribute="width" constant="174" id="n7j-y0-bRh"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <nil key="textColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Final Price (Excl GST)">
+                                        <attributes>
+                                            <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="₹200" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zWx-kp-Nr8">
-                                <rect key="frame" x="308" y="156" width="50" height="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zWx-kp-Nr8">
+                                <rect key="frame" x="279.33333333333331" y="156" width="34.666666666666686" height="20"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="Tax-ul-ayf"/>
-                                    <constraint firstAttribute="height" constant="20" id="cJh-fR-X7n"/>
+                                    <constraint firstAttribute="height" constant="20" id="P7A-QF-XH6"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="₹200">
+                                        <attributes>
+                                            <color key="NSColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <font key="NSFont" size="15" name="Lexend-Regular"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" Add: GST at 18%" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VjC-yW-VW2">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VjC-yW-VW2">
                                 <rect key="frame" x="12" y="188" width="174" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="Bul-90-tAZ"/>
                                     <constraint firstAttribute="width" constant="174" id="w6S-Lw-199"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <nil key="textColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Add: GST at 18%">
+                                        <attributes>
+                                            <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Final Price (Excl GST)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a8n-DK-76M">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a8n-DK-76M">
                                 <rect key="frame" x="12" y="220" width="174" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="174" id="s8U-Kv-Fqi"/>
                                     <constraint firstAttribute="height" constant="20" id="zM5-2u-lTd"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <nil key="textColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Final Price (incl GST)">
+                                        <attributes>
+                                            <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add: Shipping Fees" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hik-Hc-0Pj">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hik-Hc-0Pj">
                                 <rect key="frame" x="12" y="252" width="174" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="IRJ-f0-aKe"/>
                                     <constraint firstAttribute="width" constant="174" id="VeE-Rs-dEc"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <nil key="textColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Add: Shipping Fees">
+                                        <attributes>
+                                            <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="₹36" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lAx-Rw-Tts">
-                                <rect key="frame" x="308" y="188" width="50" height="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lAx-Rw-Tts">
+                                <rect key="frame" x="289.33333333333331" y="188" width="24.666666666666686" height="20"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="20" id="AeX-qL-IB9"/>
-                                    <constraint firstAttribute="width" constant="50" id="jDP-Bf-ofH"/>
+                                    <constraint firstAttribute="height" constant="20" id="549-aj-HAZ"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="₹36">
+                                        <attributes>
+                                            <color key="NSColor" red="0.0035905934343434254" green="0.0035905934343434254" blue="0.0035905934343434254" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <font key="NSFont" size="15" name="Lexend-Regular"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="₹236" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TKW-p4-zTV">
-                                <rect key="frame" x="308" y="220" width="50" height="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TKW-p4-zTV">
+                                <rect key="frame" x="281.33333333333331" y="220" width="32.666666666666686" height="20"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="aDg-ej-G46"/>
-                                    <constraint firstAttribute="height" constant="20" id="f0O-fb-H6g"/>
+                                    <constraint firstAttribute="height" constant="20" id="Qd9-Ui-wuy"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="₹236">
+                                        <attributes>
+                                            <color key="NSColor" red="0.0091145833333333703" green="0.0091145833333333703" blue="0.0091145833333333703" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <font key="NSFont" size="15" name="Lexend-Regular"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="FREE" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bOc-En-mpy">
-                                <rect key="frame" x="308" y="252" width="50" height="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bOc-En-mpy">
+                                <rect key="frame" x="276" y="252" width="38" height="20"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="D1x-Fp-MI0"/>
-                                    <constraint firstAttribute="height" constant="20" id="RuO-7k-dvT"/>
+                                    <constraint firstAttribute="height" constant="20" id="Sa0-op-s60"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="FREE">
+                                        <attributes>
+                                            <color key="NSColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <font key="NSFont" size="15" name="Lexend-Regular"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="right" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AOC-zb-0Ni">
-                                <rect key="frame" x="276" y="256" width="22" height="12"/>
+                                <rect key="frame" x="242" y="256" width="22" height="12"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="12" id="CtU-mE-682"/>
-                                    <constraint firstAttribute="width" constant="22" id="gRF-8v-8zf"/>
+                                    <constraint firstAttribute="height" constant="12" id="13F-gY-5N5"/>
+                                    <constraint firstAttribute="width" constant="22" id="eW2-1w-Npf"/>
                                 </constraints>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="30"/>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Total Amount Payable" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AcC-nY-DSp">
-                                <rect key="frame" x="12" y="304" width="178" height="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AcC-nY-DSp">
+                                <rect key="frame" x="12" y="304" width="181" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="2sS-6s-cLL"/>
-                                    <constraint firstAttribute="width" constant="178" id="WDl-hK-Ra2"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" name="34A853"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Total Amount Payable">
+                                        <attributes>
+                                            <color key="NSColor" name="34A853"/>
+                                            <font key="NSFont" size="17" name="Lexend-Regular"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="₹236" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MEQ-ff-XNf">
-                                <rect key="frame" x="308" y="304" width="50" height="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MEQ-ff-XNf">
+                                <rect key="frame" x="281.33333333333331" y="304" width="32.666666666666686" height="20"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="20" id="LX9-aS-Ux5"/>
-                                    <constraint firstAttribute="width" constant="50" id="PQx-bW-1uM"/>
+                                    <constraint firstAttribute="height" constant="20" id="AZJ-va-i6W"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <color key="textColor" red="0.048805177210000002" green="0.70974987749999996" blue="0.3824376464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="₹236">
+                                        <attributes>
+                                            <color key="NSColor" red="0.048805177210000002" green="0.70974987749999996" blue="0.3824376464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <font key="NSFont" size="15" name="Lexend-Regular"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="right" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Line 3" translatesAutoresizingMaskIntoConstraints="NO" id="Vb1-vV-FeF">
-                                <rect key="frame" x="276" y="256" width="22" height="12"/>
+                                <rect key="frame" x="234" y="255" width="30" height="14"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="12" id="2n8-he-UdS"/>
-                                    <constraint firstAttribute="width" constant="22" id="F3Q-4Z-V3k"/>
+                                    <constraint firstAttribute="width" constant="30" id="llV-WE-eLl"/>
+                                    <constraint firstAttribute="height" constant="14" id="oJh-x5-nWX"/>
                                 </constraints>
                             </imageView>
                         </subviews>
@@ -200,42 +274,53 @@
                         <constraints>
                             <constraint firstItem="aup-Mc-yw8" firstAttribute="top" secondItem="QBe-p1-S7H" secondAttribute="bottom" constant="12" id="1YE-py-Eii"/>
                             <constraint firstItem="a8n-DK-76M" firstAttribute="leading" secondItem="VjC-yW-VW2" secondAttribute="leading" id="1YV-ge-dhT"/>
-                            <constraint firstItem="lAx-Rw-Tts" firstAttribute="top" secondItem="zWx-kp-Nr8" secondAttribute="bottom" constant="12" id="6QR-dt-twb"/>
-                            <constraint firstItem="OaG-FG-lpS" firstAttribute="leading" secondItem="QBe-p1-S7H" secondAttribute="trailing" constant="138" id="9Ox-26-Hme"/>
-                            <constraint firstItem="bOc-En-mpy" firstAttribute="leading" secondItem="TKW-p4-zTV" secondAttribute="leading" id="F3m-Cu-WTT"/>
+                            <constraint firstItem="bOc-En-mpy" firstAttribute="leading" secondItem="Vb1-vV-FeF" secondAttribute="trailing" constant="12" id="5Kc-8f-LW7"/>
+                            <constraint firstAttribute="trailing" secondItem="zWx-kp-Nr8" secondAttribute="trailing" constant="12" id="86T-Hy-7o6"/>
                             <constraint firstItem="AcC-nY-DSp" firstAttribute="leading" secondItem="Hik-Hc-0Pj" secondAttribute="leading" id="FPv-Tx-U6r"/>
-                            <constraint firstItem="bOc-En-mpy" firstAttribute="top" secondItem="TKW-p4-zTV" secondAttribute="bottom" constant="12" id="G6M-je-8tX"/>
-                            <constraint firstItem="Vb1-vV-FeF" firstAttribute="centerY" secondItem="bOc-En-mpy" secondAttribute="centerY" id="Hfm-go-A52"/>
-                            <constraint firstItem="zWx-kp-Nr8" firstAttribute="top" secondItem="VUZ-zW-i2F" secondAttribute="bottom" constant="32" id="Hnp-yM-tfi"/>
+                            <constraint firstItem="MEQ-ff-XNf" firstAttribute="centerY" secondItem="AcC-nY-DSp" secondAttribute="centerY" id="J4b-0p-AqM"/>
                             <constraint firstItem="n2p-wM-vkY" firstAttribute="leading" secondItem="jDL-lZ-nGQ" secondAttribute="leading" constant="12" id="KJ0-km-MCk"/>
+                            <constraint firstItem="zWx-kp-Nr8" firstAttribute="centerY" secondItem="GOw-2R-kN9" secondAttribute="centerY" id="KWI-V9-nfq"/>
                             <constraint firstItem="N3B-SX-fRo" firstAttribute="leading" secondItem="n2p-wM-vkY" secondAttribute="trailing" constant="8" id="Kcx-PK-HNK"/>
-                            <constraint firstItem="MEQ-ff-XNf" firstAttribute="top" secondItem="bOc-En-mpy" secondAttribute="bottom" constant="32" id="Kdh-rj-7W5"/>
                             <constraint firstItem="aup-Mc-yw8" firstAttribute="leading" secondItem="QBe-p1-S7H" secondAttribute="leading" id="LAY-h3-IxY"/>
-                            <constraint firstItem="AOC-zb-0Ni" firstAttribute="centerY" secondItem="bOc-En-mpy" secondAttribute="centerY" id="LVK-EO-jqE"/>
-                            <constraint firstItem="OaG-FG-lpS" firstAttribute="centerY" secondItem="QBe-p1-S7H" secondAttribute="centerY" id="MAO-P9-Yfb"/>
-                            <constraint firstItem="VUZ-zW-i2F" firstAttribute="leading" secondItem="OaG-FG-lpS" secondAttribute="leading" id="Nuc-pT-9ki"/>
                             <constraint firstItem="QBe-p1-S7H" firstAttribute="top" secondItem="n2p-wM-vkY" secondAttribute="bottom" constant="28" id="Opo-mf-jQW"/>
+                            <constraint firstAttribute="trailing" secondItem="TKW-p4-zTV" secondAttribute="trailing" constant="12" id="Q7H-kc-xLE"/>
+                            <constraint firstItem="Vb1-vV-FeF" firstAttribute="centerY" secondItem="bOc-En-mpy" secondAttribute="centerY" id="QVd-9Q-BdW"/>
+                            <constraint firstItem="bOc-En-mpy" firstAttribute="leading" secondItem="AOC-zb-0Ni" secondAttribute="trailing" constant="12" id="TDt-Z5-5p5"/>
                             <constraint firstItem="GOw-2R-kN9" firstAttribute="leading" secondItem="aup-Mc-yw8" secondAttribute="leading" id="UJd-mc-Oss"/>
-                            <constraint firstItem="TKW-p4-zTV" firstAttribute="leading" secondItem="lAx-Rw-Tts" secondAttribute="leading" id="UXq-S1-7BY"/>
                             <constraint firstItem="N3B-SX-fRo" firstAttribute="centerY" secondItem="n2p-wM-vkY" secondAttribute="centerY" id="Ugs-b6-Njw"/>
                             <constraint firstItem="VjC-yW-VW2" firstAttribute="leading" secondItem="GOw-2R-kN9" secondAttribute="leading" id="WFH-AG-BFU"/>
-                            <constraint firstItem="lAx-Rw-Tts" firstAttribute="leading" secondItem="zWx-kp-Nr8" secondAttribute="leading" id="WSb-Up-QRD"/>
                             <constraint firstAttribute="height" constant="344" id="WU5-I3-XKC"/>
                             <constraint firstItem="AcC-nY-DSp" firstAttribute="top" secondItem="Hik-Hc-0Pj" secondAttribute="bottom" constant="32" id="Wtt-Ym-wnW"/>
-                            <constraint firstItem="TKW-p4-zTV" firstAttribute="top" secondItem="lAx-Rw-Tts" secondAttribute="bottom" constant="12" id="Ybr-uy-3EW"/>
+                            <constraint firstAttribute="trailing" secondItem="OaG-FG-lpS" secondAttribute="trailing" constant="12" id="Y9z-1n-Fvc"/>
                             <constraint firstItem="VjC-yW-VW2" firstAttribute="top" secondItem="GOw-2R-kN9" secondAttribute="bottom" constant="12" id="aHn-hE-DKF"/>
                             <constraint firstItem="QBe-p1-S7H" firstAttribute="leading" secondItem="n2p-wM-vkY" secondAttribute="leading" id="aN9-Jh-1mb"/>
+                            <constraint firstItem="lAx-Rw-Tts" firstAttribute="centerY" secondItem="VjC-yW-VW2" secondAttribute="centerY" id="aND-so-uv9"/>
                             <constraint firstItem="a8n-DK-76M" firstAttribute="top" secondItem="VjC-yW-VW2" secondAttribute="bottom" constant="12" id="cjf-ev-mw8"/>
                             <constraint firstItem="Hik-Hc-0Pj" firstAttribute="leading" secondItem="a8n-DK-76M" secondAttribute="leading" id="csg-jr-1n1"/>
-                            <constraint firstItem="lAx-Rw-Tts" firstAttribute="leading" secondItem="Vb1-vV-FeF" secondAttribute="trailing" constant="10" id="hNV-h0-5Re"/>
-                            <constraint firstItem="zWx-kp-Nr8" firstAttribute="leading" secondItem="VUZ-zW-i2F" secondAttribute="leading" id="iIS-aj-F3R"/>
-                            <constraint firstItem="VUZ-zW-i2F" firstAttribute="top" secondItem="OaG-FG-lpS" secondAttribute="bottom" constant="12" id="kJY-8H-1jj"/>
-                            <constraint firstItem="bOc-En-mpy" firstAttribute="leading" secondItem="AOC-zb-0Ni" secondAttribute="trailing" constant="10" id="liK-Ng-e0V"/>
+                            <constraint firstItem="bOc-En-mpy" firstAttribute="centerY" secondItem="Hik-Hc-0Pj" secondAttribute="centerY" id="eP5-qO-iZN"/>
+                            <constraint firstItem="TKW-p4-zTV" firstAttribute="centerY" secondItem="a8n-DK-76M" secondAttribute="centerY" id="ePL-ho-xeo"/>
+                            <constraint firstAttribute="trailing" secondItem="bOc-En-mpy" secondAttribute="trailing" constant="12" id="g1b-CD-Sks"/>
                             <constraint firstItem="n2p-wM-vkY" firstAttribute="top" secondItem="jDL-lZ-nGQ" secondAttribute="top" constant="20" id="mjc-Ep-9Jw"/>
-                            <constraint firstItem="MEQ-ff-XNf" firstAttribute="leading" secondItem="bOc-En-mpy" secondAttribute="leading" id="tnc-hX-EvR"/>
+                            <constraint firstItem="VUZ-zW-i2F" firstAttribute="centerY" secondItem="aup-Mc-yw8" secondAttribute="centerY" id="pfq-ru-SaI"/>
+                            <constraint firstItem="AOC-zb-0Ni" firstAttribute="centerY" secondItem="bOc-En-mpy" secondAttribute="centerY" id="rkp-qI-GZd"/>
+                            <constraint firstItem="OaG-FG-lpS" firstAttribute="centerY" secondItem="QBe-p1-S7H" secondAttribute="centerY" id="wh2-3x-B6o"/>
                             <constraint firstItem="Hik-Hc-0Pj" firstAttribute="top" secondItem="a8n-DK-76M" secondAttribute="bottom" constant="12" id="xGd-nY-CTw"/>
+                            <constraint firstAttribute="trailing" secondItem="lAx-Rw-Tts" secondAttribute="trailing" constant="12" id="xmx-SS-Uu5"/>
+                            <constraint firstAttribute="trailing" secondItem="MEQ-ff-XNf" secondAttribute="trailing" constant="12" id="xrK-2V-ulU"/>
                             <constraint firstItem="GOw-2R-kN9" firstAttribute="top" secondItem="aup-Mc-yw8" secondAttribute="bottom" constant="32" id="z6m-FM-TBL"/>
+                            <constraint firstAttribute="trailing" secondItem="VUZ-zW-i2F" secondAttribute="trailing" constant="12" id="zBm-yX-zCq"/>
                         </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="20"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                <color key="value" red="0.05028576404" green="0.33521342279999999" blue="0.60576432940000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                <real key="value" value="1"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
                     </view>
                 </subviews>
                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -271,7 +356,7 @@
                 <outlet property="totalPayableLbl" destination="MEQ-ff-XNf" id="xFJ-dy-luy"/>
                 <outlet property="totalamountLbl" destination="AcC-nY-DSp" id="ntC-fe-aRk"/>
             </connections>
-            <point key="canvasLocation" x="274.80916030534348" y="128.16901408450704"/>
+            <point key="canvasLocation" x="158.77862595419847" y="125"/>
         </tableViewCell>
     </objects>
     <resources>

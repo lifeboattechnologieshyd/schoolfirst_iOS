@@ -45,7 +45,8 @@ struct API {
     
     static let DASHBOARD = BASE_URL + "user/dashboard" // not using now
     static let UPLOAD_FILE = BASE_URL + "userservice/storage/upload" // not using now
-    
+    static let ONLINE_STORE_PRODUCTS = BASE_URL + "onlinestore/products"
+
     
     
     
@@ -57,6 +58,12 @@ struct API {
     static let VERIFY_OTP = BASE_URL + "user/authentication/mobile/verify-otp"
     static let EMAIL_OTP = BASE_URL + "user/authentication/email/verify-otp"
     static let SET_PASSWORD = BASE_URL + "user/authentication/set-password"
+    
+    //ED
+    static let CREATE_ORDER = BASE_URL + "onlinestore/order"
+
+    static let GET_ADDRESS = BASE_URL + "onlinestore/address"
+    static let CREATE_ADDRESS = BASE_URL + "onlinestore/address"
     
     static let ONLINE_COURSES = BASE_URL + "courses/online/courses"
     static let EDUTAIN_FEED = BASE_URL + "edutain/feed"
@@ -115,6 +122,9 @@ struct API {
     
     // Fee
     static let FEE_GET_DETAILS = BASE_URL + "fees/get/fee"
+
+    // In API struct
+    static let FEE_CREATE_PAYMENT = BASE_URL + "fees/payment"
     
     static let ASSESSMENT_CREATE = BASE_URL + "assessments/create/assessments"
     static let ASSESSMENT_ATTEMPT = BASE_URL + "assessments/attempt/assessment"

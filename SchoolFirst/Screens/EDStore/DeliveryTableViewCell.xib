@@ -27,49 +27,37 @@
                                     <constraint firstAttribute="width" constant="24" id="xfi-mv-sWg"/>
                                 </constraints>
                             </imageView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4Bb-HC-30W">
-                                <rect key="frame" x="238" y="12" width="78" height="24"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Change" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="B1i-S0-JiK">
-                                        <rect key="frame" x="12" y="3" width="54" height="18"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="18" id="Kjo-X1-57t"/>
-                                            <constraint firstAttribute="width" constant="54" id="srn-Wh-lgx"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="24" id="8RR-hb-ZjA"/>
-                                    <constraint firstItem="B1i-S0-JiK" firstAttribute="top" secondItem="4Bb-HC-30W" secondAttribute="top" constant="3" id="9ol-e5-HAi"/>
-                                    <constraint firstAttribute="width" constant="78" id="Mja-6W-Nri"/>
-                                    <constraint firstItem="B1i-S0-JiK" firstAttribute="leading" secondItem="4Bb-HC-30W" secondAttribute="leading" constant="12" id="tC6-jL-Kio"/>
-                                </constraints>
-                            </view>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tXT-pr-4hX">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tXT-pr-4hX">
                                 <rect key="frame" x="12" y="52" width="48" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="48" id="Oj1-CE-QQj"/>
                                     <constraint firstAttribute="height" constant="20" id="gkN-VB-Y1x"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
-                                <nil key="textColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Name">
+                                        <attributes>
+                                            <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DELIVERY ADDRESS" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LFi-EC-iz0">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LFi-EC-iz0">
                                 <rect key="frame" x="44" y="14" width="166" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="9Un-jE-ODB"/>
                                     <constraint firstAttribute="width" constant="166" id="Zpp-kV-K0f"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
-                                <nil key="textColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="DELIVERY ADDRESS">
+                                        <attributes>
+                                            <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Ravi Verma" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="AHc-vO-GG4">
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Full Name" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="AHc-vO-GG4">
                                 <rect key="frame" x="12" y="80" width="401" height="48"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="r9n-55-gHr"/>
@@ -77,17 +65,22 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Business Address" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MH8-AQ-t3p">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MH8-AQ-t3p">
                                 <rect key="frame" x="12" y="140" width="138" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="138" id="gCT-Cf-Zcx"/>
                                     <constraint firstAttribute="height" constant="20" id="ubR-68-5l0"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
-                                <nil key="textColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Business Address">
+                                        <attributes>
+                                            <font key="NSFont" size="14" name="Lexend-SemiBold"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Flat 2105, Block 10, My Home Avatar. Narsinghi, Kokapet." textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="664-pd-WlG">
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter Full Address" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="664-pd-WlG">
                                 <rect key="frame" x="12" y="168" width="401" height="100"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="100" id="YQc-6x-ITB"/>
@@ -95,17 +88,22 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="City Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BqO-4o-40c">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BqO-4o-40c">
                                 <rect key="frame" x="12" y="280" width="138" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="138" id="F2X-sh-uei"/>
                                     <constraint firstAttribute="height" constant="20" id="Oov-xC-HWU"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
-                                <nil key="textColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="City Name">
+                                        <attributes>
+                                            <font key="NSFont" size="14" name="Lexend-SemiBold"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Hyderabad" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ttU-RR-ahl">
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="City/Town/Village" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ttU-RR-ahl">
                                 <rect key="frame" x="12" y="308" width="401" height="48"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="f9R-xg-zjs"/>
@@ -113,17 +111,22 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Select State" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TGb-dW-MI8">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TGb-dW-MI8">
                                 <rect key="frame" x="12" y="368" width="138" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="138" id="i61-lW-JQU"/>
                                     <constraint firstAttribute="height" constant="20" id="ktk-8B-sve"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
-                                <nil key="textColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Select State">
+                                        <attributes>
+                                            <font key="NSFont" size="14" name="Lexend-SemiBold"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Telangana" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="jwe-LX-a02">
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Select state" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="jwe-LX-a02">
                                 <rect key="frame" x="12" y="396" width="401" height="48"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="LZD-MN-2o2"/>
@@ -131,17 +134,22 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PIN code" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="L0l-bc-Bbo">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="L0l-bc-Bbo">
                                 <rect key="frame" x="12" y="456" width="138" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="138" id="1kf-sZ-COm"/>
                                     <constraint firstAttribute="height" constant="20" id="3nT-kh-Z53"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
-                                <nil key="textColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="PIN code">
+                                        <attributes>
+                                            <font key="NSFont" size="14" name="Lexend-SemiBold"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="500075" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Xgo-j2-6hq">
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter the PIN code" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Xgo-j2-6hq">
                                 <rect key="frame" x="12" y="484" width="401" height="48"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="RoF-nG-edk"/>
@@ -149,17 +157,22 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Contact Number" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bkb-eB-Ff6">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bkb-eB-Ff6">
                                 <rect key="frame" x="12" y="544" width="138" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="138" id="4fJ-Ti-hSx"/>
                                     <constraint firstAttribute="height" constant="20" id="wbA-g9-ZFE"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
-                                <nil key="textColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Contact Number">
+                                        <attributes>
+                                            <font key="NSFont" size="14" name="Lexend-SemiBold"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="98480 32919" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="5Xk-fV-Xxf">
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter Mobile Number of the Receiver" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="5Xk-fV-Xxf">
                                 <rect key="frame" x="12" y="572" width="401" height="48"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="6Lv-JE-6tn"/>
@@ -176,14 +189,18 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="green square"/>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Save this Address for Future" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p7w-LW-6g7">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p7w-LW-6g7">
                                 <rect key="frame" x="40" y="643" width="192" height="18"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="192" id="i5o-lV-iY4"/>
                                     <constraint firstAttribute="height" constant="18" id="kPa-18-ji0"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <nil key="textColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Save this Address for Future">
+                                        <attributes>
+                                            <font key="NSFont" size="14" name="Lexend-Regular"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Udf-dO-AK9">
@@ -225,14 +242,12 @@
                             <constraint firstItem="jwe-LX-a02" firstAttribute="leading" secondItem="bAQ-h9-luI" secondAttribute="leading" constant="12" id="aYp-mJ-bwj"/>
                             <constraint firstAttribute="trailing" secondItem="Xgo-j2-6hq" secondAttribute="trailing" constant="12" id="bHl-rO-7Cv"/>
                             <constraint firstItem="Xgo-j2-6hq" firstAttribute="top" secondItem="L0l-bc-Bbo" secondAttribute="bottom" constant="8" id="e1I-Jp-q20"/>
-                            <constraint firstItem="4Bb-HC-30W" firstAttribute="centerY" secondItem="LFi-EC-iz0" secondAttribute="centerY" id="f3r-7h-ytJ"/>
                             <constraint firstItem="5Xk-fV-Xxf" firstAttribute="top" secondItem="bkb-eB-Ff6" secondAttribute="bottom" constant="8" id="fjt-4q-sz7"/>
                             <constraint firstItem="OIY-O4-XjK" firstAttribute="leading" secondItem="bAQ-h9-luI" secondAttribute="leading" constant="12" id="i2A-LD-tIo"/>
                             <constraint firstAttribute="trailing" secondItem="Udf-dO-AK9" secondAttribute="trailing" constant="24" id="jLR-Hf-2cc"/>
                             <constraint firstItem="Udf-dO-AK9" firstAttribute="top" secondItem="ttU-RR-ahl" secondAttribute="bottom" constant="58" id="jQO-hZ-WoX"/>
                             <constraint firstItem="p7w-LW-6g7" firstAttribute="leading" secondItem="a7G-Pg-E3a" secondAttribute="trailing" constant="12" id="jmI-Ms-jdc"/>
                             <constraint firstItem="jwe-LX-a02" firstAttribute="top" secondItem="TGb-dW-MI8" secondAttribute="bottom" constant="8" id="kYy-oD-aAr"/>
-                            <constraint firstItem="4Bb-HC-30W" firstAttribute="leading" secondItem="LFi-EC-iz0" secondAttribute="trailing" constant="28" id="pLx-xa-YpV"/>
                             <constraint firstItem="L0l-bc-Bbo" firstAttribute="leading" secondItem="bAQ-h9-luI" secondAttribute="leading" constant="12" id="qTT-ta-KeO"/>
                             <constraint firstAttribute="trailing" secondItem="664-pd-WlG" secondAttribute="trailing" constant="12" id="rpC-Ua-A2G"/>
                             <constraint firstItem="ttU-RR-ahl" firstAttribute="top" secondItem="BqO-4o-40c" secondAttribute="bottom" constant="8" id="s3V-bv-2zt"/>
@@ -244,7 +259,13 @@
                         </constraints>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                <color key="value" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="value" red="0.90341192479999999" green="0.069326452910000003" blue="0.192073673" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="20"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                <real key="value" value="1"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </view>
@@ -266,8 +287,6 @@
             <connections>
                 <outlet property="businessLbl" destination="MH8-AQ-t3p" id="VCG-xH-D0n"/>
                 <outlet property="businessTf" destination="664-pd-WlG" id="hs3-7C-BcG"/>
-                <outlet property="changeLbl" destination="B1i-S0-JiK" id="02Z-A2-8xd"/>
-                <outlet property="changeVw" destination="4Bb-HC-30W" id="nqD-3w-fME"/>
                 <outlet property="cityLbl" destination="BqO-4o-40c" id="8c6-eL-QZM"/>
                 <outlet property="cityTf" destination="ttU-RR-ahl" id="tP1-TW-Cm6"/>
                 <outlet property="deliveryLbl" destination="LFi-EC-iz0" id="OYW-Fu-Tnc"/>
@@ -280,6 +299,7 @@
                 <outlet property="phoneTf" destination="5Xk-fV-Xxf" id="Xtk-cQ-rWz"/>
                 <outlet property="pincodeLbl" destination="L0l-bc-Bbo" id="kUf-Gx-ukI"/>
                 <outlet property="pincodeTf" destination="Xgo-j2-6hq" id="S60-2W-wkW"/>
+                <outlet property="saveAddressBtn" destination="a7G-Pg-E3a" id="QhZ-fW-huR"/>
                 <outlet property="saveAddressLbl" destination="p7w-LW-6g7" id="6YM-q9-9AA"/>
                 <outlet property="stateLbl" destination="TGb-dW-MI8" id="WC3-Zi-dn5"/>
                 <outlet property="stateTf" destination="jwe-LX-a02" id="k8x-od-iuT"/>

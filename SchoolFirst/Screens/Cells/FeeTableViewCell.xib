@@ -21,28 +21,28 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JnX-4d-yjg">
-                        <rect key="frame" x="109.99999999999999" y="12" width="164.66666666666663" height="23"/>
+                        <rect key="frame" x="110.00000000000001" y="12" width="185.33333333333337" height="23"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="23" id="AJt-dg-MW8"/>
                         </constraints>
                         <attributedString key="attributedText">
                             <fragment content="Name of the student">
                                 <attributes>
-                                    <font key="NSFont" metaFont="system" size="18"/>
+                                    <font key="NSFont" size="18" name="Lexend-SemiBold"/>
                                 </attributes>
                             </fragment>
                         </attributedString>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xnQ-hP-Qeq">
-                        <rect key="frame" x="110" y="39" width="121.33333333333331" height="18"/>
+                        <rect key="frame" x="110" y="39" width="123.33333333333331" height="18"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="18" id="kfN-l8-ewX"/>
                         </constraints>
                         <attributedString key="attributedText">
                             <fragment content="Grade 4, Section A">
                                 <attributes>
-                                    <font key="NSFont" metaFont="menu" size="14"/>
+                                    <font key="NSFont" size="14" name="Lexend-Light"/>
                                 </attributes>
                             </fragment>
                         </attributedString>
@@ -56,9 +56,9 @@
                         </constraints>
                     </imageView>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="fill" contentVerticalAlignment="top" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xnA-Tu-Brf">
-                        <rect key="frame" x="109.99999999999999" y="65" width="186.66666666666663" height="20"/>
+                        <rect key="frame" x="97.999999999999986" y="59" width="205.66666666666663" height="20"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="20" id="sB5-d6-vZF"/>
+                            <constraint firstAttribute="height" constant="20" id="lnl-H1-Vgi"/>
                         </constraints>
                         <color key="tintColor" name="primaryColor"/>
                         <state key="normal" title="Button"/>
@@ -68,7 +68,7 @@
                                 <fragment content="View Fee Summary">
                                     <attributes>
                                         <color key="NSColor" red="0.043137254901960784" green="0.33725490196078434" blue="0.60392156862745094" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <font key="NSFont" metaFont="system" size="16"/>
+                                        <font key="NSFont" size="16" name="Lexend-SemiBold"/>
                                         <font key="NSOriginalFont" size="12" name="Helvetica"/>
                                         <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                     </attributes>
@@ -76,39 +76,42 @@
                                 <fragment content="  ">
                                     <attributes>
                                         <color key="NSColor" red="0.043137254901960784" green="0.33725490196078434" blue="0.60392156862745094" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <font key="NSFont" size="12" name="Helvetica"/>
+                                        <font key="NSFont" size="16" name="Lexend-SemiBold"/>
                                         <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                     </attributes>
                                 </fragment>
                             </attributedString>
                         </buttonConfiguration>
+                        <connections>
+                            <action selector="onClickViewSummary:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="5zH-qo-WZC"/>
+                        </connections>
                     </button>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dk6-6V-b83">
                         <rect key="frame" x="16" y="110" width="366" height="177"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZsI-B6-YTB">
-                                <rect key="frame" x="16.000000000000007" y="16" width="96.666666666666686" height="21.666666666666671"/>
+                                <rect key="frame" x="15.999999999999993" y="16" width="110.33333333333331" height="22.666666666666671"/>
                                 <attributedString key="attributedText">
                                     <fragment content="Fee Payable">
                                         <attributes>
-                                            <font key="NSFont" metaFont="system" size="18"/>
+                                            <font key="NSFont" size="18" name="Lexend-SemiBold"/>
                                         </attributes>
                                     </fragment>
                                 </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="itk-7E-Sjl">
-                                <rect key="frame" x="16" y="53.66666666666665" width="334" height="107.33333333333331"/>
+                                <rect key="frame" x="16" y="54.66666666666665" width="334" height="106.33333333333331"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="pyq-Up-b6Z">
-                                        <rect key="frame" x="0.0" y="0.0" width="334" height="30.333333333333332"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="334" height="30"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Rh-az-jaX">
-                                                <rect key="frame" x="0.0" y="0.0" width="163" height="30.333333333333332"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="163" height="30"/>
                                                 <attributedString key="attributedText">
                                                     <fragment content="Total Fee Due">
                                                         <attributes>
-                                                            <font key="NSFont" metaFont="system" size="16"/>
+                                                            <font key="NSFont" size="16" name="Lexend-Light"/>
                                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                                         </attributes>
                                                     </fragment>
@@ -116,11 +119,11 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sKZ-g7-mic">
-                                                <rect key="frame" x="171" y="0.0" width="163" height="30.333333333333332"/>
+                                                <rect key="frame" x="171" y="0.0" width="163" height="30"/>
                                                 <attributedString key="attributedText">
                                                     <fragment content="₹35,000">
                                                         <attributes>
-                                                            <font key="NSFont" metaFont="system" size="20"/>
+                                                            <font key="NSFont" size="20" name="Lexend-SemiBold"/>
                                                             <paragraphStyle key="NSParagraphStyle" alignment="right" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                                         </attributes>
                                                     </fragment>
@@ -130,53 +133,57 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="xe5-EI-aP9">
-                                        <rect key="frame" x="0.0" y="38.333333333333343" width="334" height="30.666666666666671"/>
+                                        <rect key="frame" x="0.0" y="38" width="334" height="30.333333333333329"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z96-bf-BLh">
-                                                <rect key="frame" x="0.0" y="0.0" width="163" height="30.666666666666668"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="163" height="30.333333333333332"/>
                                                 <attributedString key="attributedText">
                                                     <fragment content="Due Date">
                                                         <attributes>
-                                                            <font key="NSFont" metaFont="system" size="16"/>
+                                                            <font key="NSFont" size="16" name="Lexend-Light"/>
                                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                                         </attributes>
                                                     </fragment>
                                                 </attributedString>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YjB-fL-Dk6">
-                                                <rect key="frame" x="171" y="0.0" width="163" height="30.666666666666668"/>
-                                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cOb-Pb-hho">
+                                                <rect key="frame" x="171" y="0.0" width="163" height="30.333333333333332"/>
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="plain">
                                                     <attributedString key="attributedTitle">
-                                                        <fragment content="    23Jul2025">
+                                                        <fragment content="          ">
                                                             <attributes>
-                                                                <color key="NSColor" red="0.01365214646464652" green="0.01365214646464652" blue="0.01365214646464652" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                <font key="NSFont" size="16" name="Helvetica"/>
+                                                                <color key="NSColor" red="0.0" green="0.0" blue="0.0" alpha="0.89803921568627454" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                                                <paragraphStyle key="NSParagraphStyle" alignment="right" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                                            </attributes>
+                                                        </fragment>
+                                                        <fragment content="23 Jul 2025">
+                                                            <attributes>
+                                                                <color key="NSColor" red="0.0" green="0.0" blue="0.0" alpha="0.89803921568627454" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                                                <font key="NSOriginalFont" size="12" name="Helvetica"/>
                                                                 <paragraphStyle key="NSParagraphStyle" alignment="right" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                                             </attributes>
                                                         </fragment>
                                                     </attributedString>
                                                 </buttonConfiguration>
                                                 <connections>
-                                                    <action selector="onClickDueDate:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="IH0-Yo-oDO"/>
+                                                    <action selector="onClickDueDate:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="4kP-fv-MHp"/>
                                                 </connections>
                                             </button>
                                         </subviews>
-                                        <constraints>
-                                            <constraint firstAttribute="trailing" secondItem="YjB-fL-Dk6" secondAttribute="trailing" constant="16" id="iFf-rv-7WB"/>
-                                        </constraints>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="tPl-Bg-xHW">
-                                        <rect key="frame" x="0.0" y="77" width="334" height="30.333333333333329"/>
+                                        <rect key="frame" x="0.0" y="76.333333333333343" width="334" height="30"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yxN-nw-YZn">
-                                                <rect key="frame" x="0.0" y="0.0" width="163" height="30.333333333333332"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="163" height="30"/>
                                                 <attributedString key="attributedText">
                                                     <fragment content="Installment">
                                                         <attributes>
-                                                            <font key="NSFont" metaFont="system" size="16"/>
+                                                            <font key="NSFont" size="16" name="Lexend-Light"/>
                                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                                         </attributes>
                                                     </fragment>
@@ -184,7 +191,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3kb-Rt-vWH">
-                                                <rect key="frame" x="171" y="0.0" width="163" height="30.333333333333332"/>
+                                                <rect key="frame" x="171" y="0.0" width="163" height="30"/>
                                                 <attributedString key="attributedText">
                                                     <fragment content="2/3">
                                                         <attributes>
@@ -199,7 +206,7 @@
                                     </stackView>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstItem="YjB-fL-Dk6" firstAttribute="trailing" secondItem="sKZ-g7-mic" secondAttribute="trailing" id="Wm9-bd-4ew"/>
+                                    <constraint firstItem="cOb-Pb-hho" firstAttribute="trailing" secondItem="sKZ-g7-mic" secondAttribute="trailing" id="VAL-KZ-Ngh"/>
                                 </constraints>
                             </stackView>
                         </subviews>
@@ -225,12 +232,17 @@
                             <attributedString key="attributedTitle">
                                 <fragment content="Part Payment">
                                     <attributes>
-                                        <font key="NSFont" metaFont="system" size="16"/>
+                                        <font key="NSFont" size="16" name="Lexend-Regular"/>
                                         <font key="NSOriginalFont" size="12" name="Helvetica"/>
                                     </attributes>
                                 </fragment>
                             </attributedString>
                         </buttonConfiguration>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="8"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
                         <connections>
                             <action selector="onClickPartPayment:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="xPl-Gw-3OD"/>
                         </connections>
@@ -244,12 +256,17 @@
                                 <fragment content="Pay Full">
                                     <attributes>
                                         <color key="NSColor" red="0.99607843137254903" green="0.94901960784313721" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <font key="NSFont" metaFont="system" size="16"/>
+                                        <font key="NSFont" size="16" name="Lexend-SemiBold"/>
                                         <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                     </attributes>
                                 </fragment>
                             </attributedString>
                         </buttonConfiguration>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="8"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
                         <connections>
                             <action selector="onClickPayFull:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="Ayv-Xl-Osn"/>
                         </connections>
@@ -280,29 +297,32 @@
                     <constraint firstItem="ksS-s6-n7b" firstAttribute="top" secondItem="dk6-6V-b83" secondAttribute="bottom" constant="16" id="JXR-ae-t0S"/>
                     <constraint firstItem="hvl-A6-zaT" firstAttribute="leading" secondItem="ksS-s6-n7b" secondAttribute="trailing" constant="16" id="PGq-6e-SAN"/>
                     <constraint firstItem="dk6-6V-b83" firstAttribute="top" secondItem="lAW-rn-lub" secondAttribute="bottom" constant="16" id="PiQ-ST-KEY"/>
-                    <constraint firstItem="xnA-Tu-Brf" firstAttribute="top" secondItem="xnQ-hP-Qeq" secondAttribute="bottom" constant="8" id="QFt-mB-msJ"/>
                     <constraint firstAttribute="trailing" secondItem="vLn-ql-NCx" secondAttribute="trailing" constant="16" id="SIY-Np-fZ7"/>
                     <constraint firstItem="lAW-rn-lub" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="12" id="aix-4R-CzO"/>
                     <constraint firstItem="lAW-rn-lub" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="12" id="cKz-NU-HkQ"/>
                     <constraint firstItem="JnX-4d-yjg" firstAttribute="leading" secondItem="lAW-rn-lub" secondAttribute="trailing" constant="16" id="fLL-V2-SvC"/>
+                    <constraint firstItem="xnA-Tu-Brf" firstAttribute="top" secondItem="xnQ-hP-Qeq" secondAttribute="bottom" constant="2" id="gRW-MD-gAX"/>
                     <constraint firstAttribute="trailing" secondItem="hvl-A6-zaT" secondAttribute="trailing" constant="16" id="gr8-4Z-8SP"/>
+                    <constraint firstItem="xnA-Tu-Brf" firstAttribute="leading" secondItem="lAW-rn-lub" secondAttribute="trailing" constant="4" id="hlx-Vv-xeE"/>
                     <constraint firstItem="xnQ-hP-Qeq" firstAttribute="top" secondItem="JnX-4d-yjg" secondAttribute="bottom" constant="4" id="jsG-on-bhz"/>
                     <constraint firstItem="dk6-6V-b83" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="lLF-gt-pLa"/>
                     <constraint firstItem="vLn-ql-NCx" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="mSc-is-R1S"/>
                     <constraint firstItem="hvl-A6-zaT" firstAttribute="height" secondItem="ksS-s6-n7b" secondAttribute="height" id="o0d-zD-vBY"/>
-                    <constraint firstItem="xnA-Tu-Brf" firstAttribute="leading" secondItem="xnQ-hP-Qeq" secondAttribute="leading" id="vbE-w1-Mpj"/>
                     <constraint firstItem="hvl-A6-zaT" firstAttribute="centerY" secondItem="ksS-s6-n7b" secondAttribute="centerY" id="xUh-VN-gYe"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
-                <outlet property="DueDate" destination="YjB-fL-Dk6" id="Bs0-qb-A6G"/>
+                <outlet property="DueDate" destination="cOb-Pb-hho" id="Iz7-I8-Csk"/>
                 <outlet property="bgView" destination="dk6-6V-b83" id="cIq-BR-3Gb"/>
                 <outlet property="imgVw" destination="lAW-rn-lub" id="Wt1-ZT-3yu"/>
                 <outlet property="lblGrade" destination="xnQ-hP-Qeq" id="H6j-mA-Ikg"/>
                 <outlet property="lblInstallment" destination="3kb-Rt-vWH" id="m0G-iV-Po5"/>
                 <outlet property="lblName" destination="JnX-4d-yjg" id="o6c-Y7-KZW"/>
                 <outlet property="lblTotalFeeDue" destination="sKZ-g7-mic" id="yW3-oo-7Cv"/>
+                <outlet property="partpaymentBtn" destination="ksS-s6-n7b" id="KK3-wV-Bok"/>
+                <outlet property="payfullBtn" destination="hvl-A6-zaT" id="FmD-mm-t7P"/>
+                <outlet property="viewSummary" destination="xnA-Tu-Brf" id="Udu-OJ-58D"/>
             </connections>
             <point key="canvasLocation" x="-42.748091603053432" y="146.83098591549296"/>
         </tableViewCell>

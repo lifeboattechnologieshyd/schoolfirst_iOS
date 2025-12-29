@@ -8,11 +8,14 @@
 import UIKit
 
 class FeeTableViewCell: UITableViewCell {
-
+    
     @IBOutlet weak var lblName: UILabel!
+    @IBOutlet weak var viewSummary: UIButton!
     @IBOutlet weak var lblGrade: UILabel!
+    @IBOutlet weak var payfullBtn: UIButton!
     @IBOutlet weak var imgVw: UIImageView!
     @IBOutlet weak var bgView: UIView!
+    @IBOutlet weak var partpaymentBtn: UIButton!
     
     @IBOutlet weak var lblTotalFeeDue: UILabel!
     @IBOutlet weak var DueDate: UIButton!
@@ -21,11 +24,13 @@ class FeeTableViewCell: UITableViewCell {
     var onPartPayment: (() -> Void)?
     var onPayFull: (() -> Void)?
     var onDueDate: (() -> Void)?
-
+    var onViewSummary: (() -> Void)?
+    
+    
     override func awakeFromNib() {
         super.awakeFromNib()
     }
-
+    
     @IBAction func onClickPartPayment(_ sender: UIButton) {
         onPartPayment?()
     }
@@ -33,15 +38,36 @@ class FeeTableViewCell: UITableViewCell {
     @IBAction func onClickPayFull(_ sender: UIButton) {
         onPayFull?()
     }
-
+    
     @IBAction func onClickDueDate(_ sender: UIButton) {
-        onDueDate?()      // ⭐ trigger navigation
+        onDueDate?()
     }
+    @IBAction func onClickViewSummary(_ sender: UIButton) {
+        onViewSummary?()
+    }
+    
     
     func setup(details : StudentFeeDetails) {
         self.lblName.text = details.studentName
         self.lblGrade.text = details.gradeName
         self.imgVw.loadImage(url: details.studentImage ?? "")
         self.lblTotalFeeDue.text = "₹\(details.pendingFee.rounded())"
+        
+        let totalInstallments = details.feeInstallments.count
+        let paidInstallments = details.feeInstallments.filter { $0.feePaid >= $0.payableAmount }.count
+        
+        lblInstallment.text = "\(paidInstallments) / \(totalInstallments)"
+        
+        //        if let nextInstallment = details.feeInstallments.first(where: { $0.feePaid < $0.payableAmount }) {
+        //                // Divide by 1000 if API gives milliseconds
+        //                let date = Date(timeIntervalSince1970: nextInstallment.dueDate / 1000)
+        //                let formatter = DateFormatter()
+        //                formatter.dateFormat = "dd MMM yyyy"
+        //            DueDate.text = formatter.string(from: date)
+        //            } else {
+        //                DueDate.text = "All Paid"
+        //            }
+        //        }
+        //}
     }
-}
+    }

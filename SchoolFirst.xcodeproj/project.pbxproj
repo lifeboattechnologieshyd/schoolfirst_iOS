@@ -15,6 +15,11 @@
 		884F56E82EAF7958000645BE /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 884F56E72EAF7958000645BE /* FirebaseCore */; };
 		884F56EA2EAF7958000645BE /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 884F56E92EAF7958000645BE /* FirebaseCrashlytics */; };
 		884F56EF2EAF8F43000645BE /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 884F56EE2EAF8F43000645BE /* FirebaseMessaging */; };
+		885A8AB12EFD2B0E00F5A9F9 /* CFNetworkSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 885A8AB02EFD2B0E00F5A9F9 /* CFNetworkSDK */; };
+		885A8AB32EFD2B0E00F5A9F9 /* CashfreeAnalyticsSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 885A8AB22EFD2B0E00F5A9F9 /* CashfreeAnalyticsSDK */; };
+		885A8AB52EFD2B0E00F5A9F9 /* CashfreePG in Frameworks */ = {isa = PBXBuildFile; productRef = 885A8AB42EFD2B0E00F5A9F9 /* CashfreePG */; };
+		885A8AB72EFD2B0E00F5A9F9 /* CashfreePGCoreSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 885A8AB62EFD2B0E00F5A9F9 /* CashfreePGCoreSDK */; };
+		885A8AB92EFD2B0E00F5A9F9 /* CashfreePGUISDK in Frameworks */ = {isa = PBXBuildFile; productRef = 885A8AB82EFD2B0E00F5A9F9 /* CashfreePGUISDK */; };
 		889390E92E5D82880064AFEE /* YouTubeiOSPlayerHelper in Frameworks */ = {isa = PBXBuildFile; productRef = 889390E82E5D82880064AFEE /* YouTubeiOSPlayerHelper */; };
 		88BD71232E5362D900CC824D /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 88BD71222E5362D900CC824D /* Kingfisher */; };
 /* End PBXBuildFile section */
@@ -49,11 +54,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				885A8AB92EFD2B0E00F5A9F9 /* CashfreePGUISDK in Frameworks */,
 				884F56EF2EAF8F43000645BE /* FirebaseMessaging in Frameworks */,
 				88BD71232E5362D900CC824D /* Kingfisher in Frameworks */,
+				885A8AB52EFD2B0E00F5A9F9 /* CashfreePG in Frameworks */,
 				8803F35D2E0AB958000F7784 /* IQKeyboardManagerSwift in Frameworks */,
+				885A8AB72EFD2B0E00F5A9F9 /* CashfreePGCoreSDK in Frameworks */,
+				885A8AB32EFD2B0E00F5A9F9 /* CashfreeAnalyticsSDK in Frameworks */,
 				884DAD702EB20F190088EBA7 /* FSCalendar in Frameworks */,
 				8803F6112E11CA68000F7784 /* Lottie in Frameworks */,
+				885A8AB12EFD2B0E00F5A9F9 /* CFNetworkSDK in Frameworks */,
 				884DAD6D2EB1FDD60088EBA7 /* FirebaseAnalyticsCore in Frameworks */,
 				884F56EA2EAF7958000645BE /* FirebaseCrashlytics in Frameworks */,
 				884F56E62EAF7958000645BE /* FirebaseAnalytics in Frameworks */,
@@ -113,6 +123,11 @@
 				884F56EE2EAF8F43000645BE /* FirebaseMessaging */,
 				884DAD6C2EB1FDD60088EBA7 /* FirebaseAnalyticsCore */,
 				884DAD6F2EB20F190088EBA7 /* FSCalendar */,
+				885A8AB02EFD2B0E00F5A9F9 /* CFNetworkSDK */,
+				885A8AB22EFD2B0E00F5A9F9 /* CashfreeAnalyticsSDK */,
+				885A8AB42EFD2B0E00F5A9F9 /* CashfreePG */,
+				885A8AB62EFD2B0E00F5A9F9 /* CashfreePGCoreSDK */,
+				885A8AB82EFD2B0E00F5A9F9 /* CashfreePGUISDK */,
 			);
 			productName = SchoolFirst;
 			productReference = 884DB5D62DFC0394003F154E /* School First.app */;
@@ -149,6 +164,7 @@
 				889390E72E5D82880064AFEE /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */,
 				884F56E42EAF7958000645BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				884DAD6E2EB20F190088EBA7 /* XCRemoteSwiftPackageReference "FSCalendar" */,
+				885A8AAF2EFD2B0E00F5A9F9 /* XCLocalSwiftPackageReference "core-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 884DB5D72DFC0394003F154E /* Products */;
@@ -660,6 +676,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		885A8AAF2EFD2B0E00F5A9F9 /* XCLocalSwiftPackageReference "core-ios-sdk" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "core-ios-sdk";
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		8803F35B2E0AB958000F7784 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -751,6 +774,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 884F56E42EAF7958000645BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
+		};
+		885A8AB02EFD2B0E00F5A9F9 /* CFNetworkSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CFNetworkSDK;
+		};
+		885A8AB22EFD2B0E00F5A9F9 /* CashfreeAnalyticsSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CashfreeAnalyticsSDK;
+		};
+		885A8AB42EFD2B0E00F5A9F9 /* CashfreePG */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CashfreePG;
+		};
+		885A8AB62EFD2B0E00F5A9F9 /* CashfreePGCoreSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CashfreePGCoreSDK;
+		};
+		885A8AB82EFD2B0E00F5A9F9 /* CashfreePGUISDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CashfreePGUISDK;
 		};
 		889390E82E5D82880064AFEE /* YouTubeiOSPlayerHelper */ = {
 			isa = XCSwiftPackageProductDependency;

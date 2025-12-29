@@ -849,3 +849,45 @@ extension UIButton {
         }.resume()
     }
 }
+import UIKit
+
+extension UIView {
+    /// Recursively find a superview of the specified type.
+    func superview<T: UIView>(of type: T.Type) -> T? {
+        return (superview as? T) ?? superview?.superview(of: type)
+    }
+}
+extension UIView {
+    func addCardShadow() {
+        self.layer.cornerRadius = 8
+        self.layer.shadowColor = UIColor.black.cgColor
+        self.layer.shadowOpacity = 0.12
+        self.layer.shadowOffset = CGSize(width: 0, height: 4)
+        self.layer.shadowRadius = 6
+        self.layer.masksToBounds = false
+    }
+}
+extension TimeInterval {
+    func toMonthYear() -> String {
+        let date = Date(timeIntervalSince1970: self / 1000)
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM yyyy"
+        return formatter.string(from: date)
+    }
+}
+
+import UIKit
+
+extension UIView {
+    func parentViewController() -> UIViewController? {
+        var parentResponder: UIResponder? = self
+        while parentResponder != nil {
+            parentResponder = parentResponder?.next
+            if let viewController = parentResponder as? UIViewController {
+                return viewController
+            }
+        }
+        return nil
+    }
+}
+

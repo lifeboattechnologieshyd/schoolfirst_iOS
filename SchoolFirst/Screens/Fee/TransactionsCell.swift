@@ -9,19 +9,16 @@ import UIKit
 
 class TransactionsCell: UITableViewCell {
     
-    @IBOutlet weak var julVw: UIView!
-    @IBOutlet weak var decVw: UIView!
-    @IBOutlet weak var febVw: UIView!
+    @IBOutlet weak var dateLbl: UILabel!
+    @IBOutlet weak var amountLbl: UILabel!
+    @IBOutlet weak var referencenoLbl: UILabel!
     @IBOutlet weak var marVw: UIView!
+    @IBOutlet weak var paymentMethodLbl: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        
-        julVw.addCardShadow()
-        decVw.addCardShadow()
-        febVw.addCardShadow()
-        marVw.addCardShadow()
+         marVw.addCardShadow()
 
         
     }

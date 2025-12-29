@@ -41,6 +41,7 @@ class AttendanceCell: UITableViewCell {
             parentVC.navigationController?.pushViewController(vc, animated: true)
         }
     }
+
     
     @IBAction func leaveHistoryButtonTapped(_ sender: UIButton) {
         if let parentVC = self.parentViewController() {
