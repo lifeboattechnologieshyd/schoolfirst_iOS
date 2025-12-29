@@ -1266,6 +1266,8 @@ struct Product: Decodable {
     let highlights: [String]?
     let isTrending: Bool
     let variants: Variants?
+    let specification: [String]?  // 👈 This is important
+
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -1279,6 +1281,8 @@ struct Product: Decodable {
         case highlights
         case isTrending = "is_trending"
         case variants
+        case specification
+
     }
 }
 struct Variants: Decodable {
@@ -1420,5 +1424,104 @@ struct FeePaymentResponse: Codable {
         case cfOrderId = "cf_order_id"
         case paymentSessionId = "payment_session_id"
         case orderId = "order_id"
+    }
+}
+
+// MARK:  FullAddress Extension
+extension FullAddress {
+    func toDictionary() -> [String: Any] {
+        return [
+            "street": street ?? "",
+            "country": country ?? "",
+            "village": village ?? "",
+            "district": district ?? "",
+            "house_no": houseNo ?? "",
+            "landmark": landmark ?? ""
+        ]
+    }
+}
+
+// MARK:  AddressModel Extension
+extension AddressModel {
+    
+    // Convert to API parameters dictionary
+    func toParameters() -> [String: Any] {
+        var params: [String: Any] = [:]
+        
+        if let contactNumber = contactNumber {
+            params["contact_number"] = contactNumber
+        }
+        if let fullName = fullName {
+            params["full_name"] = fullName
+        }
+        if let fullAddress = fullAddress {
+            params["full_address"] = fullAddress.toDictionary()
+        }
+        if let mobile = mobile {
+            params["mobile"] = mobile
+        }
+        if let placeName = placeName {
+            params["place_name"] = placeName
+        }
+        if let stateName = stateName {
+            params["state_name"] = stateName
+        }
+        if let pinCode = pinCode {
+            params["pin_code"] = pinCode
+        }
+        
+        return params
+    }
+    
+    // Get formatted display address
+    func getDisplayAddress() -> String {
+        var addressComponents: [String] = []
+        
+        if let houseNo = fullAddress?.houseNo, !houseNo.isEmpty {
+            addressComponents.append(houseNo)
+        }
+        if let street = fullAddress?.street, !street.isEmpty {
+            addressComponents.append(street)
+        }
+        if let landmark = fullAddress?.landmark, !landmark.isEmpty {
+            addressComponents.append(landmark)
+        }
+        if let village = fullAddress?.village, !village.isEmpty {
+            addressComponents.append(village)
+        }
+        if let district = fullAddress?.district, !district.isEmpty {
+            addressComponents.append(district)
+        }
+        if let place = placeName, !place.isEmpty {
+            addressComponents.append(place)
+        }
+        if let state = stateName, !state.isEmpty {
+            addressComponents.append(state)
+        }
+        if let pin = pinCode, !pin.isEmpty {
+            addressComponents.append(pin)
+        }
+        
+        return addressComponents.joined(separator: ", ")
+    }
+    
+    // Get short display address (for limited space)
+    func getShortDisplayAddress() -> String {
+        var addressComponents: [String] = []
+        
+        if let houseNo = fullAddress?.houseNo, !houseNo.isEmpty {
+            addressComponents.append(houseNo)
+        }
+        if let street = fullAddress?.street, !street.isEmpty {
+            addressComponents.append(street)
+        }
+        if let place = placeName, !place.isEmpty {
+            addressComponents.append(place)
+        }
+        if let pin = pinCode, !pin.isEmpty {
+            addressComponents.append(pin)
+        }
+        
+        return addressComponents.joined(separator: ", ")
     }
 }

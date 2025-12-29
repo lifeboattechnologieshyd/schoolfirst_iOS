@@ -13,7 +13,7 @@ class DeliveryTableViewCell: UITableViewCell, UIPickerViewDelegate, UIPickerView
     @IBOutlet weak var mainVw: UIView!
     @IBOutlet weak var homeImg: UIImageView!
     @IBOutlet weak var businessLbl: UILabel!
-    @IBOutlet weak var businessTf: UITextField!
+    @IBOutlet weak var businessTv: UITextView!
     @IBOutlet weak var cityLbl: UILabel!
     @IBOutlet weak var cityTf: UITextField!
     @IBOutlet weak var phoneTf: UITextField!
@@ -48,16 +48,13 @@ class DeliveryTableViewCell: UITableViewCell, UIPickerViewDelegate, UIPickerView
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        let textFields = [businessTf, cityTf, phoneTf, pincodeTf, nameTf]
-        for tf in textFields {
-            tf?.layer.cornerRadius = 8
-            tf?.layer.shadowColor = UIColor.black.cgColor
-            tf?.layer.shadowOpacity = 0.15
-            tf?.layer.shadowOffset = CGSize(width: 0, height: 2)
-            tf?.layer.shadowRadius = 4
-            tf?.backgroundColor = .white
-            tf?.layer.borderWidth = 0
-        }
+        businessTv.addCardShadow()
+        cityTf.addCardShadow()
+        phoneTf.addCardShadow()
+        pincodeTf.addCardShadow()
+        nameTf.addCardShadow()
+        stateTf.addCardShadow()
+
 
         isChecked = false
         greencheckbox.setImage(UIImage(named: "green square"), for: .normal)
@@ -119,13 +116,13 @@ class DeliveryTableViewCell: UITableViewCell, UIPickerViewDelegate, UIPickerView
         return (
             contact: phoneTf.text ?? "",
             fullName: nameTf.text ?? "",
-            houseNo: businessTf.text ?? "",
+            houseNo: businessTv.text ?? "",
             street: cityTf.text ?? "",
             landmark: "",
             village: "",
             district: cityTf.text ?? "",
             country: "India",
-            placeName: businessTf.text ?? "",
+            placeName: businessTv.text ?? "",
             stateName: stateTf.text ?? "",
             pinCode: pincodeTf.text ?? ""
         )

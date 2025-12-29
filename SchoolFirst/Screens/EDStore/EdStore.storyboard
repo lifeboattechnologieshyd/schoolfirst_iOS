@@ -8,6 +8,11 @@
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="Lexend-SemiBold.ttf">
+            <string>Lexend-SemiBold</string>
+        </array>
+    </customFonts>
     <scenes>
         <!--Ed Store View Controller-->
         <scene sceneID="s0d-6b-0kx">
@@ -17,7 +22,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="RSa-Cz-jXD">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="RSa-Cz-jXD">
                                 <rect key="frame" x="0.0" y="109" width="393" height="709"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
@@ -49,22 +54,24 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1t6-Es-eNh">
-                                        <rect key="frame" x="44" y="27" width="200" height="16"/>
+                                        <rect key="frame" x="44" y="27" width="220" height="16"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="200" id="Rx7-E6-71C"/>
+                                            <constraint firstAttribute="width" constant="220" id="k2C-i1-4SK"/>
                                             <constraint firstAttribute="height" constant="16" id="lO4-Zd-udX"/>
                                         </constraints>
                                         <attributedString key="attributedText">
-                                            <fragment content="Delivery to Warangal - Pin: 293994">
+                                            <fragment content="Add your Delivery Address">
                                                 <attributes>
+                                                    <color key="NSColor" red="0.034841082990000001" green="0.40597915649999999" blue="0.22152757640000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wcg-dm-kof">
-                                        <rect key="frame" x="300" y="27" width="70" height="16"/>
+                                        <rect key="frame" x="320" y="27" width="70" height="16"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="70" id="8zj-Dj-4fI"/>
                                             <constraint firstAttribute="height" constant="16" id="xce-mj-sPc"/>
@@ -80,6 +87,9 @@
                                                 </fragment>
                                             </attributedString>
                                         </buttonConfiguration>
+                                        <connections>
+                                            <action selector="changeButtonTapped:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="L0q-Jz-kKs"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -129,7 +139,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Fwn-L2-ACU">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Fwn-L2-ACU">
                                 <rect key="frame" x="0.0" y="109" width="393" height="637"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
@@ -167,9 +177,11 @@
                                             <constraint firstAttribute="height" constant="16" id="ig4-tl-k6S"/>
                                         </constraints>
                                         <attributedString key="attributedText">
-                                            <fragment content=" Delivery to Warangal - Pin: 293994">
+                                            <fragment content="Add your Delivery Address">
                                                 <attributes>
+                                                    <color key="NSColor" red="0.034840000000000003" green="0.40598000000000001" blue="0.22153" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
@@ -192,6 +204,9 @@
                                                 </fragment>
                                             </attributedString>
                                         </buttonConfiguration>
+                                        <connections>
+                                            <action selector="changeButtonTapped:" destination="wYb-qD-aKY" eventType="touchUpInside" id="x2m-oS-JSa"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -511,7 +526,115 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QWl-3d-5w4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1790" y="-35"/>
+            <point key="canvasLocation" x="1636" y="-35"/>
+        </scene>
+        <!--Save AddressVC-->
+        <scene sceneID="Haz-go-h7x">
+            <objects>
+                <viewController storyboardIdentifier="SaveAddressVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="9xg-cG-QW0" customClass="SaveAddressVC" customModule="SF_Dev" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="ohp-5R-lXU">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EIg-e2-NXQ">
+                                <rect key="frame" x="0.0" y="59" width="393" height="50"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aZK-2h-IGw">
+                                        <rect key="frame" x="12" y="12" width="24" height="24"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="24" id="SE1-IW-EAM"/>
+                                            <constraint firstAttribute="height" constant="24" id="eU4-8F-zCc"/>
+                                        </constraints>
+                                        <color key="tintColor" red="0.002584438131" green="0.002584438131" blue="0.002584438131" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="arrow.backward" catalog="system"/>
+                                        <connections>
+                                            <action selector="backBtnTapped:" destination="9xg-cG-QW0" eventType="touchUpInside" id="OBH-h0-Zz6"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4hZ-AR-OXA">
+                                        <rect key="frame" x="44" y="14" width="117" height="20"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="20" id="dbw-fF-PPL"/>
+                                        </constraints>
+                                        <attributedString key="attributedText">
+                                            <fragment content="ADD ADDRESS">
+                                                <attributes>
+                                                    <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                                </attributes>
+                                            </fragment>
+                                        </attributedString>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="aZK-2h-IGw" firstAttribute="leading" secondItem="EIg-e2-NXQ" secondAttribute="leading" constant="12" id="DZi-ck-V9I"/>
+                                    <constraint firstItem="aZK-2h-IGw" firstAttribute="top" secondItem="EIg-e2-NXQ" secondAttribute="top" constant="12" id="Y1r-q2-vZf"/>
+                                    <constraint firstItem="4hZ-AR-OXA" firstAttribute="centerY" secondItem="aZK-2h-IGw" secondAttribute="centerY" id="kGl-Kj-nbR"/>
+                                    <constraint firstItem="4hZ-AR-OXA" firstAttribute="leading" secondItem="aZK-2h-IGw" secondAttribute="trailing" constant="8" id="kYl-LN-1Ho"/>
+                                    <constraint firstAttribute="height" constant="50" id="u0S-2J-MeA"/>
+                                </constraints>
+                            </view>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="AMm-dT-HeY">
+                                <rect key="frame" x="0.0" y="114" width="393" height="634"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UyM-uU-gH0">
+                                <rect key="frame" x="16" y="756" width="361" height="48"/>
+                                <color key="backgroundColor" red="0.089936695989999996" green="0.3610355556" blue="0.62060129639999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="48" id="vGp-qM-BSv"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain">
+                                    <attributedString key="attributedTitle">
+                                        <fragment content="SAVE ADDRESS">
+                                            <attributes>
+                                                <color key="NSColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                                <font key="NSOriginalFont" size="12" name="Helvetica"/>
+                                                <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                            </attributes>
+                                        </fragment>
+                                    </attributedString>
+                                </buttonConfiguration>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="5"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="saveAddressBtnTapped:" destination="9xg-cG-QW0" eventType="touchUpInside" id="B1R-Tb-TIR"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="76S-G8-Lhk"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="UyM-uU-gH0" firstAttribute="leading" secondItem="76S-G8-Lhk" secondAttribute="leading" constant="16" id="JQa-6Y-uz8"/>
+                            <constraint firstItem="UyM-uU-gH0" firstAttribute="top" secondItem="AMm-dT-HeY" secondAttribute="bottom" constant="8" id="JYl-AR-ZC9"/>
+                            <constraint firstItem="EIg-e2-NXQ" firstAttribute="leading" secondItem="76S-G8-Lhk" secondAttribute="leading" id="Ju1-nT-txA"/>
+                            <constraint firstItem="76S-G8-Lhk" firstAttribute="trailing" secondItem="AMm-dT-HeY" secondAttribute="trailing" id="KGd-ai-7sV"/>
+                            <constraint firstItem="76S-G8-Lhk" firstAttribute="trailing" secondItem="EIg-e2-NXQ" secondAttribute="trailing" id="YTc-cN-bl4"/>
+                            <constraint firstItem="76S-G8-Lhk" firstAttribute="bottom" secondItem="AMm-dT-HeY" secondAttribute="bottom" constant="70" id="cY4-NK-7mB"/>
+                            <constraint firstItem="EIg-e2-NXQ" firstAttribute="top" secondItem="76S-G8-Lhk" secondAttribute="top" id="isH-Z0-Rn8"/>
+                            <constraint firstItem="AMm-dT-HeY" firstAttribute="leading" secondItem="76S-G8-Lhk" secondAttribute="leading" id="nOQ-8K-Jbs"/>
+                            <constraint firstItem="76S-G8-Lhk" firstAttribute="trailing" secondItem="UyM-uU-gH0" secondAttribute="trailing" constant="16" id="uJr-bS-H4y"/>
+                            <constraint firstItem="AMm-dT-HeY" firstAttribute="top" secondItem="EIg-e2-NXQ" secondAttribute="bottom" constant="5" id="y1f-lg-d41"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="backBtn" destination="aZK-2h-IGw" id="brj-bO-VMZ"/>
+                        <outlet property="saveAddressBtn" destination="UyM-uU-gH0" id="GZt-oM-h8J"/>
+                        <outlet property="tblVw" destination="AMm-dT-HeY" id="MFT-Z8-gnj"/>
+                        <outlet property="topVw" destination="EIg-e2-NXQ" id="KlE-sj-Hc2"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="haP-ez-ta5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2364" y="-35"/>
         </scene>
     </scenes>
     <resources>

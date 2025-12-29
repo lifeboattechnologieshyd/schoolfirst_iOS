@@ -12,9 +12,10 @@ class DescriptionTableViewCell: UITableViewCell {
     
     @IBOutlet weak var interestingLbl: UILabel!
     @IBOutlet weak var mrpLbl: UILabel!
-    @IBOutlet weak var amountLbl: UILabel!
     
+    @IBOutlet weak var strikeOutPrice: UILabel!
     @IBOutlet weak var descriptionTv: UITextView!
+    @IBOutlet weak var strikeLineImg: UIImageView!
     @IBOutlet weak var variant1: UILabel!
     @IBOutlet weak var variant2: UILabel!
     @IBOutlet weak var aboutLbl: UILabel!

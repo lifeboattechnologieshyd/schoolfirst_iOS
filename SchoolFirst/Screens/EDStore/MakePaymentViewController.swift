@@ -11,21 +11,24 @@ import CashfreePGCoreSDK
 import CashfreePGUISDK
 
 class MakePaymentViewController: UIViewController {
-
+    
     var selectedProduct: Product?
     var savedAddresses: [AddressModel] = []
     var selectedAddress: AddressModel?
     var selectedQuantity: Int = 1
-
-
+    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var topbarVw: UIView!
     @IBOutlet weak var makepaymentBtn: UIButton!
     @IBOutlet weak var finalPriceLbl: UILabel!
     @IBOutlet weak var backButton: UIButton!
-
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 500
         
         topbarVw.addBottomShadow()
         setupTableView()
@@ -51,17 +54,42 @@ class MakePaymentViewController: UIViewController {
         tableView.register(UINib(nibName: "InvoiceTableViewCell", bundle: nil),
                            forCellReuseIdentifier: "InvoiceTableViewCell")
     }
-
+    
     @IBAction func backButtonTapped(_ sender: UIButton) {
         navigationController?.popViewController(animated: true)
     }
-
+    
     @IBAction func makepaymentBtnTapped(_ sender: UIButton) {
-        guard selectedAddress != nil else {
-            showAlert(title: "Address Required", message: "Please save or select an address before making payment.")
+        guard let deliveryCell = tableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? DeliveryTableViewCell else {
+            showAlert(title: "Error", message: "Unable to get address details")
             return
         }
-        callCreateOrderAPI()
+        
+        let name = deliveryCell.nameTf.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        let phone = deliveryCell.phoneTf.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        let houseNo = deliveryCell.businessTv.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        let city = deliveryCell.cityTf.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        let state = deliveryCell.stateTf.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        let pincode = deliveryCell.pincodeTf.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        
+        if name.isEmpty {
+            showAlert(title: "Missing Information", message: "Please enter your name.")
+            return
+        }
+        if phone.isEmpty || phone.count < 10 {
+            showAlert(title: "Missing Information", message: "Please enter a valid phone number.")
+            return
+        }
+        if state.isEmpty {
+            showAlert(title: "Missing Information", message: "Please enter your state.")
+            return
+        }
+        if pincode.isEmpty || pincode.count < 6 {
+            showAlert(title: "Missing Information", message: "Please enter a valid pincode.")
+            return
+        }
+        
+        createOrderWithAddress(name: name, phone: phone, houseNo: houseNo, city: city, state: state, pincode: pincode)
     }
     
     func showAlert(title: String, message: String) {
@@ -77,10 +105,8 @@ class MakePaymentViewController: UIViewController {
         }
         let unitFinalPrice = Double(product.finalPrice) ?? 0.0
         let finalPrice = unitFinalPrice * Double(selectedQuantity)
-
         let gst = finalPrice * 0.18
         let total = finalPrice + gst
-
         finalPriceLbl.text = "₹\(String(format: "%.2f", total))"
     }
 }
@@ -108,13 +134,32 @@ extension MakePaymentViewController: UITableViewDataSource, UITableViewDelegate 
         }
     }
     
+    // In MakePaymentViewController
+
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.row {
-        case 0: return 372
-        case 1: return 720
-        case 2: return 356
-        default: return 0
+        case 0:
+            return calculatePaymentCellHeight()
+        case 1:
+            return 720
+        case 2:
+            return 356
+        default:
+            return 0
         }
+    }
+
+    private func calculatePaymentCellHeight() -> CGFloat {
+        let baseHeight: CGFloat = 200  // Height without specifications
+        
+        guard let specs = selectedProduct?.specification else {
+            return baseHeight
+        }
+        
+        let visibleSpecCount = min(specs.count, 4)
+        let specificationHeight: CGFloat = CGFloat(visibleSpecCount) * 45  // Each spec row height
+        
+        return baseHeight + specificationHeight
     }
     
     private func configurePaymentCell(for indexPath: IndexPath) -> UITableViewCell {
@@ -122,26 +167,28 @@ extension MakePaymentViewController: UITableViewDataSource, UITableViewDelegate 
             withIdentifier: "PaymentTableViewCell",
             for: indexPath
         ) as! PaymentTableViewCell
-            
-        if let product = selectedProduct,
-           let url = URL(string: product.thumbnailImage) {
-            cell.imgVw.loadImage(from: url)
+        
+        if let product = selectedProduct {
+            if let url = URL(string: product.thumbnailImage) {
+                cell.imgVw.loadImage(from: url)
+            }
+            cell.managingLbl.text = product.itemName
+            cell.configureSpecifications(specifications: product.specification)
         }
-
-        // 🔥 THIS IS THE IMPORTANT PART
+        
         cell.onQuantityChanged = { [weak self] quantity in
             guard let self = self else { return }
             self.selectedQuantity = quantity
-
-            // Update invoice + final price
             let invoiceIndexPath = IndexPath(row: 2, section: 0)
             self.tableView.reloadRows(at: [invoiceIndexPath], with: .none)
             self.updateFinalPriceLabel()
         }
-            
+        
+        cell.setNeedsLayout()
+        cell.layoutIfNeeded()
+        
         return cell
     }
-
     
     private func configureDeliveryCell(for indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "DeliveryTableViewCell", for: indexPath) as! DeliveryTableViewCell
@@ -149,7 +196,7 @@ extension MakePaymentViewController: UITableViewDataSource, UITableViewDelegate 
         if let address = selectedAddress {
             cell.nameTf.text = address.fullName
             cell.phoneTf.text = "\(address.contactNumber ?? 0)"
-            cell.businessTf.text = address.fullAddress?.houseNo
+            cell.businessTv.text = address.fullAddress?.houseNo
             cell.cityTf.text = address.fullAddress?.district
             cell.stateTf.text = address.stateName
             cell.pincodeTf.text = address.pinCode
@@ -174,29 +221,28 @@ extension MakePaymentViewController: UITableViewDataSource, UITableViewDelegate 
             setDefaultInvoiceValues(cell: cell)
             return
         }
+        
         let unitMrp = Double(product.mrp) ?? 0.0
         let unitFinalPrice = Double(product.finalPrice) ?? 0.0
-
         let mrp = unitMrp * Double(selectedQuantity)
         let finalPrice = unitFinalPrice * Double(selectedQuantity)
-
         let gst = finalPrice * 0.18
         let total = finalPrice + gst
         let discountAmount = mrp - finalPrice
-
-        cell.invoiceLbl?.text = product.itemName ?? "Product"
+        
         cell.mrpamtLbl?.text = "₹\(String(format: "%.2f", mrp))"
         cell.finalamountLbl?.text = "₹\(String(format: "%.2f", finalPrice))"
         cell.discountamtLbl?.text = "-₹\(String(format: "%.2f", discountAmount))"
+        
         if let discountTag = product.discountTag {
             cell.discountLbl?.text = discountTag.components(separatedBy: "-").first
         } else {
             cell.discountLbl?.text = "0% off"
         }
+        
         cell.gstamtLbl?.text = "₹\(String(format: "%.2f", gst))"
         cell.totalPayableLbl?.text = "₹\(String(format: "%.2f", total))"
         cell.exclusiveGstamtLbl?.text = "₹\(String(format: "%.2f", total))"
-
         finalPriceLbl?.text = "₹\(String(format: "%.2f", total))"
     }
     
@@ -221,7 +267,6 @@ extension MakePaymentViewController {
             parameters: nil,
             headers: nil
         ) { [weak self] (result: Result<APIResponse<[AddressModel]>, NetworkError>) in
-            
             DispatchQueue.main.async {
                 switch result {
                 case .success(let response):
@@ -239,71 +284,50 @@ extension MakePaymentViewController {
     
     @objc func saveAddressTapped(_ sender: UITapGestureRecognizer) {
         guard let cell = sender.view?.superview(of: DeliveryTableViewCell.self) else { return }
-
+        
         let contact = cell.phoneTf.text ?? ""
         let fullName = cell.nameTf.text ?? ""
-        let houseNo = cell.businessTf.text ?? ""
+        let houseNo = cell.businessTv.text ?? ""
         let street = cell.cityTf.text ?? ""
         let district = cell.cityTf.text ?? ""
         let stateName = cell.stateTf.text ?? ""
         let pinCode = cell.pincodeTf.text ?? ""
-
+        
         if contact.isEmpty || fullName.isEmpty || stateName.isEmpty || pinCode.isEmpty {
             showAlert(title: "Missing Fields", message: "Please fill all required fields")
             return
         }
-
+        
         callCreateAddressAPI(
-            contact: contact,
-            fullName: fullName,
-            houseNo: houseNo,
-            street: street,
-            landmark: "",
-            village: "",
-            district: district,
-            country: "India",
-            placeName: district,
-            stateName: stateName,
-            pinCode: pinCode
+            contact: contact, fullName: fullName, houseNo: houseNo,
+            street: street, landmark: "", village: "", district: district,
+            country: "India", placeName: district, stateName: stateName, pinCode: pinCode
         )
     }
-
+    
     func callCreateAddressAPI(
-        contact: String,
-        fullName: String,
-        houseNo: String,
-        street: String,
-        landmark: String,
-        village: String,
-        district: String,
-        country: String,
-        placeName: String,
-        stateName: String,
-        pinCode: String
+        contact: String, fullName: String, houseNo: String, street: String,
+        landmark: String, village: String, district: String, country: String,
+        placeName: String, stateName: String, pinCode: String
     ) {
         let body: [String: Any] = [
             "contact_number": Int(contact) ?? 0,
             "full_name": fullName,
             "full_address": [
-                "house_no": houseNo,
-                "street": street,
-                "landmark": landmark,
-                "village": village,
-                "district": district,
-                "country": country
+                "house_no": houseNo, "street": street, "landmark": landmark,
+                "village": village, "district": district, "country": country
             ],
             "place_name": placeName,
             "state_name": stateName,
             "pin_code": pinCode
         ]
-
+        
         NetworkManager.shared.request(
             urlString: API.CREATE_ADDRESS,
             method: .POST,
             parameters: body,
             headers: nil
         ) { [weak self] (result: Result<APIResponse<CreateAddressResponseModel>, NetworkError>) in
-
             DispatchQueue.main.async {
                 switch result {
                 case .success:
@@ -318,8 +342,9 @@ extension MakePaymentViewController {
 }
 
 extension MakePaymentViewController {
-
-    func callCreateOrderAPI() {
+    
+    func createOrderWithAddress(name: String, phone: String, houseNo: String, city: String, state: String, pincode: String) {
+        
         let cleanedString = finalPriceLbl.text?
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .replacingOccurrences(of: "₹", with: "")
@@ -327,29 +352,25 @@ extension MakePaymentViewController {
         
         guard let amountStr = cleanedString,
               let amount = Double(amountStr),
-              let product = selectedProduct,
-              let address = selectedAddress else {
+              let product = selectedProduct else {
             showAlert(title: "Error", message: "Invalid order details")
             return
         }
         
         let addressData: [String: Any] = [
-            "street": address.fullAddress?.street ?? "",
-            "city": address.fullAddress?.district ?? "",
-            "state": address.stateName ?? "",
-            "country": address.fullAddress?.country ?? "India"
+            "house_no": houseNo, "street": city, "city": city, "state": state, "country": "India"
         ]
         
         let backendBody: [String: Any] = [
             "item": product.id ?? "",
             "quantity": selectedQuantity,
             "variants": "color: Black, storage: 128GB",
-            "full_name": address.fullName ?? "",
+            "full_name": name,
             "full_address": addressData,
-            "place_name": address.placeName ?? "",
-            "state_name": address.stateName ?? "",
-            "pin_code": address.pinCode ?? "",
-            "contact_number": address.contactNumber ?? 0,
+            "place_name": city,
+            "state_name": state,
+            "pin_code": pincode,
+            "contact_number": Int(phone) ?? 0,
             "final_price": amount,
             "order_value": amount,
             "gst_percentage": 18.0,
@@ -376,7 +397,6 @@ extension MakePaymentViewController {
             parameters: backendBody,
             headers: nil
         ) { [weak self] (result: Result<APIResponse<CreateOrderResponseModel>, NetworkError>) in
-            
             DispatchQueue.main.async {
                 loadingAlert.dismiss(animated: true) {
                     switch result {
@@ -394,53 +414,93 @@ extension MakePaymentViewController {
             }
         }
     }
-
+    
     func startCashfreePayment(orderId: String, paymentSessionId: String) {
+#if targetEnvironment(simulator)
+        showSimulatorPaymentOptions(orderId: orderId)
+#else
+        startCashfreeSDKPayment(orderId: orderId, paymentSessionId: paymentSessionId)
+#endif
+    }
+    
+    private func showSimulatorPaymentOptions(orderId: String) {
+        let alert = UIAlertController(
+            title: "📱 Simulator Detected",
+            message: "Order ID: \(orderId)",
+            preferredStyle: .actionSheet
+        )
+        
+        alert.addAction(UIAlertAction(title: "✅ Simulate Success", style: .default) { [weak self] _ in
+            self?.handlePaymentSuccess(orderId: orderId)
+        })
+        
+        alert.addAction(UIAlertAction(title: "❌ Simulate Failure", style: .destructive) { [weak self] _ in
+            self?.handlePaymentFailure(message: "Payment declined")
+        })
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        
+        if let popover = alert.popoverPresentationController {
+            popover.sourceView = makepaymentBtn
+            popover.sourceRect = makepaymentBtn.bounds
+        }
+        
+        present(alert, animated: true)
+    }
+    
+    private func startCashfreeSDKPayment(orderId: String, paymentSessionId: String) {
         CFPaymentGatewayService.getInstance().setCallback(self)
-
+        
         do {
             let session = try CFSession.CFSessionBuilder()
                 .setOrderID(orderId)
                 .setPaymentSessionId(paymentSessionId)
                 .setEnvironment(CFENVIRONMENT.SANDBOX)
                 .build()
-
+            
             let webCheckout = try CFWebCheckoutPayment.CFWebCheckoutPaymentBuilder()
                 .setSession(session)
                 .build()
-
+            
             try CFPaymentGatewayService.getInstance().doPayment(webCheckout, viewController: self)
-
+            
         } catch let cfError as CFErrorResponse {
             showAlert(title: "Payment Error", message: cfError.message ?? "Failed to initialize payment.")
         } catch {
-            showAlert(title: "Payment Error", message: "Failed to initialize payment. Please try again.")
+            showAlert(title: "Payment Error", message: "Failed to initialize payment.")
         }
+    }
+    
+    private func handlePaymentSuccess(orderId: String) {
+        let alert = UIAlertController(
+            title: "Payment Successful! 🎉",
+            message: "Order ID: \(orderId)",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+            self?.navigationController?.popToRootViewController(animated: true)
+        })
+        present(alert, animated: true)
+    }
+    
+    private func handlePaymentFailure(message: String) {
+        showAlert(title: "Payment Failed", message: message)
     }
 }
 
 extension MakePaymentViewController: CFResponseDelegate {
-
     func onSuccess(_ order_id: String) {
-        DispatchQueue.main.async {
-            let alert = UIAlertController(
-                title: "Payment Successful! 🎉",
-                message: "Your order has been placed successfully.\nOrder ID: \(order_id)",
-                preferredStyle: .alert
-            )
-            alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-                self.navigationController?.popToRootViewController(animated: true)
-            })
-            self.present(alert, animated: true)
+        DispatchQueue.main.async { [weak self] in
+            self?.handlePaymentSuccess(orderId: order_id)
         }
     }
-
+    
     func onError(_ error: CFErrorResponse, order_id: String) {
-        DispatchQueue.main.async {
-            self.showAlert(title: "Payment Failed", message: error.message ?? "Something went wrong")
+        DispatchQueue.main.async { [weak self] in
+            self?.handlePaymentFailure(message: error.message ?? "Something went wrong")
         }
     }
-
+    
     func verifyPayment(order_id: String) { }
 }
 

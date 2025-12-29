@@ -22,6 +22,10 @@ class EdStoreViewController: UIViewController {
     var totalProducts = 0
     let pageSize = 10
     
+    // Address properties
+    var savedAddresses: [AddressModel] = []
+    var selectedAddress: AddressModel?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -32,7 +36,95 @@ class EdStoreViewController: UIViewController {
         tblVw.delegate = self
         
         topbarVw.addBottomShadow()
+        
+        
         fetchProducts()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        getAddressAPI()
+    }
+    
+    func getAddressAPI() {
+        NetworkManager.shared.request(
+            urlString: API.ONLINE_STORE_ADDRESS,
+            method: .GET,
+            parameters: nil,
+            headers: nil
+        ) { [weak self] (result: Result<APIResponse<[AddressModel]>, NetworkError>) in
+            
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                
+                switch result {
+                case .success(let response):
+                    print("Address Response: \(response)")
+                    if let addresses = response.data, !addresses.isEmpty {
+                        self.savedAddresses = addresses
+                        self.selectedAddress = addresses.first
+                        self.updateDeliveryLabel()
+                    } else {
+                        self.savedAddresses = []
+                        self.selectedAddress = nil
+                        self.deliveryLbl.text = "Add your Delivery Address"
+                    }
+                    
+                case .failure(let error):
+                    print("Address Fetch Error:", error)
+                    self.savedAddresses = []
+                    self.selectedAddress = nil
+                    self.deliveryLbl.text = "Add your Delivery Address"
+                }
+            }
+        }
+    }
+    
+    func updateDeliveryLabel() {
+        guard let address = selectedAddress else {
+            deliveryLbl.text = "Add your Delivery Address"
+            return
+        }
+        
+        let displayAddress = getDisplayAddress(from: address)
+        
+        if displayAddress.isEmpty {
+            deliveryLbl.text = "Add your Delivery Address"
+        } else {
+            deliveryLbl.text = displayAddress
+            deliveryLbl.textColor = .black
+        }
+    }
+    
+    func getDisplayAddress(from address: AddressModel) -> String {
+        var addressComponents: [String] = []
+        
+        if let houseNo = address.fullAddress?.houseNo, !houseNo.isEmpty {
+            addressComponents.append(houseNo)
+        }
+        if let street = address.fullAddress?.street, !street.isEmpty {
+            addressComponents.append(street)
+        }
+        if let landmark = address.fullAddress?.landmark, !landmark.isEmpty {
+            addressComponents.append(landmark)
+        }
+        if let village = address.fullAddress?.village, !village.isEmpty {
+            addressComponents.append(village)
+        }
+        if let district = address.fullAddress?.district, !district.isEmpty {
+            addressComponents.append(district)
+        }
+        if let place = address.placeName, !place.isEmpty {
+            addressComponents.append(place)
+        }
+        if let state = address.stateName, !state.isEmpty {
+            addressComponents.append(state)
+        }
+        if let pin = address.pinCode, !pin.isEmpty {
+            addressComponents.append(pin)
+        }
+        
+        return addressComponents.joined(separator: ", ")
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -41,23 +133,22 @@ class EdStoreViewController: UIViewController {
         let height = scrollView.frame.size.height
 
         if offsetY > contentHeight - height - 120 {
-            // Only fetch if more products exist
             if !isLoading && products.count < totalProducts {
                 fetchProducts()
             }
         }
     }
     
-    private func setupTopbarShadow() {
-        topbarVw.layer.shadowColor = UIColor.black.cgColor
-        topbarVw.layer.shadowOpacity = 0.15
-        topbarVw.layer.shadowOffset = CGSize(width: 0, height: 3)
-        topbarVw.layer.shadowRadius = 5
-        topbarVw.layer.masksToBounds = false
-    }
-    
     @IBAction func backButtonTapped(_ sender: UIButton) {
         navigationController?.popViewController(animated: true)
+    }
+    
+    @IBAction func changeButtonTapped(_ sender: UIButton) {
+        let storyboard = UIStoryboard(name: "EdStore", bundle: nil)
+        if let saveAddressVC = storyboard.instantiateViewController(withIdentifier: "SaveAddressVC") as? SaveAddressVC {
+            saveAddressVC.existingAddress = selectedAddress
+            self.navigationController?.pushViewController(saveAddressVC, animated: true)
+        }
     }
     
     func fetchProducts() {
@@ -79,10 +170,8 @@ class EdStoreViewController: UIViewController {
 
                 switch result {
                 case .success(let response):
-                    // Update total products
                     self.totalProducts = response.total ?? 0
                     
-                    // Append new products
                     if let newProducts = response.data, !newProducts.isEmpty {
                         self.products.append(contentsOf: newProducts)
                         self.tblVw.reloadData()
@@ -119,13 +208,23 @@ extension EdStoreViewController: UITableViewDataSource, UITableViewDelegate, EdS
         cell.discountLbl.text = product.discountTag
         
         if let discountTag = product.discountTag {
-            cell.discountLbl?.text = discountTag.components(separatedBy: "-").first
-        } else {
-            cell.discountLbl?.text = "0% off"
-        }
-       // cell.discountLbl.text = product.highlights?.joined(separator: ", ") ?? ""
+            let pattern = "\\d+%\\s*off"
+            let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive)
 
-        
+            let range = NSRange(location: 0, length: discountTag.utf16.count)
+            if let match = regex?.firstMatch(in: discountTag, options: [], range: range),
+               let matchRange = Range(match.range, in: discountTag) {
+                cell.discountLbl.text = String(discountTag[matchRange])
+                cell.discountLbl.isHidden = false
+            } else {
+                cell.discountLbl.text = ""
+                cell.discountLbl.isHidden = true
+            }
+        } else {
+            cell.discountLbl.text = ""
+            cell.discountLbl.isHidden = true
+        }
+
         if let url = URL(string: product.thumbnailImage) {
             cell.imgVw.loadImage(from: url)
         } else {
@@ -136,10 +235,9 @@ extension EdStoreViewController: UITableViewDataSource, UITableViewDelegate, EdS
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 246
+        return 266
     }
     
-    // EdStoreCellDelegate method
     func didTapImage(in cell: EdStoreTableViewCell) {
         guard let indexPath = tblVw.indexPath(for: cell) else { return }
         let product = products[indexPath.row]
@@ -151,7 +249,6 @@ extension EdStoreViewController: UITableViewDataSource, UITableViewDelegate, EdS
         }
     }
 }
-   
 
 extension UIImageView {
     func loadImage(from url: URL) {

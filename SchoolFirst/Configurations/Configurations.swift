@@ -134,7 +134,12 @@ struct API {
     
     static let ASSESSMENT_RESULTS = BASE_URL + "assessments/result"
     
-    
+
+    // GET all addresses & POST new address
+    static let ONLINE_STORE_ADDRESS = BASE_URL + "onlinestore/address"
+
+    // PUT/UPDATE address - needs ID appended
+    static let EDIT_ADDRESS = BASE_URL + "onlinestore/address/"  // + id
     
     // Attandance :
     

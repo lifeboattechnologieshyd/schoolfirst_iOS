@@ -25,8 +25,7 @@ class EdStoreTableViewCell: UITableViewCell {
         override func awakeFromNib() {
             super.awakeFromNib()
             
-            bgVw.layer.cornerRadius = 12
-            bgVw.layer.masksToBounds = true
+             bgVw.addCardShadow()
             
              imgVw.isUserInteractionEnabled = true
             let tapGesture = UITapGestureRecognizer(target: self, action: #selector(imageTapped))
