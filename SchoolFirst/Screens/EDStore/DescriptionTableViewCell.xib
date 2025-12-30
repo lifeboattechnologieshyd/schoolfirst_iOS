@@ -65,14 +65,15 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bjb-Of-eQB">
-                        <rect key="frame" x="160.33333333333334" y="52" width="55" height="28"/>
+                        <rect key="frame" x="160.33333333333334" y="52" width="64" height="28"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="28" id="1xP-cI-PN0"/>
                         </constraints>
                         <attributedString key="attributedText">
                             <fragment content=" 80% OFF">
                                 <attributes>
-                                    <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                    <color key="NSColor" red="0.58250473484848486" green="0.58250473484848486" blue="0.58250473484848486" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <font key="NSFont" size="14" name="Lexend-Regular"/>
                                 </attributes>
                             </fragment>
                         </attributedString>
@@ -116,6 +117,11 @@
                             <constraint firstAttribute="height" constant="28" id="bOy-Y7-0hj"/>
                             <constraint firstItem="zXm-xC-cKy" firstAttribute="centerX" secondItem="YFo-M3-De0" secondAttribute="centerX" id="roB-VA-ymS"/>
                         </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="3"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
                     </view>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lPL-rH-TqC">
                         <rect key="frame" x="166" y="128" width="138" height="28"/>
@@ -139,6 +145,11 @@
                             <constraint firstItem="qRu-8M-8xN" firstAttribute="centerY" secondItem="lPL-rH-TqC" secondAttribute="centerY" id="g4U-IG-Kdd"/>
                             <constraint firstAttribute="height" constant="28" id="qgJ-qF-i0Q"/>
                         </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="3"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X3N-fY-0es">
                         <rect key="frame" x="16" y="174" width="150" height="20"/>

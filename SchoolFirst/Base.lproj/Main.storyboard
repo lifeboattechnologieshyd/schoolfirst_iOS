@@ -1136,7 +1136,7 @@
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fFt-JR-SvX">
                                                         <rect key="frame" x="168.66666666666663" y="0.0" width="160.33333333333337" height="25"/>
                                                         <attributedString key="attributedText">
-                                                            <fragment content="2/3">
+                                                            <fragment content="1">
                                                                 <attributes>
                                                                     <font key="NSFont" size="16" name="Lexend-Regular"/>
                                                                     <paragraphStyle key="NSParagraphStyle" alignment="right" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
@@ -1380,6 +1380,7 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="wis-mJ-4DA">
                                 <rect key="frame" x="0.0" y="357.33333333333326" width="393" height="460.66666666666674"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
                             </tableView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="userImage" translatesAutoresizingMaskIntoConstraints="NO" id="DcZ-CH-GdD">
                                 <rect key="frame" x="16" y="133" width="82" height="82"/>
@@ -3837,7 +3838,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GBN-Dp-1Rr">
-                                <rect key="frame" x="0.0" y="83" width="393" height="50"/>
+                                <rect key="frame" x="0.0" y="59" width="393" height="50"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Sc-Tn-iO5">
                                         <rect key="frame" x="16" y="17" width="16" height="16"/>
@@ -3878,7 +3879,7 @@
                                 </constraints>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="CUA-5C-A90">
-                                <rect key="frame" x="0.0" y="143" width="393" height="615"/>
+                                <rect key="frame" x="0.0" y="119" width="393" height="639"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jxp-Nl-5Aa">
@@ -3895,13 +3896,16 @@
                                         <real key="value" value="24"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="onClickAddKid:" destination="O7V-uX-m7r" eventType="touchUpInside" id="2Xl-XT-C7v"/>
+                                </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="fCx-IX-97d"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="fCx-IX-97d" firstAttribute="bottom" secondItem="CUA-5C-A90" secondAttribute="bottom" constant="60" id="3t6-fD-aWL"/>
-                            <constraint firstItem="GBN-Dp-1Rr" firstAttribute="top" secondItem="fCx-IX-97d" secondAttribute="top" constant="24" id="J4c-9n-wFH"/>
+                            <constraint firstItem="GBN-Dp-1Rr" firstAttribute="top" secondItem="fCx-IX-97d" secondAttribute="top" id="J4c-9n-wFH"/>
                             <constraint firstItem="CUA-5C-A90" firstAttribute="top" secondItem="GBN-Dp-1Rr" secondAttribute="bottom" constant="10" id="OXF-Mf-i2S"/>
                             <constraint firstItem="jxp-Nl-5Aa" firstAttribute="leading" secondItem="fCx-IX-97d" secondAttribute="leading" constant="16" id="Q4s-se-nb9"/>
                             <constraint firstItem="CUA-5C-A90" firstAttribute="leading" secondItem="fCx-IX-97d" secondAttribute="leading" id="R38-Vh-EtT"/>
@@ -5417,10 +5421,10 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray3Color">
-            <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGroupedBackgroundColor">
-            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

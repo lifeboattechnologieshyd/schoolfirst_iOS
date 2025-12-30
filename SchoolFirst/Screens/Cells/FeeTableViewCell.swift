@@ -53,11 +53,12 @@ class FeeTableViewCell: UITableViewCell {
         self.imgVw.loadImage(url: details.studentImage ?? "")
         self.lblTotalFeeDue.text = "₹\(details.pendingFee.rounded())"
         
-        let totalInstallments = details.feeInstallments.count
-        let paidInstallments = details.feeInstallments.filter { $0.feePaid >= $0.payableAmount }.count
-        
-        lblInstallment.text = "\(paidInstallments) / \(totalInstallments)"
-        
+        let installmentNumbers = details.feeInstallments
+            .map { String($0.installmentNo) }
+            .joined(separator: ", ")
+
+        lblInstallment.text = installmentNumbers
+
         //        if let nextInstallment = details.feeInstallments.first(where: { $0.feePaid < $0.payableAmount }) {
         //                // Divide by 1000 if API gives milliseconds
         //                let date = Date(timeIntervalSince1970: nextInstallment.dueDate / 1000)

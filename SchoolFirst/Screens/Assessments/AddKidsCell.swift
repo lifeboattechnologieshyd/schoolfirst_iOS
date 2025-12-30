@@ -11,12 +11,13 @@ class AddKidsCell: UITableViewCell {
     
     @IBOutlet weak var addKidButton: UIButton!
     
+    var onAddKidTapped: (() -> Void)?
+    
     override func awakeFromNib() {
         super.awakeFromNib()
     }
     
     @IBAction func addKidButton(_ sender: UIButton) {
-        NotificationCenter.default.post(name: NSNotification.Name("AddKidTapped"), object: nil)
+        onAddKidTapped?()
     }
 }
-

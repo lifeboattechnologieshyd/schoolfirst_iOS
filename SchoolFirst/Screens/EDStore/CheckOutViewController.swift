@@ -34,6 +34,7 @@ class CheckOutViewController: UIViewController {
         tblVw.delegate = self
         
         topbarVw.addBottomShadow()
+        bottomVw.addTopShadow()
         
         
         if let product = selectedProduct {
@@ -184,8 +185,9 @@ extension CheckOutViewController: UITableViewDataSource, UITableViewDelegate {
             cell.selectionStyle = .none
             
             cell.descriptionTv.text = product.itemDescription
-            self.amountLbl.text = "₹\(product.finalPrice)"
-            cell.amount2Lbl.text = "₹\(product.finalPrice)"
+            self.amountLbl.text = "₹\(Int(Double(product.finalPrice) ?? 0))"
+            cell.strikeOutPrice.text = "₹\(Int(Double(product.finalPrice) ?? 0))"
+
             
             // STRIKEOUT PRICE VISIBILITY
             let mrp = product.mrp.trimmingCharacters(in: .whitespaces)

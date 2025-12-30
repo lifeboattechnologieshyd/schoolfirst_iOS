@@ -88,7 +88,12 @@ struct API {
     static let NEWS = BASE_URL + "news/"
     
     
-    
+    // In your API/Constants file
+
+    // In your API/Constants file
+    static let ADD_STUDENT = BASE_URL + "school/general/student"
+    static let GRADES_LIST = BASE_URL + "school/grade/unassigned"
+
     // assesssment :
     
     static let GRADES = BASE_URL + "school/grade/unassigned"

@@ -8,6 +8,10 @@ import UIKit
 import Lottie
 
 class PopUpVC: UIViewController {
+    
+    var isSuccess: Bool = false
+       var message: String = ""
+     
 
     @IBOutlet weak var animationVw: UIView!
     @IBOutlet weak var okBtn: UIButton!

@@ -16,13 +16,14 @@ class MakePaymentViewController: UIViewController {
     var savedAddresses: [AddressModel] = []
     var selectedAddress: AddressModel?
     var selectedQuantity: Int = 1
+    private var loadingView: UIView?
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var topbarVw: UIView!
     @IBOutlet weak var makepaymentBtn: UIButton!
+    @IBOutlet weak var bottomVw: UIView!
     @IBOutlet weak var finalPriceLbl: UILabel!
     @IBOutlet weak var backButton: UIButton!
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +32,7 @@ class MakePaymentViewController: UIViewController {
         tableView.estimatedRowHeight = 500
         
         topbarVw.addBottomShadow()
+        bottomVw.addTopShadow()
         setupTableView()
         getAddressAPI()
     }
@@ -39,6 +41,7 @@ class MakePaymentViewController: UIViewController {
         super.viewWillAppear(animated)
         tableView.reloadData()
         updateFinalPriceLabel()
+        CFPaymentGatewayService.getInstance().setCallback(self)
     }
     
     private func setupTableView() {
@@ -109,6 +112,42 @@ class MakePaymentViewController: UIViewController {
         let total = finalPrice + gst
         finalPriceLbl.text = "₹\(String(format: "%.2f", total))"
     }
+    
+    private func showLoadingView(message: String = "Creating order...") {
+        hideLoadingView()
+        
+        let containerView = UIView(frame: view.bounds)
+        containerView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        containerView.tag = 999
+        
+        let boxView = UIView(frame: CGRect(x: 0, y: 0, width: 140, height: 120))
+        boxView.backgroundColor = .white
+        boxView.layer.cornerRadius = 12
+        boxView.center = containerView.center
+        containerView.addSubview(boxView)
+        
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.center = CGPoint(x: 70, y: 45)
+        indicator.color = .darkGray
+        indicator.startAnimating()
+        boxView.addSubview(indicator)
+        
+        let label = UILabel(frame: CGRect(x: 10, y: 80, width: 120, height: 30))
+        label.text = message
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 13, weight: .medium)
+        label.textColor = .darkGray
+        boxView.addSubview(label)
+        
+        view.addSubview(containerView)
+        loadingView = containerView
+    }
+    
+    private func hideLoadingView() {
+        loadingView?.removeFromSuperview()
+        loadingView = nil
+        view.viewWithTag(999)?.removeFromSuperview()
+    }
 }
 
 extension MakePaymentViewController: UITableViewDataSource, UITableViewDelegate {
@@ -134,8 +173,6 @@ extension MakePaymentViewController: UITableViewDataSource, UITableViewDelegate 
         }
     }
     
-    // In MakePaymentViewController
-
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.row {
         case 0:
@@ -150,14 +187,14 @@ extension MakePaymentViewController: UITableViewDataSource, UITableViewDelegate 
     }
 
     private func calculatePaymentCellHeight() -> CGFloat {
-        let baseHeight: CGFloat = 200  // Height without specifications
+        let baseHeight: CGFloat = 200
         
         guard let specs = selectedProduct?.specification else {
             return baseHeight
         }
         
         let visibleSpecCount = min(specs.count, 4)
-        let specificationHeight: CGFloat = CGFloat(visibleSpecCount) * 45  // Each spec row height
+        let specificationHeight: CGFloat = CGFloat(visibleSpecCount) * 45
         
         return baseHeight + specificationHeight
     }
@@ -221,29 +258,31 @@ extension MakePaymentViewController: UITableViewDataSource, UITableViewDelegate 
             setDefaultInvoiceValues(cell: cell)
             return
         }
-        
-        let unitMrp = Double(product.mrp) ?? 0.0
-        let unitFinalPrice = Double(product.finalPrice) ?? 0.0
-        let mrp = unitMrp * Double(selectedQuantity)
-        let finalPrice = unitFinalPrice * Double(selectedQuantity)
-        let gst = finalPrice * 0.18
+
+        let unitMrp = Int(Double(product.mrp) ?? 0)
+        let unitFinalPrice = Int(Double(product.finalPrice) ?? 0)
+
+        let mrp = unitMrp * selectedQuantity
+        let finalPrice = unitFinalPrice * selectedQuantity
+
+        let gst = Int(Double(finalPrice) * 0.18)
         let total = finalPrice + gst
         let discountAmount = mrp - finalPrice
-        
-        cell.mrpamtLbl?.text = "₹\(String(format: "%.2f", mrp))"
-        cell.finalamountLbl?.text = "₹\(String(format: "%.2f", finalPrice))"
-        cell.discountamtLbl?.text = "-₹\(String(format: "%.2f", discountAmount))"
-        
-        if let discountTag = product.discountTag {
-            cell.discountLbl?.text = discountTag.components(separatedBy: "-").first
+
+        cell.mrpamtLbl.text = "₹\(mrp)"
+        cell.finalamountLbl.text = "₹\(finalPrice)"
+        cell.discountamtLbl.text = "-₹\(discountAmount)"
+
+        if let discountTag = product.discountTag, !discountTag.isEmpty {
+            cell.discountLbl.text = discountTag.components(separatedBy: "-").first?.trimmingCharacters(in: .whitespaces)
         } else {
-            cell.discountLbl?.text = "0% off"
+            cell.discountLbl.text = "0% off"
         }
-        
-        cell.gstamtLbl?.text = "₹\(String(format: "%.2f", gst))"
-        cell.totalPayableLbl?.text = "₹\(String(format: "%.2f", total))"
-        cell.exclusiveGstamtLbl?.text = "₹\(String(format: "%.2f", total))"
-        finalPriceLbl?.text = "₹\(String(format: "%.2f", total))"
+
+        cell.gstamtLbl.text = "₹\(gst)"
+        cell.totalPayableLbl.text = "₹\(total)"
+        cell.exclusiveGstamtLbl.text = "₹\(total)"
+        finalPriceLbl.text = "₹\(total)"
     }
     
     private func setDefaultInvoiceValues(cell: InvoiceTableViewCell) {
@@ -383,13 +422,7 @@ extension MakePaymentViewController {
             "last_status_update_by": ""
         ]
         
-        let loadingAlert = UIAlertController(title: nil, message: "Creating order...", preferredStyle: .alert)
-        let loadingIndicator = UIActivityIndicatorView(frame: CGRect(x: 10, y: 5, width: 50, height: 50))
-        loadingIndicator.hidesWhenStopped = true
-        loadingIndicator.style = .medium
-        loadingIndicator.startAnimating()
-        loadingAlert.view.addSubview(loadingIndicator)
-        present(loadingAlert, animated: true)
+        showLoadingView(message: "Creating order...")
         
         NetworkManager.shared.request(
             urlString: API.CREATE_ORDER,
@@ -398,64 +431,45 @@ extension MakePaymentViewController {
             headers: nil
         ) { [weak self] (result: Result<APIResponse<CreateOrderResponseModel>, NetworkError>) in
             DispatchQueue.main.async {
-                loadingAlert.dismiss(animated: true) {
-                    switch result {
-                    case .success(let response):
-                        if let orderId = response.data?.orderId,
-                           let paymentSessionId = response.data?.paymentSessionId {
-                            self?.startCashfreePayment(orderId: orderId, paymentSessionId: paymentSessionId)
-                        } else {
-                            self?.showAlert(title: "Error", message: "Failed to get order details from server.")
-                        }
-                    case .failure:
-                        self?.showAlert(title: "Error", message: "Failed to create order. Please try again.")
+                guard let self = self else { return }
+                
+                self.hideLoadingView()
+                
+                switch result {
+                case .success(let response):
+                    if let orderId = response.data?.orderId,
+                       let paymentSessionId = response.data?.paymentSessionId,
+                       !orderId.isEmpty,
+                       !paymentSessionId.isEmpty {
+                        self.startCashfreePayment(orderId: orderId, paymentSessionId: paymentSessionId)
+                    } else {
+                        self.showPaymentPopUp(isSuccess: false, message: "Failed to get order details from server.")
                     }
+                case .failure:
+                    self.showPaymentPopUp(isSuccess: false, message: "Failed to create order. Please try again.")
                 }
             }
         }
     }
     
     func startCashfreePayment(orderId: String, paymentSessionId: String) {
-#if targetEnvironment(simulator)
-        showSimulatorPaymentOptions(orderId: orderId)
-#else
-        startCashfreeSDKPayment(orderId: orderId, paymentSessionId: paymentSessionId)
-#endif
-    }
-    
-    private func showSimulatorPaymentOptions(orderId: String) {
-        let alert = UIAlertController(
-            title: "📱 Simulator Detected",
-            message: "Order ID: \(orderId)",
-            preferredStyle: .actionSheet
-        )
-        
-        alert.addAction(UIAlertAction(title: "✅ Simulate Success", style: .default) { [weak self] _ in
-            self?.handlePaymentSuccess(orderId: orderId)
-        })
-        
-        alert.addAction(UIAlertAction(title: "❌ Simulate Failure", style: .destructive) { [weak self] _ in
-            self?.handlePaymentFailure(message: "Payment declined")
-        })
-        
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        
-        if let popover = alert.popoverPresentationController {
-            popover.sourceView = makepaymentBtn
-            popover.sourceRect = makepaymentBtn.bounds
+        if let presented = self.presentedViewController {
+            presented.dismiss(animated: false) { [weak self] in
+                self?.initiatePayment(orderId: orderId, paymentSessionId: paymentSessionId)
+            }
+        } else {
+            initiatePayment(orderId: orderId, paymentSessionId: paymentSessionId)
         }
-        
-        present(alert, animated: true)
     }
-    
-    private func startCashfreeSDKPayment(orderId: String, paymentSessionId: String) {
+
+    private func initiatePayment(orderId: String, paymentSessionId: String) {
         CFPaymentGatewayService.getInstance().setCallback(self)
         
         do {
             let session = try CFSession.CFSessionBuilder()
                 .setOrderID(orderId)
                 .setPaymentSessionId(paymentSessionId)
-                .setEnvironment(CFENVIRONMENT.SANDBOX)
+                .setEnvironment(.PRODUCTION)
                 .build()
             
             let webCheckout = try CFWebCheckoutPayment.CFWebCheckoutPaymentBuilder()
@@ -465,43 +479,63 @@ extension MakePaymentViewController {
             try CFPaymentGatewayService.getInstance().doPayment(webCheckout, viewController: self)
             
         } catch let cfError as CFErrorResponse {
-            showAlert(title: "Payment Error", message: cfError.message ?? "Failed to initialize payment.")
+            showPaymentPopUp(isSuccess: false, message: cfError.message ?? "Failed to initialize payment.")
         } catch {
-            showAlert(title: "Payment Error", message: "Failed to initialize payment.")
+            showPaymentPopUp(isSuccess: false, message: "Failed to initialize payment. Please try again.")
         }
     }
     
-    private func handlePaymentSuccess(orderId: String) {
-        let alert = UIAlertController(
-            title: "Payment Successful! 🎉",
-            message: "Order ID: \(orderId)",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
-            self?.navigationController?.popToRootViewController(animated: true)
-        })
-        present(alert, animated: true)
+    func showPaymentPopUp(isSuccess: Bool, message: String) {
+        if let presentedVC = self.presentedViewController {
+            presentedVC.dismiss(animated: false) { [weak self] in
+                self?.presentPopUp(isSuccess: isSuccess, message: message)
+            }
+        } else {
+            presentPopUp(isSuccess: isSuccess, message: message)
+        }
     }
     
-    private func handlePaymentFailure(message: String) {
-        showAlert(title: "Payment Failed", message: message)
+    private func presentPopUp(isSuccess: Bool, message: String) {
+        let sb = UIStoryboard(name: "Main", bundle: nil)
+        guard let vc = sb.instantiateViewController(withIdentifier: "PopUpVC") as? PopUpVC else { return }
+        
+        vc.modalPresentationStyle = .overFullScreen
+        vc.modalTransitionStyle = .crossDissolve
+        vc.isSuccess = isSuccess
+        vc.message = message
+        
+        present(vc, animated: true)
     }
 }
 
 extension MakePaymentViewController: CFResponseDelegate {
+    
     func onSuccess(_ order_id: String) {
-        DispatchQueue.main.async { [weak self] in
-            self?.handlePaymentSuccess(orderId: order_id)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.showPaymentPopUp(
+                isSuccess: true,
+                message: "Your payment has been processed successfully.\n\nOrder ID: \(order_id)"
+            )
         }
     }
     
     func onError(_ error: CFErrorResponse, order_id: String) {
-        DispatchQueue.main.async { [weak self] in
-            self?.handlePaymentFailure(message: error.message ?? "Something went wrong")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.showPaymentPopUp(
+                isSuccess: false,
+                message: error.message ?? "Payment failed. Please try again."
+            )
         }
     }
     
-    func verifyPayment(order_id: String) { }
+    func verifyPayment(order_id: String) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.showPaymentPopUp(
+                isSuccess: true,
+                message: "Payment verification in progress.\n\nOrder ID: \(order_id)"
+            )
+        }
+    }
 }
 
 extension UIView {

@@ -244,6 +244,21 @@ struct Student: Codable {
         case gradeID = "grade_id"
         case section
     }
+    
+    // ✅ Add this initializer
+    init(studentID: String, name: String, image: String?, fatherName: String, motherName: String, dob: String?, address: String?, mobile: String?, grade: String, gradeID: String, section: String) {
+        self.studentID = studentID
+        self.name = name
+        self.image = image
+        self.fatherName = fatherName
+        self.motherName = motherName
+        self.dob = dob
+        self.address = address
+        self.mobile = mobile
+        self.grade = grade
+        self.gradeID = gradeID
+        self.section = section
+    }
 }
 
 
@@ -344,6 +359,7 @@ struct Event: Codable {
         case date
         case time,image
         case colourCode = "colour_code"
+        
     }
 }
 
@@ -961,6 +977,37 @@ struct FeeInstallment: Codable {
         case dueDate = "due_date"
     }
 }
+extension FeeInstallment {
+    
+    var isPaid: Bool {
+        return feePaid >= payableAmount
+    }
+    
+    var pendingAmount: Double {
+        return payableAmount - feePaid
+    }
+    
+    var isPartiallyPaid: Bool {
+        return feePaid > 0 && feePaid < payableAmount
+    }
+    
+    // Convert TimeInterval to formatted date string
+    func dueDateFormatted() -> String {
+        let date = Date(timeIntervalSince1970: dueDate / 1000) // If milliseconds
+        // let date = Date(timeIntervalSince1970: dueDate) // If seconds
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd MMM yyyy"
+        return formatter.string(from: date)
+    }
+    
+    func dueDateMonthYear() -> String {
+        let date = Date(timeIntervalSince1970: dueDate / 1000) // If milliseconds
+        // let date = Date(timeIntervalSince1970: dueDate) // If seconds
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM yyyy"
+        return formatter.string(from: date)
+    }
+}
 
 
 
@@ -1523,5 +1570,61 @@ extension AddressModel {
         }
         
         return addressComponents.joined(separator: ", ")
+    }
+}
+struct PaymentVerificationResponse: Codable {
+    let orderId: String
+    let paymentStatus: String  // "SUCCESS", "FAILED", "PENDING", "CANCELLED"
+    let transactionId: String?
+    let amount: Double?
+    
+    enum CodingKeys: String, CodingKey {
+        case orderId = "order_id"
+        case paymentStatus = "payment_status"
+        case transactionId = "transaction_id"
+        case amount
+    }
+}
+
+struct StudentUpdateResponse: Codable {
+    let id: String
+    let creatorId: String
+    let relationType: String
+    let gradeId: String
+    let gradeName: String?
+    let studentName: String
+    let image: String?
+    let dob: String
+    let notes: [String]?
+    let status: String
+    let numericGrade: Int?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case creatorId = "creator_id"
+        case relationType = "relation_type"
+        case gradeId = "grade_id"
+        case gradeName = "grade_name"
+        case studentName = "student_name"
+        case image, dob, notes, status
+        case numericGrade = "numeric_grade"
+    
+    }
+}
+struct Grade: Codable {
+    let id: String
+    let schoolId: String?
+    let name: String
+    let section: String?
+    let numericGrade: Int?
+    let age: Int?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case schoolId = "school_id"
+        case name
+        case section
+        case numericGrade = "numeric_grade"
+        case age
     }
 }

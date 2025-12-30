@@ -204,7 +204,7 @@ extension EdStoreViewController: UITableViewDataSource, UITableViewDelegate, EdS
         cell.delegate = self
         
         cell.titleLbl.text = product.itemName
-        cell.priceLbl.text = "₹\(product.finalPrice)"
+        cell.priceLbl.text = "₹\(Int(Double(product.finalPrice) ?? 0))"
         cell.discountLbl.text = product.discountTag
         
         if let discountTag = product.discountTag {

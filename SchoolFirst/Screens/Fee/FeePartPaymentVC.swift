@@ -13,6 +13,8 @@ import CashfreePGUISDK
 class FeePartPaymentVC: UIViewController {
     
     var feeDetails: StudentFeeDetails!
+    var selectedInstallment: FeeInstallment! 
+        
 
     @IBOutlet weak var bachButton: UIButton!
     @IBOutlet weak var topVw: UIView!
@@ -38,24 +40,109 @@ class FeePartPaymentVC: UIViewController {
         "₹25 (0.12%)"
     ]
     
+    private static var blockRefresh = false
+    private static var cachedFeeDetails: StudentFeeDetails?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        topVw.addBottomShadow()
+        setupUI()
+        setupCollectionView()
+        updateUI()
+    }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        CFPaymentGatewayService.getInstance().setCallback(self)
+        
+        if !FeePartPaymentVC.blockRefresh {
+            updateUI()
+        } else if let cached = FeePartPaymentVC.cachedFeeDetails {
+            self.feeDetails = cached
+            updateUI()
+        }
+    }
+    
+    private func getPendingAmount() -> Double {
+        guard let details = feeDetails else { return 0 }
+        
+        if details.pendingFee > 0 {
+            return details.pendingFee
+        }
+        
+        var totalPending: Double = 0
+        for installment in details.feeInstallments {
+            let pending = installment.payableAmount - installment.feePaid
+            if pending > 0 {
+                totalPending += pending
+            }
+        }
+        return totalPending
+    }
+    
+    private func findInstallmentToPay() -> FeeInstallment? {
+        guard let details = feeDetails else { return nil }
+        
+        let sortedInstallments = details.feeInstallments.sorted { $0.installmentNo < $1.installmentNo }
+        
+        if let unpaidInstallment = sortedInstallments.first(where: { $0.feePaid < $0.payableAmount }) {
+            return unpaidInstallment
+        }
+        
+        if details.pendingFee > 0 {
+            return sortedInstallments.last
+        }
+        
+        return sortedInstallments.first
+    }
+    
+    private func setupUI() {
+        topVw.addBottomShadow()
+        
         bgVw.layer.shadowColor = UIColor.black.cgColor
         bgVw.layer.shadowOpacity = 0.15
         bgVw.layer.shadowOffset = CGSize(width: 0, height: 4)
+        bgVw.layer.shadowRadius = 4
         bgVw.layer.masksToBounds = false
         
+        amountTf.keyboardType = .decimalPad
+        amountTf.delegate = self
+    }
+    
+    private func setupCollectionView() {
         colVw.register(
             UINib(nibName: "AmountCell", bundle: nil),
             forCellWithReuseIdentifier: "AmountCell"
         )
-        
         colVw.delegate = self
         colVw.dataSource = self
-        updateUI()
+    }
+    
+    private func updateUI() {
+        guard let feeDetails = feeDetails else { return }
+        
+        studentNameLbl.text = feeDetails.studentName
+        
+        let pendingAmount = getPendingAmount()
+        if pendingAmount > 0 {
+            totalFeeLbl.text = "Pending: ₹\(String(format: "%.2f", pendingAmount))"
+        } else {
+            totalFeeLbl.text = "Total: ₹\(feeDetails.totalFee) (Fully Paid)"
+        }
+        
+        let installmentNumbers = feeDetails.feeInstallments
+            .map { String($0.installmentNo) }
+            .joined(separator: ", ")
+        installmentslbl.text = installmentNumbers
+
+        colVw.reloadData()
+        
+        if pendingAmount <= 0 {
+            paynowButton.isEnabled = false
+            paynowButton.alpha = 0.5
+        } else {
+            paynowButton.isEnabled = true
+            paynowButton.alpha = 1.0
+        }
     }
     
     @IBAction func onClickBack(_ sender: UIButton) {
@@ -64,15 +151,14 @@ class FeePartPaymentVC: UIViewController {
 
     @IBAction func onClickFeeSummary(_ sender: UIButton) {
         let sb = UIStoryboard(name: "Main", bundle: nil)
-        let vc = sb.instantiateViewController(
-            withIdentifier: "FeeSummaryVC"
-        ) as! FeeSummaryVC
-        
+        let vc = sb.instantiateViewController(withIdentifier: "FeeSummaryVC") as! FeeSummaryVC
         vc.feeDetails = feeDetails
         navigationController?.pushViewController(vc, animated: true)
     }
     
     @IBAction func onClickPayNow(_ sender: UIButton) {
+        view.endEditing(true)
+        
         guard let amountText = amountTf.text, !amountText.isEmpty else {
             showAlert(msg: "Please enter an amount")
             return
@@ -89,22 +175,34 @@ class FeePartPaymentVC: UIViewController {
             return
         }
         
-        guard let details = feeDetails else { return }
-        
-        guard let nextInstallment = details.feeInstallments.first(where: { $0.feePaid < $0.payableAmount }) else {
-            showAlert(msg: "All installments are already paid!")
+        guard let details = feeDetails else {
+            showAlert(msg: "Fee details not found")
             return
         }
         
+        let pendingAmount = getPendingAmount()
+        
+        if pendingAmount <= 0 {
+            showAlert(msg: "All fees are already paid!")
+            return
+        }
+        
+        guard let installment = findInstallmentToPay() else {
+            showAlert(msg: "No installment found")
+            return
+        }
+        
+        FeePartPaymentVC.cachedFeeDetails = self.feeDetails
+        FeePartPaymentVC.blockRefresh = true
+        
         createPaymentOrder(
             studentFeeId: details.studentFeeID,
-            installmentNumber: nextInstallment.installmentNo,
+            installmentNumber: installment.installmentNo,
             amount: amount
         )
     }
     
     func createPaymentOrder(studentFeeId: String, installmentNumber: Int, amount: Double) {
-        
         let payload: [String: Any] = [
             "student_fee_id": studentFeeId,
             "installment_number": installmentNumber,
@@ -115,9 +213,11 @@ class FeePartPaymentVC: UIViewController {
             urlString: API.FEE_CREATE_PAYMENT,
             method: .POST,
             parameters: payload
-        ) { (result: Result<APIResponse<FeePaymentResponse>, NetworkError>) in
+        ) { [weak self] (result: Result<APIResponse<FeePaymentResponse>, NetworkError>) in
             
             DispatchQueue.main.async {
+                guard let self = self else { return }
+                
                 switch result {
                 case .success(let response):
                     if response.success, let data = response.data {
@@ -126,10 +226,12 @@ class FeePartPaymentVC: UIViewController {
                             paymentSessionId: data.paymentSessionId
                         )
                     } else {
+                        FeePartPaymentVC.blockRefresh = true
                         self.showPaymentPopUp(isSuccess: false, message: response.description ?? "Failed to create order")
                     }
                     
                 case .failure(let error):
+                    FeePartPaymentVC.blockRefresh = true
                     self.showPaymentPopUp(isSuccess: false, message: error.localizedDescription)
                 }
             }
@@ -153,15 +255,31 @@ class FeePartPaymentVC: UIViewController {
             try CFPaymentGatewayService.getInstance().doPayment(webCheckout, viewController: self)
             
         } catch let cfError as CFErrorResponse {
+            FeePartPaymentVC.blockRefresh = true
             showPaymentPopUp(isSuccess: false, message: cfError.message ?? "Failed to initialize payment.")
         } catch {
+            FeePartPaymentVC.blockRefresh = true
             showPaymentPopUp(isSuccess: false, message: "Failed to initialize payment. Please try again.")
         }
     }
     
     func showPaymentPopUp(isSuccess: Bool, message: String) {
+        if let presentedVC = self.presentedViewController {
+            presentedVC.dismiss(animated: false) { [weak self] in
+                self?.presentPopUp(isSuccess: isSuccess, message: message)
+            }
+        } else {
+            presentPopUp(isSuccess: isSuccess, message: message)
+        }
+    }
+    
+    private func presentPopUp(isSuccess: Bool, message: String) {
         let sb = UIStoryboard(name: "Main", bundle: nil)
-        let vc = sb.instantiateViewController(withIdentifier: "PopUpVC") as! PopUpVC
+        
+        guard let vc = sb.instantiateViewController(withIdentifier: "PopUpVC") as? PopUpVC else {
+            showFallbackAlert(isSuccess: isSuccess, message: message)
+            return
+        }
         
         vc.modalPresentationStyle = .overFullScreen
         vc.modalTransitionStyle = .crossDissolve
@@ -171,81 +289,117 @@ class FeePartPaymentVC: UIViewController {
         }
     }
     
-    func updateUI() {
-        guard let feeDetails = feeDetails else { return }
+    private func showFallbackAlert(isSuccess: Bool, message: String) {
+        let title = isSuccess ? "Payment Successful" : "Payment Failed"
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
-        studentNameLbl.text = feeDetails.studentName
-        totalFeeLbl.text = "Total: ₹\(feeDetails.totalFee)"
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+            if isSuccess {
+                self?.navigationController?.popViewController(animated: true)
+            }
+        })
         
-        let totalInstallments = feeDetails.feeInstallments.count
-        let paidInstallments = feeDetails.feeInstallments.filter { $0.feePaid >= $0.payableAmount }.count
-        installmentslbl.text = "\(paidInstallments) / \(totalInstallments)"
-        
-        colVw.reloadData()
+        present(alert, animated: true)
+    }
+}
+
+extension FeePartPaymentVC: UITextFieldDelegate {
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        view.endEditing(true)
     }
 }
 
 extension FeePartPaymentVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
-    func collectionView(_ collectionView: UICollectionView,
-                        numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return amountList.count
     }
     
-    func collectionView(_ collectionView: UICollectionView,
-                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: "AmountCell",
-            for: indexPath
-        ) as! AmountCell
-        
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "AmountCell", for: indexPath) as! AmountCell
         cell.amountLbl.text = amountList[indexPath.item]
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedAmount = amountList[indexPath.item]
-        
-        let amountString = selectedAmount
-            .components(separatedBy: "(").first ?? ""
+        let amountString = selectedAmount.components(separatedBy: "(").first ?? ""
         let cleanedAmount = amountString
             .replacingOccurrences(of: "₹", with: "")
             .replacingOccurrences(of: ",", with: "")
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        
         amountTf.text = cleanedAmount
     }
 
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = (collectionView.frame.width - 40) / 3
         return CGSize(width: width, height: 34)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 10
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 10
     }
 }
 
 extension FeePartPaymentVC: CFResponseDelegate {
     
     func onSuccess(_ order_id: String) {
-        DispatchQueue.main.async {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self = self else { return }
+            
+            FeePartPaymentVC.blockRefresh = false
+            FeePartPaymentVC.cachedFeeDetails = nil
+            FeeViewController.blockRefresh = false
+            FeeViewController.cachedFeeDetails = nil
+            
             self.showPaymentPopUp(
                 isSuccess: true,
-                message: "Your payment has been processed successfully.\n\nOrder ID: \(order_id)"
+                message: "Payment successful!\n\nOrder ID: \(order_id)"
             )
         }
     }
     
     func onError(_ error: CFErrorResponse, order_id: String) {
-        DispatchQueue.main.async {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self = self else { return }
+            
+            FeePartPaymentVC.blockRefresh = true
+            
             self.showPaymentPopUp(
                 isSuccess: false,
-                message: error.message ?? "Something went wrong"
+                message: error.message ?? "Payment failed."
             )
+            
+            if let cached = FeePartPaymentVC.cachedFeeDetails {
+                self.feeDetails = cached
+                self.updateUI()
+            }
         }
     }
     
     func verifyPayment(order_id: String) {
-        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self = self else { return }
+            
+            FeePartPaymentVC.blockRefresh = false
+            FeePartPaymentVC.cachedFeeDetails = nil
+            FeeViewController.blockRefresh = false
+            FeeViewController.cachedFeeDetails = nil
+            
+            self.showPaymentPopUp(
+                isSuccess: true,
+                message: "Payment successful!\n\nOrder ID: \(order_id)"
+            )
+        }
     }
 }

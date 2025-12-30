@@ -32,8 +32,11 @@ class AssessmentsViewController: UIViewController {
         
         navigationController?.popToRootViewController(animated: true)
     }
-}
-
+    func goToAddKidVC() {
+            let vc = storyboard?.instantiateViewController(identifier: "AddKidVC") as! AddKidVC
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
 
 
 extension AssessmentsViewController: UITableViewDelegate, UITableViewDataSource {
