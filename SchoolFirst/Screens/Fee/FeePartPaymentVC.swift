@@ -13,9 +13,8 @@ import CashfreePGUISDK
 class FeePartPaymentVC: UIViewController {
     
     var feeDetails: StudentFeeDetails!
-    var selectedInstallment: FeeInstallment! 
+    var selectedInstallment: FeeInstallment!
         
-
     @IBOutlet weak var bachButton: UIButton!
     @IBOutlet weak var topVw: UIView!
     @IBOutlet weak var colVw: UICollectionView!
@@ -227,12 +226,12 @@ class FeePartPaymentVC: UIViewController {
                         )
                     } else {
                         FeePartPaymentVC.blockRefresh = true
-                        self.showPaymentPopUp(isSuccess: false, message: response.description ?? "Failed to create order")
+                        self.showPaymentPopUp(isSuccess: false)
                     }
                     
-                case .failure(let error):
+                case .failure:
                     FeePartPaymentVC.blockRefresh = true
-                    self.showPaymentPopUp(isSuccess: false, message: error.localizedDescription)
+                    self.showPaymentPopUp(isSuccess: false)
                 }
             }
         }
@@ -245,7 +244,7 @@ class FeePartPaymentVC: UIViewController {
             let session = try CFSession.CFSessionBuilder()
                 .setOrderID(orderId)
                 .setPaymentSessionId(paymentSessionId)
-                .setEnvironment(CFENVIRONMENT.SANDBOX)
+                .setEnvironment(CFENVIRONMENT.PRODUCTION)
                 .build()
             
             let webCheckout = try CFWebCheckoutPayment.CFWebCheckoutPaymentBuilder()
@@ -255,42 +254,49 @@ class FeePartPaymentVC: UIViewController {
             try CFPaymentGatewayService.getInstance().doPayment(webCheckout, viewController: self)
             
         } catch let cfError as CFErrorResponse {
+            print("❌ Cashfree Error: \(cfError.message ?? "Unknown error")")
             FeePartPaymentVC.blockRefresh = true
-            showPaymentPopUp(isSuccess: false, message: cfError.message ?? "Failed to initialize payment.")
+            showPaymentPopUp(isSuccess: false)
         } catch {
+            print("❌ Payment Error: \(error.localizedDescription)")
             FeePartPaymentVC.blockRefresh = true
-            showPaymentPopUp(isSuccess: false, message: "Failed to initialize payment. Please try again.")
+            showPaymentPopUp(isSuccess: false)
         }
     }
     
-    func showPaymentPopUp(isSuccess: Bool, message: String) {
+    func showPaymentPopUp(isSuccess: Bool) {
         if let presentedVC = self.presentedViewController {
             presentedVC.dismiss(animated: false) { [weak self] in
-                self?.presentPopUp(isSuccess: isSuccess, message: message)
+                self?.presentPopUp(isSuccess: isSuccess)
             }
         } else {
-            presentPopUp(isSuccess: isSuccess, message: message)
+            presentPopUp(isSuccess: isSuccess)
         }
     }
     
-    private func presentPopUp(isSuccess: Bool, message: String) {
+    private func presentPopUp(isSuccess: Bool) {
         let sb = UIStoryboard(name: "Main", bundle: nil)
         
         guard let vc = sb.instantiateViewController(withIdentifier: "PopUpVC") as? PopUpVC else {
-            showFallbackAlert(isSuccess: isSuccess, message: message)
+            showFallbackAlert(isSuccess: isSuccess)
             return
         }
         
         vc.modalPresentationStyle = .overFullScreen
         vc.modalTransitionStyle = .crossDissolve
         
-        present(vc, animated: true) {
-            vc.configure(isSuccess: isSuccess, message: message)
-        }
+        // Set property BEFORE presenting
+        vc.isSuccess = isSuccess
+        
+        present(vc, animated: true)
     }
     
-    private func showFallbackAlert(isSuccess: Bool, message: String) {
+    private func showFallbackAlert(isSuccess: Bool) {
         let title = isSuccess ? "Payment Successful" : "Payment Failed"
+        let message = isSuccess
+            ? "Thank you! Your payment has been processed successfully."
+            : "Your payment couldn't be processed. Please try again later."
+        
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
         alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
@@ -354,6 +360,7 @@ extension FeePartPaymentVC: UICollectionViewDelegate, UICollectionViewDataSource
 extension FeePartPaymentVC: CFResponseDelegate {
     
     func onSuccess(_ order_id: String) {
+        print("✅ Payment Success - Order ID: \(order_id)")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             guard let self = self else { return }
             
@@ -362,23 +369,18 @@ extension FeePartPaymentVC: CFResponseDelegate {
             FeeViewController.blockRefresh = false
             FeeViewController.cachedFeeDetails = nil
             
-            self.showPaymentPopUp(
-                isSuccess: true,
-                message: "Payment successful!\n\nOrder ID: \(order_id)"
-            )
+            self.showPaymentPopUp(isSuccess: true)
         }
     }
     
     func onError(_ error: CFErrorResponse, order_id: String) {
+        print("❌ Payment Error - Order ID: \(order_id), Error: \(error.message ?? "Unknown")")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             guard let self = self else { return }
             
             FeePartPaymentVC.blockRefresh = true
             
-            self.showPaymentPopUp(
-                isSuccess: false,
-                message: error.message ?? "Payment failed."
-            )
+            self.showPaymentPopUp(isSuccess: false)
             
             if let cached = FeePartPaymentVC.cachedFeeDetails {
                 self.feeDetails = cached
@@ -388,18 +390,23 @@ extension FeePartPaymentVC: CFResponseDelegate {
     }
     
     func verifyPayment(order_id: String) {
+        // This is called when user comes back without completing payment
+        // or when payment status is uncertain (cancelled/closed)
+        print("🔄 Payment Verification Called (User cancelled/closed) - Order ID: \(order_id)")
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             guard let self = self else { return }
             
-            FeePartPaymentVC.blockRefresh = false
-            FeePartPaymentVC.cachedFeeDetails = nil
-            FeeViewController.blockRefresh = false
-            FeeViewController.cachedFeeDetails = nil
+            // Treat as FAILURE since user came back without completing payment
+            FeePartPaymentVC.blockRefresh = true
             
-            self.showPaymentPopUp(
-                isSuccess: true,
-                message: "Payment successful!\n\nOrder ID: \(order_id)"
-            )
+            // Show FAILURE popup
+            self.showPaymentPopUp(isSuccess: false)
+            
+            if let cached = FeePartPaymentVC.cachedFeeDetails {
+                self.feeDetails = cached
+                self.updateUI()
+            }
         }
     }
 }

@@ -20,28 +20,14 @@ class FeeViewController: UIViewController {
     static var blockRefresh = false
     static var cachedFeeDetails: [StudentFeeDetails]?
     
+    // Track current order for verification
+    private var currentOrderId: String?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        topVw.addBottomShadow()
-        
-        tblVw.register(
-            UINib(nibName: "FeeTableViewCell", bundle: nil),
-            forCellReuseIdentifier: "FeeTableViewCell"
-        )
-        
-        tblVw.delegate = self
-        tblVw.dataSource = self
-        
-        if FeeViewController.blockRefresh, let cached = FeeViewController.cachedFeeDetails {
-            self.fee_details = cached
-            self.tblVw.reloadData()
-        } else {
-            getFeeDetails()
-        }
-        
-        topVw.clipsToBounds = false
-        topVw.layer.masksToBounds = false
+        setupUI()
+        setupTableView()
+        loadInitialData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -56,6 +42,32 @@ class FeeViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         topVw.addBottomShadow()
+    }
+    
+    private func setupUI() {
+        topVw.addBottomShadow()
+        topVw.clipsToBounds = false
+        topVw.layer.masksToBounds = false
+    }
+    
+    private func setupTableView() {
+        tblVw.register(
+            UINib(nibName: "FeeTableViewCell", bundle: nil),
+            forCellReuseIdentifier: "FeeTableViewCell"
+        )
+        tblVw.delegate = self
+        tblVw.dataSource = self
+        tblVw.separatorStyle = .none
+        tblVw.showsVerticalScrollIndicator = false
+    }
+    
+    private func loadInitialData() {
+        if FeeViewController.blockRefresh, let cached = FeeViewController.cachedFeeDetails {
+            self.fee_details = cached
+            self.tblVw.reloadData()
+        } else {
+            getFeeDetails()
+        }
     }
     
     @IBAction func onClickBack(_ sender: UIButton) {
@@ -102,7 +114,10 @@ class FeeViewController: UIViewController {
             return
         }
         
-        NetworkManager.shared.request(urlString: API.FEE_GET_DETAILS, method: .GET) { [weak self] (result: Result<APIResponse<[StudentFeeDetails]>, NetworkError>) in
+        NetworkManager.shared.request(
+            urlString: API.FEE_GET_DETAILS,
+            method: .GET
+        ) { [weak self] (result: Result<APIResponse<[StudentFeeDetails]>, NetworkError>) in
             guard let self = self else { return }
             
             if FeeViewController.blockRefresh { return }
@@ -116,8 +131,8 @@ class FeeViewController: UIViewController {
                         self.tblVw.reloadData()
                     }
                     
-                case .failure:
-                    break
+                case .failure(let error):
+                    print("❌ API Error: \(error.localizedDescription)")
                 }
             }
         }
@@ -165,18 +180,19 @@ class FeeViewController: UIViewController {
                 switch result {
                 case .success(let response):
                     if response.success, let data = response.data {
+                        self.currentOrderId = data.orderId
                         self.startCashfreePayment(
                             orderId: data.orderId,
                             paymentSessionId: data.paymentSessionId
                         )
                     } else {
                         FeeViewController.blockRefresh = true
-                        self.showPaymentPopUp(isSuccess: false, message: response.description ?? "Failed to create order")
+                        self.showPaymentPopUp(isSuccess: false)
                     }
                     
-                case .failure(let error):
+                case .failure:
                     FeeViewController.blockRefresh = true
-                    self.showPaymentPopUp(isSuccess: false, message: error.localizedDescription)
+                    self.showPaymentPopUp(isSuccess: false)
                 }
             }
         }
@@ -189,7 +205,7 @@ class FeeViewController: UIViewController {
             let session = try CFSession.CFSessionBuilder()
                 .setOrderID(orderId)
                 .setPaymentSessionId(paymentSessionId)
-                .setEnvironment(CFENVIRONMENT.SANDBOX)
+                .setEnvironment(CFENVIRONMENT.PRODUCTION)
                 .build()
             
             let webCheckout = try CFWebCheckoutPayment.CFWebCheckoutPaymentBuilder()
@@ -199,36 +215,60 @@ class FeeViewController: UIViewController {
             try CFPaymentGatewayService.getInstance().doPayment(webCheckout, viewController: self)
             
         } catch let cfError as CFErrorResponse {
+            print("❌ Cashfree Error: \(cfError.message ?? "Unknown error")")
             FeeViewController.blockRefresh = true
-            showPaymentPopUp(isSuccess: false, message: cfError.message ?? "Failed to initialize payment.")
+            currentOrderId = nil
+            showPaymentPopUp(isSuccess: false)
         } catch {
+            print("❌ Payment Error: \(error.localizedDescription)")
             FeeViewController.blockRefresh = true
-            showPaymentPopUp(isSuccess: false, message: "Failed to initialize payment. Please try again.")
+            currentOrderId = nil
+            showPaymentPopUp(isSuccess: false)
         }
     }
     
-    func showPaymentPopUp(isSuccess: Bool, message: String) {
+    func showPaymentPopUp(isSuccess: Bool) {
+        currentOrderId = nil
+        
         if let presentedVC = self.presentedViewController {
             presentedVC.dismiss(animated: false) { [weak self] in
-                self?.presentPopUp(isSuccess: isSuccess, message: message)
+                self?.presentPopUp(isSuccess: isSuccess)
             }
         } else {
-            presentPopUp(isSuccess: isSuccess, message: message)
+            presentPopUp(isSuccess: isSuccess)
         }
     }
     
-    private func presentPopUp(isSuccess: Bool, message: String) {
+    private func presentPopUp(isSuccess: Bool) {
         let sb = UIStoryboard(name: "Main", bundle: nil)
         
         guard let vc = sb.instantiateViewController(withIdentifier: "PopUpVC") as? PopUpVC else {
+            print("Could not instantiate PopUpVC")
             return
         }
         
         vc.modalPresentationStyle = .overFullScreen
         vc.modalTransitionStyle = .crossDissolve
+        vc.isSuccess = isSuccess
         
-        present(vc, animated: true) {
-            vc.configure(isSuccess: isSuccess, message: message)
+        present(vc, animated: true)
+    }
+    
+    private func verifyPaymentWithBackend(orderId: String) {
+        let payload: [String: Any] = [
+            "order_id": orderId
+        ]
+        
+        print("🔄 Payment was not completed - Order ID: \(orderId)")
+        
+        FeeViewController.blockRefresh = true
+        currentOrderId = nil
+        
+        showPaymentPopUp(isSuccess: false)
+        
+        if let cached = FeeViewController.cachedFeeDetails {
+            self.fee_details = cached
+            self.tblVw.reloadData()
         }
     }
     
@@ -270,7 +310,9 @@ extension FeeViewController: UITableViewDelegate, UITableViewDataSource {
         
         cell.bgView.applyCardShadow()
         cell.setup(details: details)
+        cell.selectionStyle = .none
         
+        // Handle button actions
         cell.onPartPayment = { [weak self] in
             self?.goToPartPayment(details: details)
         }
@@ -298,16 +340,15 @@ extension FeeViewController: UITableViewDelegate, UITableViewDataSource {
 extension FeeViewController: CFResponseDelegate {
     
     func onSuccess(_ order_id: String) {
+        print("✅ Payment Success - Order ID: \(order_id)")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             guard let self = self else { return }
             
             FeeViewController.blockRefresh = false
             FeeViewController.cachedFeeDetails = nil
+            self.currentOrderId = nil
             
-            self.showPaymentPopUp(
-                isSuccess: true,
-                message: "Payment successful!\n\nOrder ID: \(order_id)"
-            )
+            self.showPaymentPopUp(isSuccess: true)
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.getFeeDetails()
@@ -316,15 +357,14 @@ extension FeeViewController: CFResponseDelegate {
     }
     
     func onError(_ error: CFErrorResponse, order_id: String) {
+        print("❌ Payment Error - Order ID: \(order_id), Error: \(error.message ?? "Unknown")")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             guard let self = self else { return }
             
             FeeViewController.blockRefresh = true
+            self.currentOrderId = nil
             
-            self.showPaymentPopUp(
-                isSuccess: false,
-                message: error.message ?? "Payment failed."
-            )
+            self.showPaymentPopUp(isSuccess: false)
             
             if let cached = FeeViewController.cachedFeeDetails {
                 self.fee_details = cached
@@ -334,19 +374,19 @@ extension FeeViewController: CFResponseDelegate {
     }
     
     func verifyPayment(order_id: String) {
+        print("🔄 Payment Verification Called - Order ID: \(order_id)")
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             guard let self = self else { return }
             
-            FeeViewController.blockRefresh = false
-            FeeViewController.cachedFeeDetails = nil
+            FeeViewController.blockRefresh = true
+            self.currentOrderId = nil
             
-            self.showPaymentPopUp(
-                isSuccess: true,
-                message: "Payment successful!\n\nOrder ID: \(order_id)"
-            )
+            self.showPaymentPopUp(isSuccess: false)
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                self.getFeeDetails()
+            if let cached = FeeViewController.cachedFeeDetails {
+                self.fee_details = cached
+                self.tblVw.reloadData()
             }
         }
     }

@@ -4,6 +4,7 @@
 //
 //  Created by Lifeboat on 08/11/25.
 //
+
 import UIKit
 import Lottie
 
@@ -20,7 +21,10 @@ class QuestionVC: UIViewController {
     @IBOutlet weak var lblQuestionNumber: UILabel!
     @IBOutlet weak var lblQuestion: UILabel!
     @IBOutlet weak var lblDesciption: UILabel!
+    @IBOutlet weak var hintVw: UIView!
+    @IBOutlet weak var hintLbl: UILabel!
     @IBOutlet weak var stackViewOptions: UIStackView!
+    @IBOutlet weak var okBtn: UIButton!
     @IBOutlet weak var optionAView: UIView!
     @IBOutlet weak var lblTitleA: UILabel!
     @IBOutlet weak var lblOptionA: UILabel!
@@ -37,9 +41,7 @@ class QuestionVC: UIViewController {
     @IBOutlet weak var lblTitleHint: UILabel!
     @IBOutlet weak var lblOptionHint: UILabel!
     
-    
     @IBOutlet weak var lblMarks: UILabel!
-    
     
     @IBOutlet weak var lblPercentage: UILabel!
     @IBOutlet weak var lblSkipAns: UILabel!
@@ -48,9 +50,9 @@ class QuestionVC: UIViewController {
     @IBOutlet weak var lblTotalMarks: UILabel!
     
     var current_question = 0
+    var darkOverlayView: UIView!
     
     let slashLayer = CAShapeLayer()
-
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -63,11 +65,83 @@ class QuestionVC: UIViewController {
         self.lblDesciption.text = ""
         self.stackViewOptions.isHidden = true
         self.resultPopup.isHidden = true
+        
+        setupHintView()
+        
         self.setupQuestionsView()
-
+        
         drawSlash()
     }
     
+    func setupHintView() {
+        hintVw.isHidden = true
+        hintVw.layer.masksToBounds = true
+        
+        // Create dark overlay
+        darkOverlayView = UIView(frame: view.bounds)
+        darkOverlayView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+        darkOverlayView.isHidden = true
+        darkOverlayView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(overlayTapped))
+        darkOverlayView.addGestureRecognizer(tapGesture)
+        
+        view.addSubview(darkOverlayView)
+        
+        view.bringSubviewToFront(hintVw)
+        
+        okBtn.addTarget(self, action: #selector(okButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc func okButtonTapped() {
+        hideHintView()
+    }
+    
+    @objc func overlayTapped() {
+        hideHintView()
+    }
+    
+    func showHintView() {
+        let currentHint = UserManager.shared.assessment_created_assessment.questions[current_question].hint
+        
+        hintLbl.text = currentHint
+        
+        darkOverlayView.isHidden = false
+        darkOverlayView.alpha = 0
+        
+        hintVw.isHidden = false
+        
+        // Correct order: overlay behind, hintVw on top
+        view.bringSubviewToFront(darkOverlayView)
+        view.bringSubviewToFront(hintVw)
+        
+        okBtn.isUserInteractionEnabled = true
+        hintVw.isUserInteractionEnabled = true
+        
+        // ONLY animate the dark overlay, NOT hintVw
+        UIView.animate(withDuration: 0) {
+            self.darkOverlayView.alpha = 0.5
+        }
+    }
+    
+    @IBAction func onClickOkBtn(_ sender: UIButton) {
+    self.okBtn.titleLabel?.font = UIFont.lexend(.semiBold, size: 16)
+
+        hideHintView()
+    }
+    
+    func hideHintView() {
+        
+        // ONLY animate the dark overlay
+        UIView.animate(withDuration: 0, animations: {
+            self.darkOverlayView.alpha = 0
+        }) { completed in
+            if completed {
+                self.darkOverlayView.isHidden = true
+                self.hintVw.isHidden = true
+            }
+        }
+    }
     
     @IBAction func onClickHome() {
         self.navigationController?.popToRootViewController(animated: true)
@@ -79,18 +153,19 @@ class QuestionVC: UIViewController {
     }
     
     func changeQuestion() {
+        hintVw.isHidden = true
+        darkOverlayView.isHidden = true
+        
         lblQuestionNumber.text = "Question \(current_question+1)/\(UserManager.shared.assessment_created_assessment.numberOfQuestions)"
         lblQuestion.animateTyping(text: UserManager.shared.assessment_created_assessment.questions[current_question].question) {
             self.lblDesciption.animateTyping(text: UserManager.shared.assessment_created_assessment.questions[self.current_question].description) {
-                // after a sec
                 self.lblOptionA.text = UserManager.shared.assessment_created_assessment.questions[self.current_question].options[0]
                 self.lblOptionB.text = UserManager.shared.assessment_created_assessment.questions[self.current_question].options[1]
                 self.lblOptionC.text = UserManager.shared.assessment_created_assessment.questions[self.current_question].options[2]
                 self.lblOptionD.text = UserManager.shared.assessment_created_assessment.questions[self.current_question].options[3]
-                self.lblOptionHint.text = "I do not know"
+                self.lblOptionHint.text = "I don't know"
                 self.stackViewOptions.isHidden = false
             }
-            
         }
     }
     
@@ -122,19 +197,21 @@ class QuestionVC: UIViewController {
         }
         changeQuestion()
     }
-    func displayResultPopup(){
+    
+    func displayResultPopup() {
         self.bgView.isHidden = true
         self.resultPopup.isHidden = false
         self.slider.maximumValue = Float(UserManager.shared.assessment_created_assessment.totalMarks)
         self.lblTotalMarks.text = "\((UserManager.shared.assessment_created_assessment.totalMarks))"
+        self.viewanswersButton.titleLabel?.font = UIFont.lexend(.semiBold, size: 20)
     }
     
-    func getStats(){
+    func getStats() {
         let payload = [
             "assessment_id":"\(UserManager.shared.assessment_created_assessment.id)",
             "student_id":"\(UserManager.shared.assessmentSelectedStudent.studentID)"
         ]
-        NetworkManager.shared.request(urlString: API.ASSESSMENT_RESULTS,method: .POST, parameters: payload) { (result: Result<APIResponse<AssessmentResult>, NetworkError>)  in
+        NetworkManager.shared.request(urlString: API.ASSESSMENT_RESULTS, method: .POST, parameters: payload) { (result: Result<APIResponse<AssessmentResult>, NetworkError>) in
             switch result {
             case .success(let info):
                 if info.success {
@@ -143,9 +220,9 @@ class QuestionVC: UIViewController {
                             self.displayResultPopup()
                             self.slider.value = Float(data.studentMarks)
                             self.slider.maximumValue = Float(data.totalMarks)
-                            var percentage = Int(Float(data.studentMarks)/Float(data.totalMarks) * 100)
+                            let percentage = Int(Float(data.studentMarks)/Float(data.totalMarks) * 100)
                             self.lblPercentage.text = "\(percentage) %"
-
+                            
                             self.slider.minimumValue = 0
                             self.lblMarks.text = "\(data.studentMarks)"
                             self.lblTotalMarks.text = "\(data.totalMarks)"
@@ -154,7 +231,7 @@ class QuestionVC: UIViewController {
                             self.lblSkipAns.text = "\(data.skippedQuestions)"
                         }
                     }
-                }else{
+                } else {
                     print(info.description)
                 }
             case .failure(let error):
@@ -171,22 +248,25 @@ class QuestionVC: UIViewController {
         }
     }
     
-    func attemptAns(ans: String, index: Int){
+    func attemptAns(ans: String, index: Int) {
         let url = API.ASSESSMENT_ATTEMPT
-        let payload  =
-        ["question_id":"\(UserManager.shared.assessment_created_assessment.questions[self.current_question].id)","assessment_id":"\(UserManager.shared.assessment_created_assessment.id)","student_id":"\(UserManager.shared.assessmentSelectedStudent.studentID)",
-         "answer":ans]
+        let payload = [
+            "question_id":"\(UserManager.shared.assessment_created_assessment.questions[self.current_question].id)",
+            "assessment_id":"\(UserManager.shared.assessment_created_assessment.id)",
+            "student_id":"\(UserManager.shared.assessmentSelectedStudent.studentID)",
+            "answer": ans
+        ]
         
-        NetworkManager.shared.request(urlString: url,method: .POST, parameters: payload) { (result: Result<APIResponse<AssessmentAnswerResponse>, NetworkError>)  in
+        NetworkManager.shared.request(urlString: url, method: .POST, parameters: payload) { (result: Result<APIResponse<AssessmentAnswerResponse>, NetworkError>) in
             switch result {
             case .success(let info):
                 if info.success {
-                    if let data = info.data {
+                    if let _ = info.data {
                         DispatchQueue.main.async {
                             self.highlightSelection(at: index)
                         }
                     }
-                }else{
+                } else {
                     print(info.description)
                 }
             case .failure(let error):
@@ -201,7 +281,6 @@ class QuestionVC: UIViewController {
                 }
             }
         }
-        
     }
     
     @objc func optionTapped(_ sender: UITapGestureRecognizer) {
@@ -209,25 +288,27 @@ class QuestionVC: UIViewController {
         let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.prepare()
         generator.impactOccurred()
-        print("Option tapped: \(view.tag)")
+        
         UIView.animate(withDuration: 0.1,
                        animations: {
             view.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
         },
                        completion: { _ in
-            UIView.animate(withDuration: 0.1) {
+            UIView.animate(withDuration: 0) {
                 view.transform = .identity
             }
         })
+        
         if view.tag == 4 {
-            // hint
-            self.attemptAns(ans: "", index: view.tag)
-        }else {
-            let selected_ans = UserManager.shared.assessment_created_assessment.questions[self.current_question].options[view.tag]
-            self.attemptAns(ans: selected_ans, index: view.tag)
+            self.showHintView()
+            return
         }
-        for view in stackViewOptions.arrangedSubviews {
-            view.isUserInteractionEnabled = false
+        
+        let selected_ans = UserManager.shared.assessment_created_assessment.questions[self.current_question].options[view.tag]
+        self.attemptAns(ans: selected_ans, index: view.tag)
+        
+        for v in stackViewOptions.arrangedSubviews {
+            v.isUserInteractionEnabled = false
         }
     }
     
@@ -238,19 +319,16 @@ class QuestionVC: UIViewController {
             self.optionAView.backgroundColor = ans == lblOptionA.text ? UIColor(hex: "00BB00") : UIColor(hex: "#FFA700")
         case 1:
             self.optionBView.backgroundColor = ans == lblOptionB.text ? UIColor(hex: "00BB00") : UIColor(hex: "#FFA700")
-            
         case 2:
             self.optionCView.backgroundColor = ans == lblOptionC.text ? UIColor(hex: "00BB00") : UIColor(hex: "#FFA700")
-            
         case 3:
             self.optionDView.backgroundColor = ans == lblOptionD.text ? UIColor(hex: "00BB00") : UIColor(hex: "#FFA700")
-            
         case 4:
             self.optionHintView.backgroundColor = UIColor(hex: "#FFA700")
-            
         default:
             break
         }
+        
         if ans == lblOptionA.text {
             self.optionAView.backgroundColor = UIColor(hex: "00BB00")
         } else if ans == lblOptionB.text {
@@ -260,43 +338,51 @@ class QuestionVC: UIViewController {
         } else if ans == lblOptionD.text {
             self.optionDView.backgroundColor = UIColor(hex: "00BB00")
         }
-        print(UserManager.shared.assessment_created_assessment.numberOfQuestions)
-        if UserManager.shared.assessment_created_assessment.numberOfQuestions > current_question+1 {
+        
+        if UserManager.shared.assessment_created_assessment.numberOfQuestions > current_question + 1 {
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                
-                for (_, v) in self.stackViewOptions.arrangedSubviews.enumerated() {
-                    v.backgroundColor = .systemBackground
-                    v.isUserInteractionEnabled = true
-                    v.layer.borderColor = UIColor.primary.cgColor
-                }
-                self.lblDesciption.text = ""
-                self.stackViewOptions.isHidden = true
-                self.lblTitleA.backgroundColor = .primary
-                self.lblTitleA.textColor = .secondary
-                self.lblOptionA.textColor = .black
-                
-                self.lblTitleB.backgroundColor = .primary
-                self.lblTitleB.textColor = .secondary
-                self.lblOptionB.textColor = .black
-                
-                self.lblTitleC.backgroundColor = .primary
-                self.lblTitleC.textColor = .secondary
-                self.lblOptionC.textColor = .black
-                
-                self.lblTitleD.backgroundColor = .primary
-                self.lblTitleD.textColor = .secondary
-                self.lblOptionD.textColor = .black
-                
-                self.lblTitleHint.backgroundColor = .primary
-                self.lblTitleHint.textColor = .secondary
-                self.lblOptionHint.textColor = .black
-                
-                self.current_question += 1
-                self.changeQuestion()
+                self.resetOptionsAndMoveToNextQuestion()
             }
-        }else{
+        } else {
             self.getStats()
         }
+    }
+    
+    func resetOptionsAndMoveToNextQuestion() {
+        for (_, v) in self.stackViewOptions.arrangedSubviews.enumerated() {
+            v.backgroundColor = .systemBackground
+            v.isUserInteractionEnabled = true
+            v.layer.borderColor = UIColor.primary.cgColor
+        }
+        
+        self.lblDesciption.text = ""
+        self.stackViewOptions.isHidden = true
+        
+        self.lblTitleA.backgroundColor = .primary
+        self.lblTitleA.textColor = .secondary
+        self.lblOptionA.textColor = .black
+        
+        self.lblTitleB.backgroundColor = .primary
+        self.lblTitleB.textColor = .secondary
+        self.lblOptionB.textColor = .black
+        
+        self.lblTitleC.backgroundColor = .primary
+        self.lblTitleC.textColor = .secondary
+        self.lblOptionC.textColor = .black
+        
+        self.lblTitleD.backgroundColor = .primary
+        self.lblTitleD.textColor = .secondary
+        self.lblOptionD.textColor = .black
+        
+        self.lblTitleHint.backgroundColor = .primary
+        self.lblTitleHint.textColor = .secondary
+        self.lblOptionHint.textColor = .black
+        
+        self.hintVw.isHidden = true
+        self.darkOverlayView.isHidden = true
+        
+        self.current_question += 1
+        self.changeQuestion()
     }
     
     @IBAction func onClickAnswers(_ sender: UIButton) {
@@ -316,7 +402,4 @@ class QuestionVC: UIViewController {
         slashLayer.lineWidth = 4
         scoreVw.layer.addSublayer(slashLayer)
     }
-    
 }
-
-

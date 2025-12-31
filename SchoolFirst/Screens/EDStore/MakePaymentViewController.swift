@@ -392,7 +392,7 @@ extension MakePaymentViewController {
         guard let amountStr = cleanedString,
               let amount = Double(amountStr),
               let product = selectedProduct else {
-            showAlert(title: "Error", message: "Invalid order details")
+            showPaymentPopUp(isSuccess: false)
             return
         }
         
@@ -443,10 +443,10 @@ extension MakePaymentViewController {
                        !paymentSessionId.isEmpty {
                         self.startCashfreePayment(orderId: orderId, paymentSessionId: paymentSessionId)
                     } else {
-                        self.showPaymentPopUp(isSuccess: false, message: "Failed to get order details from server.")
+                        self.showPaymentPopUp(isSuccess: false)
                     }
                 case .failure:
-                    self.showPaymentPopUp(isSuccess: false, message: "Failed to create order. Please try again.")
+                    self.showPaymentPopUp(isSuccess: false)
                 }
             }
         }
@@ -479,30 +479,34 @@ extension MakePaymentViewController {
             try CFPaymentGatewayService.getInstance().doPayment(webCheckout, viewController: self)
             
         } catch let cfError as CFErrorResponse {
-            showPaymentPopUp(isSuccess: false, message: cfError.message ?? "Failed to initialize payment.")
+            print("❌ Cashfree Error: \(cfError.message ?? "Unknown error")")
+            showPaymentPopUp(isSuccess: false)
         } catch {
-            showPaymentPopUp(isSuccess: false, message: "Failed to initialize payment. Please try again.")
+            print("❌ Payment Error: \(error.localizedDescription)")
+            showPaymentPopUp(isSuccess: false)
         }
     }
     
-    func showPaymentPopUp(isSuccess: Bool, message: String) {
+    func showPaymentPopUp(isSuccess: Bool) {
         if let presentedVC = self.presentedViewController {
             presentedVC.dismiss(animated: false) { [weak self] in
-                self?.presentPopUp(isSuccess: isSuccess, message: message)
+                self?.presentPopUp(isSuccess: isSuccess)
             }
         } else {
-            presentPopUp(isSuccess: isSuccess, message: message)
+            presentPopUp(isSuccess: isSuccess)
         }
     }
     
-    private func presentPopUp(isSuccess: Bool, message: String) {
+    private func presentPopUp(isSuccess: Bool) {
         let sb = UIStoryboard(name: "Main", bundle: nil)
-        guard let vc = sb.instantiateViewController(withIdentifier: "PopUpVC") as? PopUpVC else { return }
+        guard let vc = sb.instantiateViewController(withIdentifier: "PopUpVC") as? PopUpVC else {
+            print("Could not instantiate PopUpVC")
+            return
+        }
         
         vc.modalPresentationStyle = .overFullScreen
         vc.modalTransitionStyle = .crossDissolve
         vc.isSuccess = isSuccess
-        vc.message = message
         
         present(vc, animated: true)
     }
@@ -511,29 +515,24 @@ extension MakePaymentViewController {
 extension MakePaymentViewController: CFResponseDelegate {
     
     func onSuccess(_ order_id: String) {
+        print("✅ Payment Success - Order ID: \(order_id)")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            self?.showPaymentPopUp(
-                isSuccess: true,
-                message: "Your payment has been processed successfully.\n\nOrder ID: \(order_id)"
-            )
+            self?.showPaymentPopUp(isSuccess: true)
         }
     }
     
     func onError(_ error: CFErrorResponse, order_id: String) {
+        print("❌ Payment Error - Order ID: \(order_id), Error: \(error.message ?? "Unknown")")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            self?.showPaymentPopUp(
-                isSuccess: false,
-                message: error.message ?? "Payment failed. Please try again."
-            )
+            self?.showPaymentPopUp(isSuccess: false)
         }
     }
     
     func verifyPayment(order_id: String) {
+        print("🔄 Payment Verification - Order ID: \(order_id)")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            self?.showPaymentPopUp(
-                isSuccess: true,
-                message: "Payment verification in progress.\n\nOrder ID: \(order_id)"
-            )
+            // Treat verification as pending/failed for now
+            self?.showPaymentPopUp(isSuccess: false)
         }
     }
 }
