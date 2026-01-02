@@ -93,6 +93,8 @@ struct API {
     // In your API/Constants file
     static let ADD_STUDENT = BASE_URL + "school/general/student"
     static let GRADES_LIST = BASE_URL + "school/grade/unassigned"
+    // Add this to your API struct
+    static let GET_STUDENTS = BASE_URL + "backoffice/student"
 
     // assesssment :
     
@@ -127,6 +129,8 @@ struct API {
     
     // Fee
     static let FEE_GET_DETAILS = BASE_URL + "fees/get/fee"
+    static let FEE_TRANSACTIONS = BASE_URL + "fees/transactions"
+
 
     // In API struct
     static let FEE_CREATE_PAYMENT = BASE_URL + "fees/payment"

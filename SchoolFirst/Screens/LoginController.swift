@@ -20,7 +20,12 @@ class LoginController: UIViewController {
         super.viewDidLoad()
         playLottieFile()
         self.lblUsername.text = "Welcome back \(username)"
-        self.navigationController?.setNavigationBarHidden(false, animated: false)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.setNavigationBarHidden(false, animated: animated)
+        self.navigationController?.navigationBar.isHidden = false
     }
     
     @IBAction func onClickForgotPassword(_ sender: Any) {
@@ -30,13 +35,13 @@ class LoginController: UIViewController {
     @IBAction func onClickLogin(_ sender: Any) {
         if self.txtFieldPassword.hasText {
             self.loginWithPassword()
-        }else{
+        } else {
             print("Please enter password")
         }
     }
     
-    func forgetPassword(){
-        let payload : [String:Any] = [
+    func forgetPassword() {
+        let payload: [String: Any] = [
             "mobile": mobile,
             "is_forgot_password": true
         ]
@@ -49,18 +54,16 @@ class LoginController: UIViewController {
                         vc?.mobile = self.mobile
                         self.navigationController?.pushViewController(vc!, animated: true)
                     }
-                }else{
+                } else {
                     self.showAlert(msg: "Login Failed")
                 }
-                break
             case .failure(_):
                 self.showAlert(msg: "School is not associated with the system. Please contact your school admin")
-                break
             }
         }
     }
     
-    func loginWithPassword(){
+    func loginWithPassword() {
         let payload = [
             "mobile": mobile,
             "password": self.txtFieldPassword.text!
@@ -77,7 +80,6 @@ class LoginController: UIViewController {
                     UserDefaults.standard.set(true, forKey: "LOGGEDIN")
                     UserManager.shared.saveUser(user: info.data!.user)
                     DispatchQueue.main.async {
-                        
                         let storyboard = UIStoryboard(name: "Main", bundle: nil)
                         if let tabBarController = storyboard.instantiateViewController(withIdentifier: "MainTabBarController") as? MainTabBarController {
                             tabBarController.selectedIndex = 2
@@ -89,18 +91,16 @@ class LoginController: UIViewController {
                             }
                         }
                     }
-                }else{
+                } else {
                     self.showAlert(msg: "Login Failed")
                 }
-                break
             case .failure(_):
                 self.showAlert(msg: "School is not associated with the system. Please contact your school admin")
-                break
             }
         }
     }
     
-    func playLottieFile(){
+    func playLottieFile() {
         let animation = LottieAnimation.named("login.json")
         lottieView.animation = animation
         lottieView.contentMode = .scaleAspectFit
@@ -108,5 +108,4 @@ class LoginController: UIViewController {
         lottieView.animationSpeed = 1.0
         lottieView.play()
     }
-    
 }

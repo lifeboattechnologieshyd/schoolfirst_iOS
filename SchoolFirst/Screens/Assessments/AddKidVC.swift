@@ -26,6 +26,7 @@ class AddKidVC: UIViewController {
         tblVw.dataSource = self
         tblVw.register(UINib(nibName: "AddKidOneCell", bundle: nil), forCellReuseIdentifier: "AddKidOneCell")
         tblVw.rowHeight = 740
+        tblVw.separatorStyle = .none
         
         fetchGrades()
     }
@@ -47,16 +48,20 @@ class AddKidVC: UIViewController {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let response):
-                    if response.success, let grades = response.data {
-                        print("✅ Grades fetched: \(grades.count)")
+                    
+                    if let grades = response.data {
                         self.gradeList = grades
-                        self.addKidCell?.gradeList = grades
+                        self.tblVw.reloadData()
+                        
+                        if let cell = self.addKidCell {
+                            cell.gradeList = grades
+                        }
                     } else {
-                        self.showAlert(msg: response.description)
+                        print("⚠️ Grades data is nil")
                     }
                     
                 case .failure(let error):
-                    self.showAlert(msg: "Failed to fetch grades: \(error.localizedDescription)")
+                    print("❌ Network error: \(error.localizedDescription)")
                 }
             }
         }
@@ -64,9 +69,11 @@ class AddKidVC: UIViewController {
     
     private func addStudent() {
         
-        guard let cell = addKidCell else { return }
+        guard let cell = addKidCell else {
+            print("❌ Cell is nil")
+            return
+        }
         
-        // Validate
         guard let gradeId = cell.selectedGradeId, !gradeId.isEmpty else {
             showAlert(msg: "Please select a grade")
             return
@@ -87,15 +94,16 @@ class AddKidVC: UIViewController {
             return
         }
         
-        // Get notes
         let notesText = cell.notesTv.text ?? ""
         var notesArray: [String] = []
         if !notesText.trimmingCharacters(in: .whitespaces).isEmpty {
             notesArray = notesText.components(separatedBy: "\n").filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
         }
         
-        // Payload
-        var payload: [String: Any] = [
+        // Get selected grade name
+        let selectedGradeName = gradeList.first(where: { $0.id == gradeId })?.name ?? ""
+        
+        let payload: [String: Any] = [
             "grade_id": gradeId,
             "student_name": studentName,
             "relation_type": relationType,
@@ -104,7 +112,7 @@ class AddKidVC: UIViewController {
             "status": "Active"
         ]
         
-         
+        
         NetworkManager.shared.request(
             urlString: API.ADD_STUDENT,
             method: .POST,
@@ -115,7 +123,23 @@ class AddKidVC: UIViewController {
                 switch result {
                 case .success(let response):
                     if response.success, let data = response.data {
-                        print("✅ Student added: \(data.studentName)")
+                        
+                        let newStudent = Student(
+                            studentID: data.id,
+                            name: data.studentName,
+                            image: data.image,
+                            fatherName: "",
+                            motherName: "",
+                            dob: data.dob,
+                            address: nil,
+                            mobile: nil,
+                            grade: data.gradeName ?? selectedGradeName,
+                            gradeID: data.gradeId,
+                            section: ""
+                        )
+                        
+                        self.addKidToLocalUser(newStudent: newStudent)
+                        
                         self.showSuccessAndGoBack()
                     } else {
                         self.showAlert(msg: response.description)
@@ -126,6 +150,39 @@ class AddKidVC: UIViewController {
                 }
             }
         }
+    }
+    
+    private func addKidToLocalUser(newStudent: Student) {
+        guard var user = UserManager.shared.user else {
+            print("❌ No user found")
+            return
+        }
+        
+        if user.schools.isEmpty {
+            let newSchool = School(
+                schoolID: "",
+                schoolName: "My Kids",
+                smallLogo: nil,
+                fullLogo: nil,
+                district: nil,
+                state: nil,
+                coverPic: nil,
+                address: nil,
+                phoneNumber: nil,
+                website: nil,
+                email: nil,
+                mapLink: nil,
+                latitude: nil,
+                longitude: nil,
+                students: [newStudent]
+            )
+            user.schools = [newSchool]
+        } else {
+            user.schools[0].students.append(newStudent)
+        }
+        
+        UserManager.shared.saveUser(user: user)
+        print("✅ Kid added to local user. Total kids: \(UserManager.shared.kids.count)")
     }
     
     private func showSuccessAndGoBack() {
@@ -159,7 +216,9 @@ extension AddKidVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "AddKidOneCell", for: indexPath) as! AddKidOneCell
         cell.gradeList = gradeList
+        print("📱 Cell created with \(gradeList.count) grades")
         self.addKidCell = cell
+        cell.selectionStyle = .none
         return cell
     }
 }
@@ -170,7 +229,6 @@ extension AddKidVC: UIImagePickerControllerDelegate, UINavigationControllerDeleg
         
         picker.dismiss(animated: true)
         
-        // Get edited or original image
         if let editedImage = info[.editedImage] as? UIImage {
             addKidCell?.setProfileImage(editedImage)
         } else if let originalImage = info[.originalImage] as? UIImage {

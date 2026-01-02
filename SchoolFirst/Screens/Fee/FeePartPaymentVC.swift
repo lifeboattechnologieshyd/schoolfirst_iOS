@@ -123,7 +123,7 @@ class FeePartPaymentVC: UIViewController {
         
         let pendingAmount = getPendingAmount()
         if pendingAmount > 0 {
-            totalFeeLbl.text = "Pending: ₹\(String(format: "%.2f", pendingAmount))"
+            totalFeeLbl.text = "₹\(String(format: "%.2f", pendingAmount))"
         } else {
             totalFeeLbl.text = "Total: ₹\(feeDetails.totalFee) (Fully Paid)"
         }

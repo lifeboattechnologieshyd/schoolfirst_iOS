@@ -11,15 +11,37 @@ class AssessmentsViewController: UIViewController {
     
     @IBOutlet weak var tblVw: UITableView!
     @IBOutlet weak var backButton: UIButton!
+    @IBOutlet weak var testLbl: UILabel!
+    
+    var hasKids: Bool {
+        return UserManager.shared.kids.count > 0
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         tblVw.register(UINib(nibName: "KidsCell", bundle: nil), forCellReuseIdentifier: "KidsCell")
         tblVw.register(UINib(nibName: "AddKidsCell", bundle: nil), forCellReuseIdentifier: "AddKidsCell")
+        tblVw.register(UINib(nibName: "ImageCell", bundle: nil), forCellReuseIdentifier: "ImageCell")
         
         tblVw.delegate = self
         tblVw.dataSource = self
+        tblVw.separatorStyle = .none
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        updateUI()
+        tblVw.reloadData()
+    }
+    
+    func updateUI() {
+        if hasKids {
+            testLbl.isHidden = false
+        } else {
+            testLbl.isHidden = true   
+        }
     }
     
     @IBAction func backButtonTapped(_ sender: UIButton) {
@@ -29,23 +51,41 @@ class AssessmentsViewController: UIViewController {
                 return
             }
         }
-        
         navigationController?.popToRootViewController(animated: true)
     }
+    
     func goToAddKidVC() {
-            let vc = storyboard?.instantiateViewController(identifier: "AddKidVC") as! AddKidVC
-            self.navigationController?.pushViewController(vc, animated: true)
-        }
+        let vc = storyboard?.instantiateViewController(identifier: "AddKidVC") as! AddKidVC
+        self.navigationController?.pushViewController(vc, animated: true)
     }
-
+}
 
 extension AssessmentsViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return UserManager.shared.kids.count + 1
+        if hasKids {
+            return UserManager.shared.kids.count + 1
+        } else {
+            return 2
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        if !hasKids {
+            if indexPath.row == 0 {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "ImageCell", for: indexPath)
+                cell.selectionStyle = .none
+                cell.backgroundColor = .clear
+                return cell
+            } else {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "AddKidsCell", for: indexPath) as! AddKidsCell
+                cell.selectionStyle = .none
+                cell.backgroundColor = .clear
+                return cell
+            }
+        }
+        
         if indexPath.row == UserManager.shared.kids.count {
             let cell = tableView.dequeueReusableCell(withIdentifier: "AddKidsCell", for: indexPath) as! AddKidsCell
             cell.selectionStyle = .none
@@ -61,23 +101,40 @@ extension AssessmentsViewController: UITableViewDelegate, UITableViewDataSource 
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        if !hasKids {
+            if indexPath.row == 0 {
+                return 218
+            } else {
+                return 48
+            }
+        }
+        
         if indexPath.row == UserManager.shared.kids.count {
             return 48
         }
+        
         return 74
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        if !hasKids {
+            if indexPath.row == 1 {
+                let vc = storyboard?.instantiateViewController(identifier: "AddKidVC") as! AddKidVC
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+            return
+        }
+        
         if indexPath.row == UserManager.shared.kids.count {
             let vc = storyboard?.instantiateViewController(identifier: "AddKidVC") as! AddKidVC
             self.navigationController?.pushViewController(vc, animated: true)
-            return
-        }else{
+        } else {
             let vc = storyboard?.instantiateViewController(identifier: "AssessmentsGradeSelectionVC") as! AssessmentsGradeSelectionVC
             UserManager.shared.assessmentSelectedStudent = UserManager.shared.kids[indexPath.row]
-            
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
 }
-

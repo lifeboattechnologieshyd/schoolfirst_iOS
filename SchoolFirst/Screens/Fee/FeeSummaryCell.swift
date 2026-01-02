@@ -34,7 +34,7 @@ class FeeSummaryCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        buttonsContainer1.isHidden = true
+        buttonsContainer1.isHidden = false
         installmentVw.addCardShadow()
         installmentVw1.addCardShadow()
         
@@ -46,7 +46,7 @@ class FeeSummaryCell: UITableViewCell {
         super.prepareForReuse()
         
         // Reset all states
-        buttonsContainer1.isHidden = true
+        buttonsContainer1.isHidden = false
         installmentVw.isHidden = false
         installmentVw1.isHidden = false
         installmentVwHeight.constant = viewHeight
@@ -73,7 +73,7 @@ class FeeSummaryCell: UITableViewCell {
         let isPaid = installment.feePaid >= installment.payableAmount
         
         if isPaid {
-             showPaidView()
+            showPaidView()
             hidePendingView()
             
             // Configure PAID view labels
@@ -87,7 +87,7 @@ class FeeSummaryCell: UITableViewCell {
             dueLbl.textColor = UIColor(hex: "#4CAF50")
             
         } else {
-         
+            
             hidePaidView()
             showPendingView()
             
@@ -99,15 +99,13 @@ class FeeSummaryCell: UITableViewCell {
                 paidAmountLbl1.text = "Paid: ₹\(installment.feePaid)"
                 paidAmountLbl1.isHidden = false
             } else {
-                paidAmountLbl1.isHidden = true
+                paidAmountLbl1.isHidden = false
             }
-            
             if installment.fineDays > 0 {
-                dueLbl1.text = "Fine: ₹\(installment.finePerDay) × \(installment.fineDays) Days"
-                dueLbl1.textColor = UIColor(hex: "#EE4E4E")
+                dueLbl1.text = "Installment \(installment.installmentNo)"
                 dueMonth1.setTitleColor(UIColor(hex: "#EE4E4E"), for: .normal)
             } else {
-                dueLbl1.text = "Due Amount"
+                dueLbl1.text = "Installment \(installment.installmentNo)"
                 dueLbl1.textColor = .darkGray
                 dueMonth1.setTitleColor(.darkGray, for: .normal)
             }

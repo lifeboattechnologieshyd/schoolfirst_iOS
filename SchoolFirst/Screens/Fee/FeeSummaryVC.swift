@@ -23,7 +23,6 @@ class FeeSummaryVC: UIViewController {
     @IBOutlet weak var studentImg: UIImageView!
     @IBOutlet weak var tblVw: UITableView!
     
-    // DEFAULT IMAGE NAME - Change this to your image name in Assets.xcassets
     private let defaultStudentImage = "userImage"
     
     override func viewDidLoad() {
@@ -47,7 +46,6 @@ class FeeSummaryVC: UIViewController {
         studentNameLbl.text = feeDetails.studentName
         gradeLbl.text = feeDetails.gradeName
         
-        // ✅ Handle null/empty image with default placeholder
         loadStudentImage(urlString: feeDetails.studentImage)
 
         annualAmountLbl.text = "₹\(feeDetails.totalFee)"
@@ -59,13 +57,12 @@ class FeeSummaryVC: UIViewController {
     }
     
     private func loadStudentImage(urlString: String?) {
-        // ✅ Check if image URL is nil or empty
+
         guard let urlString = urlString, !urlString.isEmpty else {
             studentImg.image = UIImage(named: defaultStudentImage)
             return
         }
         
-        // ✅ Check if URL is valid
         guard let url = URL(string: urlString) else {
             studentImg.image = UIImage(named: defaultStudentImage)
             return

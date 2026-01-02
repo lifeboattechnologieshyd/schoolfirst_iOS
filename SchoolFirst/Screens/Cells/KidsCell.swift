@@ -8,26 +8,47 @@
 import UIKit
 
 class KidsCell: UITableViewCell {
-    @IBOutlet weak var lblName: UILabel!
-    @IBOutlet weak var lblGrade: UILabel!
-    @IBOutlet weak var imgVw: UIImageView!
     
-    @IBOutlet weak var bgView: UIView!
+    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var gradeLabel: UILabel!
+    @IBOutlet weak var profileImageView: UIImageView!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-        bgView.applyCardShadow()
+        setupUI()
     }
     
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
+    private func setupUI() {
+        profileImageView.layer.cornerRadius = profileImageView.frame.height / 2
+        profileImageView.clipsToBounds = true
+        profileImageView.contentMode = .scaleAspectFill
+    }
+    
+    func setupCell(student: Student) {
+        nameLabel.text = student.name
         
-        // Configure the view for the selected state
+        if !student.grade.isEmpty {
+            gradeLabel.text = student.grade
+        } else {
+            gradeLabel.text = "No Grade"
+        }
+        
+        if let imageUrl = student.image, !imageUrl.isEmpty, let url = URL(string: imageUrl) {
+            loadImage(from: url)
+        } else {
+            profileImageView.image = UIImage(named: "userImage")
+        }
     }
     
-    func setupCell(student : Student) {
-        self.imgVw.loadImage(url: student.image ?? "", placeHolderImage: "dummy_profile_pic")
-        self.lblName.text = student.name
-        self.lblGrade.text = student.grade
+    private func loadImage(from url: URL) {
+        profileImageView.image = UIImage(named: "userImage")
+        
+        URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
+            guard let data = data, error == nil, let image = UIImage(data: data) else { return }
+            
+            DispatchQueue.main.async {
+                self?.profileImageView.image = image
+            }
+        }.resume()
     }
-    
 }

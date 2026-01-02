@@ -168,7 +168,7 @@ struct User:  Codable {
     let referralCode: String
     let mobile: Int
     let deviceID: String?
-    let schools: [School]
+    var schools: [School]
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -200,8 +200,8 @@ struct School: Codable {
     let mapLink: String?
     let latitude: String?
     let longitude: String?
-    let students: [Student]
-
+    var students: [Student]
+    
     enum CodingKeys: String, CodingKey {
         case schoolID = "school_id"
         case schoolName = "school_name"
@@ -216,52 +216,26 @@ struct School: Codable {
         case latitude, longitude
         case students
     }
-}
-
-struct Student: Codable {
-    let studentID: String
-    let name: String
-    let image: String?
-    let fatherName: String
-    let motherName: String
-    let dob: String?
-    let address: String?
-    let mobile: String?
-    let grade: String
-    let gradeID: String
-    let section: String
-
-    enum CodingKeys: String, CodingKey {
-        case studentID = "student_id"
-        case name
-        case image
-        case fatherName = "father_name"
-        case motherName = "mother_name"
-        case dob
-        case address
-        case mobile
-        case grade
-        case gradeID = "grade_id"
-        case section
-    }
     
-    // ✅ Add this initializer
-    init(studentID: String, name: String, image: String?, fatherName: String, motherName: String, dob: String?, address: String?, mobile: String?, grade: String, gradeID: String, section: String) {
-        self.studentID = studentID
-        self.name = name
-        self.image = image
-        self.fatherName = fatherName
-        self.motherName = motherName
-        self.dob = dob
+    // ✅ Add initializer
+    init(schoolID: String, schoolName: String, smallLogo: String?, fullLogo: String?, district: String?, state: String?, coverPic: String?, address: String?, phoneNumber: String?, website: String?, email: String?, mapLink: String?, latitude: String?, longitude: String?, students: [Student]) {
+        self.schoolID = schoolID
+        self.schoolName = schoolName
+        self.smallLogo = smallLogo
+        self.fullLogo = fullLogo
+        self.district = district
+        self.state = state
+        self.coverPic = coverPic
         self.address = address
-        self.mobile = mobile
-        self.grade = grade
-        self.gradeID = gradeID
-        self.section = section
+        self.phoneNumber = phoneNumber
+        self.website = website
+        self.email = email
+        self.mapLink = mapLink
+        self.latitude = latitude
+        self.longitude = longitude
+        self.students = students
     }
 }
-
-
 struct Course: Codable {
     let id: String
     let name: String
@@ -991,24 +965,86 @@ extension FeeInstallment {
         return feePaid > 0 && feePaid < payableAmount
     }
     
-    // Convert TimeInterval to formatted date string
+    
+    /// Calculate fine per day (if API returns 0, calculate from fineAmount/fineDays)
+    var calculatedFinePerDay: Double {
+        if finePerDay > 0 {
+            return finePerDay
+        } else if fineDays > 0 && fineAmount > 0 {
+            return fineAmount / Double(fineDays)
+        }
+        return 0.0
+    }
+    
+    /// Check if fine is applicable
+    var hasFine: Bool {
+        return fineAmount > 0 && fineDays > 0
+    }
+    
+    /// Formatted fine text: "+ Fine (₹5 × 246 Days)"
+    var fineDisplayText: String {
+        guard hasFine else {
+            return "Fine"
+        }
+        
+        let perDay = calculatedFinePerDay
+        let daysText = fineDays == 1 ? "Day" : "Days"
+        
+        return "+ Fine (₹\(formatAmount(perDay)) × \(fineDays) \(daysText))"
+    }
+    
+    /// Fine display text with total amount: "+ Fine (₹5 × 246 Days = ₹1230)"
+    var fineDisplayTextWithTotal: String {
+        guard hasFine else {
+            return "Fine"
+        }
+        
+        let perDay = calculatedFinePerDay
+        let daysText = fineDays == 1 ? "Day" : "Days"
+        
+        return "+ Fine (₹\(formatAmount(perDay)) × \(fineDays) \(daysText) = ₹\(formatAmount(fineAmount)))"
+    }
+    
+    
+    /// Convert TimeInterval to formatted date string
     func dueDateFormatted() -> String {
-        let date = Date(timeIntervalSince1970: dueDate / 1000) // If milliseconds
-        // let date = Date(timeIntervalSince1970: dueDate) // If seconds
+        let date = Date(timeIntervalSince1970: dueDate / 1000)
         let formatter = DateFormatter()
         formatter.dateFormat = "dd MMM yyyy"
         return formatter.string(from: date)
     }
     
     func dueDateMonthYear() -> String {
-        let date = Date(timeIntervalSince1970: dueDate / 1000) // If milliseconds
-        // let date = Date(timeIntervalSince1970: dueDate) // If seconds
+        let date = Date(timeIntervalSince1970: dueDate / 1000)
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM yyyy"
         return formatter.string(from: date)
     }
+    
+    /// Check if due date has passed
+    var isOverdue: Bool {
+        let date = Date(timeIntervalSince1970: dueDate / 1000)
+        return Date() > date && !isPaid
+    }
+    
+    /// Days until due date (negative if overdue)
+    var daysUntilDue: Int {
+        let date = Date(timeIntervalSince1970: dueDate / 1000)
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.day], from: Date(), to: date)
+        return components.day ?? 0
+    }
+    
+    // MARK: - Private Helpers
+    
+    private func formatAmount(_ amount: Double) -> String {
+        if amount == amount.rounded() {
+            return String(format: "%.0f", amount)
+        } else {
+            return String(format: "%.2f", amount)
+        }
+    }
 }
-
 
 
 class Attendance : Codable {
@@ -1617,7 +1653,7 @@ struct Grade: Codable {
     let name: String
     let section: String?
     let numericGrade: Int?
-    let age: Int?
+    let age: String?  
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -1626,5 +1662,72 @@ struct Grade: Codable {
         case section
         case numericGrade = "numeric_grade"
         case age
+    }
+}
+struct FeeTransaction: Decodable {
+    let id: String
+    let schoolId: String
+    let studentId: String
+    let referenceId: String
+    let transactionTime: Double
+    let transactionType: String
+    let paymentMode: String
+    let installmentNumber: Int
+    let amount: Double
+    let remarks: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case schoolId = "school_id"
+        case studentId = "student_id"
+        case referenceId = "reference_id"
+        case transactionTime = "transaction_time"
+        case transactionType = "transaction_type"
+        case paymentMode = "payment_mode"
+        case installmentNumber = "installment_number"
+        case amount
+        case remarks
+    }
+}
+struct Student: Codable {
+    let studentID: String
+    let name: String
+    let image: String?
+    let fatherName: String
+    let motherName: String
+    let dob: String?
+    let address: String?
+    let mobile: String?
+    let grade: String
+    let gradeID: String
+    let section: String
+
+    enum CodingKeys: String, CodingKey {
+        case studentID = "student_id"
+        case name
+        case image
+        case fatherName = "father_name"
+        case motherName = "mother_name"
+        case dob
+        case address
+        case mobile
+        case grade
+        case gradeID = "grade_id"
+        case section
+    }
+    
+    // ✅ Add this initializer
+    init(studentID: String, name: String, image: String?, fatherName: String, motherName: String, dob: String?, address: String?, mobile: String?, grade: String, gradeID: String, section: String) {
+        self.studentID = studentID
+        self.name = name
+        self.image = image
+        self.fatherName = fatherName
+        self.motherName = motherName
+        self.dob = dob
+        self.address = address
+        self.mobile = mobile
+        self.grade = grade
+        self.gradeID = gradeID
+        self.section = section
     }
 }

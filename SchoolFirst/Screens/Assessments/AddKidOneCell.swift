@@ -27,7 +27,6 @@ class AddKidOneCell: UITableViewCell {
     private let relationPicker = UIPickerView()
     private let datePicker = UIDatePicker()
     
-    // Grades from API
     var gradeList: [Grade] = [] {
         didSet {
             gradePicker.reloadAllComponents()
@@ -37,11 +36,10 @@ class AddKidOneCell: UITableViewCell {
     private let relations = ["son", "daughter"]
     private let relationsDisplay = ["Son", "Daughter"]
     
-    // Selected values
     var selectedGradeId: String?
     var selectedRelationType: String?
     var selectedDob: String?
-    var selectedImage: UIImage?  // Store selected image
+    var selectedImage: UIImage?
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -54,12 +52,10 @@ class AddKidOneCell: UITableViewCell {
     }
     
     private func setupProfileImage() {
-        // Make profile image circular
         profileImg.layer.cornerRadius = profileImg.frame.height / 2
         profileImg.clipsToBounds = true
         profileImg.contentMode = .scaleAspectFill
         
-        // Add tap action to button
         addProfileImg.addTarget(self, action: #selector(addProfileImgTapped), for: .touchUpInside)
     }
     
@@ -72,22 +68,18 @@ class AddKidOneCell: UITableViewCell {
         
         let alert = UIAlertController(title: "Select Photo", message: "Choose a photo for profile", preferredStyle: .actionSheet)
         
-        // Gallery option
         alert.addAction(UIAlertAction(title: "Photo Library", style: .default) { _ in
             self.openImagePicker(sourceType: .photoLibrary)
         })
         
-        // Camera option
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
             alert.addAction(UIAlertAction(title: "Camera", style: .default) { _ in
                 self.openImagePicker(sourceType: .camera)
             })
         }
         
-        // Cancel
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         
-        // For iPad
         if let popover = alert.popoverPresentationController {
             popover.sourceView = addProfileImg
             popover.sourceRect = addProfileImg.bounds
@@ -107,13 +99,11 @@ class AddKidOneCell: UITableViewCell {
         parentVC.present(imagePicker, animated: true)
     }
     
-    // Call this from VC when image is selected
     func setProfileImage(_ image: UIImage) {
         selectedImage = image
         profileImg.image = image
     }
     
-    // Helper to get parent VC
     var parentViewController: UIViewController? {
         var responder: UIResponder? = self
         while let nextResponder = responder?.next {
@@ -190,18 +180,43 @@ extension AddKidOneCell: UIPickerViewDelegate, UIPickerViewDataSource {
         gradeTf.inputView = gradePicker
         relationTf.inputView = relationPicker
         
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTapped))
-        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        toolbar.setItems([flexSpace, doneButton], animated: true)
+        // Toolbar for Grade
+        let gradeToolbar = UIToolbar()
+        gradeToolbar.sizeToFit()
+        let gradeDoneBtn = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(gradeDoneTapped))
+        let gradeFlexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        gradeToolbar.setItems([gradeFlexSpace, gradeDoneBtn], animated: true)
+        gradeTf.inputAccessoryView = gradeToolbar
         
-        gradeTf.inputAccessoryView = toolbar
-        relationTf.inputAccessoryView = toolbar
+        // Toolbar for Relation
+        let relationToolbar = UIToolbar()
+        relationToolbar.sizeToFit()
+        let relationDoneBtn = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(relationDoneTapped))
+        let relationFlexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        relationToolbar.setItems([relationFlexSpace, relationDoneBtn], animated: true)
+        relationTf.inputAccessoryView = relationToolbar
     }
     
-    @objc private func doneTapped() {
+    @objc private func gradeDoneTapped() {
+        // Auto-select first item if nothing selected
+        if selectedGradeId == nil && !gradeList.isEmpty {
+            let row = gradePicker.selectedRow(inComponent: 0)
+            if row < gradeList.count {
+                gradeTf.text = gradeList[row].name
+                selectedGradeId = gradeList[row].id
+            }
+        }
         gradeTf.resignFirstResponder()
+    }
+    
+    @objc private func relationDoneTapped() {
+        // Auto-select first item if nothing selected
+        if selectedRelationType == nil {
+            let row = relationPicker.selectedRow(inComponent: 0)
+            relationTf.text = relationsDisplay[row]
+            selectedRelationType = relations[row]
+            updateGenderSelection(isMale: row == 0)
+        }
         relationTf.resignFirstResponder()
     }
     
@@ -232,46 +247,37 @@ extension AddKidOneCell: UIPickerViewDelegate, UIPickerViewDataSource {
 extension AddKidOneCell {
     
     private func setupDatePicker() {
-        datePicker.datePickerMode = .date
-        datePicker.preferredDatePickerStyle = .wheels
-        datePicker.maximumDate = Date()
-        
         dateTf.isHidden = false
         
-        addDate.addTarget(self, action: #selector(dateButtonTapped), for: .touchUpInside)
+        // ✅ Only button works
+        addDate.addTarget(self, action: #selector(showDatePicker), for: .touchUpInside)
     }
     
-    @objc private func dateButtonTapped() {
-        showDatePickerAlert()
-    }
-    
-    private func showDatePickerAlert() {
+    @objc private func showDatePicker() {
         guard let parentVC = self.parentViewController else { return }
         
         let alert = UIAlertController(title: "Select Date of Birth", message: "\n\n\n\n\n\n\n\n\n", preferredStyle: .actionSheet)
         
-        let datePicker = UIDatePicker()
-        datePicker.datePickerMode = .date
-        datePicker.preferredDatePickerStyle = .wheels
-        datePicker.maximumDate = Date()
-        datePicker.frame = CGRect(x: 0, y: 50, width: alert.view.bounds.width - 20, height: 200)
+        let picker = UIDatePicker()
+        picker.datePickerMode = .date
+        picker.preferredDatePickerStyle = .wheels
+        picker.maximumDate = Date()
+        picker.frame = CGRect(x: 0, y: 50, width: alert.view.bounds.width - 20, height: 200)
         
-        alert.view.addSubview(datePicker)
+        alert.view.addSubview(picker)
         
         alert.addAction(UIAlertAction(title: "Done", style: .default) { _ in
             let displayFormatter = DateFormatter()
             displayFormatter.dateStyle = .medium
-            self.dateTf.text = displayFormatter.string(from: datePicker.date)
-            self.addDate.setTitle(displayFormatter.string(from: datePicker.date), for: .normal)
+            self.addDate.setTitle(displayFormatter.string(from: picker.date), for: .normal)
             
             let apiFormatter = DateFormatter()
             apiFormatter.dateFormat = "yyyy-MM-dd"
-            self.selectedDob = apiFormatter.string(from: datePicker.date)
+            self.selectedDob = apiFormatter.string(from: picker.date)
         })
         
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         
-        // For iPad
         if let popover = alert.popoverPresentationController {
             popover.sourceView = addDate
             popover.sourceRect = addDate.bounds

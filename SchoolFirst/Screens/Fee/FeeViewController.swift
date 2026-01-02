@@ -20,7 +20,6 @@ class FeeViewController: UIViewController {
     static var blockRefresh = false
     static var cachedFeeDetails: [StudentFeeDetails]?
     
-    // Track current order for verification
     private var currentOrderId: String?
     
     override func viewDidLoad() {
@@ -255,10 +254,6 @@ class FeeViewController: UIViewController {
     }
     
     private func verifyPaymentWithBackend(orderId: String) {
-        let payload: [String: Any] = [
-            "order_id": orderId
-        ]
-        
         print("🔄 Payment was not completed - Order ID: \(orderId)")
         
         FeeViewController.blockRefresh = true
@@ -286,13 +281,7 @@ class FeeViewController: UIViewController {
         navigationController?.pushViewController(vc, animated: true)
     }
     
-    func goToDueDate(details: StudentFeeDetails) {
-        let sb = UIStoryboard(name: "Main", bundle: nil)
-        let vc = sb.instantiateViewController(withIdentifier: "SchoolFeesVC") as! SchoolFeesVC
-        vc.feeDetails = details
-        navigationController?.pushViewController(vc, animated: true)
     }
-}
 
 extension FeeViewController: UITableViewDelegate, UITableViewDataSource {
     
@@ -308,21 +297,15 @@ extension FeeViewController: UITableViewDelegate, UITableViewDataSource {
         
         let details = fee_details[indexPath.row]
         
-        cell.bgView.applyCardShadow()
         cell.setup(details: details)
         cell.selectionStyle = .none
         
-        // Handle button actions
         cell.onPartPayment = { [weak self] in
             self?.goToPartPayment(details: details)
         }
         
         cell.onViewSummary = { [weak self] in
             self?.goToFeeSummary(details: details)
-        }
-        
-        cell.onDueDate = { [weak self] in
-            self?.goToDueDate(details: details)
         }
         
         cell.onPayFull = { [weak self] in
@@ -333,7 +316,7 @@ extension FeeViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 407
+        return 590
     }
 }
 

@@ -193,7 +193,9 @@ extension CheckOutViewController: UITableViewDataSource, UITableViewDelegate {
             let mrp = product.mrp.trimmingCharacters(in: .whitespaces)
             
             if !mrp.isEmpty && mrp != "0" {
-                cell.strikeOutPrice.text = "₹\(mrp)"
+
+                let mrpValue = Int(Double(mrp) ?? 0)
+                cell.strikeOutPrice.text = "₹\(mrpValue)"
                 cell.strikeOutPrice.isHidden = false
                 cell.strikeLineImg.isHidden = false
             } else {

@@ -9,23 +9,34 @@ import UIKit
 import Lottie
 
 class OTPViewController: UIViewController {
+    
     @IBOutlet weak var imgVw: LottieAnimationView!
     @IBOutlet weak var txtFieldOTP: UITextField!
     @IBOutlet weak var lblMobile: UILabel!
     var mobile = ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationController?.navigationBar.isHidden = true
         playLottieFile()
         setupLabel()
         txtFieldOTP.font = UIFont.lexend(.regular, size: 24)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
     @IBAction func onClickBack(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
     }
     
-    func playLottieFile(){
+    func playLottieFile() {
         let animation = LottieAnimation.named("otp_sf.json")
         imgVw.animation = animation
         imgVw.contentMode = .scaleAspectFit
@@ -33,16 +44,15 @@ class OTPViewController: UIViewController {
         imgVw.animationSpeed = 1.0
         imgVw.play()
     }
+    
     @IBAction func onClickSubmit(_ sender: UIButton) {
-        
         if txtFieldOTP.hasText && txtFieldOTP.text?.count == 4 {
             if mobile.isValidEmail {
                 self.verifyOtpwithEmail()
-            }else {
+            } else {
                 verifyOtp()
-
             }
-        }else {
+        } else {
             self.showAlert(msg: "Please enter Valid OTP")
         }
     }
@@ -54,14 +64,15 @@ class OTPViewController: UIViewController {
         if mobile.isValidEmail {
             message = "A 4 Digit OTP has been sent to \(mobile)"
             boldParts = ["4 Digit OTP", "\(mobile)"]
-
         }
+        
         let attributedString = NSMutableAttributedString(
             string: message,
             attributes: [
                 .font: UIFont.lexend(.regular, size: 16)
             ]
         )
+        
         for part in boldParts {
             if let range = message.range(of: part) {
                 let nsRange = NSRange(range, in: message)
@@ -72,15 +83,14 @@ class OTPViewController: UIViewController {
         }
         lblMobile.attributedText = attributedString
     }
-    // authentication/email/verify-otp
     
-    func verifyOtpwithEmail(){
+    func verifyOtpwithEmail() {
         let payload = [
             "email": mobile,
             "otp": self.txtFieldOTP.text!,
-            "device_id":"",
-            "fcm_id":"",
-            "device_os":"iOS"
+            "device_id": "",
+            "fcm_id": "",
+            "device_os": "iOS"
         ]
         
         NetworkManager.shared.request(urlString: API.EMAIL_OTP, method: .POST, parameters: payload) { (result: Result<APIResponse<LoginResponse>, NetworkError>) in
@@ -95,18 +105,16 @@ class OTPViewController: UIViewController {
                         let vc = self.storyboard?.instantiateViewController(withIdentifier: "SetPasswordController") as? SetPasswordController
                         self.navigationController?.pushViewController(vc!, animated: true)
                     }
-                }else{
+                } else {
                     self.showAlert(msg: info.description)
                 }
-                break
             case .failure(_):
                 self.showAlert(msg: "Oops")
-                break
             }
         }
     }
     
-    func verifyOtp(){
+    func verifyOtp() {
         let payload = [
             "mobile": mobile,
             "otp": self.txtFieldOTP.text!
@@ -124,13 +132,11 @@ class OTPViewController: UIViewController {
                         let vc = self.storyboard?.instantiateViewController(withIdentifier: "SetPasswordController") as? SetPasswordController
                         self.navigationController?.pushViewController(vc!, animated: true)
                     }
-                }else{
+                } else {
                     self.showAlert(msg: info.description)
                 }
-                break
             case .failure(_):
                 self.showAlert(msg: "Oops")
-                break
             }
         }
     }

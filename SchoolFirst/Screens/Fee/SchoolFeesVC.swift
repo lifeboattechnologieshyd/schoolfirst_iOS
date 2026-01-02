@@ -44,8 +44,13 @@ class SchoolFeesVC: UIViewController {
                 
         studentnameLbl.text = details.studentName
         gradeLbl.text = details.gradeName
-        studentImg.loadImage(url: details.studentImage ?? "")
-        
+
+        if let imageUrl = details.studentImage, !imageUrl.isEmpty {
+                studentImg.loadImage(url: imageUrl)
+            } else {
+                studentImg.image = UIImage(named: "userImage")
+            }
+            
         let feeDue = details.pendingFee
         let fine = details.finePayable
         let totalDue = feeDue + fine

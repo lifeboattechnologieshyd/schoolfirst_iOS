@@ -15,45 +15,109 @@ class FeeTransactionsVC: UIViewController {
     @IBOutlet weak var topVw: UIView!
     @IBOutlet weak var tblVw: UITableView!
     
-    var allInstallments: [FeeInstallment] = []
+    var transactions: [FeeTransaction] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupUI()
+        setupTableView()
+        getTransactions()
+    }
+    
+    private func setupUI() {
         topVw.addBottomShadow()
-
-        print("Student Name: \(feeDetails.studentName)")
         
-        // Show ALL installments (paid, partial, pending, failed - everything)
-        allInstallments = feeDetails.feeInstallments.sorted { $0.installmentNo < $1.installmentNo }
-
-        // Hide table if no installments
-        tblVw.isHidden = allInstallments.isEmpty
-
+//        // Setup no data label (if you have one)
+//        noDataLbl?.isHidden = true
+//        noDataLbl?.text = "No transactions found"
+    }
+    
+    private func setupTableView() {
         tblVw.register(
             UINib(nibName: "TransactionsCell", bundle: nil),
             forCellReuseIdentifier: "TransactionsCell"
         )
-
+        
         tblVw.delegate = self
         tblVw.dataSource = self
         tblVw.separatorStyle = .none
+        tblVw.showsVerticalScrollIndicator = false
     }
 
     @IBAction func onClickBack(_ sender: UIButton) {
         self.navigationController?.popViewController(animated: true)
     }
     
-    private func getPaymentStatus(for installment: FeeInstallment) -> (status: String, color: UIColor) {
-        if installment.feePaid >= installment.payableAmount {
-            // Fully Paid
-            return ("Paid", UIColor(red: 0.0, green: 0.6, blue: 0.0, alpha: 1.0)) // Green
-        } else if installment.feePaid > 0 {
-            // Partially Paid
-            return ("Partial", UIColor(red: 1.0, green: 0.6, blue: 0.0, alpha: 1.0)) // Orange
-        } else {
-            // Not Paid / Pending
-            return ("Pending", UIColor(red: 0.8, green: 0.0, blue: 0.0, alpha: 1.0)) // Red
+    func getTransactions() {
+        guard let studentId = feeDetails?.studentUUID else {
+            print("❌ No student ID found")
+            showNoData()
+            return
         }
+        
+        let parameters: [String: Any] = [
+            "student_id": studentId
+        ]
+        
+        NetworkManager.shared.request(
+            urlString: API.FEE_TRANSACTIONS,
+            method: .GET,
+            parameters: parameters
+        ) { [weak self] (result: Result<APIResponse<[FeeTransaction]>, NetworkError>) in
+            
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                
+                switch result {
+                case .success(let response):
+                    if response.success, let data = response.data {
+                        self.transactions = data
+                        
+                        if data.isEmpty {
+                            self.showNoData()
+                        } else {
+                            self.tblVw.isHidden = false
+                            self.tblVw.reloadData()
+                        }
+                        
+                        print("✅ Loaded \(data.count) transactions")
+                    } else {
+                        self.showNoData()
+                    }
+                    
+                case .failure(let error):
+                    print("❌ Transaction API Error: \(error)")
+                    self.showNoData()
+                }
+            }
+        }
+    }
+    
+    private func showNoData() {
+        tblVw.isHidden = true
+    }
+    
+    private func getTransactionStatusColor(type: String) -> UIColor {
+        switch type.uppercased() {
+        case "CREDIT":
+            return UIColor(red: 0.0, green: 0.6, blue: 0.0, alpha: 1.0) // Green
+        case "DEBIT":
+            return UIColor(red: 0.8, green: 0.0, blue: 0.0, alpha: 1.0) // Red
+        default:
+            return UIColor.darkGray
+        }
+    }
+    
+    private func formatDate(timestamp: Double) -> String {
+        let date = Date(timeIntervalSince1970: timestamp / 1000)
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd MMM yyyy, hh:mm a"
+        return formatter.string(from: date)
+    }
+    
+    private func formatAmount(amount: Double, type: String) -> String {
+        let prefix = type.uppercased() == "CREDIT" ? "+ " : "- "
+        return "\(prefix)₹\(Int(amount))"
     }
 }
 
@@ -61,7 +125,7 @@ extension FeeTransactionsVC: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView,
                    numberOfRowsInSection section: Int) -> Int {
-        return allInstallments.count
+        return transactions.count
     }
 
     func tableView(_ tableView: UITableView,
@@ -72,42 +136,16 @@ extension FeeTransactionsVC: UITableViewDelegate, UITableViewDataSource {
             for: indexPath
         ) as! TransactionsCell
 
-        let installment = allInstallments[indexPath.row]
-
-        // Format date
-        let date = Date(timeIntervalSince1970: installment.dueDate / 1000)
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd MMM yyyy"
-        cell.dateLbl.text = formatter.string(from: date)
-
-        // Show installment number
-        cell.referencenoLbl.text = "Installment \(installment.installmentNo)"
+        let transaction = transactions[indexPath.row]
         
-        // Get payment status
-        let (status, color) = getPaymentStatus(for: installment)
-        cell.paymentMethodLbl.text = status
-        cell.paymentMethodLbl.textColor = color
-        
-        // Show amount based on status
-        if installment.feePaid >= installment.payableAmount {
-            // Fully Paid - show paid amount
-            cell.amountLbl.text = "₹\(Int(installment.feePaid))"
-            cell.amountLbl.textColor = UIColor(red: 0.0, green: 0.6, blue: 0.0, alpha: 1.0) // Green
-        } else if installment.feePaid > 0 {
-            // Partially Paid - show paid/total
-            cell.amountLbl.text = "₹\(Int(installment.feePaid)) / ₹\(Int(installment.payableAmount))"
-            cell.amountLbl.textColor = UIColor(red: 1.0, green: 0.6, blue: 0.0, alpha: 1.0) // Orange
-        } else {
-            // Pending - show payable amount
-            cell.amountLbl.text = "₹\(Int(installment.payableAmount))"
-            cell.amountLbl.textColor = UIColor(red: 0.8, green: 0.0, blue: 0.0, alpha: 1.0) // Red
-        }
+        // Configure cell with transaction data
+        cell.configure(with: transaction)
 
         return cell
     }
 
     func tableView(_ tableView: UITableView,
                    heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 90
+        return 100
     }
 }
