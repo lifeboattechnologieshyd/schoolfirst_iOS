@@ -282,9 +282,9 @@ struct Feed: Codable {
     let youtubeVideo: String?
     let description: String
     let description_2: String?
-    let likesCount: Int
+    var likesCount: Int
     let commentsCount: Int
-    let whatsappShareCount: Int
+    var whatsappShareCount: Int
     let language: String
     let duration: Int
     let postingDate: String
@@ -296,7 +296,9 @@ struct Feed: Codable {
     let subject: String?
     let grade_id: String?
     let serial_number: Int
-    let isLiked: Bool
+    var isLiked: Bool
+    var shareCount: Int?
+    let f_category: String?
 
     enum CodingKeys: String, CodingKey {
         case id, heading, trending, categories, image, remarks, video, description, language, duration, status, description_2, serial_number, grade_id, subject, lesson, skill_tested
@@ -310,6 +312,86 @@ struct Feed: Codable {
         case approvedBy = "approved_by"
         case approvedTime = "approved_time"
         case isLiked = "is_liked"
+        case shareCount = "share_count"
+        case f_category
+    }
+    
+    // MARK: - Custom Decoder (Handles missing is_liked field)
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        // Required fields
+        id = try container.decode(String.self, forKey: .id)
+        heading = try container.decode(String.self, forKey: .heading)
+        description = try container.decode(String.self, forKey: .description)
+        trending = try container.decodeIfPresent(Bool.self, forKey: .trending) ?? false
+        feedType = try container.decodeIfPresent(String.self, forKey: .feedType) ?? "Image"
+        status = try container.decodeIfPresent(String.self, forKey: .status) ?? "Published"
+        language = try container.decodeIfPresent(String.self, forKey: .language) ?? "English"
+        duration = try container.decodeIfPresent(Int.self, forKey: .duration) ?? 0
+        postingDate = try container.decodeIfPresent(String.self, forKey: .postingDate) ?? ""
+        serial_number = try container.decodeIfPresent(Int.self, forKey: .serial_number) ?? 0
+        
+        // Optional fields
+        categories = try container.decodeIfPresent([String].self, forKey: .categories)
+        image = try container.decodeIfPresent(String.self, forKey: .image)
+        remarks = try container.decodeIfPresent(String.self, forKey: .remarks)
+        schoolId = try container.decodeIfPresent(String.self, forKey: .schoolId)
+        video = try container.decodeIfPresent(String.self, forKey: .video)
+        youtubeVideo = try container.decodeIfPresent(String.self, forKey: .youtubeVideo)
+        description_2 = try container.decodeIfPresent(String.self, forKey: .description_2)
+        approvedBy = try container.decodeIfPresent(String.self, forKey: .approvedBy)
+        approvedTime = try container.decodeIfPresent(String.self, forKey: .approvedTime)
+        skill_tested = try container.decodeIfPresent(String.self, forKey: .skill_tested)
+        lesson = try container.decodeIfPresent(String.self, forKey: .lesson)
+        subject = try container.decodeIfPresent(String.self, forKey: .subject)
+        grade_id = try container.decodeIfPresent(String.self, forKey: .grade_id)
+        f_category = try container.decodeIfPresent(String.self, forKey: .f_category)
+        
+        // Counts - default to 0 if missing
+        likesCount = try container.decodeIfPresent(Int.self, forKey: .likesCount) ?? 0
+        commentsCount = try container.decodeIfPresent(Int.self, forKey: .commentsCount) ?? 0
+        whatsappShareCount = try container.decodeIfPresent(Int.self, forKey: .whatsappShareCount) ?? 0
+        shareCount = try container.decodeIfPresent(Int.self, forKey: .shareCount)
+        
+        //  KEY FIX: is_liked defaults to false if missing in search API
+        isLiked = try container.decodeIfPresent(Bool.self, forKey: .isLiked) ?? false
+    }
+    
+    // MARK: - Encoder (for Codable conformance)
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(id, forKey: .id)
+        try container.encode(heading, forKey: .heading)
+        try container.encode(description, forKey: .description)
+        try container.encode(trending, forKey: .trending)
+        try container.encode(feedType, forKey: .feedType)
+        try container.encode(status, forKey: .status)
+        try container.encode(language, forKey: .language)
+        try container.encode(duration, forKey: .duration)
+        try container.encode(postingDate, forKey: .postingDate)
+        try container.encode(serial_number, forKey: .serial_number)
+        try container.encode(likesCount, forKey: .likesCount)
+        try container.encode(commentsCount, forKey: .commentsCount)
+        try container.encode(whatsappShareCount, forKey: .whatsappShareCount)
+        try container.encode(isLiked, forKey: .isLiked)
+        
+        try container.encodeIfPresent(categories, forKey: .categories)
+        try container.encodeIfPresent(image, forKey: .image)
+        try container.encodeIfPresent(remarks, forKey: .remarks)
+        try container.encodeIfPresent(schoolId, forKey: .schoolId)
+        try container.encodeIfPresent(video, forKey: .video)
+        try container.encodeIfPresent(youtubeVideo, forKey: .youtubeVideo)
+        try container.encodeIfPresent(description_2, forKey: .description_2)
+        try container.encodeIfPresent(approvedBy, forKey: .approvedBy)
+        try container.encodeIfPresent(approvedTime, forKey: .approvedTime)
+        try container.encodeIfPresent(skill_tested, forKey: .skill_tested)
+        try container.encodeIfPresent(lesson, forKey: .lesson)
+        try container.encodeIfPresent(subject, forKey: .subject)
+        try container.encodeIfPresent(grade_id, forKey: .grade_id)
+        try container.encodeIfPresent(f_category, forKey: .f_category)
+        try container.encodeIfPresent(shareCount, forKey: .shareCount)
     }
 }
 
@@ -1730,4 +1812,35 @@ struct Student: Codable {
         self.gradeID = gradeID
         self.section = section
     }
+}
+struct LikeResponse: Decodable {
+    let likes_count: Int
+    let is_liked: Bool
+}
+extension String {
+    
+    // Strip HTML tags from string
+    func stripHTML() -> String {
+        guard let data = self.data(using: .utf8) else { return self }
+        
+        let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
+            .documentType: NSAttributedString.DocumentType.html,
+            .characterEncoding: String.Encoding.utf8.rawValue
+        ]
+        
+        if let attributedString = try? NSAttributedString(data: data, options: options, documentAttributes: nil) {
+            return attributedString.string
+        }
+        
+        // Fallback: Simple regex replacement
+        return self
+            .replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
+            .replacingOccurrences(of: "&nbsp;", with: " ")
+            .replacingOccurrences(of: "&amp;", with: "&")
+            .replacingOccurrences(of: "&lt;", with: "<")
+            .replacingOccurrences(of: "&gt;", with: ">")
+            .replacingOccurrences(of: "&quot;", with: "\"")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    
 }

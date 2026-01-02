@@ -348,9 +348,9 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
             vc.isEdutain = false
             navigationController?.pushViewController(vc, animated: true)
         case 3:
-           let stbd = UIStoryboard(name: "PTips", bundle: nil)
-           let vc = stbd.instantiateViewController(identifier: "PTipsViewController") as! PTipsViewController
-            vc.isEdutain = true
+           let stbd = UIStoryboard(name: "Main", bundle: nil)
+           let vc = stbd.instantiateViewController(identifier: "EdutainmentController") as! EdutainmentController
+           // vc.isEdutain = true
             navigationController?.pushViewController(vc, animated: true)
         case 4:
             let stbd = UIStoryboard(name: "Feels", bundle: nil)

@@ -68,6 +68,13 @@ struct API {
     static let ONLINE_COURSES = BASE_URL + "courses/online/courses"
     static let EDUTAIN_FEED = BASE_URL + "edutain/feed"
     
+    static let LIKE_FEED = BASE_URL + "edutain/feed/"
+    // Usage: LIKE_FEED + feedId + "/like"
+    static let EDUTAIN_SEARCH = BASE_URL + "edutain/search" 
+    
+         
+    static let WHATSAPP_SHARE = BASE_URL + "edutain/whatsappshare"
+
     static let EDUTAIN_FEEL = BASE_URL + "events/get/feels"
     static let EVENT_GALLERY = BASE_URL + "events/gallery"
     static let EVENTS_GETEVENTS = BASE_URL + "events/events"

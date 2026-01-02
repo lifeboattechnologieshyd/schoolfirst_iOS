@@ -339,20 +339,78 @@ extension String {
             return "recent"
         }
     }
-    func extractYoutubeId() -> String? {
-        if let url = URL(string: self) {
-            if url.absoluteString.contains("youtube.com/shorts") {
-                return url.lastPathComponent
+        // ADD THIS NEW FUNCTION 👇
+            func formatDate() -> String {
+                let inputFormatter = DateFormatter()
+                inputFormatter.locale = Locale(identifier: "en_US_POSIX")
+                inputFormatter.dateFormat = "yyyy-MM-dd"
+                
+                if let date = inputFormatter.date(from: self) {
+                    let outputFormatter = DateFormatter()
+                    outputFormatter.dateFormat = "dd MMM yyyy"  // Output: "31 Dec 2025"
+                    return outputFormatter.string(from: date)
+                }
+                
+                return self
             }
+        
+        // MARK: - Extract YouTube Video ID (All URL formats)
+        func extractYoutubeId() -> String? {
+            
+            // Pattern 1: https://youtu.be/VIDEO_ID
+            if self.contains("youtu.be/") {
+                let components = self.components(separatedBy: "youtu.be/")
+                if components.count > 1 {
+                    let videoID = components[1].components(separatedBy: "?").first ?? components[1]
+                    return videoID
+                }
+            }
+            
+            // Pattern 2: https://www.youtube.com/watch?v=VIDEO_ID
+            if self.contains("youtube.com/watch") {
+                if let url = URL(string: self),
+                   let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems {
+                    for item in queryItems {
+                        if item.name == "v", let value = item.value {
+                            return value
+                        }
+                    }
+                }
+            }
+            
+            // Pattern 3: https://youtube.com/shorts/VIDEO_ID
+            if self.contains("youtube.com/shorts") {
+                if let url = URL(string: self) {
+                    return url.lastPathComponent
+                }
+            }
+            
+            // Pattern 4: https://youtube.com/embed/VIDEO_ID
+            if self.contains("youtube.com/embed/") {
+                let components = self.components(separatedBy: "embed/")
+                if components.count > 1 {
+                    let videoID = components[1].components(separatedBy: "?").first ?? components[1]
+                    return videoID
+                }
+            }
+            
+            // Pattern 5: https://youtube.com/v/VIDEO_ID
+            if self.contains("youtube.com/v/") {
+                let components = self.components(separatedBy: "/v/")
+                if components.count > 1 {
+                    let videoID = components[1].components(separatedBy: "?").first ?? components[1]
+                    return videoID
+                }
+            }
+            
+            return nil
         }
-        return nil
+        
+        // MARK:  Get YouTube Thumbnail URL
+        func youtubeThumbnailURL(quality: String = "hqdefault") -> String {
+            "https://img.youtube.com/vi/\(self)/\(quality).jpg"
+        }
     }
-    func youtubeThumbnailURL(quality: String = "hqdefault") -> String {
-        "https://img.youtube.com/vi/\(self)/\(quality).jpg"
-    }
-    
-}
-
 
 import Kingfisher
 
@@ -874,6 +932,7 @@ extension TimeInterval {
         formatter.dateFormat = "MMM yyyy"
         return formatter.string(from: date)
     }
+    
 }
 
 import UIKit

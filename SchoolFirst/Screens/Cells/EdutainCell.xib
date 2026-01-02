@@ -62,13 +62,13 @@
                                 </subviews>
                             </stackView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Skill Enhanced : " textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tM7-4G-qgz">
-                                <rect key="frame" x="0.0" y="97" width="355" height="17.666666666666671"/>
+                                <rect key="frame" x="0.0" y="97" width="355" height="16.333333333333329"/>
                                 <fontDescription key="fontDescription" name="Lexend-Regular" family="Lexend" pointSize="14"/>
                                 <color key="textColor" name="34A853"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ffH-p3-pYP">
-                                <rect key="frame" x="0.0" y="122.66666666666667" width="355" height="44.666666666666671"/>
+                                <rect key="frame" x="0.0" y="121.33333333333333" width="355" height="32.666666666666671"/>
                                 <attributedString key="attributedText">
                                     <fragment content="What is a trendy thing called Instagram that all the cool kids seem to be into? It’s been around for a few years">
                                         <attributes>
@@ -79,13 +79,13 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="xud-M9-IXh">
-                                <rect key="frame" x="0.0" y="175.33333333333337" width="355" height="199.66666666666663"/>
+                                <rect key="frame" x="0.0" y="162" width="355" height="199.66666666666663"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="xud-M9-IXh" secondAttribute="height" multiplier="16:9" id="MYJ-ke-fjX"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="748" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mJa-wW-lPN">
-                                <rect key="frame" x="0.0" y="383" width="355" height="0.0"/>
+                                <rect key="frame" x="0.0" y="369.66666666666669" width="355" height="13.333333333333314"/>
                                 <attributedString key="attributedText">
                                     <fragment content="What is a trendy thing called Instagram that all the cool kids seem to be into? It’s been around for a few years">
                                         <attributes>
@@ -153,27 +153,35 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fqN-tO-2i3">
                                         <rect key="frame" x="76" y="8" width="68" height="34"/>
                                         <subviews>
-                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="social" translatesAutoresizingMaskIntoConstraints="NO" id="Bd7-bW-zZ7">
-                                                <rect key="frame" x="8" y="9" width="16" height="16"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="16" id="Aca-k9-Nge"/>
-                                                    <constraint firstAttribute="height" constant="16" id="hCJ-Lm-fD6"/>
-                                                </constraints>
-                                            </imageView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="23" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3zQ-dc-YPP">
-                                                <rect key="frame" x="28" y="7.3333333333333126" width="32" height="19.333333333333329"/>
+                                                <rect key="frame" x="40" y="6.3333333333333144" width="19.333333333333329" height="19.333333333333332"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="19.329999999999998" id="UcV-Zc-q1D"/>
+                                                    <constraint firstAttribute="height" constant="19.329999999999998" id="dUX-PU-EbF"/>
+                                                </constraints>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Yb-Cg-q5C">
+                                                <rect key="frame" x="12" y="8" width="16" height="16"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="16" id="4Y6-JJ-aRb"/>
+                                                    <constraint firstAttribute="height" constant="16" id="dBE-Fd-F2s"/>
+                                                </constraints>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" image="social"/>
+                                                <connections>
+                                                    <action selector="onClickWhatsapp:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="Pa1-xn-TDU"/>
+                                                </connections>
+                                            </button>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
-                                            <constraint firstItem="3zQ-dc-YPP" firstAttribute="centerY" secondItem="Bd7-bW-zZ7" secondAttribute="centerY" id="4d0-7g-Jwm"/>
-                                            <constraint firstItem="Bd7-bW-zZ7" firstAttribute="centerY" secondItem="fqN-tO-2i3" secondAttribute="centerY" id="MP8-6c-nqM"/>
-                                            <constraint firstItem="Bd7-bW-zZ7" firstAttribute="leading" secondItem="fqN-tO-2i3" secondAttribute="leading" constant="8" id="Oha-D2-F5i"/>
-                                            <constraint firstAttribute="trailing" secondItem="3zQ-dc-YPP" secondAttribute="trailing" constant="8" id="cJU-Um-r1k"/>
-                                            <constraint firstItem="3zQ-dc-YPP" firstAttribute="leading" secondItem="Bd7-bW-zZ7" secondAttribute="trailing" constant="4" id="sy6-pT-2B5"/>
+                                            <constraint firstItem="4Yb-Cg-q5C" firstAttribute="top" secondItem="fqN-tO-2i3" secondAttribute="top" constant="8" id="R95-Y4-g3l"/>
+                                            <constraint firstItem="3zQ-dc-YPP" firstAttribute="centerY" secondItem="4Yb-Cg-q5C" secondAttribute="centerY" id="Rnu-ad-NoU"/>
+                                            <constraint firstItem="3zQ-dc-YPP" firstAttribute="leading" secondItem="4Yb-Cg-q5C" secondAttribute="trailing" constant="12" id="qXJ-VS-sNM"/>
+                                            <constraint firstItem="4Yb-Cg-q5C" firstAttribute="leading" secondItem="fqN-tO-2i3" secondAttribute="leading" constant="12" id="tDE-YW-fzG"/>
                                         </constraints>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
@@ -190,27 +198,38 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kA8-uq-6a1">
                                         <rect key="frame" x="150" y="8" width="68" height="34"/>
                                         <subviews>
-                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="share" translatesAutoresizingMaskIntoConstraints="NO" id="FJu-5q-cpu">
-                                                <rect key="frame" x="8" y="9" width="16" height="16"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="16" id="GSV-9t-5zF"/>
-                                                    <constraint firstAttribute="width" constant="16" id="QeK-X4-xY4"/>
-                                                </constraints>
-                                            </imageView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="23" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3CK-BT-ONy">
-                                                <rect key="frame" x="32" y="7.3333333333333126" width="28" height="19.333333333333329"/>
+                                                <rect key="frame" x="40.666666666666657" y="6.3333333333333144" width="19.333333333333329" height="19.333333333333332"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="19.329999999999998" id="dfR-0B-4n3"/>
+                                                    <constraint firstAttribute="width" constant="19.329999999999998" id="veT-h9-oHa"/>
+                                                </constraints>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RLO-Vv-lco">
+                                                <rect key="frame" x="12" y="8" width="16" height="16"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="16" id="KgU-Kz-gcG"/>
+                                                    <constraint firstAttribute="width" constant="16" id="bvI-I8-Wo9"/>
+                                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="16" id="cjC-cY-lqk"/>
+                                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="16" id="j3X-CF-fue"/>
+                                                </constraints>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" image="share"/>
+                                                <connections>
+                                                    <action selector="onClickShare:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="KmZ-f1-5F1"/>
+                                                    <action selector="onClickWhatsapp:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="uNh-vk-RWZ"/>
+                                                </connections>
+                                            </button>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
-                                            <constraint firstItem="FJu-5q-cpu" firstAttribute="leading" secondItem="kA8-uq-6a1" secondAttribute="leading" constant="8" id="17P-OD-jCZ"/>
-                                            <constraint firstItem="FJu-5q-cpu" firstAttribute="centerY" secondItem="kA8-uq-6a1" secondAttribute="centerY" id="4Vh-G0-kVR"/>
-                                            <constraint firstItem="3CK-BT-ONy" firstAttribute="centerY" secondItem="FJu-5q-cpu" secondAttribute="centerY" id="Sxb-jl-YmJ"/>
-                                            <constraint firstAttribute="trailing" secondItem="3CK-BT-ONy" secondAttribute="trailing" constant="8" id="V9Z-8q-gN7"/>
-                                            <constraint firstItem="3CK-BT-ONy" firstAttribute="leading" secondItem="FJu-5q-cpu" secondAttribute="trailing" constant="8" id="ahW-bf-H3o"/>
+                                            <constraint firstItem="RLO-Vv-lco" firstAttribute="leading" secondItem="kA8-uq-6a1" secondAttribute="leading" constant="12" id="N7V-R5-biG"/>
+                                            <constraint firstItem="RLO-Vv-lco" firstAttribute="top" secondItem="kA8-uq-6a1" secondAttribute="top" constant="8" id="Y8b-9L-3HA"/>
+                                            <constraint firstItem="3CK-BT-ONy" firstAttribute="leading" secondItem="RLO-Vv-lco" secondAttribute="trailing" constant="12.67" id="aiW-Q8-AhX"/>
+                                            <constraint firstItem="3CK-BT-ONy" firstAttribute="centerY" secondItem="RLO-Vv-lco" secondAttribute="centerY" id="fcp-cR-Mrc"/>
                                         </constraints>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
@@ -230,7 +249,7 @@
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain"/>
                                         <connections>
-                                            <action selector="onClickLogin:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="0J1-ap-q3g"/>
+                                            <action selector="onClickLike:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="cgt-Vk-dAk"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zSa-ZL-BVj">
@@ -298,7 +317,12 @@
                 <outlet property="lblTime" destination="zgR-gK-EkX" id="O4a-fh-5UM"/>
                 <outlet property="lblTitle" destination="pq1-Tj-M6v" id="jN1-zg-Tqg"/>
                 <outlet property="lblTopic" destination="PH5-dg-VVa" id="CGe-mp-PBl"/>
+                <outlet property="likeVw" destination="6qO-hP-V8F" id="t5l-Ve-c0l"/>
+                <outlet property="shareBtn" destination="RLO-Vv-lco" id="7lx-Wu-35R"/>
+                <outlet property="shareLbl" destination="3CK-BT-ONy" id="8RN-Zj-ORl"/>
                 <outlet property="subjectConceptStackView" destination="Fjs-8F-9B0" id="rVO-dy-R2d"/>
+                <outlet property="whatsappBtn" destination="4Yb-Cg-q5C" id="cSH-X5-Pz1"/>
+                <outlet property="whatsappLbl" destination="3zQ-dc-YPP" id="euK-hR-hQQ"/>
             </connections>
             <point key="canvasLocation" x="16" y="-27"/>
         </tableViewCell>
