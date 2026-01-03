@@ -14,7 +14,7 @@ extension UILabel {
 }
 
 class EdutainCell: UITableViewCell {
-    
+
     @IBOutlet weak var subjectConceptStackView: UIStackView!
     @IBOutlet weak var lblSkillTested: UILabel!
     @IBOutlet weak var lblDescription2: UILabel!
@@ -30,32 +30,37 @@ class EdutainCell: UITableViewCell {
     @IBOutlet weak var lblDescription: UILabel!
     @IBOutlet weak var lblTime: UILabel!
     @IBOutlet weak var lblTitle: UILabel!
-    
     @IBOutlet weak var imgLike: UIImageView!
     @IBOutlet weak var lblLikeCount: UILabel!
     @IBOutlet weak var btnLike: UIButton!
-    
+    @IBOutlet weak var commentBtn: UIButton!
+
     // Callbacks
     var likeClicked: ((Int) -> Void)?
     var whatsappClicked: ((Int, Feed) -> Void)?
     var shareClicked: ((Int, Feed) -> Void)?
-    
+    var commentClicked: ((Int, Feed) -> Void)?
+    var tagClicked: ((Int, Feed, String) -> Void)?  // NEW: Tag click callback
+
     // Track states
     var isLiked: Bool = false
     var currentLikeCount: Int = 0
     var currentWhatsappCount: Int = 0
     var currentShareCount: Int = 0
     var currentFeed: Feed?
-    
+    var cellIndex: Int = 0
+    var selectedTagIndex: Int? = nil
+    var currentCommentCount: Int = 0
+
     var arr = ["That's awesome!", "This is Very useful!",
                "This is exactly what I needed!", "I learned something new!", "I already knew this!"]
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         selectionStyle = .none
         setupCollectionView()
     }
-    
+
     private func setupCollectionView() {
         colVw.register(UINib(nibName: "TagCell", bundle: nil), forCellWithReuseIdentifier: "TagCell")
         
@@ -68,27 +73,31 @@ class EdutainCell: UITableViewCell {
         colVw.delegate = self
         colVw.dataSource = self
     }
-    
+
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
         isLiked = false
         currentLikeCount = 0
         currentWhatsappCount = 0
         currentShareCount = 0
+        currentCommentCount = 0
         currentFeed = nil
+        cellIndex = 0
+        selectedTagIndex = nil
         imgVw.image = nil
         lblLikeCount.text = "0"
         whatsappLbl.text = "0"
         shareLbl.text = "0"
     }
-    
-    func setup(feed: Feed) {
-        // Store current feed
+
+    func setup(feed: Feed, index: Int = 0) {
         currentFeed = feed
+        cellIndex = index
+        selectedTagIndex = nil
         
         // SUBJECT
         if let subject = feed.subject, !subject.isEmpty {
@@ -114,7 +123,6 @@ class EdutainCell: UITableViewCell {
             label?.setContentHuggingPriority(.required, for: .horizontal)
             label?.setContentCompressionResistancePriority(.required, for: .horizontal)
             label?.numberOfLines = 1
-            label?.padding(left: 8, right: 8, top: 4, bottom: 4)
         }
         
         subjectConceptStackView.isHidden = lblTopic.isHidden && lblSubject.isHidden
@@ -171,14 +179,28 @@ class EdutainCell: UITableViewCell {
         currentWhatsappCount = feed.whatsappShareCount
         whatsappLbl.text = "\(currentWhatsappCount)"
         
-        // Share Count (if available in Feed model)
+        // Share Count
         currentShareCount = feed.shareCount ?? 0
         shareLbl.text = "\(currentShareCount)"
+        
+        // Comment Button Title
+        currentCommentCount = feed.commentsCount
+        setupCommentButton(count: currentCommentCount)
         
         // Reload collection view
         colVw.reloadData()
     }
-    
+
+    private func setupCommentButton(count: Int) {
+        if count == 0 {
+            commentBtn.setTitle("0 Comments", for: .normal)
+        } else if count == 1 {
+            commentBtn.setTitle("1 Comment", for: .normal)
+        } else {
+            commentBtn.setTitle("\(count) Comments", for: .normal)
+        }
+    }
+
     func updateLikeUI(isLiked: Bool) {
         if isLiked {
             imgLike.image = UIImage(named: "likefill")
@@ -188,7 +210,7 @@ class EdutainCell: UITableViewCell {
             likeVw.backgroundColor = UIColor(hex: "#F5F5F5")
         }
     }
-    
+
     func toggleLike() {
         isLiked.toggle()
         
@@ -200,7 +222,6 @@ class EdutainCell: UITableViewCell {
         
         lblLikeCount.text = "\(currentLikeCount)"
         
-        // Animation
         UIView.animate(withDuration: 0.1, animations: {
             self.imgLike.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
         }) { _ in
@@ -211,11 +232,10 @@ class EdutainCell: UITableViewCell {
         
         updateLikeUI(isLiked: isLiked)
     }
-    
+
     func updateWhatsappCount() {
         currentWhatsappCount += 1
         
-        // Animation
         UIView.animate(withDuration: 0.1, animations: {
             self.whatsappLbl.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
         }) { _ in
@@ -225,11 +245,10 @@ class EdutainCell: UITableViewCell {
             }
         }
     }
-    
+
     func updateShareCount() {
         currentShareCount += 1
         
-        // Animation
         UIView.animate(withDuration: 0.1, animations: {
             self.shareLbl.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
         }) { _ in
@@ -239,7 +258,7 @@ class EdutainCell: UITableViewCell {
             }
         }
     }
-    
+
     func revertLike() {
         isLiked.toggle()
         
@@ -253,31 +272,90 @@ class EdutainCell: UITableViewCell {
         updateLikeUI(isLiked: isLiked)
     }
     
-    // MARK: - Actions
+    // Update comment count after posting
+    func incrementCommentCount() {
+        currentCommentCount += 1
+        setupCommentButton(count: currentCommentCount)
+        
+        // Animate the comment button
+        UIView.animate(withDuration: 0.1, animations: {
+            self.commentBtn.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+        }) { _ in
+            UIView.animate(withDuration: 0.1) {
+                self.commentBtn.transform = .identity
+            }
+        }
+    }
+    
+    // Reset tag selection
+    func resetTagSelection() {
+        selectedTagIndex = nil
+        colVw.reloadData()
+    }
+
     @IBAction func onClickLike(_ sender: UIButton) {
         toggleLike()
         likeClicked?(sender.tag)
     }
-    
+
     @IBAction func onClickWhatsapp(_ sender: UIButton) {
         guard let feed = currentFeed else { return }
         whatsappClicked?(sender.tag, feed)
     }
-    
+
     @IBAction func onClickShare(_ sender: UIButton) {
         guard let feed = currentFeed else { return }
         shareClicked?(sender.tag, feed)
     }
+
+    @IBAction func onClickComment(_ sender: UIButton) {
+        guard let feed = currentFeed else { return }
+        commentClicked?(sender.tag, feed)
+    }
 }
 
 extension EdutainCell: UICollectionViewDelegate, UICollectionViewDataSource {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return arr.count
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TagCell", for: indexPath) as! TagCell
         cell.lblText.text = arr[indexPath.row]
+        
+        // Update UI based on selection
+        if selectedTagIndex == indexPath.row {
+            cell.setSelected(true)
+        } else {
+            cell.setSelected(false)
+        }
+        
         return cell
+    }
+    
+    // Handle tag selection
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let feed = currentFeed else { return }
+        
+        let selectedText = arr[indexPath.row]
+        
+        // Update selected state
+        selectedTagIndex = indexPath.row
+        collectionView.reloadData()
+        
+        // Animate the selected cell
+        if let cell = collectionView.cellForItem(at: indexPath) as? TagCell {
+            UIView.animate(withDuration: 0.1, animations: {
+                cell.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+            }) { _ in
+                UIView.animate(withDuration: 0.1) {
+                    cell.transform = .identity
+                }
+            }
+        }
+        
+        // Call the callback with selected tag text
+        tagClicked?(cellIndex, feed, selectedText)
     }
 }

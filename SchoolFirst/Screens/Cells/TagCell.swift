@@ -8,11 +8,38 @@
 import UIKit
 
 class TagCell: UICollectionViewCell {
-    
+
     @IBOutlet weak var lblText: UILabel!
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
+        setupUI()
+    }
+
+    func setupUI() {
+        contentView.backgroundColor = UIColor(hex: "#F5F5F5")
+        contentView.layer.cornerRadius = 12
+        contentView.layer.masksToBounds = true
         
+        // Add border for better visibility
+        contentView.layer.borderWidth = 1
+        contentView.layer.borderColor = UIColor.clear.cgColor
+    }
+    
+    func setSelected(_ selected: Bool) {
+        if selected {
+            contentView.backgroundColor = UIColor(hex: "#CDE9FA")
+            contentView.layer.borderColor = UIColor(hex: "#007AFF")?.cgColor
+            lblText.textColor = UIColor(hex: "#007AFF")
+        } else {
+            contentView.backgroundColor = UIColor(hex: "#F5F5F5")
+            contentView.layer.borderColor = UIColor.clear.cgColor
+        }
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        setSelected(false)
+        lblText.text = nil
     }
 }

@@ -70,7 +70,9 @@ struct API {
     
     static let LIKE_FEED = BASE_URL + "edutain/feed/"
     // Usage: LIKE_FEED + feedId + "/like"
-    static let EDUTAIN_SEARCH = BASE_URL + "edutain/search" 
+    static let EDUTAIN_SEARCH = BASE_URL + "edutain/search"
+    static let GET_COMMENTS = BASE_URL + "edutain/comment"
+    static let POST_COMMENT = BASE_URL + "edutain/comment"
     
          
     static let WHATSAPP_SHARE = BASE_URL + "edutain/whatsappshare"

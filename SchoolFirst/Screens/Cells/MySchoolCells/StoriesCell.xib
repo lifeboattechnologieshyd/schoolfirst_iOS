@@ -242,22 +242,27 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4r3-ZI-J2w">
-                                <rect key="frame" x="223.33333333333334" y="7.3333333333333712" width="112.66666666666666" height="35"/>
+                                <rect key="frame" x="217" y="7.3333333333333712" width="119" height="35"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="35" id="Mp6-AM-UqW"/>
                                 </constraints>
+                                <color key="tintColor" red="0.077784277499999999" green="0.3335567713" blue="0.541552484" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain">
                                     <attributedString key="attributedTitle">
                                         <fragment content="15 Comments">
                                             <attributes>
-                                                <font key="NSFont" metaFont="system" size="14"/>
+                                                <color key="NSColor" red="0.070446245369999994" green="0.27863362429999999" blue="0.44846415519999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <font key="NSFont" size="14" name="Lexend-SemiBold"/>
                                                 <font key="NSOriginalFont" size="12" name="Helvetica"/>
                                                 <paragraphStyle key="NSParagraphStyle" alignment="right" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                             </attributes>
                                         </fragment>
                                     </attributedString>
                                 </buttonConfiguration>
+                                <connections>
+                                    <action selector="onClickComment:" destination="W0a-I0-syZ" eventType="touchUpInside" id="HlS-Ny-MnW"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>

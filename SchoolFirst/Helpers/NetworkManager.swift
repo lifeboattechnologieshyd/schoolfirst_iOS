@@ -283,7 +283,7 @@ struct Feed: Codable {
     let description: String
     let description_2: String?
     var likesCount: Int
-    let commentsCount: Int
+    var commentsCount: Int
     var whatsappShareCount: Int
     let language: String
     let duration: Int
@@ -1843,4 +1843,51 @@ extension String {
             .trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
+}
+
+// Response wrapper for GET comments
+struct CommentsResponse: Codable {
+    let comments: [Comment]
+}
+
+// Response wrapper for POST comment
+struct PostCommentResponse: Codable {
+    let id: String
+}
+
+// Comment Model
+struct Comment: Codable {
+    let commentId: String
+    let userId: String
+    let parentId: String?
+    let comment: String
+    let likesCount: Int
+    let image: String?
+    let userName: String
+    let profilePic: String?
+    let createdAt: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case commentId = "comment_id"
+        case userId = "user_id"
+        case parentId = "parent_id"
+        case comment
+        case likesCount = "likes_count"
+        case image
+        case userName = "user_name"
+        case profilePic = "profile_pic"
+        case createdAt = "created_at"
+    }
+    
+    // Helper to get formatted time
+    var formattedTime: String {
+        let date = Date(timeIntervalSince1970: TimeInterval(createdAt))
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .abbreviated
+        return formatter.localizedString(for: date, relativeTo: Date())
+    }
+}
+enum FeedCellType {
+    case diy
+    case stories
 }
