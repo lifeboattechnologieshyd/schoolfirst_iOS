@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="187" id="KGk-i7-Jjw" customClass="LeaveHistoryCell" customModule="SF_Dev" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="395" height="187"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="395" height="187"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VdS-xw-Zux">
+                        <rect key="frame" x="16" y="12" width="363" height="160"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dtI-mc-lj4">
+                                <rect key="frame" x="11.999999999999996" y="14" width="51.666666666666657" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="MjS-5X-RyW"/>
+                                </constraints>
+                                <attributedString key="attributedText">
+                                    <fragment content="3 Days">
+                                        <attributes>
+                                            <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="56t-xV-Jg7">
+                                <rect key="frame" x="12" y="38" width="136.33333333333334" height="15"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="15" id="O48-L4-Mgm"/>
+                                </constraints>
+                                <attributedString key="attributedText">
+                                    <fragment content="10 Mar 2025 (First Half)">
+                                        <attributes>
+                                            <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Teacher Remarks: Submit Medical Proof" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7hs-AL-9jY">
+                                <rect key="frame" x="12" y="93" width="339" height="15"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="15" id="COF-bi-d5l"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="light" pointSize="12"/>
+                                <color key="textColor" red="0.93333333330000001" green="0.30588235289999999" blue="0.36862745099999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VRs-3M-g3V">
+                                <rect key="frame" x="263" y="12" width="88" height="24"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ufi-7y-1NA">
+                                        <rect key="frame" x="18.666666666666686" y="4.6666666666666679" width="51" height="15"/>
+                                        <attributedString key="attributedText">
+                                            <fragment content="Rejected">
+                                                <attributes>
+                                                    <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                                </attributes>
+                                            </fragment>
+                                        </attributedString>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" red="0.99961715939999995" green="0.7983936667" blue="0.81823414559999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstItem="Ufi-7y-1NA" firstAttribute="centerY" secondItem="VRs-3M-g3V" secondAttribute="centerY" id="G6P-yQ-uXm"/>
+                                    <constraint firstAttribute="height" constant="24" id="lLZ-y8-8qw"/>
+                                    <constraint firstItem="Ufi-7y-1NA" firstAttribute="centerX" secondItem="VRs-3M-g3V" secondAttribute="centerX" id="nfS-4u-5ec"/>
+                                    <constraint firstAttribute="width" constant="88" id="u8b-7y-eSd"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="12"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tg1-8h-LoG">
+                                <rect key="frame" x="12" y="57" width="339" height="32"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="32" id="i4y-Ml-EHB"/>
+                                </constraints>
+                                <attributedString key="attributedText">
+                                    <fragment content="Reason: Abhinay was selected for U14 Cricket Tournament. Hence he cannot come for 2 Days">
+                                        <attributes>
+                                            <color key="NSColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <font key="NSFont" size="12" name="Lexend-Light"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="adu-AG-hn9">
+                                <rect key="frame" x="80" y="120" width="203" height="32"/>
+                                <color key="backgroundColor" red="0.80392156859999997" green="0.91372549020000005" blue="0.98039215690000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="32" id="cxJ-gg-kYn"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain">
+                                    <attributedString key="attributedTitle">
+                                        <fragment content="Re-submit Request">
+                                            <attributes>
+                                                <color key="NSColor" red="0.05028576404" green="0.33521342279999999" blue="0.60576432940000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <font key="NSFont" size="14" name="Lexend-Regular"/>
+                                                <font key="NSOriginalFont" size="12" name="Helvetica"/>
+                                                <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                            </attributes>
+                                        </fragment>
+                                    </attributedString>
+                                </buttonConfiguration>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="16"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="adu-AG-hn9" secondAttribute="trailing" constant="80" id="2t0-aw-Kuw"/>
+                            <constraint firstItem="7hs-AL-9jY" firstAttribute="leading" secondItem="VdS-xw-Zux" secondAttribute="leading" constant="12" id="3cW-FT-xgX"/>
+                            <constraint firstItem="adu-AG-hn9" firstAttribute="top" secondItem="7hs-AL-9jY" secondAttribute="bottom" constant="12" id="5Hc-fs-yx9"/>
+                            <constraint firstItem="dtI-mc-lj4" firstAttribute="top" secondItem="VdS-xw-Zux" secondAttribute="top" constant="14" id="8Wo-nA-nhc"/>
+                            <constraint firstItem="tg1-8h-LoG" firstAttribute="top" secondItem="56t-xV-Jg7" secondAttribute="bottom" constant="4" id="91r-IV-nbJ"/>
+                            <constraint firstItem="adu-AG-hn9" firstAttribute="leading" secondItem="VdS-xw-Zux" secondAttribute="leading" constant="80" id="BDG-2j-fDw"/>
+                            <constraint firstItem="7hs-AL-9jY" firstAttribute="top" secondItem="tg1-8h-LoG" secondAttribute="bottom" constant="4" id="KnS-V2-PsR"/>
+                            <constraint firstAttribute="bottom" secondItem="adu-AG-hn9" secondAttribute="bottom" constant="8" id="MCq-U3-V1R"/>
+                            <constraint firstAttribute="trailing" secondItem="tg1-8h-LoG" secondAttribute="trailing" constant="12" id="Rfw-Vz-vcR"/>
+                            <constraint firstAttribute="trailing" secondItem="VRs-3M-g3V" secondAttribute="trailing" constant="12" id="XGs-rC-1Vg"/>
+                            <constraint firstAttribute="trailing" secondItem="7hs-AL-9jY" secondAttribute="trailing" constant="12" id="gli-mf-IZz"/>
+                            <constraint firstItem="56t-xV-Jg7" firstAttribute="leading" secondItem="VdS-xw-Zux" secondAttribute="leading" constant="12" id="i0p-Fh-2rA"/>
+                            <constraint firstItem="tg1-8h-LoG" firstAttribute="leading" secondItem="56t-xV-Jg7" secondAttribute="leading" id="iVh-yH-eQ4"/>
+                            <constraint firstItem="56t-xV-Jg7" firstAttribute="top" secondItem="dtI-mc-lj4" secondAttribute="bottom" constant="4" id="seG-M1-xp8"/>
+                            <constraint firstItem="VRs-3M-g3V" firstAttribute="top" secondItem="VdS-xw-Zux" secondAttribute="top" constant="12" id="taF-kq-I1a"/>
+                            <constraint firstItem="dtI-mc-lj4" firstAttribute="leading" secondItem="VdS-xw-Zux" secondAttribute="leading" constant="12" id="xvQ-zG-oSw"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="16"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="VdS-xw-Zux" secondAttribute="trailing" constant="16" id="7cD-3P-esp"/>
+                    <constraint firstItem="VdS-xw-Zux" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="12" id="FkE-DS-0uQ"/>
+                    <constraint firstAttribute="bottom" secondItem="VdS-xw-Zux" secondAttribute="bottom" constant="15" id="eeO-jj-Lih"/>
+                    <constraint firstItem="VdS-xw-Zux" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="zdm-64-jHE"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="bgVw" destination="VdS-xw-Zux" id="M1w-cB-3vs"/>
+                <outlet property="leaveDate" destination="56t-xV-Jg7" id="DgC-Nv-27Y"/>
+                <outlet property="noofdaysLbl" destination="dtI-mc-lj4" id="kDj-Zc-Cao"/>
+                <outlet property="reasonLbl" destination="tg1-8h-LoG" id="C1f-wr-J8U"/>
+                <outlet property="remarksLbl" destination="7hs-AL-9jY" id="Ua5-AC-wc1"/>
+                <outlet property="resubmitBtn" destination="adu-AG-hn9" id="nhw-bK-OZq"/>
+                <outlet property="statusLbl" destination="Ufi-7y-1NA" id="5yL-q2-aAO"/>
+                <outlet property="statusVw" destination="VRs-3M-g3V" id="4Mc-2V-QXb"/>
+            </connections>
+            <point key="canvasLocation" x="228.24427480916029" y="38.380281690140848"/>
+        </tableViewCell>
+    </objects>
+</document>

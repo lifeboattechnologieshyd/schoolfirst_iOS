@@ -1914,3 +1914,82 @@ struct LeaveDayInfo: Decodable {
         case sessionType = "session_type"
     }
 }
+struct LeaveHistoryData: Codable {
+    let id: String
+    let studentId: String
+    let gradeId: String
+    let fromDate: String
+    let toDate: String
+    let totalDays: Double
+    let reasonType: String
+    let reason: String
+    let leaveStatus: String
+    let teacherRemarks: String?
+    let leaveDays: [String: LeaveDayDetail]
+    let holidays: [String]
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case studentId = "student_id"
+        case gradeId = "grade_id"
+        case fromDate = "from_date"
+        case toDate = "to_date"
+        case totalDays = "total_days"
+        case reasonType = "reason_type"
+        case reason
+        case leaveStatus = "leave_status"
+        case teacherRemarks = "teacher_remarks"
+        case leaveDays = "leave_days"
+        case holidays
+    }
+    
+    // Helper computed properties
+    var formattedDateRange: String {
+        if fromDate == toDate {
+            return formatDate(fromDate)
+        } else {
+            return "\(formatDate(fromDate)) - \(formatDate(toDate))"
+        }
+    }
+    
+    var formattedTotalDays: String {
+        if totalDays == floor(totalDays) {
+            return "\(Int(totalDays)) \(Int(totalDays) == 1 ? "Day" : "Days")"
+        } else {
+            return "\(totalDays) Days"
+        }
+    }
+    
+    private func formatDate(_ dateString: String) -> String {
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "yyyy-MM-dd"
+        
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "dd MMM yyyy"
+        
+        if let date = inputFormatter.date(from: dateString) {
+            return outputFormatter.string(from: date)
+        }
+        return dateString
+    }
+    
+    // Get month from fromDate (1-12)
+    var leaveMonth: Int? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        if let date = formatter.date(from: fromDate) {
+            return Calendar.current.component(.month, from: date)
+        }
+        return nil
+    }
+}
+
+struct LeaveDayDetail: Codable {
+    let dayType: String
+    let sessionType: String
+    
+    enum CodingKeys: String, CodingKey {
+        case dayType = "day_type"
+        case sessionType = "session_type"
+    }
+}
