@@ -5739,6 +5739,9 @@
                                         <real key="value" value="1"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="videonoTf:" destination="aLt-hF-EcU" eventType="editingDidEnd" id="Lfn-R4-yFa"/>
+                                </connections>
                             </textField>
                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="          Search Specific" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="uHn-Qa-3T3">
                                 <rect key="frame" x="180" y="230" width="197" height="36"/>
@@ -5759,6 +5762,9 @@
                                         <real key="value" value="1"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="searchTf:" destination="aLt-hF-EcU" eventType="editingDidEnd" id="byo-0X-ooi"/>
+                                </connections>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aWX-jX-kyt">
                                 <rect key="frame" x="192" y="238" width="22" height="16"/>
@@ -5857,6 +5863,7 @@
                                             </attributedString>
                                         </buttonConfiguration>
                                         <connections>
+                                            <action selector="goBtn:" destination="aLt-hF-EcU" eventType="touchUpInside" id="IpF-sC-MT8"/>
                                             <action selector="onClickGo:" destination="0oL-gx-e45" eventType="touchUpInside" id="MuZ-OJ-sNo"/>
                                         </connections>
                                     </button>
@@ -5916,6 +5923,7 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SdY-4K-Qoa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <exit id="aLt-hF-EcU" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="5434" y="905"/>
         </scene>

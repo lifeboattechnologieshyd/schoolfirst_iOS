@@ -10,29 +10,30 @@ class SchoolGalleryCell: UITableViewCell {
 
     @IBOutlet weak var colVw: UICollectionView!
     @IBOutlet weak var btnViewAll: UIButton!
+    
     var gallery = [EventGallery]()
+    
+    var onViewAllTapped: (() -> Void)?
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         
         self.colVw.register(UINib(nibName: "GalleryCollectionCell", bundle: nil), forCellWithReuseIdentifier: "GalleryCollectionCell")
         colVw.delegate = self
         colVw.dataSource = self
-        
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        
     }
     
-    
     @IBAction func onClickViewAll(_ sender: UIButton) {
-        
+        onViewAllTapped?()
     }
 }
 
-extension SchoolGalleryCell :  UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension SchoolGalleryCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return gallery.count
     }
@@ -46,5 +47,4 @@ extension SchoolGalleryCell :  UICollectionViewDelegate, UICollectionViewDataSou
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: colVw.frame.size.width * 0.6, height: 207)
     }
-    
 }

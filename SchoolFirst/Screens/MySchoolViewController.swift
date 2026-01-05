@@ -102,12 +102,21 @@ extension MySchoolViewController : UITableViewDelegate, UITableViewDataSource {
         }else if indexPath.row == 1 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "SchoolInfoCell") as? SchoolInfoCell
             return cell!
-        }else if indexPath.row == 2{
-            let cell = tableView.dequeueReusableCell(withIdentifier: "SchoolGalleryCell") as? SchoolGalleryCell
-            cell?.gallery = self.gallery
-            cell?.colVw.reloadData()
-            return cell!
-
+        } else if indexPath.row == 2 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "SchoolGalleryCell") as! SchoolGalleryCell
+            cell.gallery = self.gallery
+            cell.colVw.reloadData()
+            
+            cell.onViewAllTapped = { [weak self] in
+                guard let self = self else { return }
+                let stbd = UIStoryboard(name: "Gallery", bundle: nil)
+                let vc = stbd.instantiateViewController(withIdentifier: "GalleryViewController") as! GalleryViewController
+                vc.gallery = self.gallery
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+            
+            return cell
+        
         }else if indexPath.row == 3 {
             var cell = tableView.dequeueReusableCell(withIdentifier: "Cell")
             if cell == nil {
