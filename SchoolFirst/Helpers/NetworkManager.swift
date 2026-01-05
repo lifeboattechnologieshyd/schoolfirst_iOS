@@ -1891,3 +1891,26 @@ enum FeedCellType {
     case diy
     case stories
 }
+struct LeaveResponseData: Decodable {
+    let leaveId: String?
+    let totalDays: Double?
+    let leaveDays: [String: LeaveDayInfo]?
+    let leaveStatus: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case leaveId = "leave_id"
+        case totalDays = "total_days"
+        case leaveDays = "leave_days"
+        case leaveStatus = "leave_status"
+    }
+}
+
+struct LeaveDayInfo: Decodable {
+    let dayType: String?
+    let sessionType: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case dayType = "day_type"
+        case sessionType = "session_type"
+    }
+}
