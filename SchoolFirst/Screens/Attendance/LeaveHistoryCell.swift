@@ -82,15 +82,15 @@ class LeaveHistoryCell: UITableViewCell {
         // Set status color and resubmit button visibility
         switch leave.leaveStatus.lowercased() {
         case "approved":
-            statusVw.backgroundColor = UIColor(hex: "#11AF13")
+            statusVw.backgroundColor = UIColor(hex: "#CFEFD0")
             hideResubmitButton()
             
         case "rejected":
-            statusVw.backgroundColor = UIColor(hex: "#FF001A")
+            statusVw.backgroundColor = UIColor(hex: "#FFCCD1")
             showResubmitButton()
             
         case "pending":
-            statusVw.backgroundColor = UIColor(hex: "#F78500")
+            statusVw.backgroundColor = UIColor(hex: "#FDE7CC")
             hideResubmitButton()
             
         default:

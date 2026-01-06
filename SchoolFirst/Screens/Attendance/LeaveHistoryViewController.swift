@@ -126,7 +126,7 @@ class LeaveHistoryViewController: UIViewController {
             let maxWidth = self.view.frame.width - 40
             let size = toastLabel.sizeThatFits(CGSize(width: maxWidth, height: .greatestFiniteMagnitude))
             toastLabel.frame = CGRect(x: 20, y: self.view.frame.height - 120,
-                                       width: maxWidth, height: size.height + 20)
+                                      width: maxWidth, height: size.height + 20)
             
             self.view.addSubview(toastLabel)
             
@@ -142,8 +142,8 @@ class LeaveHistoryViewController: UIViewController {
         guard !UserManager.shared.kids.isEmpty else { return }
         
         let student = UserManager.shared.kids[selected_student]
-         let studentId = student.studentID
-
+        let studentId = student.studentID
+        
         let urlString = "\(API.LEAVE_HISTORY)?student_id=\(studentId)"
         
         showLoader()
@@ -276,13 +276,13 @@ extension LeaveHistoryViewController: UICollectionViewDelegate, UICollectionView
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         if collectionView == monthsCollectionView {
-            return CGSize(width: 72, height: 32)
+            return CGSize(width: 60, height: 32)
         } else if collectionView == colVw {
-            let width = (collectionView.frame.size.width - 14) / 2
+            let width = (collectionView.frame.size.width - 20) / 3
             return CGSize(width: width, height: 74)
         }
         
-        return CGSize(width: 100, height: 50)
+        return CGSize(width: 80, height: 50)
     }
 }
 
@@ -308,5 +308,13 @@ extension LeaveHistoryViewController: UITableViewDelegate, UITableViewDataSource
     @objc func resubmitTapped(_ sender: UIButton) {
         let leave = filteredLeaveHistory[sender.tag]
         print("Resubmit tapped for leave ID: \(leave.id)")
+        
+        let storyboard = UIStoryboard(name: "Attendance", bundle: nil)
+        if let resubmitVC = storyboard.instantiateViewController(withIdentifier: "ReSubmitViewController") as? ReSubmitViewController {
+            resubmitVC.leaveData = leave 
+            navigationController?.pushViewController(resubmitVC, animated: true)
+        }
+        
     }
+    
 }

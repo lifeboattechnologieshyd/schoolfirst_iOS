@@ -27,7 +27,7 @@ class MonthCell: UICollectionViewCell {
             contentView.backgroundColor = UIColor(red: 11/255, green: 86/255, blue: 154/255, alpha: 1)
             
              if month.uppercased() == "ALL" {
-                monthLabel.textColor = .yellow
+                monthLabel.textColor = .black
             } else {
                 monthLabel.textColor = .white
             }
@@ -35,7 +35,7 @@ class MonthCell: UICollectionViewCell {
         } else {
             contentView.backgroundColor = UIColor(red: 203/255, green: 229/255, blue: 253/255, alpha: 1)
             
-             monthLabel.textColor = (month.uppercased() == "ALL") ? .yellow : .black
+             monthLabel.textColor = (month.uppercased() == "ALL") ? .black : .black
         }
     }
 }

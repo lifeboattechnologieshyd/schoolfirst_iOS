@@ -28,13 +28,18 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9Qf-By-PMN">
                         <rect key="frame" x="16" y="12" width="340" height="185"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" Attendance Snapshot" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aR8-46-Tvh">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aR8-46-Tvh">
                                 <rect key="frame" x="78" y="12" width="200" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="w7A-oi-He5"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
-                                <nil key="textColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment content=" Attendance Snapshot">
+                                        <attributes>
+                                            <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text=" 89%" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WMh-bu-lOQ">
@@ -47,23 +52,33 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="w33-O6-duA">
                                 <rect key="frame" x="232" y="53" width="96" height="54"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" Present Days" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ro1-RJ-N1Y">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ro1-RJ-N1Y">
                                         <rect key="frame" x="8" y="8" width="80" height="15"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="15" id="XEB-Aq-kpM"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="system" weight="light" pointSize="12"/>
-                                        <nil key="textColor"/>
+                                        <attributedString key="attributedText">
+                                            <fragment content=" Present Days">
+                                                <attributes>
+                                                    <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                                </attributes>
+                                            </fragment>
+                                        </attributedString>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" 129" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ldY-vx-lTj">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ldY-vx-lTj">
                                         <rect key="frame" x="30" y="27" width="36" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="7It-10-ibv"/>
                                             <constraint firstAttribute="width" constant="36" id="grn-0a-0vq"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
-                                        <nil key="textColor"/>
+                                        <attributedString key="attributedText">
+                                            <fragment content=" 129">
+                                                <attributes>
+                                                    <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                                </attributes>
+                                            </fragment>
+                                        </attributedString>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
@@ -81,23 +96,35 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bnm-5H-jOS">
                                 <rect key="frame" x="232" y="115" width="96" height="54"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" Absent Days" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cBF-4E-iVD">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cBF-4E-iVD">
                                         <rect key="frame" x="8" y="12" width="80" height="15"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="15" id="bsz-Qf-c1e"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="system" weight="light" pointSize="12"/>
-                                        <nil key="textColor"/>
+                                        <attributedString key="attributedText">
+                                            <fragment content=" Absent Days">
+                                                <attributes>
+                                                    <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                                </attributes>
+                                            </fragment>
+                                        </attributedString>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" 11" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iFq-jZ-WIv" userLabel="11">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iFq-jZ-WIv" userLabel="11">
                                         <rect key="frame" x="30" y="31" width="36" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="I5E-NX-HGo"/>
                                             <constraint firstAttribute="width" constant="36" id="R61-bx-LP3"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
-                                        <color key="textColor" red="0.99892729520000001" green="0.0040644132529999996" blue="0.1059660539" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <attributedString key="attributedText">
+                                            <fragment content=" 11">
+                                                <attributes>
+                                                    <color key="NSColor" red="0.99892729520000001" green="0.0040644132529999996" blue="0.1059660539" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                                </attributes>
+                                            </fragment>
+                                        </attributedString>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
@@ -142,7 +169,16 @@
                             <constraint firstAttribute="height" constant="48" id="d4Y-iT-ol1"/>
                         </constraints>
                         <state key="normal" title="Button"/>
-                        <buttonConfiguration key="configuration" style="plain" title=" Leave History"/>
+                        <buttonConfiguration key="configuration" style="plain">
+                            <attributedString key="attributedTitle">
+                                <fragment content=" Leave History">
+                                    <attributes>
+                                        <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                        <font key="NSOriginalFont" size="12" name="Helvetica"/>
+                                    </attributes>
+                                </fragment>
+                            </attributedString>
+                        </buttonConfiguration>
                         <connections>
                             <action selector="leaveHistoryButtonTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="rxM-Nw-4Ud"/>
                         </connections>
@@ -152,7 +188,16 @@
                         <color key="backgroundColor" name="primaryColor"/>
                         <color key="tintColor" red="0.99516242740000005" green="0.94719189410000004" blue="0.01824968494" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <state key="normal" title="Button"/>
-                        <buttonConfiguration key="configuration" style="plain" title=" Request Leave"/>
+                        <buttonConfiguration key="configuration" style="plain">
+                            <attributedString key="attributedTitle">
+                                <fragment content=" Request Leave">
+                                    <attributes>
+                                        <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                        <font key="NSOriginalFont" size="12" name="Helvetica"/>
+                                    </attributes>
+                                </fragment>
+                            </attributedString>
+                        </buttonConfiguration>
                         <connections>
                             <action selector="requestLeaveButtonTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="mMk-u0-C41"/>
                         </connections>

@@ -271,10 +271,10 @@ extension AttendanceViewController  : UICollectionViewDelegate, UICollectionView
         selected_student = indexPath.row
         colVw.reloadData()
         collectionView.scrollToItem(
-                at: indexPath,
-                at: .centeredHorizontally,
-                animated: true
-            )
+            at: indexPath,
+            at: .centeredHorizontally,
+            animated: true
+        )
         getAttandanceReport()
         self.getLeaveDetails(date: self.selected_date)
     }
@@ -282,10 +282,8 @@ extension AttendanceViewController  : UICollectionViewDelegate, UICollectionView
         colVw.reloadData()
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = (collectionView.frame.size.width-14)/2
-        return CGSize(width: width, height: 74)
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 150, height: 74)
     }
+    
 }
-

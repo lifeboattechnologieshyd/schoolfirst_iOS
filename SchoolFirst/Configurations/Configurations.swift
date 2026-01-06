@@ -167,5 +167,7 @@ struct API {
     static let APPLY_LEAVE = BASE_URL + "attendance/apply/leave"
     // Add this to your URLs file
     static let LEAVE_HISTORY = BASE_URL + "attendance/leave/history"
+    static let UPDATE_LEAVE = BASE_URL + "attendance/leave/"
+
     
 }

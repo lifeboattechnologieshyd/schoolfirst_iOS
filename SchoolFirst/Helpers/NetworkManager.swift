@@ -1993,3 +1993,37 @@ struct LeaveDayDetail: Codable {
         case sessionType = "session_type"
     }
 }
+// MARK: Leave Update Response Model
+struct LeaveUpdateResponse: Codable {
+    let id: String
+    let gradeId: String
+    let gradeName: String
+    let studentId: String
+    let studentName: String
+    let fromDate: String
+    let toDate: String
+    let dayType: String
+    let sessionType: String
+    let totalDays: Double
+    let reason: String
+    let leaveStatus: String
+    let teacherRemarks: String
+    let document: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case gradeId = "grade_id"
+        case gradeName = "grade_name"
+        case studentId = "student_id"
+        case studentName = "student_name"
+        case fromDate = "from_date"
+        case toDate = "to_date"
+        case dayType = "day_type"
+        case sessionType = "session_type"
+        case totalDays = "total_days"
+        case reason
+        case leaveStatus = "leave_status"
+        case teacherRemarks = "teacher_remarks"
+        case document
+    }
+}

@@ -77,7 +77,6 @@ class SubmitLeaveViewController: UIViewController {
         view.endEditing(true)
     }
     
-    // MARK: - Button Actions
     
     @IBAction func backButtonTapped(_ sender: UIButton) {
         self.navigationController?.popViewController(animated: true)
@@ -88,7 +87,6 @@ class SubmitLeaveViewController: UIViewController {
         submitLeaveRequest()
     }
     
-    // MARK: - API Call
     
     func submitLeaveRequest() {
         
@@ -101,8 +99,6 @@ class SubmitLeaveViewController: UIViewController {
             return
         }
         
-        print("📤 Submitting Leave Request...")
-        print("📋 Parameters: \(parameters)")
         
         showLoading(true)
         
