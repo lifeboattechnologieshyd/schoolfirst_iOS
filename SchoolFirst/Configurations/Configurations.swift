@@ -168,6 +168,8 @@ struct API {
     // Add this to your URLs file
     static let LEAVE_HISTORY = BASE_URL + "attendance/leave/history"
     static let UPDATE_LEAVE = BASE_URL + "attendance/leave/"
+    // Add this to your API URLs
+    static let DONE_HOMEWORK = BASE_URL + "school/create/homework"
 
     
 }

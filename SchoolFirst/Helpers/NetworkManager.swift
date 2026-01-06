@@ -616,9 +616,10 @@ struct Homework: Codable {
     let gradeName: String
     let homeworkDate: String
     let homeworkDetails: [HomeworkDetail]
-    let homeworkTrackerDetails: [HomeworkTrackerDetail]
+    var homeworkTrackerDetails: [HomeworkTrackerDetail]
     let deadline: String
     let doneCount: Int
+    let homeworkType: String
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -631,6 +632,22 @@ struct Homework: Codable {
         case homeworkTrackerDetails = "homework_tracker_details"
         case deadline
         case doneCount = "done_count"
+        case homeworkType = "homework_type"
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(String.self, forKey: .id) ?? ""
+        school = try container.decodeIfPresent(String.self, forKey: .school) ?? ""
+        schoolName = try container.decodeIfPresent(String.self, forKey: .schoolName) ?? ""
+        grade = try container.decodeIfPresent(String.self, forKey: .grade) ?? ""
+        gradeName = try container.decodeIfPresent(String.self, forKey: .gradeName) ?? ""
+        homeworkDate = try container.decodeIfPresent(String.self, forKey: .homeworkDate) ?? ""
+        homeworkDetails = try container.decodeIfPresent([HomeworkDetail].self, forKey: .homeworkDetails) ?? []
+        homeworkTrackerDetails = try container.decodeIfPresent([HomeworkTrackerDetail].self, forKey: .homeworkTrackerDetails) ?? []
+        deadline = try container.decodeIfPresent(String.self, forKey: .deadline) ?? ""
+        doneCount = try container.decodeIfPresent(Int.self, forKey: .doneCount) ?? 0
+        homeworkType = try container.decodeIfPresent(String.self, forKey: .homeworkType) ?? ""
     }
 }
 
@@ -654,7 +671,6 @@ struct HomeworkTrackerDetail: Codable {
         case status
     }
 }
-
 
 struct DashboardResponse: Codable {
     let homework: [Homework]

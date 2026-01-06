@@ -4,8 +4,8 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
-        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -26,7 +26,7 @@
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4X5-7d-MrR">
-                        <rect key="frame" x="48" y="6.6666666666666679" width="353" height="15"/>
+                        <rect key="frame" x="48" y="6.333333333333333" width="353" height="15.333333333333336"/>
                         <attributedString key="attributedText">
                             <fragment content="8 Students have completed this. Have you?">
                                 <attributes>
@@ -36,59 +36,81 @@
                         </attributedString>
                         <nil key="highlightedColor"/>
                     </label>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pah-hq-wn1">
-                        <rect key="frame" x="16" y="37.666666666666664" width="128.66666666666666" height="34.999999999999993"/>
-                        <color key="backgroundColor" name="primaryColor"/>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5E8-eW-Xfv">
+                        <rect key="frame" x="16" y="37.666666666666664" width="124" height="31.999999999999993"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uxL-IS-Pt7">
+                                <rect key="frame" x="12" y="6" width="20" height="18"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="18" id="AkA-hj-eCa"/>
+                                    <constraint firstAttribute="width" constant="20" id="B2C-3V-C2H"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="check-mark"/>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V1N-k0-WuT">
+                                <rect key="frame" x="36" y="6" width="76" height="18"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="18" id="5E0-lp-ARK"/>
+                                </constraints>
+                                <attributedString key="attributedText">
+                                    <fragment content="Completed">
+                                        <attributes>
+                                            <color key="NSColor" red="0.1311849058" green="0.72990804909999996" blue="0.081043295560000006" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <font key="NSFont" size="14" name="Lexend-SemiBold"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="35" id="HUR-78-tr5"/>
+                            <constraint firstItem="V1N-k0-WuT" firstAttribute="leading" secondItem="uxL-IS-Pt7" secondAttribute="trailing" constant="4" id="TZt-tv-XMc"/>
+                            <constraint firstItem="V1N-k0-WuT" firstAttribute="centerY" secondItem="uxL-IS-Pt7" secondAttribute="centerY" id="U7S-bE-RnB"/>
+                            <constraint firstItem="uxL-IS-Pt7" firstAttribute="top" secondItem="5E8-eW-Xfv" secondAttribute="top" constant="6" id="bAz-fP-6zj"/>
+                            <constraint firstAttribute="height" constant="32" id="i0A-d9-GLU"/>
+                            <constraint firstItem="uxL-IS-Pt7" firstAttribute="leading" secondItem="5E8-eW-Xfv" secondAttribute="leading" constant="12" id="iwE-Qv-nsE"/>
+                            <constraint firstAttribute="width" constant="124" id="urY-E4-fyo"/>
                         </constraints>
-                        <state key="normal" title="Button"/>
-                        <buttonConfiguration key="configuration" style="plain">
-                            <attributedString key="attributedTitle">
-                                <fragment content="Mark as Done">
-                                    <attributes>
-                                        <font key="NSFont" metaFont="system" size="17"/>
-                                        <font key="NSOriginalFont" size="12" name="Helvetica"/>
-                                    </attributes>
-                                </fragment>
-                            </attributedString>
-                            <color key="baseForegroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                        </buttonConfiguration>
                         <userDefinedRuntimeAttributes>
-                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                <real key="value" value="1"/>
-                            </userDefinedRuntimeAttribute>
                             <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
                                 <real key="value" value="5"/>
                             </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                <real key="value" value="1"/>
+                            </userDefinedRuntimeAttribute>
                             <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                <color key="value" name="primaryColor"/>
+                                <color key="value" red="0.1311849058" green="0.72990804909999996" blue="0.081043295560000006" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
-                    </button>
+                    </view>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="Pah-hq-wn1" firstAttribute="leading" secondItem="1lh-Mb-F2l" secondAttribute="leading" id="Hj9-7T-rbe"/>
+                    <constraint firstItem="5E8-eW-Xfv" firstAttribute="top" secondItem="4X5-7d-MrR" secondAttribute="bottom" constant="16" id="1hW-l3-d0a"/>
+                    <constraint firstAttribute="bottom" secondItem="5E8-eW-Xfv" secondAttribute="bottom" constant="12.33" id="JCI-Vh-EiI"/>
+                    <constraint firstItem="5E8-eW-Xfv" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="REg-bn-5sO"/>
                     <constraint firstItem="1lh-Mb-F2l" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="Wte-Nh-JDS"/>
                     <constraint firstItem="1lh-Mb-F2l" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="dQl-ts-f6O"/>
                     <constraint firstItem="4X5-7d-MrR" firstAttribute="leading" secondItem="1lh-Mb-F2l" secondAttribute="trailing" constant="16" id="k4C-1E-LgN"/>
-                    <constraint firstItem="Pah-hq-wn1" firstAttribute="top" secondItem="4X5-7d-MrR" secondAttribute="bottom" constant="16" id="qtd-hO-ty3"/>
                     <constraint firstAttribute="trailing" secondItem="4X5-7d-MrR" secondAttribute="trailing" constant="16" id="r4i-XY-pG7"/>
                     <constraint firstItem="4X5-7d-MrR" firstAttribute="centerY" secondItem="1lh-Mb-F2l" secondAttribute="centerY" id="wsa-fg-Gj2"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
-                <outlet property="btnComplete" destination="Pah-hq-wn1" id="rkL-sT-3Cw"/>
+                <outlet property="completeVw" destination="5E8-eW-Xfv" id="0VY-8t-Gg1"/>
                 <outlet property="lblCount" destination="4X5-7d-MrR" id="gnK-3P-cfU"/>
             </connections>
             <point key="canvasLocation" x="64.885496183206101" y="33.098591549295776"/>
         </tableViewCell>
     </objects>
     <resources>
+        <image name="check-mark" width="20" height="18"/>
         <image name="hw_students" width="16" height="13"/>
-        <namedColor name="primaryColor">
-            <color red="0.043137254901960784" green="0.33725490196078434" blue="0.60392156862745094" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>
