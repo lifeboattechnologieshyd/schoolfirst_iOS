@@ -25,13 +25,19 @@ class HomeworkViewController: UIViewController {
     }
     
     private var selectedGradeID: String? {
-        guard selected_student >= 0, selected_student < UserManager.shared.kids.count else { return nil }
-        return UserManager.shared.kids[selected_student].gradeID
+        let kids = UserManager.shared.kids
+        guard !kids.isEmpty, selected_student >= 0, selected_student < kids.count else { return nil }
+        return kids[selected_student].gradeID
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        
+        guard !UserManager.shared.kids.isEmpty else {
+            showAlert(msg: "No students found")
+            return
+        }
         getHomework()
     }
 
@@ -78,6 +84,7 @@ class HomeworkViewController: UIViewController {
     func getHomework() {
         homework.removeAll()
         tblVw.reloadData()
+        
         guard let gradeID = selectedGradeID else { return }
         
         let requestID = UUID()
@@ -94,6 +101,7 @@ class HomeworkViewController: UIViewController {
     func getPastHomework() {
         past_homework.removeAll()
         tblVw.reloadData()
+        
         guard let gradeID = selectedGradeID else { return }
         
         let requestID = UUID()
@@ -143,7 +151,6 @@ class HomeworkViewController: UIViewController {
                 }
             }
         }
-        
     }
 
     func updateTrackerStatus(trackerId: String, section: Int) {
@@ -162,13 +169,17 @@ class HomeworkViewController: UIViewController {
 
     func reloadFooter(for section: Int) {
         guard let hw = safeHomework(at: section) else { return }
-        tblVw.reloadRows(at: [IndexPath(row: hw.homeworkDetails.count + 1, section: section)], with: .none)
+        let footerRow = hw.homeworkDetails.count + 1
+        guard section < tblVw.numberOfSections, footerRow < tblVw.numberOfRows(inSection: section) else { return }
+        tblVw.reloadRows(at: [IndexPath(row: footerRow, section: section)], with: .none)
     }
 }
 
 extension HomeworkViewController: UITableViewDelegate, UITableViewDataSource {
 
-    func numberOfSections(in tableView: UITableView) -> Int { currentHomeworkList.count }
+    func numberOfSections(in tableView: UITableView) -> Int {
+        currentHomeworkList.count
+    }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let hw = safeHomework(at: section) else { return 0 }
@@ -194,8 +205,11 @@ extension HomeworkViewController: UITableViewDelegate, UITableViewDataSource {
             return cell
         }
         
+        let detailIndex = indexPath.row - 1
+        guard detailIndex >= 0, detailIndex < detailsCount else { return UITableViewCell() }
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "HWSubjectWiseCell") as! HWSubjectWiseCell
-        let detail = currentHW.homeworkDetails[indexPath.row - 1]
+        let detail = currentHW.homeworkDetails[detailIndex]
         cell.configure(detail: detail, trackerDetail: findTrackerDetail(for: detail.subject, in: currentHW))
         
         cell.onDoneTapped = { [weak self] in
@@ -227,8 +241,9 @@ extension HomeworkViewController: UICollectionViewDelegate, UICollectionViewData
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "KidSelectionCell", for: indexPath) as! KidSelectionCell
-        guard indexPath.row < UserManager.shared.kids.count else { return cell }
-        cell.setup(student: UserManager.shared.kids[indexPath.row], isSelected: selected_student == indexPath.row)
+        let kids = UserManager.shared.kids
+        guard indexPath.row < kids.count else { return cell }
+        cell.setup(student: kids[indexPath.row], isSelected: selected_student == indexPath.row)
         return cell
     }
 

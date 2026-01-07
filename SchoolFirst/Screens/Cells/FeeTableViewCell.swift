@@ -91,40 +91,54 @@ class FeeTableViewCell: UITableViewCell {
         studentnameLbl.text = details.studentName
         
         loadStudentImage(urlString: details.studentImage)
-        setupFeeDetails(details: details)
+        setupFeeAndFineDetails(details: details)
         setupDueDate(details: details)
         setupRemainderMessage(details: details)
-        setupDynamicFineLabel(details: details)
     }
     
-    private func setupFeeDetails(details: StudentFeeDetails) {
+    private func setupFeeAndFineDetails(details: StudentFeeDetails) {
         let feeDue = details.pendingFee
-        let fine = details.finePayable
+        let sortedInstallments = details.feeInstallments.sorted { $0.installmentNo < $1.installmentNo }
+        
+        // Calculate fine based on days passed
+        var calculatedFine: Double = 0
+        var daysPassed: Int = 0
+        var finePerDay: Double = 0
+        
+        if let unpaidInstallment = sortedInstallments.first(where: { !$0.isPaid }) {
+            let daysRemaining = unpaidInstallment.daysUntilDue
+            finePerDay = unpaidInstallment.calculatedFinePerDay
+            
+            if daysRemaining < 0 {
+                daysPassed = abs(daysRemaining)
+                calculatedFine = Double(daysPassed) * finePerDay
+            }
+        }
+        
+        // Use calculated fine or API fine (whichever is greater or use calculated)
+        let fine = max(calculatedFine, details.finePayable)
         let totalDue = feeDue + fine
         
         feedue.text = "₹\(formatAmount(feeDue))"
         fineamountLbl.text = "₹\(formatAmount(fine))"
         totalfeedueLbl.text = "₹\(formatAmount(totalDue))"
         
-        let totalInstallments = details.feeInstallments.count
-        let installmentNumbers = (1...totalInstallments)
-            .map { String($0) }
-            .joined(separator: ", ")
+        // Setup fine label with days calculation
+        setupFineLabelWithDays(daysPassed: daysPassed, finePerDay: finePerDay, totalFine: fine)
         
+        // Installments
+        let totalInstallments = details.feeInstallments.count
+        let installmentNumbers = (1...totalInstallments).map { String($0) }.joined(separator: ", ")
         installmentsNoLbl.text = installmentNumbers
     }
     
-    private func setupDynamicFineLabel(details: StudentFeeDetails) {
-        let sortedInstallments = details.feeInstallments.sorted { $0.installmentNo < $1.installmentNo }
-        
-        guard let unpaidInstallment = sortedInstallments.first(where: { !$0.isPaid }) else {
+    private func setupFineLabelWithDays(daysPassed: Int, finePerDay: Double, totalFine: Double) {
+        if daysPassed > 0 && finePerDay > 0 {
+            // Show: "Fine (X days × ₹Y)"
+            fineLbl.text = "Fine (\(daysPassed) days × ₹\(formatAmount(finePerDay)))"
+            fineLbl.textColor = .systemRed
+        } else if totalFine > 0 {
             fineLbl.text = "Fine"
-            fineLbl.textColor = .darkGray
-            return
-        }
-        
-        if unpaidInstallment.hasFine {
-            fineLbl.text = unpaidInstallment.fineDisplayText
             fineLbl.textColor = .systemRed
         } else {
             fineLbl.text = "Fine"
@@ -158,57 +172,41 @@ class FeeTableViewCell: UITableViewCell {
         
         if daysRemaining < 0 {
             let daysPassed = abs(daysRemaining)
+            let totalFine = Double(daysPassed) * finePerDay
+            
             if finePerDay > 0 {
-                remainderLbl.text = "Due date passed \(daysPassed) day(s) ago. Please Pay the Fee immediately to avoid Late Fee Fine of ₹\(formatAmount(finePerDay)) per day"
+                remainderLbl.text = "Due date passed \(daysPassed) day(s) ago. Fine accumulated: ₹\(formatAmount(totalFine)). Pay immediately to stop further fine of ₹\(formatAmount(finePerDay))/day"
             } else {
-                remainderLbl.text = "Due date passed \(daysPassed) day(s) ago. Please Pay the Fee immediately."
+                remainderLbl.text = "Due date passed \(daysPassed) day(s) ago. Please pay immediately."
             }
             remainderLbl.textColor = .systemRed
         } else if daysRemaining == 0 {
             remainderLbl.text = "Payment is due TODAY! Pay now to avoid fine."
             remainderLbl.textColor = .systemOrange
         } else if daysRemaining <= 7 {
-            remainderLbl.text = "Only \(daysRemaining) Day(s) remaining. Pay Now to avoid Fine"
+            remainderLbl.text = "Only \(daysRemaining) day(s) remaining. Pay now to avoid fine."
             remainderLbl.textColor = .systemOrange
         } else {
-            remainderLbl.text = "Next payment due in \(daysRemaining) days"
+            remainderLbl.text = "Next payment due in \(daysRemaining) days."
             remainderLbl.textColor = .darkGray
         }
     }
     
     private func formatAmount(_ amount: Double) -> String {
-        if amount == amount.rounded() {
-            return String(format: "%.0f", amount)
-        } else {
-            return String(format: "%.2f", amount)
-        }
+        amount == amount.rounded() ? String(format: "%.0f", amount) : String(format: "%.2f", amount)
     }
     
     private func loadStudentImage(urlString: String?) {
-        guard let urlString = urlString, !urlString.isEmpty else {
-            imgVw.image = UIImage(named: defaultStudentImage)
-            return
-        }
-        
-        guard let url = URL(string: urlString) else {
+        guard let urlString = urlString, !urlString.isEmpty, let url = URL(string: urlString) else {
             imgVw.image = UIImage(named: defaultStudentImage)
             return
         }
         
         imgVw.image = UIImage(named: defaultStudentImage)
         
-        URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-            guard let self = self else { return }
-            
-            guard let data = data,
-                  error == nil,
-                  let image = UIImage(data: data) else {
-                return
-            }
-            
-            DispatchQueue.main.async {
-                self.imgVw.image = image
-            }
+        URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
+            guard let data = data, error == nil, let image = UIImage(data: data) else { return }
+            DispatchQueue.main.async { self?.imgVw.image = image }
         }.resume()
     }
 }

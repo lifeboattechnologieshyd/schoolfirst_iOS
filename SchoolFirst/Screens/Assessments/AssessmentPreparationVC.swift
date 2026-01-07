@@ -9,57 +9,59 @@ import UIKit
 import Lottie
 
 class AssessmentPreparationVC: UIViewController {
-
+    
     @IBOutlet weak var imgVw: LottieAnimationView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         playLottieFile()
         createAssessment()
     }
     
-   
-    
-    
     func createAssessment() {
+        guard !UserManager.shared.assessment_selected_lesson_ids.isEmpty else {
+            showAlert(msg: "Please select at least one lesson")
+            navigationController?.popViewController(animated: true)
+            return
+        }
         
-        print( UserManager.shared.assessment_selected_grade.id)
-        print( UserManager.shared.assessment_selected_subject.id)
-        print( UserManager.shared.assessmentSelectedStudent.studentID)
-
-        print( UserManager.shared.assessment_selected_lesson_ids.first!)
+        guard let grade = UserManager.shared.assessment_selected_grade,
+              let subject = UserManager.shared.assessment_selected_subject,
+              let student = UserManager.shared.assessmentSelectedStudent else {
+            
+            
+            showAlert(msg: "Missing required assessment data. Please try again.")
+            navigationController?.popViewController(animated: true)
+            return
+        }
         
-        
-        
-        let payload: [String:Any] = [
-            "grade_id": UserManager.shared.assessment_selected_grade.id,
-            "subject_id":UserManager.shared.assessment_selected_subject.id,
-            "lesson_ids":UserManager.shared.assessment_selected_lesson_ids,
-            "student_id":UserManager.shared.assessmentSelectedStudent.studentID
+        let payload: [String: Any] = [
+            "grade_id": grade.id,
+            "subject_id": subject.id,
+            "lesson_ids": UserManager.shared.assessment_selected_lesson_ids,
+            "student_id": student.studentID
         ]
-        print(payload)
         
-        let subject_url = API.ASSESSMENT_CREATE
-        NetworkManager.shared.request(urlString: subject_url,method: .POST, parameters: payload) { (result: Result<APIResponse<[Assessment]>, NetworkError>)  in
-            switch result {
-            case .success(let info):
-                if info.success {
-                    if let data = info.data {
-                        DispatchQueue.main.async {
-                            if data.count > 0 {
-                                UserManager.shared.assessment_created_assessment = data[0]
-                                self.goToStartTestVC()
-                            }
-                        }
+        
+        NetworkManager.shared.request(urlString: API.ASSESSMENT_CREATE, method: .POST, parameters: payload) { [weak self] (result: Result<APIResponse<[Assessment]>, NetworkError>) in
+            
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                
+                switch result {
+                case .success(let info):
+                    if info.success, let data = info.data, let assessment = data.first {
+                        UserManager.shared.assessment_created_assessment = assessment
+                        self.goToStartTestVC()
+                    } else {
+                        self.showAlert(msg: info.description)
+                        self.navigationController?.popViewController(animated: true)
                     }
-                }else{
-                    print(info.description)
-                }
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    switch error {
-                    case .noaccess:
+                    
+                case .failure(let error):
+                    if case .noaccess = error {
                         self.handleLogout()
-                    default:
+                    } else {
                         self.showAlert(msg: error.localizedDescription)
                         self.navigationController?.popViewController(animated: true)
                     }
@@ -68,21 +70,24 @@ class AssessmentPreparationVC: UIViewController {
         }
     }
     
-    func playLottieFile(){
-        let animation = LottieAnimation.named("loading.json")
-        imgVw.animation = animation
-        imgVw.contentMode = .scaleAspectFit
-        imgVw.loopMode = .loop
-        imgVw.animationSpeed = 1.0
-        imgVw.play()
+    func playLottieFile() {
+        guard let animationView = imgVw else { return }
+        
+        guard let animation = LottieAnimation.named("loading") else {
+            return
+        }
+        
+        animationView.animation = animation
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        animationView.animationSpeed = 1.0
+        animationView.play()
     }
     
-    // api call to generate/get assessment. then display start quiz popup.
-    
-    
-    func goToStartTestVC(){
-        let vc = storyboard?.instantiateViewController(identifier: "StartTestVC") as? StartTestVC
-        self.navigationController?.pushViewController(vc!, animated: true)
+    func goToStartTestVC() {
+        guard let vc = storyboard?.instantiateViewController(identifier: "StartTestVC") as? StartTestVC else {
+            return
+        }
+        navigationController?.pushViewController(vc, animated: true)
     }
-
 }
