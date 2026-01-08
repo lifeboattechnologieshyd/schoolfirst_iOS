@@ -20,17 +20,17 @@ class SchoolInfoCell: UITableViewCell {
 
         imgLogo.applyCardShadow()
         
-        lblSchoolName.text = UserManager.shared.user?.schools.first?.schoolName ?? ""
+        lblSchoolName.text = UserManager.shared.selectedSchool?.schoolName ?? ""
         
-        lblEmail.text = UserManager.shared.user?.schools.first?.email ?? ""
+        lblEmail.text = UserManager.shared.selectedSchool?.email ?? ""
         
-        lblMobile.text = UserManager.shared.user?.schools.first?.phoneNumber ?? ""
+        lblMobile.text = UserManager.shared.selectedSchool?.phoneNumber ?? ""
         
-        lblWebsite.text = UserManager.shared.user?.schools.first?.website ?? ""
+        lblWebsite.text = UserManager.shared.selectedSchool?.website ?? ""
         
-        lblAddress.text = UserManager.shared.user?.schools.first?.address ?? "" + ", \(UserManager.shared.user?.schools.first?.district ?? "")" + ", \(UserManager.shared.user?.schools.first?.state ?? "")"
+        lblAddress.text = UserManager.shared.selectedSchool?.address ?? "" + ", \(UserManager.shared.selectedSchool?.district ?? "")" + ", \(UserManager.shared.selectedSchool?.state ?? "")"
         
-        imgLogo.loadImage(url: UserManager.shared.user?.schools.first?.fullLogo ?? "")
+        imgLogo.loadImage(url: UserManager.shared.selectedSchool?.fullLogo ?? "")
         
     }
     override func setSelected(_ selected: Bool, animated: Bool) {

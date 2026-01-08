@@ -11,10 +11,12 @@ class KidsCell: UITableViewCell {
     
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var gradeLabel: UILabel!
+    @IBOutlet weak var bgVw: UIView!
     @IBOutlet weak var profileImageView: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        bgVw.addCardShadow()
         setupUI()
     }
     

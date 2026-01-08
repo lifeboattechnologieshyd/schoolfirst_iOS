@@ -5,7 +5,6 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -69,7 +68,7 @@
                                 <buttonConfiguration key="configuration" style="plain" image="btn_next"/>
                             </button>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="OyC-S1-Ou3" firstAttribute="leading" secondItem="BCE-P7-jZM" secondAttribute="trailing" constant="12" id="Cng-fX-S51"/>
                             <constraint firstItem="TZW-4w-sWt" firstAttribute="centerY" secondItem="4nZ-oN-KBe" secondAttribute="centerY" id="QOM-6u-oCO"/>
@@ -82,7 +81,7 @@
                         </constraints>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                <real key="value" value="10"/>
+                                <real key="value" value="20"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </view>
@@ -96,6 +95,7 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="bgVw" destination="4nZ-oN-KBe" id="kLl-0j-j7T"/>
                 <outlet property="gradeLabel" destination="GDR-PE-dV1" id="bhd-as-3zN"/>
                 <outlet property="nameLabel" destination="OyC-S1-Ou3" id="pzt-ll-fpB"/>
                 <outlet property="profileImageView" destination="BCE-P7-jZM" id="X6L-Zo-0Ri"/>
@@ -106,8 +106,5 @@
     <resources>
         <image name="btn_next" width="8" height="12"/>
         <image name="dummy_kid_profile_pic" width="50" height="50"/>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
     </resources>
 </document>

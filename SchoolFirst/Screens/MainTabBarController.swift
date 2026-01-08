@@ -178,33 +178,32 @@ class MainTabBarController: UITabBarController,
     // ✅ NEW: Update middle tab title & circle image dynamically
     // ------------------------------------------------------------
     func updateMiddleTabTitleAndImage() {
-        let isSchoolUser = (UserManager.shared.user?.schools.count ?? 0) > 0
         
-        // ✅ Update tab bar item title for the nav controller
+        var isSchoolUser = false
+        if UserManager.shared.user?.students.count ?? 0 > 0 {
+            let first_student = UserManager.shared.user?.students.first!
+            if let school = first_student?.school {
+                isSchoolUser = true
+                circleButton.loadImage(url: school.smallLogo ?? "")
+            }
+        }
+        
+        if !isSchoolUser {
+            circleButton.setImage(UIImage(named: "MyPlan"), for: .normal)
+        }
+        
+        // Update tab bar item title
         if let nav = viewControllers?[homeIndex] as? UINavigationController {
             nav.tabBarItem.title = isSchoolUser ? "MySchool" : "MyPlan"
             nav.tabBarItem.image = nil
             nav.tabBarItem.selectedImage = nil
         }
-        
-        // ✅ Update circle button image
-        if isSchoolUser {
-            if let logoURL = UserManager.shared.user?.schools.first?.smallLogo {
-                circleButton.loadImage(url: logoURL) // your image loader extension
-            }
-        } else {
-            circleButton.setImage(UIImage(named: "MyPlan"), for: .normal)
-        }
-        
-        // ✅ Remove any button title (important!)
+
         circleButton.setTitle("", for: .normal)
-        
-        // Force the tab bar to refresh
         tabBar.setNeedsLayout()
         tabBar.layoutIfNeeded()
     }
 }
-
 ///////////////////////////////////////////////////////////////
 // ✅ CUSTOM NON-MOVING TAB BAR WITH DIP
 ///////////////////////////////////////////////////////////////

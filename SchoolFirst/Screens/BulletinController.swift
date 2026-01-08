@@ -35,7 +35,7 @@ class BulletinController: UIViewController {
         isLoading = true
         
         var url = API.NEWS
-        if let gradeId = UserManager.shared.user?.schools.first?.students.first?.gradeID {
+        if let gradeId = UserManager.shared.selectedKid?.gradeID {
             url += "?grade_id=\(gradeId)&page=\(page)&page_size=\(page_size)"
         }
         NetworkManager.shared.request(urlString: url,method: .GET) { (result: Result<APIResponse<[Bulletin]>, NetworkError>)  in

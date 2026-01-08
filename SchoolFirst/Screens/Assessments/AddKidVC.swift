@@ -124,9 +124,11 @@ class AddKidVC: UIViewController {
                 case .success(let response):
                     if response.success, let data = response.data {
                         
+                        let selectedGradeName = self.gradeList.first(where: { $0.id == gradeId })?.name ?? ""
+                        
                         let newStudent = Student(
-                            studentID: data.id,
-                            name: data.studentName,
+                            studentID: data.finalID,
+                            name: data.finalName,
                             image: data.image,
                             fatherName: "",
                             motherName: "",
@@ -134,55 +136,35 @@ class AddKidVC: UIViewController {
                             address: nil,
                             mobile: nil,
                             grade: data.gradeName ?? selectedGradeName,
-                            gradeID: data.gradeId,
-                            section: ""
+                            gradeID: data.gradeId ?? gradeId,
+                            section: "",
+                            numeric_grade: 0,
+                            school: nil
                         )
                         
-                        self.addKidToLocalUser(newStudent: newStudent)
+//                        UserManager.shared.addKid(newStudent)
+                        print("KID ADDED: \(newStudent.name) - \(newStudent.studentID)")
+                        print("Total kids: \(UserManager.shared.kids.count)")
                         
                         self.showSuccessAndGoBack()
                     } else {
-                        self.showAlert(msg: response.description)
-                    }
+                        print("Failed: data is nil → wrong model!")
+                        self.showAlert(msg: response.description ?? "Failed to add kid")
+                    }           
                     
                 case .failure(let error):
-                    self.showAlert(msg: "Failed: \(error.localizedDescription)")
+                    self.showAlert(msg: error.localizedDescription)
                 }
             }
         }
     }
     
     private func addKidToLocalUser(newStudent: Student) {
-        guard var user = UserManager.shared.user else {
-            print("❌ No user found")
-            return
-        }
-        
-        if user.schools.isEmpty {
-            let newSchool = School(
-                schoolID: "",
-                schoolName: "My Kids",
-                smallLogo: nil,
-                fullLogo: nil,
-                district: nil,
-                state: nil,
-                coverPic: nil,
-                address: nil,
-                phoneNumber: nil,
-                website: nil,
-                email: nil,
-                mapLink: nil,
-                latitude: nil,
-                longitude: nil,
-                students: [newStudent]
-            )
-            user.schools = [newSchool]
-        } else {
-            user.schools[0].students.append(newStudent)
-        }
-        
-        UserManager.shared.saveUser(user: user)
-        print("✅ Kid added to local user. Total kids: \(UserManager.shared.kids.count)")
+        // UserManager.shared.addKid(newStudent)
+        print("✅ Kid added! Total kids: \(UserManager.shared.kids.count)")
+           
+//        UserManager.shared.kids.append(newStudent)
+//        print("✅ Kid added to local user. Total kids: \(UserManager.shared.kids.count)")
     }
     
     private func showSuccessAndGoBack() {

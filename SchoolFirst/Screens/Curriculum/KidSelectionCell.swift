@@ -8,7 +8,7 @@
 import UIKit
 
 class KidSelectionCell: UICollectionViewCell {
-
+    
     @IBOutlet weak var bgView: UIView!
     @IBOutlet weak var imgVw: UIImageView!
     @IBOutlet weak var lblNAme: UILabel!
@@ -17,18 +17,23 @@ class KidSelectionCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-       
+        
     }
-    
     func setup(student: Student, isSelected: Bool) {
         lblNAme.text = student.name
-        lblGrade.text = student.grade
-          if let imageUrl = student.image, !imageUrl.isEmpty {
+        lblGrade.text = student.grade ?? "Grade not set"
+        
+        if let imageUrl = student.image, !imageUrl.isEmpty {
             imgVw.loadImage(url: imageUrl)
         } else {
             imgVw.image = UIImage(named: "Profile")
         }
         
-        bgView.layer.borderColor = isSelected ? UIColor.primary.cgColor : UIColor(hex: "#CBE5FD")?.cgColor
+           
+        if isSelected {
+            bgView.layer.borderColor = UIColor.primary.cgColor
+        } else {
+            bgView.layer.borderColor = UIColor(red: 0.8, green: 0.9, blue: 0.99, alpha: 1.0).cgColor
+        }
     }
 }

@@ -18,6 +18,10 @@ class CourseCell: UITableViewCell {
     @IBOutlet weak var lblCourseName: UILabel!
     @IBOutlet weak var imgCourse: UIImageView!
     @IBOutlet weak var bgView: UIView!
+    
+    var onWatchDemoTapped: (() -> Void)?
+    var onBuyTapped: (() -> Void)?
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         bgView.applyCardShadow()
@@ -26,23 +30,18 @@ class CourseCell: UITableViewCell {
         btnCost.titleLabel?.font = UIFont.lexend(.bold, size: 14)
     }
     
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-        
-    }
-    
     func setupCell(course: Course) {
-        self.imgCourse.loadImage(url: course.thumbnailImage)
-        self.lblCourseName.text = course.name
-        self.lblDuration.text = "\(course.duration) Hours"
-        self.lblAudience.text = "\(course.audience)"
+        imgCourse.loadImage(url: course.thumbnailImage)
+        lblCourseName.text = course.name
+        lblDuration.text = "\(course.duration) Hours"
+        lblAudience.text = "\(course.audience)"
     }
     
     @IBAction func onClickPay(_ sender: UIButton) {
-        print("user wants to buy")
+        onBuyTapped?()
     }
     
     @IBAction func onClickWatchDemo(_ sender: UIButton) {
-        print("demo played")
+        onWatchDemoTapped?()
     }
 }

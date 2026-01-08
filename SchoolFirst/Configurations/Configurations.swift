@@ -171,5 +171,11 @@ struct API {
     // Add this to your API URLs
     static let DONE_HOMEWORK = BASE_URL + "school/create/homework"
 
-    
+    // Remove duplicate ONLINE_COURSES and keep only these 3 at the bottom
+
+    static let WEBINARS = BASE_URL + "courses/get/webinar"
+    static let OFFLINE_COURSES = BASE_URL + "courses/get/course"   // This is your working offline API
 }
+
+    
+

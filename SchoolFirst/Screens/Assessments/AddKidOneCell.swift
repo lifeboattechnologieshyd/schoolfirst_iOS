@@ -249,7 +249,6 @@ extension AddKidOneCell {
     private func setupDatePicker() {
         dateTf.isHidden = false
         
-        // ✅ Only button works
         addDate.addTarget(self, action: #selector(showDatePicker), for: .touchUpInside)
     }
     

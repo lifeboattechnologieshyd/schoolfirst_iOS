@@ -73,12 +73,13 @@ class LoginController: UIViewController {
         NetworkManager.shared.request(urlString: API.LOGIN, method: .POST, parameters: payload) { (result: Result<APIResponse<LoginResponse>, NetworkError>) in
             switch result {
             case .success(let info):
-                if info.success {
+                if info.success, let data = info.data {
                     print("Login Success")
-                    UserDefaults.standard.set(info.data!.accessToken, forKey: "ACCESSTOKEN")
-                    UserDefaults.standard.set(info.data!.refreshToken, forKey: "REFRESHTOKEN")
+                    UserDefaults.standard.set(data.accessToken, forKey: "ACCESSTOKEN")
+                    UserDefaults.standard.set(data.refreshToken, forKey: "REFRESHTOKEN")
                     UserDefaults.standard.set(true, forKey: "LOGGEDIN")
-                    UserManager.shared.saveUser(user: info.data!.user)
+                    UserManager.shared.saveUser(user: data.user)
+                    
                     DispatchQueue.main.async {
                         let storyboard = UIStoryboard(name: "Main", bundle: nil)
                         if let tabBarController = storyboard.instantiateViewController(withIdentifier: "MainTabBarController") as? MainTabBarController {
@@ -92,10 +93,14 @@ class LoginController: UIViewController {
                         }
                     }
                 } else {
-                    self.showAlert(msg: "Login Failed")
+                    DispatchQueue.main.async {
+                        self.showAlert(msg: "Login Failed")
+                    }
                 }
             case .failure(_):
-                self.showAlert(msg: "School is not associated with the system. Please contact your school admin")
+                DispatchQueue.main.async {
+                    self.showAlert(msg: "School is not associated with the system. Please contact your school admin")
+                }
             }
         }
     }

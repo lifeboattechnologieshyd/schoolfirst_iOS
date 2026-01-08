@@ -6,155 +6,268 @@
 //
 
 import UIKit
+import AVKit
+import Kingfisher
 
 class CoursesViewController: UIViewController {
-    
-    // header view outlets
-    
-    @IBOutlet weak var imgProfile: UIImageView!
+
     @IBOutlet weak var imgVw: UIImageView!
-    
-    
     @IBOutlet weak var tblVw: UITableView!
     @IBOutlet weak var colVw: UICollectionView!
     @IBOutlet weak var bannerColVw: UICollectionView!
-    var selectedIndexPath: IndexPath?
-    var courses = [Course]()
-    
-    var categories : [[String:Any]] = [
-        [
-            "name":"All",
-            "image": "all_courses",
-        ],
-        [
-            "name":"Online",
-            "image": "online",
-        ],
-        [
-            "name":"Webinars",
-            "image": "webinars",
-        ],
-        [
-            "name":"Offline",
-            "image": "offline",
-        ],
+
+    var selectedTab = 0
+    var onlineCourses = [OnlineCourse]()
+    var offlineCourses = [OfflineCourse]()
+    var webinars = [Webinar]()
+
+    let tabs = [
+        ["name": "All", "image": "all"],
+        ["name": "Online", "image": "online"],
+        ["name": "Webinars", "image": "live"],
+        ["name": "Offline", "image": "offlinee"]
     ]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.imgVw.loadImage(url: UserManager.shared.user?.schools.first?.fullLogo ?? "", placeHolderImage: "")
-
-        
-        self.getCourses()
-        selectedIndexPath = IndexPath(item: 0, section: 0)
-        self.colVw.register(UINib(nibName: "TabCell", bundle: nil), forCellWithReuseIdentifier: "TabCell")
-        self.bannerColVw.register(UINib(nibName: "BannerCell", bundle: nil), forCellWithReuseIdentifier: "BannerCell")
-        self.colVw.tag = 1
-        self.bannerColVw.tag = 2
-        
-        self.tblVw.register(UINib(nibName: "CourseCell", bundle: nil), forCellReuseIdentifier: "CourseCell")
-        
-        self.tblVw.delegate = self
-        self.tblVw.dataSource = self
-
-
-        self.colVw.delegate = self
-        self.colVw.dataSource = self
-        
-        self.bannerColVw.delegate = self
-        self.bannerColVw.dataSource = self
+        imgVw.loadImage(url: UserManager.shared.selectedSchool?.fullLogo ?? "")
+        setupViews()
+        loadTab(0)
     }
-    
-    func getCourses(){
-        NetworkManager.shared.request(urlString: API.ONLINE_COURSES,method: .GET) { (result: Result<APIResponse<[Course]>, NetworkError>)  in
-            switch result {
-            case .success(let info):
-                if info.success {
-                    print("courses fetched")
-                    if let data = info.data {
-                        self.courses = data
-                    }
-                    DispatchQueue.main.async {
-                        self.tblVw.reloadData()
-                    }
-                }else{
-                    print(info.description)
-                }
-            case .failure(let error):
-                print(error.localizedDescription)
+
+    func setupViews() {
+        colVw.register(UINib(nibName: "TabCell", bundle: nil), forCellWithReuseIdentifier: "TabCell")
+        bannerColVw.register(UINib(nibName: "BannerCell", bundle: nil), forCellWithReuseIdentifier: "BannerCell")
+        tblVw.register(UINib(nibName: "CourseCell", bundle: nil), forCellReuseIdentifier: "CourseCell")
+        tblVw.register(UINib(nibName: "OfflineCell", bundle: nil), forCellReuseIdentifier: "OfflineCell")
+        tblVw.register(UINib(nibName: "WebinarsCell", bundle: nil), forCellReuseIdentifier: "WebinarsCell")
+
+        colVw.tag = 1
+        bannerColVw.tag = 2
+
+        tblVw.delegate = self
+        tblVw.dataSource = self
+        colVw.delegate = self
+        colVw.dataSource = self
+        bannerColVw.delegate = self
+        bannerColVw.dataSource = self
+    }
+
+    func loadTab(_ index: Int) {
+        selectedTab = index
+        colVw.reloadData()
+        tblVw.reloadData()
+
+        if onlineCourses.isEmpty { fetchOnline() }
+        if webinars.isEmpty { fetchWebinars() }
+        if offlineCourses.isEmpty { fetchOffline() }
+    }
+
+    func fetchOnline() {
+        NetworkManager.shared.request(urlString: API.ONLINE_COURSES, method: .GET) { [weak self] (result: Result<APIResponse<[OnlineCourse]>, NetworkError>) in
+            if case .success(let res) = result, let data = res.data {
+                self?.onlineCourses = data
+                DispatchQueue.main.async { self?.tblVw.reloadData() }
             }
         }
+    }
+
+    func fetchWebinars() {
+        NetworkManager.shared.request(urlString: API.WEBINARS, method: .GET) { [weak self] (result: Result<APIResponse<[Webinar]>, NetworkError>) in
+            if case .success(let res) = result, let data = res.data {
+                self?.webinars = data
+                DispatchQueue.main.async { self?.tblVw.reloadData() }
+            }
+        }
+    }
+
+    func fetchOffline() {
+        NetworkManager.shared.request(urlString: API.OFFLINE_COURSES, method: .GET) { [weak self] (result: Result<APIResponse<[OfflineCourse]>, NetworkError>) in
+            if case .success(let res) = result, let data = res.data {
+                self?.offlineCourses = data
+                DispatchQueue.main.async { self?.tblVw.reloadData() }
+            }
+        }
+    }
+
+    private func playDemo(_ url: String?) {
+        guard let str = url, let url = URL(string: str) else {
+            showAlert("Demo not available")
+            return
+        }
+        let player = AVPlayer(url: url)
+        let vc = AVPlayerViewController()
+        vc.player = player
+        present(vc, animated: true) { player.play() }
+    }
+
+    private func openLink(_ url: String) {
+        if let url = URL(string: url) { UIApplication.shared.open(url) }
+    }
+
+    private func showAlert(_ msg: String) {
+        let a = UIAlertController(title: nil, message: msg, preferredStyle: .alert)
+        a.addAction(UIAlertAction(title: "OK", style: .default))
+        present(a, animated: true)
     }
 }
 
-extension CoursesViewController : UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension CoursesViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if collectionView.tag == 1 {
-            return categories.count
-        }
-        return 3
+    func collectionView(_ cv: UICollectionView, numberOfItemsInSection s: Int) -> Int {
+        cv.tag == 1 ? tabs.count : 3
     }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if collectionView.tag == 1 {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TabCell", for: indexPath) as! TabCell
-            cell.selectedView.backgroundColor = indexPath.row == 0 ? UIColor(named: "primaryColor") : UIColor.clear
-            cell.loadCell(option: categories[indexPath.row])
-            return cell
-        }else{
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "BannerCell", for: indexPath) as! BannerCell
+
+    func collectionView(_ cv: UICollectionView, cellForItemAt ip: IndexPath) -> UICollectionViewCell {
+        if cv.tag == 1 {
+            let cell = cv.dequeueReusableCell(withReuseIdentifier: "TabCell", for: ip) as! TabCell
+            cell.loadCell(option: tabs[ip.row])
+            cell.selectedView.backgroundColor = ip.row == selectedTab ? UIColor(named: "primaryColor") : .clear
             return cell
         }
+        return cv.dequeueReusableCell(withReuseIdentifier: "BannerCell", for: ip) as! BannerCell
+    }
+
+    func collectionView(_ cv: UICollectionView, didSelectItemAt ip: IndexPath) {
+        if cv.tag == 1 { loadTab(ip.row) }
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        if collectionView.tag == 1 {
-            return CGSize(width: collectionView.frame.width/4, height: 80)
-        }else{
-            return CGSize(width: collectionView.frame.width-5, height: 58)
+    func collectionView(_ cv: UICollectionView, layout: UICollectionViewLayout, sizeForItemAt ip: IndexPath) -> CGSize {
+        if cv.tag == 1 {
+            return CGSize(width: 80, height: 80)
+        }
+        return CGSize(width: cv.frame.width - 40, height: 150)
+    }
+}
+
+extension CoursesViewController: UITableViewDataSource, UITableViewDelegate {
+    
+    func tableView(_ tv: UITableView, numberOfRowsInSection s: Int) -> Int {
+        switch selectedTab {
+        case 1: return onlineCourses.count
+        case 2: return webinars.count
+        case 3: return offlineCourses.count
+        default: return onlineCourses.count + webinars.count + offlineCourses.count
         }
     }
     
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if collectionView.tag == 1{
-            if let previousIndex = selectedIndexPath, previousIndex != indexPath {
-                collectionView.deselectItem(at: previousIndex, animated: false)
-                if let previousCell = collectionView.cellForItem(at: previousIndex) as? TabCell {
-                    previousCell.selectedView.backgroundColor = .clear
-                }
-            }
-            selectedIndexPath = indexPath
-            collectionView.reloadItems(at: [indexPath])
+    func tableView(_ tv: UITableView, cellForRowAt ip: IndexPath) -> UITableViewCell {
+        
+        if selectedTab == 0 {
+            let onlineCount = onlineCourses.count
+            let webinarCount = webinars.count
             
-            if let newCell = collectionView.cellForItem(at: indexPath) as? TabCell {
-                newCell.selectedView.backgroundColor = UIColor(named: "primaryColor")
+            if ip.row < onlineCount {
+                let cell = tv.dequeueReusableCell(withIdentifier: "CourseCell", for: ip) as! CourseCell
+                let c = onlineCourses[ip.row]
+                cell.lblCourseName.text = c.name
+                cell.imgCourse.kf.setImage(with: URL(string: c.thumbnailImage), placeholder: UIImage(named: "placeholder"))
+                cell.lblDuration.text = "\(c.duration) mins"
+                cell.lblAudience.text = c.audience
+                cell.btnCost.setTitle("₹\(c.finalCourseFee)", for: .normal)
+                cell.onWatchDemoTapped = { [weak self] in self?.playDemo(c.demoVideo?.first) }
+                cell.onBuyTapped = { print("Buy Online:", c.name) }
+                return cell
             }
-        }else{
-            print("")
+            else if ip.row < onlineCount + webinarCount {
+                let cell = tv.dequeueReusableCell(withIdentifier: "WebinarsCell", for: ip) as! WebinarsCell
+                let w = webinars[ip.row - onlineCount]
+                cell.lblCourseName.text = w.name
+                cell.imgCourse.kf.setImage(with: URL(string: w.thumbnailImage), placeholder: UIImage(named: "placeholder"))
+                cell.lblDuration.text = "\(w.duration / 60)m"
+                cell.lblAudience.text = w.audience
+                let remaining = w.totalSlots - w.totalEnrolled
+                cell.noofslotsLbl.text = "Hurry up! Only \(remaining) Slots are left"
+                
+                // Dynamic Entry Fee Button
+                let webinarFee = formatEntryFee(w.entryFee)
+                cell.enrollBtn.setTitle("Enroll at \(webinarFee)", for: .normal)
+                
+              
+                return cell
+            }
+            else {
+                let cell = tv.dequeueReusableCell(withIdentifier: "OfflineCell", for: ip) as! OfflineCell
+                let o = offlineCourses[ip.row - onlineCount - webinarCount]
+                cell.lblCourseName.text = o.name
+                cell.imgCourse.kf.setImage(with: URL(string: o.thumbnailImage), placeholder: UIImage(named: "placeholder"))
+                cell.lblAudience.text = o.audience
+                cell.locationLbl.text = o.venue
+                let remaining = o.totalSlots - o.totalEnrolled
+                cell.noofslotsLbl.text = "Hurry up! Only \(remaining) Slots are left"
+                
+                // Dynamic Entry Fee Button
+                let offlineFee = formatEntryFee(o.entryFee)
+                cell.enrollBtn.setTitle("Enroll at \(offlineFee)", for: .normal)
+            
+                return cell
+            }
+        }
+        
+        switch selectedTab {
+        case 1:
+            let cell = tv.dequeueReusableCell(withIdentifier: "CourseCell", for: ip) as! CourseCell
+            let c = onlineCourses[ip.row]
+            cell.lblCourseName.text = c.name
+            cell.imgCourse.kf.setImage(with: URL(string: c.thumbnailImage), placeholder: UIImage(named: "placeholder"))
+            cell.lblDuration.text = "\(c.duration) mins"
+            cell.lblAudience.text = c.audience
+            cell.btnCost.setTitle("₹\(c.finalCourseFee)", for: .normal)
+            cell.onWatchDemoTapped = { [weak self] in self?.playDemo(c.demoVideo?.first) }
+            cell.onBuyTapped = { print("Buy:", c.name) }
+            return cell
+            
+        case 2:
+            let cell = tv.dequeueReusableCell(withIdentifier: "WebinarsCell", for: ip) as! WebinarsCell
+            let w = webinars[ip.row]
+            cell.lblCourseName.text = w.name
+            cell.imgCourse.kf.setImage(with: URL(string: w.thumbnailImage), placeholder: UIImage(named: "placeholder"))
+            cell.lblDuration.text = "\(w.duration / 60)m"
+            cell.lblAudience.text = w.audience
+            let remaining = w.totalSlots - w.totalEnrolled
+            cell.noofslotsLbl.text = "Hurry up! Only \(remaining) Slots are left"
+            
+            // Dynamic Entry Fee Button
+            let webinarFee = formatEntryFee(w.entryFee)
+            cell.enrollBtn.setTitle("Enroll at \(webinarFee)", for: .normal)
+            return cell
+            
+        case 3:
+            let cell = tv.dequeueReusableCell(withIdentifier: "OfflineCell", for: ip) as! OfflineCell
+            let o = offlineCourses[ip.row]
+            cell.lblCourseName.text = o.name
+            cell.imgCourse.kf.setImage(with: URL(string: o.thumbnailImage), placeholder: UIImage(named: "placeholder"))
+            cell.lblAudience.text = o.audience
+            cell.locationLbl.text = o.venue
+            let remaining = o.totalSlots - o.totalEnrolled
+            cell.noofslotsLbl.text = "Hurry up! Only \(remaining) Slots are left"
+            
+            // Dynamic Entry Fee Button
+            let offlineFee = formatEntryFee(o.entryFee)
+            cell.enrollBtn.setTitle("Enroll at \(offlineFee)", for: .normal)
+            return cell
+            
+        default:
+            return UITableViewCell()
         }
     }
     
-    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        if collectionView.tag == 1{
-            collectionView.reloadItems(at: [indexPath])
-        }else {
-            print("")
+    func tableView(_ tv: UITableView, heightForRowAt ip: IndexPath) -> CGFloat {
+        if selectedTab == 0 {
+            let onlineCount = onlineCourses.count
+            let webinarCount = webinars.count
+            
+            if ip.row < onlineCount { return 420 }
+            else if ip.row < onlineCount + webinarCount { return 400 }
+            else { return 420 }
+        }
+        
+        switch selectedTab {
+        case 1: return 420
+        case 2: return 400
+        case 3: return 420
+        default: return 394
         }
     }
-}
-
-extension CoursesViewController: UITableViewDelegate, UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.courses.count
-    }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CourseCell") as! CourseCell
-        cell.setupCell(course: self.courses[indexPath.row])
-        return cell
-    }
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 394
-    }
 }

@@ -221,10 +221,10 @@ class SubmitLeaveViewController: UIViewController {
             
             self.leaveCell = cell
             
-            cell.configureWithKids(
-                kids: UserManager.shared.kids,
-                selectedIndex: selected_student
-            )
+//            cell.configureWithKids(
+//                kids: UserManager.shared.kids,
+//                selectedIndex: selected_student
+//            )
             
             cell.onLayoutUpdate = { [weak self] height in
                 guard let self = self else { return }

@@ -157,18 +157,18 @@ struct LoginResponse: Decodable {
     }
 }
 
-struct User:  Codable {
+struct User: Codable {
     let id: String
     let firstName: String?
     let lastName: String?
-    let schoolIDs: [String]
+    let schoolIDs: [String?]  // ← Allow null inside array
     let username: String
     let profileImage: String?
     let email: String?
     let referralCode: String
-    let mobile: Int
+    let mobile: Int64
     let deviceID: String?
-    var schools: [School]
+    let students : [Student]
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -181,10 +181,15 @@ struct User:  Codable {
         case referralCode = "referral_code"
         case mobile
         case deviceID = "device_id"
-        case schools
+        case students
     }
-}
+    
+    // Clean up nulls
+    var cleanSchoolIDs: [String] {
+        return schoolIDs.compactMap { $0 }
+    }
 
+}
 struct School: Codable {
     let schoolID: String
     let schoolName: String
@@ -200,7 +205,6 @@ struct School: Codable {
     let mapLink: String?
     let latitude: String?
     let longitude: String?
-    var students: [Student]
     
     enum CodingKeys: String, CodingKey {
         case schoolID = "school_id"
@@ -214,26 +218,27 @@ struct School: Codable {
         case website, email
         case mapLink = "map_link"
         case latitude, longitude
-        case students
     }
     
-    // ✅ Add initializer
-    init(schoolID: String, schoolName: String, smallLogo: String?, fullLogo: String?, district: String?, state: String?, coverPic: String?, address: String?, phoneNumber: String?, website: String?, email: String?, mapLink: String?, latitude: String?, longitude: String?, students: [Student]) {
-        self.schoolID = schoolID
-        self.schoolName = schoolName
-        self.smallLogo = smallLogo
-        self.fullLogo = fullLogo
-        self.district = district
-        self.state = state
-        self.coverPic = coverPic
-        self.address = address
-        self.phoneNumber = phoneNumber
-        self.website = website
-        self.email = email
-        self.mapLink = mapLink
-        self.latitude = latitude
-        self.longitude = longitude
-        self.students = students
+    // ✅ Custom init to handle missing students key
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        schoolID = try container.decode(String.self, forKey: .schoolID)
+        schoolName = try container.decode(String.self, forKey: .schoolName)
+        smallLogo = try container.decodeIfPresent(String.self, forKey: .smallLogo)
+        fullLogo = try container.decodeIfPresent(String.self, forKey: .fullLogo)
+        district = try container.decodeIfPresent(String.self, forKey: .district)
+        state = try container.decodeIfPresent(String.self, forKey: .state)
+        coverPic = try container.decodeIfPresent(String.self, forKey: .coverPic)
+        address = try container.decodeIfPresent(String.self, forKey: .address)
+        phoneNumber = try container.decodeIfPresent(String.self, forKey: .phoneNumber)
+        website = try container.decodeIfPresent(String.self, forKey: .website)
+        email = try container.decodeIfPresent(String.self, forKey: .email)
+        mapLink = try container.decodeIfPresent(String.self, forKey: .mapLink)
+        latitude = try container.decodeIfPresent(String.self, forKey: .latitude)
+        longitude = try container.decodeIfPresent(String.self, forKey: .longitude)
+        
     }
 }
 struct Course: Codable {
@@ -244,6 +249,8 @@ struct Course: Codable {
     let hosts: [String]
     let thumbnailImage: String
     let profileImage: String
+    let videos: [String]           // Full course videos
+    let demoVideo: [String]?       // This is an array!
     let images: [String]
     let courseFee: String
     let finalCourseFee: String
@@ -256,13 +263,14 @@ struct Course: Codable {
     let trending: Bool
 
     enum CodingKeys: String, CodingKey {
-        case id, name, description, duration, hosts, images, audience, language, enrollments, completions, trending
+        case id, name, description, duration, hosts, videos, images, audience, language, enrollments, completions, trending
         case thumbnailImage = "thumbnail_image"
         case profileImage = "profile_image"
         case courseFee = "course_fee"
         case finalCourseFee = "final_course_fee"
         case numberOfChapters = "number_of_chapters"
         case numberOfLessons = "number_of_lessons"
+        case demoVideo = "demo_video"           // Maps correctly
     }
 }
 
@@ -1721,28 +1729,35 @@ struct PaymentVerificationResponse: Codable {
 }
 
 struct StudentUpdateResponse: Codable {
-    let id: String
-    let creatorId: String
-    let relationType: String
-    let gradeId: String
-    let gradeName: String?
-    let studentName: String
+    let id: String?
+    let studentID: String?
+    let studentName: String?
+    let name: String?
     let image: String?
-    let dob: String
-    let notes: [String]?
-    let status: String
-    let numericGrade: Int?
-    
+    let gradeName: String?
+    let gradeId: String?
+    let dob: String?
+    let status: String?
+
     enum CodingKeys: String, CodingKey {
         case id
-        case creatorId = "creator_id"
-        case relationType = "relation_type"
-        case gradeId = "grade_id"
-        case gradeName = "grade_name"
+        case studentID = "student_id"
         case studentName = "student_name"
-        case image, dob, notes, status
-        case numericGrade = "numeric_grade"
+        case name
+        case image
+        case gradeName = "grade_name"
+        case gradeId = "grade_id"
+        case dob
+        case status
+    }
     
+    // Helper: Get final ID and name
+    var finalID: String {
+        return id ?? studentID ?? ""
+    }
+    
+    var finalName: String {
+        return studentName ?? name ?? "Student"
     }
 }
 struct Grade: Codable {
@@ -1799,6 +1814,8 @@ struct Student: Codable {
     let grade: String
     let gradeID: String
     let section: String
+    let numeric_grade: Int
+    let school : School?
 
     enum CodingKeys: String, CodingKey {
         case studentID = "student_id"
@@ -1811,11 +1828,29 @@ struct Student: Codable {
         case mobile
         case grade
         case gradeID = "grade_id"
-        case section
+        case section, numeric_grade, school
     }
     
-    // ✅ Add this initializer
-    init(studentID: String, name: String, image: String?, fatherName: String, motherName: String, dob: String?, address: String?, mobile: String?, grade: String, gradeID: String, section: String) {
+    // ✅ Add computed property for id
+    var id: String {
+        return studentID
+    }
+    
+    // ✅ Add display name for convenience
+    var displayName: String {
+        return name.isEmpty ? "Student" : name
+    }
+    
+    // ✅ Add grade section for display
+    var gradeSection: String {
+        if !grade.isEmpty && !section.isEmpty {
+            return "\(grade) - \(section)"
+        }
+        return grade
+    }
+    
+    // ✅ Keep your initializer
+    init(studentID: String, name: String, image: String?, fatherName: String, motherName: String, dob: String?, address: String?, mobile: String?, grade: String, gradeID: String, section: String, numeric_grade: Int, school: School?) {
         self.studentID = studentID
         self.name = name
         self.image = image
@@ -1827,6 +1862,8 @@ struct Student: Codable {
         self.grade = grade
         self.gradeID = gradeID
         self.section = section
+        self.numeric_grade = numeric_grade
+        self.school = school
     }
 }
 struct LikeResponse: Decodable {
@@ -2043,3 +2080,87 @@ struct LeaveUpdateResponse: Codable {
         case document
     }
 }
+struct OnlineCourse: Codable {
+    let id: String
+    let name: String
+    let description: String
+    let duration: Int
+    let audience: String
+    let thumbnailImage: String        // ← Yeh sahi hai
+    let profileImage: String?          // ← Isse ignore karo
+    let demoVideo: [String]?
+    let courseFee: String
+    let finalCourseFee: String
+    let trending: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, description, duration, audience, trending
+        case thumbnailImage = "thumbnail_image"     // ← API key
+        case profileImage = "profile_image"         // ← Ignore this
+        case demoVideo = "demo_video"
+        case courseFee = "course_fee"
+        case finalCourseFee = "final_course_fee"
+    }
+}
+
+struct OfflineCourse: Codable {
+    let id: String
+    let name: String
+    let description: String
+    let audience: String
+    let venue: String
+    let venueFullAddress: String
+    let venueLocationLink: String
+    let totalSlots: Int
+    let totalEnrolled: Int
+    let entryFee: String
+    let thumbnailImage: String
+    let date: Int64
+    let trending: Bool
+    
+    enum CodingKeys: String, CodingKey {
+        case id, name, description, audience, venue, date, trending
+        case venueFullAddress = "venue_full_address"
+        case venueLocationLink = "venue_location_link"
+        case totalSlots = "total_slots"
+        case totalEnrolled = "total_enrolled"
+        case entryFee = "entry_fee"
+        case thumbnailImage = "thumbnail_image"
+    }
+}
+
+struct Webinar: Codable {
+    let id: String
+    let name: String
+    let description: String
+    let audience: String
+    let webinarLink: String
+    let totalSlots: Int
+    let totalEnrolled: Int
+    let entryFee: String
+    let duration: Int
+    let thumbnailImage: String
+    let date: Int64
+    let trending: Bool
+    
+    enum CodingKeys: String, CodingKey {
+        case id, name, description, audience, duration, date, trending
+        case webinarLink = "webinar_link"
+        case totalSlots = "total_slots"
+        case totalEnrolled = "total_enrolled"
+        case entryFee = "entry_fee"
+        case thumbnailImage = "thumbnail_image"
+    }
+}
+func formatEntryFee(_ fee: String) -> String {
+    // Convert string to double and format
+    if let feeValue = Double(fee) {
+        let formattedFee = String(format: "%.2f", feeValue)
+        return "₹\(formattedFee)/-"
+    } else if fee.isEmpty || fee == "0" || fee == "0.00" {
+        return "₹0.00/-"
+    } else {
+        return "₹\(fee)/-"
+    }
+}
+

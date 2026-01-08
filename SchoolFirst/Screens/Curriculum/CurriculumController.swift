@@ -8,9 +8,12 @@
 import UIKit
 
 class CurriculumController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITableViewDelegate, UITableViewDataSource {
+    
     @IBOutlet weak var topView: UIView!
     @IBOutlet weak var colVw: UICollectionView!
     @IBOutlet weak var tblVw: UITableView!
+    @IBOutlet weak var lblNoKids: UILabel! 
+    
     var selected_student = 0
     var types = [Curriculum]()
     
@@ -20,29 +23,57 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
         topView.addBottomShadow()
         
         self.colVw.register(UINib(nibName: "KidSelectionCell", bundle: nil), forCellWithReuseIdentifier: "KidSelectionCell")
+        self.tblVw.register(UINib(nibName: "CurriculumTypeCell", bundle: nil), forCellReuseIdentifier: "CurriculumTypeCell")
         
         self.getCurriculumType()
         
-        self.tblVw.register(UINib(nibName: "CurriculumTypeCell", bundle: nil), forCellReuseIdentifier: "CurriculumTypeCell")
-        if UserManager.shared.kids.count == 0 {
-            
+        setupUI()
+        colVw.reloadData()
+        tblVw.reloadData()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        print("CURRICULUM APPEARED")
+        print("Total kids in UserManager: \(UserManager.shared.kids.count)")
+        for (i, kid) in UserManager.shared.kids.enumerated() {
+            print("Kid \(i): \(kid.name) | ID: \(kid.studentID) | Grade: \(kid.grade ?? "nil")")
+        }
+        
+        setupUI()
+        colVw.reloadData()
+    }
+    
+    func setupUI() {
+        let kids = UserManager.shared.kids
+        
+        if kids.isEmpty {
             colVw.isHidden = true
             tblVw.isHidden = true
+            lblNoKids?.isHidden = false
+            lblNoKids?.text = "No kids added yet. Please add a kid first."
+        } else {
+            colVw.isHidden = false
+            tblVw.isHidden = false
+            lblNoKids?.isHidden = true
             
-        }else {
             selected_student = 0
-            UserManager.shared.curriculamSelectedStudent = UserManager.shared.kids[0]
-            colVw.delegate = self
-            colVw.dataSource = self
-            tblVw.delegate = self
-            tblVw.dataSource = self
+            UserManager.shared.curriculamSelectedStudent = kids[0]
             
+            // DO NOT SET DELEGATE/DATASOURCE HERE!
+            // Already set in viewDidLoad()
         }
+        
+        // Always reload after setup
+        colVw.reloadData()
     }
     
     @IBAction func onClickBack(_ sender: UIButton) {
         self.navigationController?.popViewController(animated: true)
     }
+    
+    // MARK:  Collection View
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return UserManager.shared.kids.count
@@ -50,24 +81,30 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "KidSelectionCell", for: indexPath) as! KidSelectionCell
-        cell.setup(student: UserManager.shared.kids[indexPath.row], isSelected: selected_student ==  indexPath.row)
+        let kids = UserManager.shared.kids
+        cell.setup(student: kids[indexPath.row], isSelected: selected_student == indexPath.row)
         return cell
     }
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let previousIndex = selected_student
         selected_student = indexPath.row
         UserManager.shared.curriculamSelectedStudent = UserManager.shared.kids[indexPath.row]
-        colVw.reloadItems(at: [indexPath])
-    }
-    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        colVw.reloadItems(at: [indexPath])
+        
+        var indexPathsToReload = [indexPath]
+        if previousIndex != indexPath.row {
+            indexPathsToReload.append(IndexPath(row: previousIndex, section: 0))
+        }
+        colVw.reloadItems(at: indexPathsToReload)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = (collectionView.frame.size.width-20)/2
+        let width = (collectionView.frame.size.width - 20) / 2
         return CGSize(width: width, height: 80)
     }
     
+    // MARK: Table View
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return types.count
@@ -79,6 +116,7 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
         cell?.lblName.text = types[indexPath.row].curriculumName
         return cell!
     }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
@@ -89,8 +127,8 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
         navigationController?.pushViewController(vc, animated: true)
     }
     
-    func getCurriculumType(){
-        NetworkManager.shared.request(urlString: API.CURRICULUM_TYPES, method: .GET) { (result: Result<APIResponse<[Curriculum]>, NetworkError>)  in
+    func getCurriculumType() {
+        NetworkManager.shared.request(urlString: API.CURRICULUM_TYPES, method: .GET) { (result: Result<APIResponse<[Curriculum]>, NetworkError>) in
             switch result {
             case .success(let info):
                 if info.success {
@@ -100,14 +138,12 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
                     DispatchQueue.main.async {
                         self.tblVw.reloadData()
                     }
-                }else{
-                    self.showAlert(msg: info.description)
+                } else {
+                    self.showAlert(msg: info.description ?? "Failed to load curriculum")
                 }
             case .failure(let error):
                 self.showAlert(msg: error.localizedDescription)
             }
         }
     }
-    
-    
 }

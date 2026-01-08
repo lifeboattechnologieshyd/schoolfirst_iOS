@@ -91,10 +91,10 @@ class HomeController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if UserManager.shared.user?.schools.count == 0 {
-            schooluser = false
-        }else{
+        if let school = UserManager.shared.selectedSchool {
             schooluser = true
+        }else{
+            schooluser = false
         }
         segmentControl.isHidden = !schooluser
         if !schooluser {
@@ -104,7 +104,7 @@ class HomeController: UIViewController {
         self.getCalender()
         self.getBanners()
         self.segmentControl.applyCustomStyle()
-        self.logoImage.loadImage(url: UserManager.shared.user?.schools.first?.fullLogo ?? "", placeHolderImage: "")
+//        self.logoImage.loadImage(url: UserManager.shared.user?.schools.first?.fullLogo ?? "", placeHolderImage: "")
         self.colVw.register(UINib(nibName: "HomeViewCell", bundle: nil), forCellWithReuseIdentifier: "HomeViewCell")
         self.colVw.register(UINib(nibName: "HomeCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "HomeCollectionViewCell")
         colVw.delegate = self
@@ -361,6 +361,10 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
             let stbd = UIStoryboard(name: "VocabBees", bundle: nil)
             let vc = stbd.instantiateViewController(identifier: "VocabBeesViewController") as! VocabBeesViewController
             navigationController?.pushViewController(vc, animated: true)
+        case 6:
+            print("Courses")
+            let vc = storyboard?.instantiateViewController(identifier: "CoursesViewController") as! CoursesViewController
+           navigationController?.pushViewController(vc, animated: true)
         case 7:
             print("EdStore")
             let stbd = UIStoryboard(name: "EdStore", bundle: nil)
@@ -370,7 +374,7 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
             print("Ask Us")
             let vc = storyboard?.instantiateViewController(identifier: "ComingSoonVC") as! ComingSoonVC
            navigationController?.pushViewController(vc, animated: true)
-        default:
+             default:
             print("Courses")
         }
     }

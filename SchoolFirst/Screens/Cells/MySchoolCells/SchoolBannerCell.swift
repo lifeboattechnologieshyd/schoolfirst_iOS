@@ -13,8 +13,8 @@ class SchoolBannerCell: UITableViewCell {
     @IBOutlet weak var cover_pic: UIImageView!
     override func awakeFromNib() {
         super.awakeFromNib()
-        self.cover_pic.loadImage(url: UserManager.shared.user?.schools.first?.coverPic ?? "")
-        self.logoImg.loadImage(url: UserManager.shared.user?.schools.first?.smallLogo ?? "")
+        self.cover_pic.loadImage(url: UserManager.shared.selectedSchool?.coverPic ?? "")
+        self.logoImg.loadImage(url: UserManager.shared.selectedSchool?.smallLogo ?? "")
     }
     
     @IBAction func onClickBack(_ sender: Any) {

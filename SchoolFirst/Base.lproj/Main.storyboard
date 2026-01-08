@@ -3093,7 +3093,6 @@
                     <connections>
                         <outlet property="bannerColVw" destination="C1M-zh-9AD" id="zKK-U6-WRc"/>
                         <outlet property="colVw" destination="tjc-t2-onh" id="i7w-iw-FWM"/>
-                        <outlet property="imgProfile" destination="Hms-bl-zxO" id="5MI-Zy-zG1"/>
                         <outlet property="imgVw" destination="QUH-XO-8ta" id="7N5-jT-yP8"/>
                         <outlet property="tblVw" destination="4DN-1P-6NB" id="HGX-68-WDV"/>
                     </connections>
@@ -3101,6 +3100,55 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="90L-mA-6j9" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3693.8931297709923" y="-496.47887323943667"/>
+        </scene>
+        <!--DemoVC-->
+        <scene sceneID="Qvg-pQ-6AO">
+            <objects>
+                <viewController storyboardIdentifier="DemoVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="i1a-Gb-RIa" customClass="DemoVC" customModule="SF_Dev" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="3CS-X9-Hx3">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="V1Y-we-VQ8">
+                                <rect key="frame" x="0.0" y="109" width="393" height="709"/>
+                            </imageView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="07p-Hw-DVR">
+                                <rect key="frame" x="0.0" y="59" width="393" height="50"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JPa-OK-Zds">
+                                        <rect key="frame" x="2" y="7.6666666666666714" width="49.333333333333336" height="35"/>
+                                        <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="arrow.backward" catalog="system" imagePlacement="leading"/>
+                                        <connections>
+                                            <action selector="onClickBack:" destination="cM3-Fo-gEJ" eventType="touchUpInside" id="eI5-G1-k9C"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="2oO-aj-59L"/>
+                                    <constraint firstItem="JPa-OK-Zds" firstAttribute="centerY" secondItem="07p-Hw-DVR" secondAttribute="centerY" id="F9u-la-0CV"/>
+                                    <constraint firstItem="JPa-OK-Zds" firstAttribute="leading" secondItem="07p-Hw-DVR" secondAttribute="leading" constant="2" id="PFg-XW-TP0"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="HkD-Fm-Rkl"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="07p-Hw-DVR" firstAttribute="leading" secondItem="HkD-Fm-Rkl" secondAttribute="leading" id="3Lj-LT-iFu"/>
+                            <constraint firstItem="HkD-Fm-Rkl" firstAttribute="bottom" secondItem="V1Y-we-VQ8" secondAttribute="bottom" id="PEm-AS-luT"/>
+                            <constraint firstItem="07p-Hw-DVR" firstAttribute="trailing" secondItem="HkD-Fm-Rkl" secondAttribute="trailing" id="USk-Ip-rxf"/>
+                            <constraint firstItem="V1Y-we-VQ8" firstAttribute="top" secondItem="HkD-Fm-Rkl" secondAttribute="top" constant="50" id="VIB-pD-6eS"/>
+                            <constraint firstItem="07p-Hw-DVR" firstAttribute="top" secondItem="HkD-Fm-Rkl" secondAttribute="top" id="bCv-OU-elx"/>
+                            <constraint firstItem="HkD-Fm-Rkl" firstAttribute="trailing" secondItem="V1Y-we-VQ8" secondAttribute="trailing" id="lla-yC-P4q"/>
+                            <constraint firstItem="V1Y-we-VQ8" firstAttribute="leading" secondItem="HkD-Fm-Rkl" secondAttribute="leading" id="nrd-cx-o1Z"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="doh-cv-oru" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4353" y="-496"/>
         </scene>
         <!--Edutain-->
         <scene sceneID="x2r-7N-yRC">
@@ -5973,13 +6021,13 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray3Color">
-            <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGroupedBackgroundColor">
-            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="tertiarySystemGroupedBackgroundColor">
-            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
