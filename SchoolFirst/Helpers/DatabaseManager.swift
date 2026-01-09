@@ -24,7 +24,6 @@ class DBManager {
         UserDefaults.standard.removeObject(forKey: "ACCESSTOKEN")
         UserDefaults.standard.removeObject(forKey: "REFRESHTOKEN")
         UserDefaults.standard.removeObject(forKey: "LOGGEDIN")
-        UserDefaults.standard.removeObject(forKey: "STORED_KIDS") // Also clear stored kids
     }
     
 //    func allStudents(schools: [School]) -> [Student] {
@@ -88,36 +87,6 @@ class UserManager {
     
     func deleteUser() {
         DBManager.shared.deleteUser()
-        clearStoredKids()
-    }
-    
-   
-    
-    func clearStoredKids() {
-        UserDefaults.standard.removeObject(forKey: "STORED_KIDS")
     }
 }
 
-struct PasswordValidator {
-    
-    static func validate(password: String, confirmPassword: String) -> String? {
-        // 1. Empty check
-        guard !password.isEmpty else { return "Password cannot be empty" }
-        guard !confirmPassword.isEmpty else { return "Confirm password cannot be empty" }
-        
-        // 2. Length check
-        guard password.count >= 8 else { return "Password must be at least 8 characters long" }
-        
-        // 3. Strong password
-        let regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$&*]).{8,}$"
-        if !NSPredicate(format: "SELF MATCHES %@", regex).evaluate(with: password) {
-            return "Password must contain uppercase, lowercase, number, and special character"
-        }
-        
-        // 4. Match check
-        guard password == confirmPassword else { return "Passwords do not match" }
-        
-        // ✅ All good
-        return nil
-    }
-}

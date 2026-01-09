@@ -20,6 +20,11 @@
 		885A8AB52EFD2B0E00F5A9F9 /* CashfreePG in Frameworks */ = {isa = PBXBuildFile; productRef = 885A8AB42EFD2B0E00F5A9F9 /* CashfreePG */; };
 		885A8AB72EFD2B0E00F5A9F9 /* CashfreePGCoreSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 885A8AB62EFD2B0E00F5A9F9 /* CashfreePGCoreSDK */; };
 		885A8AB92EFD2B0E00F5A9F9 /* CashfreePGUISDK in Frameworks */ = {isa = PBXBuildFile; productRef = 885A8AB82EFD2B0E00F5A9F9 /* CashfreePGUISDK */; };
+		887C17202F102169003A5C58 /* CFNetworkSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 887C171F2F102169003A5C58 /* CFNetworkSDK */; };
+		887C17222F102169003A5C58 /* CashfreeAnalyticsSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 887C17212F102169003A5C58 /* CashfreeAnalyticsSDK */; };
+		887C17242F102169003A5C58 /* CashfreePG in Frameworks */ = {isa = PBXBuildFile; productRef = 887C17232F102169003A5C58 /* CashfreePG */; };
+		887C17262F102169003A5C58 /* CashfreePGCoreSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 887C17252F102169003A5C58 /* CashfreePGCoreSDK */; };
+		887C17282F102169003A5C58 /* CashfreePGUISDK in Frameworks */ = {isa = PBXBuildFile; productRef = 887C17272F102169003A5C58 /* CashfreePGUISDK */; };
 		889390E92E5D82880064AFEE /* YouTubeiOSPlayerHelper in Frameworks */ = {isa = PBXBuildFile; productRef = 889390E82E5D82880064AFEE /* YouTubeiOSPlayerHelper */; };
 		88BD71232E5362D900CC824D /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 88BD71222E5362D900CC824D /* Kingfisher */; };
 /* End PBXBuildFile section */
@@ -55,8 +60,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				885A8AB92EFD2B0E00F5A9F9 /* CashfreePGUISDK in Frameworks */,
+				887C17202F102169003A5C58 /* CFNetworkSDK in Frameworks */,
+				887C17262F102169003A5C58 /* CashfreePGCoreSDK in Frameworks */,
 				884F56EF2EAF8F43000645BE /* FirebaseMessaging in Frameworks */,
 				88BD71232E5362D900CC824D /* Kingfisher in Frameworks */,
+				887C17242F102169003A5C58 /* CashfreePG in Frameworks */,
 				885A8AB52EFD2B0E00F5A9F9 /* CashfreePG in Frameworks */,
 				8803F35D2E0AB958000F7784 /* IQKeyboardManagerSwift in Frameworks */,
 				885A8AB72EFD2B0E00F5A9F9 /* CashfreePGCoreSDK in Frameworks */,
@@ -66,6 +74,8 @@
 				885A8AB12EFD2B0E00F5A9F9 /* CFNetworkSDK in Frameworks */,
 				884DAD6D2EB1FDD60088EBA7 /* FirebaseAnalyticsCore in Frameworks */,
 				884F56EA2EAF7958000645BE /* FirebaseCrashlytics in Frameworks */,
+				887C17282F102169003A5C58 /* CashfreePGUISDK in Frameworks */,
+				887C17222F102169003A5C58 /* CashfreeAnalyticsSDK in Frameworks */,
 				884F56E62EAF7958000645BE /* FirebaseAnalytics in Frameworks */,
 				884F56E82EAF7958000645BE /* FirebaseCore in Frameworks */,
 				889390E92E5D82880064AFEE /* YouTubeiOSPlayerHelper in Frameworks */,
@@ -128,6 +138,11 @@
 				885A8AB42EFD2B0E00F5A9F9 /* CashfreePG */,
 				885A8AB62EFD2B0E00F5A9F9 /* CashfreePGCoreSDK */,
 				885A8AB82EFD2B0E00F5A9F9 /* CashfreePGUISDK */,
+				887C171F2F102169003A5C58 /* CFNetworkSDK */,
+				887C17212F102169003A5C58 /* CashfreeAnalyticsSDK */,
+				887C17232F102169003A5C58 /* CashfreePG */,
+				887C17252F102169003A5C58 /* CashfreePGCoreSDK */,
+				887C17272F102169003A5C58 /* CashfreePGUISDK */,
 			);
 			productName = SchoolFirst;
 			productReference = 884DB5D62DFC0394003F154E /* School First.app */;
@@ -164,7 +179,7 @@
 				889390E72E5D82880064AFEE /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */,
 				884F56E42EAF7958000645BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				884DAD6E2EB20F190088EBA7 /* XCRemoteSwiftPackageReference "FSCalendar" */,
-				885A8AAF2EFD2B0E00F5A9F9 /* XCLocalSwiftPackageReference "core-ios-sdk" */,
+				887C171E2F102169003A5C58 /* XCRemoteSwiftPackageReference "core-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 884DB5D72DFC0394003F154E /* Products */;
@@ -526,7 +541,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SchoolFirst/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = SchoolFirst;
+				INFOPLIST_KEY_CFBundleDisplayName = "SchoolFirst Dev";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to update profile picture.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "App needs permission to save images to your gallery.";
@@ -624,7 +639,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SchoolFirst/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = SchoolFirst;
+				INFOPLIST_KEY_CFBundleDisplayName = "SchoolFirst Dev";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to update profile picture.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "App needs permission to save images to your gallery.";
@@ -676,13 +691,6 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		885A8AAF2EFD2B0E00F5A9F9 /* XCLocalSwiftPackageReference "core-ios-sdk" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = "core-ios-sdk";
-		};
-/* End XCLocalSwiftPackageReference section */
-
 /* Begin XCRemoteSwiftPackageReference section */
 		8803F35B2E0AB958000F7784 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -714,6 +722,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 12.4.0;
+			};
+		};
+		887C171E2F102169003A5C58 /* XCRemoteSwiftPackageReference "core-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/cashfree/core-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.5;
 			};
 		};
 		889390E72E5D82880064AFEE /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */ = {
@@ -793,6 +809,31 @@
 		};
 		885A8AB82EFD2B0E00F5A9F9 /* CashfreePGUISDK */ = {
 			isa = XCSwiftPackageProductDependency;
+			productName = CashfreePGUISDK;
+		};
+		887C171F2F102169003A5C58 /* CFNetworkSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 887C171E2F102169003A5C58 /* XCRemoteSwiftPackageReference "core-ios-sdk" */;
+			productName = CFNetworkSDK;
+		};
+		887C17212F102169003A5C58 /* CashfreeAnalyticsSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 887C171E2F102169003A5C58 /* XCRemoteSwiftPackageReference "core-ios-sdk" */;
+			productName = CashfreeAnalyticsSDK;
+		};
+		887C17232F102169003A5C58 /* CashfreePG */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 887C171E2F102169003A5C58 /* XCRemoteSwiftPackageReference "core-ios-sdk" */;
+			productName = CashfreePG;
+		};
+		887C17252F102169003A5C58 /* CashfreePGCoreSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 887C171E2F102169003A5C58 /* XCRemoteSwiftPackageReference "core-ios-sdk" */;
+			productName = CashfreePGCoreSDK;
+		};
+		887C17272F102169003A5C58 /* CashfreePGUISDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 887C171E2F102169003A5C58 /* XCRemoteSwiftPackageReference "core-ios-sdk" */;
 			productName = CashfreePGUISDK;
 		};
 		889390E82E5D82880064AFEE /* YouTubeiOSPlayerHelper */ = {

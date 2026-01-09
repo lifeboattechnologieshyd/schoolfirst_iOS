@@ -104,7 +104,7 @@ class HomeController: UIViewController {
         self.getCalender()
         self.getBanners()
         self.segmentControl.applyCustomStyle()
-//        self.logoImage.loadImage(url: UserManager.shared.user?.schools.first?.fullLogo ?? "", placeHolderImage: "")
+        self.logoImage.loadImage(url: UserManager.shared.selectedSchool?.fullLogo ?? "", placeHolderImage: "")
         self.colVw.register(UINib(nibName: "HomeViewCell", bundle: nil), forCellWithReuseIdentifier: "HomeViewCell")
         self.colVw.register(UINib(nibName: "HomeCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "HomeCollectionViewCell")
         colVw.delegate = self
