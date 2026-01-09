@@ -161,7 +161,7 @@ struct User: Codable {
     let id: String
     let firstName: String?
     let lastName: String?
-    let schoolIDs: [String?]  // ← Allow null inside array
+    let schoolIDs: [String?]
     let username: String
     let profileImage: String?
     let email: String?

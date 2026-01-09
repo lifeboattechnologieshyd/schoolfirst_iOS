@@ -26,28 +26,23 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
         self.tblVw.register(UINib(nibName: "CurriculumTypeCell", bundle: nil), forCellReuseIdentifier: "CurriculumTypeCell")
         
         self.getCurriculumType()
+        colVw.delegate = self
+        colVw.dataSource = self
         
-        setupUI()
-        colVw.reloadData()
+        tblVw.delegate = self
+        tblVw.dataSource = self
+        
         tblVw.reloadData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        print("CURRICULUM APPEARED")
-        print("Total kids in UserManager: \(UserManager.shared.kids.count)")
-        for (i, kid) in UserManager.shared.kids.enumerated() {
-            print("Kid \(i): \(kid.name) | ID: \(kid.studentID) | Grade: \(kid.grade ?? "nil")")
-        }
-        
         setupUI()
         colVw.reloadData()
     }
     
     func setupUI() {
         let kids = UserManager.shared.kids
-        
         if kids.isEmpty {
             colVw.isHidden = true
             tblVw.isHidden = true
@@ -57,15 +52,9 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
             colVw.isHidden = false
             tblVw.isHidden = false
             lblNoKids?.isHidden = true
-            
             selected_student = 0
             UserManager.shared.curriculamSelectedStudent = kids[0]
-            
-            // DO NOT SET DELEGATE/DATASOURCE HERE!
-            // Already set in viewDidLoad()
         }
-        
-        // Always reload after setup
         colVw.reloadData()
     }
     
