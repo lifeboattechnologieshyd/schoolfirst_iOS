@@ -30,6 +30,7 @@ class NetworkManager {
     func request<T: Decodable>(
         urlString: String,
         method: HTTPMethod = .GET,
+        is_testing : Bool = false,
         parameters: [String: Any]? = nil,
         headers: [String: String]? = nil,
         completion: @escaping (Result<APIResponse<T>, NetworkError>) -> Void
@@ -85,6 +86,10 @@ class NetworkManager {
                 if let httpResponse = response as? HTTPURLResponse {
                     if (200...399).contains(httpResponse.statusCode)  {
                         print("✅ Success: Status code is \(httpResponse.statusCode)")
+                        if is_testing {
+                            let decodedData = try JSONDecoder().decode(TestResponsere.self, from: data)
+                            print(decodedData)
+                        }
                         let decodedData = try JSONDecoder().decode(APIResponse<T>.self, from: data)
                         print(decodedData)
                         completion(.success(decodedData))
@@ -207,9 +212,9 @@ struct User: Codable {
     let profileImage: String?
     let email: String?
     let referralCode: String
-    let mobile: Int64
+    let mobile: Int64?
     let deviceID: String?
-    let students : [Student]
+    let students : [Student]?
 
     enum CodingKeys: String, CodingKey {
         case id

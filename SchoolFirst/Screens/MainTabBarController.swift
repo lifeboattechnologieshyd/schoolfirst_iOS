@@ -180,8 +180,8 @@ class MainTabBarController: UITabBarController,
     func updateMiddleTabTitleAndImage() {
         
         var isSchoolUser = false
-        if UserManager.shared.user?.students.count ?? 0 > 0 {
-            let first_student = UserManager.shared.user?.students.first!
+        if UserManager.shared.user?.students?.count ?? 0 > 0 {
+            let first_student = UserManager.shared.user?.students?.first!
             if let school = first_student?.school {
                 isSchoolUser = true
                 circleButton.loadImage(url: school.smallLogo ?? "")

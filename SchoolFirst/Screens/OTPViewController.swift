@@ -93,7 +93,7 @@ class OTPViewController: UIViewController {
             "device_os": "iOS"
         ]
         
-        NetworkManager.shared.request(urlString: API.EMAIL_OTP, method: .POST, parameters: payload) { (result: Result<APIResponse<LoginResponse>, NetworkError>) in
+        NetworkManager.shared.request(urlString: API.EMAIL_OTP,method: .POST, is_testing: true, parameters: payload) { (result: Result<APIResponse<LoginResponse>, NetworkError>) in
             switch result {
             case .success(let info):
                 if info.success {
