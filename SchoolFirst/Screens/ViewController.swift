@@ -78,7 +78,8 @@ class ViewController: UIViewController {
         btnMobile.layer.borderColor = UIColor.primary.cgColor
         btnEmail.setTitleColor(.black, for: .normal)
         btnEmail.layer.borderColor = UIColor(hex: "#CBE5FD")?.cgColor
-        
+        txtFieldMobile.keyboardType = .numberPad
+        txtFieldMobile.resignFirstResponder()
         imgMobile.image = UIImage(named: "india")
         is_mobile_login = true
         txtFieldMobile.placeholder = "Enter mobile number"
@@ -89,6 +90,8 @@ class ViewController: UIViewController {
         btnEmail.layer.borderColor = UIColor.primary.cgColor
         btnMobile.setTitleColor(.black, for: .normal)
         btnMobile.layer.borderColor = UIColor(hex: "#CBE5FD")?.cgColor
+        txtFieldMobile.keyboardType = .emailAddress
+        txtFieldMobile.resignFirstResponder()
         imgMobile.image = UIImage(named: "email")
         is_mobile_login = false
         txtFieldMobile.placeholder = "Enter Email Address"
