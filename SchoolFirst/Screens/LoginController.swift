@@ -65,12 +65,20 @@ class LoginController: UIViewController {
     }
     
     func forgetPassword() {
-        let payload: [String: Any] = [
-            "mobile": mobile,
+        
+        var payload: [String: Any] = [
             "is_forgot_password": true
         ]
+        var ur = API.SENDOTP
+        if !isMobileLogin {
+            payload["email"] = mobile
+            ur = API.EMAIL_SENDOTP
+        }else {
+            payload["mobile"] = mobile
+
+        }
         
-        NetworkManager.shared.request(urlString: API.SENDOTP, method: .POST, parameters: payload) { (result: Result<APIResponse<MobileCheckResponse>, NetworkError>) in
+        NetworkManager.shared.request(urlString: ur, method: .POST, parameters: payload) { (result: Result<APIResponse<MobileCheckResponse>, NetworkError>) in
             switch result {
             case .success(let info):
                 if info.success {
