@@ -3482,6 +3482,9 @@
                                 </constraints>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="view"/>
+                                <connections>
+                                    <action selector="onClickShowHideConfirmPassword:" destination="uqV-9X-neE" eventType="touchUpInside" id="2yb-s3-pRA"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N3F-yq-gfW">
                                 <rect key="frame" x="343" y="330" width="20" height="12"/>
@@ -3493,6 +3496,9 @@
                                 </constraints>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="view"/>
+                                <connections>
+                                    <action selector="onClickShowHidePassword:" destination="uqV-9X-neE" eventType="touchUpInside" id="mnn-gM-0ma"/>
+                                </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="X9e-EH-stg"/>
@@ -3525,6 +3531,8 @@
                     </view>
                     <connections>
                         <outlet property="lottieView" destination="lve-dE-h0m" id="agR-k4-Kux"/>
+                        <outlet property="show1btn" destination="N3F-yq-gfW" id="aXJ-5F-D6U"/>
+                        <outlet property="showbtn" destination="wKD-3T-kXo" id="QZ9-HC-OOh"/>
                         <outlet property="txtFieldPassword" destination="LBk-A0-huH" id="XOq-he-qoU"/>
                         <outlet property="txtfieldConfirmPassword" destination="tLR-w6-gSC" id="Tbb-vS-5Tb"/>
                     </connections>

@@ -29,7 +29,6 @@ class NetworkManager {
 
     func request<T: Decodable>(
         urlString: String,
-        is_testing : Bool = false,
         method: HTTPMethod = .GET,
         parameters: [String: Any]? = nil,
         headers: [String: String]? = nil,

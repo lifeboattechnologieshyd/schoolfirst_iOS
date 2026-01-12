@@ -107,6 +107,7 @@ class ViewController: UIViewController {
                         DispatchQueue.main.async {
                             let vc = self.storyboard?.instantiateViewController(withIdentifier: "LoginController") as? LoginController
                             vc?.mobile = self.txtFieldMobile.text!
+                            vc?.isMobileLogin = false
                             vc?.username = info.data!.username!
                             self.navigationController?.pushViewController(vc!, animated: true)
                         }
@@ -142,6 +143,7 @@ class ViewController: UIViewController {
                             let vc = self.storyboard?.instantiateViewController(withIdentifier: "LoginController") as? LoginController
                             vc?.mobile = self.txtFieldMobile.text!
                             vc?.username = info.data!.username!
+                            vc?.isMobileLogin = true
                             self.navigationController?.pushViewController(vc!, animated: true)
                         }
                     }else{

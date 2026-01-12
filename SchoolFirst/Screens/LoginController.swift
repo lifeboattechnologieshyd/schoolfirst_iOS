@@ -17,6 +17,7 @@ class LoginController: UIViewController {
     var mobile = ""
     var username = ""
     var isPasswordVisible = false
+    var isMobileLogin = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,6 +69,7 @@ class LoginController: UIViewController {
             "mobile": mobile,
             "is_forgot_password": true
         ]
+        
         NetworkManager.shared.request(urlString: API.SENDOTP, method: .POST, parameters: payload) { (result: Result<APIResponse<MobileCheckResponse>, NetworkError>) in
             switch result {
             case .success(let info):
@@ -87,13 +89,19 @@ class LoginController: UIViewController {
     }
     
     func loginWithPassword() {
-        let payload = [
-            "mobile": mobile,
+        var payload = [
             "password": self.txtFieldPassword.text!
         ]
+        if isMobileLogin {
+            payload["mobile"] = mobile
+        }else {
+            payload["email"] = mobile
+        }
+      
+        
         
         print(payload)
-        NetworkManager.shared.request(urlString: API.LOGIN,is_testing: true, method: .POST, parameters: payload) { (result: Result<APIResponse<LoginResponse>, NetworkError>) in
+        NetworkManager.shared.request(urlString: API.LOGIN, method: .POST, parameters: payload) { (result: Result<APIResponse<LoginResponse>, NetworkError>) in
             switch result {
             case .success(let info):
                 if info.success, let data = info.data {
