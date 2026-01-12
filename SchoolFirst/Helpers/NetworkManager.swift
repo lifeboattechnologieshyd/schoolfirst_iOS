@@ -29,6 +29,7 @@ class NetworkManager {
 
     func request<T: Decodable>(
         urlString: String,
+        is_testing : Bool = false,
         method: HTTPMethod = .GET,
         parameters: [String: Any]? = nil,
         headers: [String: String]? = nil,
@@ -103,9 +104,50 @@ class NetworkManager {
             }
         }.resume()
     }
+    
+    func logDecodingError(_ error: Error?) {
+        guard let decodingError = error as? DecodingError else {
+            print("❌ Non-decoding error:", error)
+            return
+        }
+
+        switch decodingError {
+
+        case .typeMismatch(let type, let context):
+            print("❌ Type mismatch for type:", type)
+            print("📍 CodingPath:", context.codingPath.map { $0.stringValue }.joined(separator: " → "))
+            print("ℹ️ Debug:", context.debugDescription)
+
+        case .valueNotFound(let type, let context):
+            print("❌ Value not found for type:", type)
+            print("📍 CodingPath:", context.codingPath.map { $0.stringValue }.joined(separator: " → "))
+            print("ℹ️ Debug:", context.debugDescription)
+
+        case .keyNotFound(let key, let context):
+            print("❌ Key not found:", key.stringValue)
+            print("📍 CodingPath:", context.codingPath.map { $0.stringValue }.joined(separator: " → "))
+            print("ℹ️ Debug:", context.debugDescription)
+
+        case .dataCorrupted(let context):
+            print("❌ Data corrupted")
+            print("📍 CodingPath:", context.codingPath.map { $0.stringValue }.joined(separator: " → "))
+            print("ℹ️ Debug:", context.debugDescription)
+
+        @unknown default:
+            print("❌ Unknown decoding error")
+        }
+    }
+
 }
 
-
+struct TestResponsere: Decodable {
+    let success: Bool
+    let errorCode: Int
+    let total : Int?
+    let description: String
+    let data: LoginResponse
+    
+}
 
 struct APIResponse<T: Decodable>: Decodable {
     let success: Bool
@@ -1802,24 +1844,77 @@ struct FeeTransaction: Decodable {
         case remarks
     }
 }
+
+struct ContactJson : Codable {
+    let type : String
+    let number : String
+    
+    enum CodingKeys: String, CodingKey {
+        case type, number
+    }
+}
+@propertyWrapper
+struct SafeOptional<T: Codable>: Codable {
+
+    var wrappedValue: T?
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+
+        // null → nil
+        if container.decodeNil() {
+            wrappedValue = nil
+            return
+        }
+
+        // {} → nil
+        if let dict = try? container.decode([String: SafeAnyDecodable].self),
+           dict.isEmpty {
+            wrappedValue = nil
+            return
+        }
+
+        // try normal decoding
+        wrappedValue = try? container.decode(T.self)
+    }
+
+    init(wrappedValue: T?) {
+        self.wrappedValue = wrappedValue
+    }
+    
+    func encode(to encoder: Encoder) throws {
+           var container = encoder.singleValueContainer()
+           if let value = wrappedValue {
+               try container.encode(value)
+           } else {
+               try container.encodeNil()
+           }
+       }
+}
+struct SafeAnyDecodable: Codable {}
+
+
 struct Student: Codable {
     let studentID: String
     let name: String
     let image: String?
-    let fatherName: String
-    let motherName: String
+    let fatherName: String?
+    let motherName: String?
     let dob: String?
     let address: String?
     let mobile: String?
+    let email_json: [[String:String]]?
+    let mobile_json: [ContactJson]?
     let grade: String
     let gradeID: String
-    let section: String
+    let section: String?
     let numeric_grade: Int
-    let school : School?
+    @SafeOptional var school : School?
+
 
     enum CodingKeys: String, CodingKey {
         case studentID = "student_id"
-        case name
+        case name, mobile_json, email_json
         case image
         case fatherName = "father_name"
         case motherName = "mother_name"
@@ -1828,7 +1923,8 @@ struct Student: Codable {
         case mobile
         case grade
         case gradeID = "grade_id"
-        case section, numeric_grade, school
+        case school = "schools"
+        case section, numeric_grade
     }
     
     // ✅ Add computed property for id
@@ -1843,7 +1939,7 @@ struct Student: Codable {
     
     // ✅ Add grade section for display
     var gradeSection: String {
-        if !grade.isEmpty && !section.isEmpty {
+        if !grade.isEmpty && (section != nil) {
             return "\(grade) - \(section)"
         }
         return grade
@@ -1863,7 +1959,9 @@ struct Student: Codable {
         self.gradeID = gradeID
         self.section = section
         self.numeric_grade = numeric_grade
-        self.school = school
+        self.school = nil
+        self.mobile_json = nil
+        self.email_json = nil
     }
 }
 struct LikeResponse: Decodable {

@@ -93,7 +93,7 @@ class LoginController: UIViewController {
         ]
         
         print(payload)
-        NetworkManager.shared.request(urlString: API.LOGIN, method: .POST, parameters: payload) { (result: Result<APIResponse<LoginResponse>, NetworkError>) in
+        NetworkManager.shared.request(urlString: API.LOGIN,is_testing: true, method: .POST, parameters: payload) { (result: Result<APIResponse<LoginResponse>, NetworkError>) in
             switch result {
             case .success(let info):
                 if info.success, let data = info.data {
