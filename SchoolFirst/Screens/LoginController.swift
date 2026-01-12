@@ -12,15 +12,38 @@ class LoginController: UIViewController {
     
     @IBOutlet weak var txtFieldPassword: UITextField!
     @IBOutlet weak var lblUsername: UILabel!
+    @IBOutlet weak var showbtn: UIButton!
     @IBOutlet weak var lottieView: LottieAnimationView!
     var mobile = ""
     var username = ""
+    var isPasswordVisible = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         playLottieFile()
         self.lblUsername.text = "Welcome back \(username)"
-    }
+    
+    setupPasswordField()
+        }
+    func setupPasswordField() {
+           txtFieldPassword.isSecureTextEntry = true
+           showbtn.setImage(UIImage(named: "view"), for: .normal)
+       }
+       
+       @IBAction func onClickShowHidePassword(_ sender: UIButton) {
+           isPasswordVisible.toggle()
+           
+           if isPasswordVisible {
+               // Show password
+               txtFieldPassword.isSecureTextEntry = false
+               showbtn.setImage(UIImage(named: "hide"), for: .normal)
+           } else {
+               // Hide password
+               txtFieldPassword.isSecureTextEntry = true
+               showbtn.setImage(UIImage(named: "view"), for: .normal)
+           }
+       }
+       
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

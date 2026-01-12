@@ -17,6 +17,9 @@ class AddKidVC: UIViewController {
     private var addKidCell: AddKidOneCell?
     private var gradeList: [Grade] = []
     
+    var onDismissWithoutAdding: (() -> Void)?
+       var onKidAdded: (() -> Void)?
+       
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -32,8 +35,17 @@ class AddKidVC: UIViewController {
     }
     
     @IBAction func onClickBack(_ sender: UIButton) {
-        self.navigationController?.popViewController(animated: true)
-    }
+            // Check if presented modally or pushed
+            if self.presentingViewController != nil {
+                // Presented modally - dismiss and call closure
+                self.dismiss(animated: true) {
+                    self.onDismissWithoutAdding?()
+                }
+            } else {
+                // Pushed via navigation - just pop
+                self.navigationController?.popViewController(animated: true)
+            }
+        }
     
     @IBAction func onClickAddKid(_ sender: UIButton) {
         addStudent()
@@ -168,13 +180,19 @@ class AddKidVC: UIViewController {
     }
     
     private func showSuccessAndGoBack() {
-        let alert = UIAlertController(title: "Success", message: "Kid added successfully!", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-            self.navigationController?.popViewController(animated: true)
-        })
-        present(alert, animated: true)
-    }
-    
+            let alert = UIAlertController(title: "Success", message: "Kid added successfully!", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+                if self.presentingViewController != nil {
+                    self.dismiss(animated: true) {
+                        // 👇 Call onKidAdded when kid is successfully added
+                        self.onKidAdded?()
+                    }
+                } else {
+                    self.navigationController?.popViewController(animated: true)
+                }
+            })
+            present(alert, animated: true)
+        }
     func openImagePicker(sourceType: UIImagePickerController.SourceType) {
         guard UIImagePickerController.isSourceTypeAvailable(sourceType) else {
             showAlert(msg: "This feature is not available on your device")

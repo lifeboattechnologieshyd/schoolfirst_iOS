@@ -310,6 +310,28 @@ extension HomeController: UIImagePickerControllerDelegate, UINavigationControlle
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
     }
+    // MARK:  Helper Function to Check Kids
+    func checkKidsAndNavigate(completion: @escaping () -> Void) {
+        let kids = UserManager.shared.kids
+        
+        if kids.isEmpty {
+            // No kids - Show AddKidVC
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            if let addKidVC = storyboard.instantiateViewController(identifier: "AddKidVC") as? AddKidVC {
+                addKidVC.modalPresentationStyle = .fullScreen
+                
+                // When kid is added successfully, execute the completion
+                addKidVC.onKidAdded = { [weak self] in
+                    completion()
+                }
+                
+                self.present(addKidVC, animated: true, completion: nil)
+            }
+        } else {
+            // Has kids - Continue with navigation
+            completion()
+        }
+    }
 }
 
 extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
@@ -348,9 +370,9 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
             vc.isEdutain = false
             navigationController?.pushViewController(vc, animated: true)
         case 3:
-           let stbd = UIStoryboard(name: "Main", bundle: nil)
-           let vc = stbd.instantiateViewController(identifier: "EdutainmentController") as! EdutainmentController
-           // vc.isEdutain = true
+            let stbd = UIStoryboard(name: "Main", bundle: nil)
+            let vc = stbd.instantiateViewController(identifier: "EdutainmentController") as! EdutainmentController
+            // vc.isEdutain = true
             navigationController?.pushViewController(vc, animated: true)
         case 4:
             let stbd = UIStoryboard(name: "Feels", bundle: nil)
@@ -364,7 +386,7 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
         case 6:
             print("Courses")
             let vc = storyboard?.instantiateViewController(identifier: "CoursesVC") as! CoursesVC
-           navigationController?.pushViewController(vc, animated: true)
+            navigationController?.pushViewController(vc, animated: true)
         case 7:
             print("EdStore")
             let stbd = UIStoryboard(name: "EdStore", bundle: nil)
@@ -373,8 +395,8 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
         case 8:
             print("Ask Us")
             let vc = storyboard?.instantiateViewController(identifier: "ComingSoonVC") as! ComingSoonVC
-           navigationController?.pushViewController(vc, animated: true)
-             default:
+            navigationController?.pushViewController(vc, animated: true)
+        default:
             print("Courses")
         }
     }
@@ -382,12 +404,14 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
     func onSelectItems(index: Int, selectedIndex: Int) {
         if segmentControl.isHidden {
             self.FamilyZoneItemSelection(index: index)
-        }else {
+        } else {
             if selectedIndex == 0 {
                 switch index {
                 case 0:
-                    let vc = storyboard?.instantiateViewController(identifier: "MySchoolViewController") as! MySchoolViewController
-                    navigationController?.pushViewController(vc, animated: true)
+                    checkKidsAndNavigate {
+                        let vc = self.storyboard?.instantiateViewController(identifier: "MySchoolViewController") as! MySchoolViewController
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }
                 case 1:
                     let vc = storyboard?.instantiateViewController(identifier: "BulletinController") as! BulletinController
                     navigationController?.pushViewController(vc, animated: true)
@@ -395,36 +419,40 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
                     let vc = storyboard?.instantiateViewController(identifier: "EventsViewController") as! EventsViewController
                     navigationController?.pushViewController(vc, animated: true)
                 case 3:
-                    let stbd = UIStoryboard(name: "Attendance", bundle: nil)
-                    let vc = stbd.instantiateViewController(identifier: "AttendanceViewController") as! AttendanceViewController
-                    navigationController?.pushViewController(vc, animated: true)
+                    checkKidsAndNavigate {
+                        let stbd = UIStoryboard(name: "Attendance", bundle: nil)
+                        let vc = stbd.instantiateViewController(identifier: "AttendanceViewController") as! AttendanceViewController
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }
                 case 4:
                     let vc = storyboard?.instantiateViewController(identifier: "HomeworkViewController") as! HomeworkViewController
                     navigationController?.pushViewController(vc, animated: true)
                 case 5:
-                    let stbd = UIStoryboard(name: "TimeTable", bundle: nil)
-                    let vc = stbd.instantiateViewController(identifier: "TimeTableViewController") as! TimeTableViewController
-                    navigationController?.pushViewController(vc, animated: true)
+                    checkKidsAndNavigate {
+                        let stbd = UIStoryboard(name: "TimeTable", bundle: nil)
+                        let vc = stbd.instantiateViewController(identifier: "TimeTableViewController") as! TimeTableViewController
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }
                 case 6:
                     let vc = storyboard?.instantiateViewController(identifier: "FeeViewController") as! FeeViewController
                     navigationController?.pushViewController(vc, animated: true)
                 case 7:
                     print("School Bus")
                     let vc = storyboard?.instantiateViewController(identifier: "ComingSoonVC") as! ComingSoonVC
-                   navigationController?.pushViewController(vc, animated: true)
+                    navigationController?.pushViewController(vc, animated: true)
+                    
                 case 8:
                     let stbd = UIStoryboard(name: "Gallery", bundle: nil)
                     let vc = stbd.instantiateViewController(identifier: "GalleryViewController") as! GalleryViewController
                     navigationController?.pushViewController(vc, animated: true)
+                    
                 default:
                     break
                 }
-
+                
             } else {
                 self.FamilyZoneItemSelection(index: index)
             }
         }
-        
     }
-    
 }

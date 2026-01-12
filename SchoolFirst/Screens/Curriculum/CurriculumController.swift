@@ -41,23 +41,48 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
         colVw.reloadData()
     }
     
+    var hasShownAddKid = false
+
     func setupUI() {
         let kids = UserManager.shared.kids
-        if kids.isEmpty {
+
+        if kids.isEmpty && !hasShownAddKid {
+            hasShownAddKid = true
+            
+            // Hide curriculum UI
             colVw.isHidden = true
             tblVw.isHidden = true
-            lblNoKids?.isHidden = false
-            lblNoKids?.text = "No kids added yet. Please add a kid first."
-        } else {
+            lblNoKids?.isHidden = true
+            
+            // Present AddKidVC modally
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            if let addKidVC = storyboard.instantiateViewController(identifier: "AddKidVC") as? AddKidVC {
+                addKidVC.modalPresentationStyle = .fullScreen
+                
+                // 👇 ADD THIS CLOSURE - When back pressed without adding kid
+                addKidVC.onDismissWithoutAdding = { [weak self] in
+                    // Pop CurriculumController also
+                    self?.navigationController?.popViewController(animated: true)
+                }
+                
+                self.present(addKidVC, animated: true, completion: nil)
+            }
+            return
+        }
+
+        if !kids.isEmpty {
+            // Show curriculum
             colVw.isHidden = false
             tblVw.isHidden = false
             lblNoKids?.isHidden = true
+
             selected_student = 0
             UserManager.shared.curriculamSelectedStudent = kids[0]
+
+            colVw.reloadData()
+            tblVw.reloadData()
         }
-        colVw.reloadData()
     }
-    
     @IBAction func onClickBack(_ sender: UIButton) {
         self.navigationController?.popViewController(animated: true)
     }
