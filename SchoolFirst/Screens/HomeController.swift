@@ -363,7 +363,7 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
             navigationController?.pushViewController(vc, animated: true)
         case 6:
             print("Courses")
-            let vc = storyboard?.instantiateViewController(identifier: "CoursesViewController") as! CoursesViewController
+            let vc = storyboard?.instantiateViewController(identifier: "CoursesVC") as! CoursesVC
            navigationController?.pushViewController(vc, animated: true)
         case 7:
             print("EdStore")
