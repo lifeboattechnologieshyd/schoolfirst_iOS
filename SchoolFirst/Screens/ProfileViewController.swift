@@ -13,19 +13,18 @@ class ProfileViewController: UIViewController {
     @IBOutlet weak var imgVw: UIImageView!
     @IBOutlet weak var tblVw: UITableView!
     
+    var hasKids: Bool {
+        return UserManager.shared.kids.count > 0
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Safe loading of school logo
-//        if let logoURL = UserManager.shared.user?.schools.first?.fullLogo, !logoURL.isEmpty {
-//            self.imgVw.loadImage(url: logoURL, placeHolderImage: "placeholder_school")
-//        } else {
-//            self.imgVw.image = UIImage(named: "placeholder_school")
-//        }
         
         self.tblVw.register(UINib(nibName: "ProfileTableViewCell", bundle: nil), forCellReuseIdentifier: "ProfileTableViewCell")
         self.tblVw.register(UINib(nibName: "KidsCell", bundle: nil), forCellReuseIdentifier: "KidsCell")
         self.tblVw.register(UINib(nibName: "ProfileOthersCell", bundle: nil), forCellReuseIdentifier: "ProfileOthersCell")
+        self.tblVw.register(UINib(nibName: "ImageCell", bundle: nil), forCellReuseIdentifier: "ImageCell")
+        self.tblVw.register(UINib(nibName: "AddKidsCell", bundle: nil), forCellReuseIdentifier: "AddKidsCell")
         
         tblVw.delegate = self
         tblVw.dataSource = self
@@ -33,7 +32,7 @@ class ProfileViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        tblVw.reloadData() // Reload to reflect any kid changes
+        tblVw.reloadData()
     }
     
     func navigateToLogin() {
@@ -78,8 +77,11 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         switch section {
         case 0: return 1
         case 1:
-            let kidsCount = UserManager.shared.kids.count
-            return kidsCount > 0 ? kidsCount : 1  // Show at least 1 row for "No kids" message
+            if hasKids {
+                return UserManager.shared.kids.count + 1
+            } else {
+                return 2
+            }
         case 2: return 1
         default: return 0
         }
@@ -97,26 +99,35 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             return cell
             
         case 1:
-            let kids = UserManager.shared.kids
-            if kids.isEmpty {
-                // Return a cell showing "No kids added"
-                let cell = UITableViewCell(style: .default, reuseIdentifier: "NoKidsCell")
-                cell.textLabel?.text = "No kids added yet"
-                cell.textLabel?.textColor = .gray
-                cell.textLabel?.textAlignment = .center
+            if !hasKids {
+                if indexPath.row == 0 {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "ImageCell", for: indexPath) as! ImageCell
+                    cell.selectionStyle = .none
+                    cell.backgroundColor = .clear
+                    cell.titleLbl.textColor = .black
+                    return cell
+                } else {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "AddKidsCell", for: indexPath) as! AddKidsCell
+                    cell.selectionStyle = .none
+                    cell.backgroundColor = .clear
+                    return cell
+                }
+            }
+            if indexPath.row == UserManager.shared.kids.count {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "AddKidsCell", for: indexPath) as! AddKidsCell
                 cell.selectionStyle = .none
-                return cell
-            } else {
-                let cell = tableView.dequeueReusableCell(withIdentifier: "KidsCell") as! KidsCell
-                cell.setupCell(student: kids[indexPath.row])
+                cell.backgroundColor = .clear
                 return cell
             }
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: "KidsCell", for: indexPath) as! KidsCell
+            cell.setupCell(student: UserManager.shared.kids[indexPath.row])
+            return cell
             
         case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: "ProfileOthersCell") as! ProfileOthersCell
             
             cell.onClickDelete = { [weak self] in
-                // self?.confirmation()
             }
             
             cell.onTermsTapped = { [weak self] in
@@ -148,11 +159,41 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         switch indexPath.section {
         case 0: return 145
         case 1:
-            if UserManager.shared.kids.isEmpty {
-                return 50  // Height for "No kids" cell
+            if !hasKids {
+                if indexPath.row == 0 {
+                    return 218
+                } else {
+                    return 48
+                }
             }
+            
+            if indexPath.row == UserManager.shared.kids.count {
+                return 48
+            }
+            
             return 74
-        default: return 434
+            
+        case 2: return 434
+        default: return 0
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        guard indexPath.section == 1 else { return }
+        
+        if !hasKids {
+            if indexPath.row == 1 {
+                let vc = storyboard?.instantiateViewController(identifier: "AddKidVC") as! AddKidVC
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+            return
+        }
+        
+        if indexPath.row == UserManager.shared.kids.count {
+            let vc = storyboard?.instantiateViewController(identifier: "AddKidVC") as! AddKidVC
+            self.navigationController?.pushViewController(vc, animated: true)
         }
     }
     

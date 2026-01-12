@@ -10,6 +10,7 @@ import UIKit
 class AddKidsCell: UITableViewCell {
     
     @IBOutlet weak var addKidButton: UIButton!
+    @IBOutlet weak var bgVw: UIView!
     
     var onAddKidTapped: (() -> Void)?
     

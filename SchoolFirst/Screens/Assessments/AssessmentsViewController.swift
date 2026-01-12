@@ -24,6 +24,7 @@ class AssessmentsViewController: UIViewController {
         tblVw.register(UINib(nibName: "AddKidsCell", bundle: nil), forCellReuseIdentifier: "AddKidsCell")
         tblVw.register(UINib(nibName: "ImageCell", bundle: nil), forCellReuseIdentifier: "ImageCell")
         
+        
         tblVw.delegate = self
         tblVw.dataSource = self
         tblVw.separatorStyle = .none
