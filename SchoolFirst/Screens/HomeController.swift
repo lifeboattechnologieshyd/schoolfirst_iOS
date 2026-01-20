@@ -414,10 +414,8 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
             if selectedIndex == 0 {
                 switch index {
                 case 0:
-                    checkKidsAndNavigate {
-                        let vc = self.storyboard?.instantiateViewController(identifier: "MySchoolViewController") as! MySchoolViewController
-                        self.navigationController?.pushViewController(vc, animated: true)
-                    }
+                    let vc = self.storyboard?.instantiateViewController(identifier: "MySchoolViewController") as! MySchoolViewController
+                    self.navigationController?.pushViewController(vc, animated: true)
                 case 1:
                     let vc = storyboard?.instantiateViewController(identifier: "BulletinController") as! BulletinController
                     navigationController?.pushViewController(vc, animated: true)
@@ -425,20 +423,16 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
                     let vc = storyboard?.instantiateViewController(identifier: "EventsViewController") as! EventsViewController
                     navigationController?.pushViewController(vc, animated: true)
                 case 3:
-                    checkKidsAndNavigate {
-                        let stbd = UIStoryboard(name: "Attendance", bundle: nil)
-                        let vc = stbd.instantiateViewController(identifier: "AttendanceViewController") as! AttendanceViewController
-                        self.navigationController?.pushViewController(vc, animated: true)
-                    }
+                    let stbd = UIStoryboard(name: "Attendance", bundle: nil)
+                    let vc = stbd.instantiateViewController(identifier: "AttendanceViewController") as! AttendanceViewController
+                    self.navigationController?.pushViewController(vc, animated: true)
                 case 4:
                     let vc = storyboard?.instantiateViewController(identifier: "HomeworkViewController") as! HomeworkViewController
                     navigationController?.pushViewController(vc, animated: true)
                 case 5:
-                    checkKidsAndNavigate {
-                        let stbd = UIStoryboard(name: "TimeTable", bundle: nil)
-                        let vc = stbd.instantiateViewController(identifier: "TimeTableViewController") as! TimeTableViewController
-                        self.navigationController?.pushViewController(vc, animated: true)
-                    }
+                    let stbd = UIStoryboard(name: "TimeTable", bundle: nil)
+                    let vc = stbd.instantiateViewController(identifier: "TimeTableViewController") as! TimeTableViewController
+                    self.navigationController?.pushViewController(vc, animated: true)
                 case 6:
                     let vc = storyboard?.instantiateViewController(identifier: "FeeViewController") as! FeeViewController
                     navigationController?.pushViewController(vc, animated: true)
