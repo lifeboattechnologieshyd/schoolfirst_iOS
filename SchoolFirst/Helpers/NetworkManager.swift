@@ -546,7 +546,7 @@ struct Banner: Codable {
     let screen: String
     let image: String
     let status: String
-    let schoolId: String
+    let schoolId: String?
 
     enum CodingKeys: String, CodingKey {
         case id
