@@ -996,7 +996,7 @@
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hmi-hF-e9h">
-                                        <rect key="frame" x="67.333333333333329" y="15" width="208.33333333333337" height="20"/>
+                                        <rect key="frame" x="67.333333333333329" y="15" width="201.66666666666669" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="M1B-Vq-hdA"/>
                                         </constraints>
@@ -1029,7 +1029,7 @@
                                 <rect key="frame" x="0.0" y="728" width="393" height="90"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vl0-RY-Ltw">
-                                        <rect key="frame" x="16" y="8" width="190.33333333333334" height="20"/>
+                                        <rect key="frame" x="16" y="8" width="177.66666666666666" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="9zK-L5-YDf"/>
                                         </constraints>
@@ -2468,7 +2468,7 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8AC-3d-5WH">
                                 <rect key="frame" x="0.0" y="160" width="393" height="68"/>
                                 <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="o1c-SN-bJ3">
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="o1c-SN-bJ3">
                                         <rect key="frame" x="16" y="5" width="361" height="58"/>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
@@ -2588,17 +2588,6 @@
                                     <constraint firstItem="wjt-b5-mnM" firstAttribute="bottom" secondItem="mGX-kd-JvI" secondAttribute="bottom" id="z3U-tX-cBR"/>
                                 </constraints>
                             </view>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Nyl-o6-kpr">
-                                <rect key="frame" x="16" y="364" width="361" height="397"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" automaticEstimatedItemSize="YES" minimumLineSpacing="8" minimumInteritemSpacing="8" id="pgF-fm-OGC">
-                                    <size key="itemSize" width="128" height="128"/>
-                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                </collectionViewFlowLayout>
-                                <cells/>
-                            </collectionView>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="e9S-Wj-58E">
                                 <rect key="frame" x="16" y="316" width="361" height="41"/>
                                 <constraints>
@@ -2612,6 +2601,17 @@
                                     <action selector="onClickSegment:" destination="6ib-R9-BWZ" eventType="valueChanged" id="HYD-F3-fjU"/>
                                 </connections>
                             </segmentedControl>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Nyl-o6-kpr">
+                                <rect key="frame" x="16" y="364" width="361" height="397"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" automaticEstimatedItemSize="YES" minimumLineSpacing="8" minimumInteritemSpacing="8" id="pgF-fm-OGC">
+                                    <size key="itemSize" width="128" height="128"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells/>
+                            </collectionView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="LRl-1e-oqq"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -2630,6 +2630,7 @@
                             <constraint firstItem="70K-MT-fqs" firstAttribute="top" secondItem="3TJ-or-jO2" secondAttribute="top" id="YFf-2g-juq"/>
                             <constraint firstItem="LRl-1e-oqq" firstAttribute="trailing" secondItem="8AC-3d-5WH" secondAttribute="trailing" id="bx5-k2-6ri"/>
                             <constraint firstItem="8AC-3d-5WH" firstAttribute="top" secondItem="70K-MT-fqs" secondAttribute="bottom" id="c4X-5v-UXS"/>
+                            <constraint firstItem="Nyl-o6-kpr" firstAttribute="top" secondItem="QL6-ed-RRm" secondAttribute="bottom" priority="999" id="dOX-Dq-tHe"/>
                             <constraint firstItem="LRl-1e-oqq" firstAttribute="bottom" secondItem="Nyl-o6-kpr" secondAttribute="bottom" constant="8" id="gqe-se-Vob"/>
                             <constraint firstItem="Nyl-o6-kpr" firstAttribute="top" secondItem="e9S-Wj-58E" secondAttribute="bottom" constant="8" id="jt8-Mz-nSg"/>
                         </constraints>
@@ -2642,6 +2643,7 @@
                     <navigationItem key="navigationItem" id="p1v-0x-6ei"/>
                     <connections>
                         <outlet property="colVw" destination="Nyl-o6-kpr" id="0Ao-pC-KYK"/>
+                        <outlet property="heightOfSegment" destination="Elm-bm-rma" id="vAk-BK-NF4"/>
                         <outlet property="imgVw" destination="o1c-SN-bJ3" id="WZ5-5S-Y8y"/>
                         <outlet property="lblCalenderPrompt" destination="wjt-b5-mnM" id="eeY-Bw-fDM"/>
                         <outlet property="lblCalenderTitle" destination="hwd-5C-zgR" id="6d8-M6-NJ7"/>
@@ -5656,7 +5658,7 @@
                                 <rect key="frame" x="0.0" y="452" width="393" height="400"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H8L-Uy-djJ">
-                                        <rect key="frame" x="160" y="24" width="81.333333333333314" height="21"/>
+                                        <rect key="frame" x="160" y="24" width="77.333333333333314" height="21"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="21" id="4Aa-cS-YAn"/>
                                         </constraints>
@@ -6097,7 +6099,7 @@
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EWq-wK-7dO">
-                                        <rect key="frame" x="63.333333333333343" y="15" width="61.666666666666657" height="20"/>
+                                        <rect key="frame" x="63.333333333333343" y="15" width="59.666666666666657" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="Zse-Eu-Zb3"/>
                                         </constraints>
@@ -6202,13 +6204,13 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray3Color">
-            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGroupedBackgroundColor">
-            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="tertiarySystemGroupedBackgroundColor">
-            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
