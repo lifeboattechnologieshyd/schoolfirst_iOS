@@ -133,7 +133,7 @@ class LoginController: UIViewController {
                     }
                 } else {
                     DispatchQueue.main.async {
-                        self.showAlert(msg: "Login Failed")
+                        self.showAlert(msg: "Invalid Credentials")
                     }
                 }
             case .failure(_):
