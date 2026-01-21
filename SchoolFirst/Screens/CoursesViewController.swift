@@ -11,7 +11,7 @@ import Kingfisher
 
 class CoursesViewController: UIViewController {
 
-    @IBOutlet weak var imgVw: UIImageView!
+//    @IBOutlet weak var imgVw: UIImageView!
     @IBOutlet weak var tblVw: UITableView!
     @IBOutlet weak var colVw: UICollectionView!
     @IBOutlet weak var bannerColVw: UICollectionView!
@@ -30,7 +30,7 @@ class CoursesViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        imgVw.loadImage(url: UserManager.shared.selectedSchool?.fullLogo ?? "")
+//        imgVw.loadImage(url: UserManager.shared.selectedSchool?.fullLogo ?? "")
         setupViews()
         loadTab(0)
     }

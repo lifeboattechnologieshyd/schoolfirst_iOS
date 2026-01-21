@@ -76,7 +76,7 @@ class HomeController: UIViewController {
         ]
     ]
     @IBOutlet weak var userImage: UIImageView!
-    @IBOutlet weak var logoImage: UIImageView!
+//    @IBOutlet weak var logoImage: UIImageView!
     @IBOutlet weak var imgVw: UIImageView!
     
     var dashboard_url = ""
@@ -94,19 +94,20 @@ class HomeController: UIViewController {
         super.viewDidLoad()
         if let school = UserManager.shared.selectedSchool {
             schooluser = true
-            segmentControl.isHidden = true
-            heightOfSegment.isActive = false
+            segmentControl.isHidden = false
+            heightOfSegment.isActive = true
             self.segmentControl.applyCustomStyle()
         }else{
             schooluser = false
-            schoolNames.removeFirst()
-            schoolImages.removeFirst()
             segmentControl.isHidden = true
             heightOfSegment.isActive = false
+            schoolNames.removeFirst()
+            schoolImages.removeFirst()
+            
         }
         self.getCalender()
         self.getBanners()
-        self.logoImage.loadImage(url: UserManager.shared.selectedSchool?.fullLogo ?? "", placeHolderImage: "")
+//        self.logoImage.loadImage(url: UserManager.shared.selectedSchool?.fullLogo ?? "", placeHolderImage: "")
         self.colVw.register(UINib(nibName: "HomeViewCell", bundle: nil), forCellWithReuseIdentifier: "HomeViewCell")
         self.colVw.register(UINib(nibName: "HomeCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "HomeCollectionViewCell")
         colVw.delegate = self
