@@ -248,6 +248,8 @@ extension AddKidOneCell {
     
     private func setupDatePicker() {
         dateTf.isHidden = false
+        dateTf.inputView = UIView()
+
         
         addDate.addTarget(self, action: #selector(showDatePicker), for: .touchUpInside)
     }
