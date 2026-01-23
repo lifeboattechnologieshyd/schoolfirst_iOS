@@ -12,12 +12,22 @@ class MainTabBarController: UITabBarController,
     
     let circleButton = UIButton(type: .custom)
     let homeIndex = 2
-    let gapOffset: CGFloat = -10   // Distance between circle & tab bar
+    let gapOffset: CGFloat = 10 // Distance between circle & tab bar
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = self
         
+        if #available(iOS 15.0, *) {
+            let appearance = UITabBarAppearance()
+            appearance.configureWithTransparentBackground()
+            appearance.backgroundColor = .clear
+            appearance.shadowColor = .clear
+
+            tabBar.standardAppearance = appearance
+            tabBar.scrollEdgeAppearance = appearance
+        }
+
         // ✅ Apply custom non-moving tab bar
         let fixedTabBar = UTabBarFixedDip()
         setValue(fixedTabBar, forKey: "tabBar")
@@ -60,6 +70,11 @@ class MainTabBarController: UITabBarController,
             items[homeIndex].isEnabled = false
             items[homeIndex].image = UIImage()
             items[homeIndex].selectedImage = UIImage()
+            let dummy = UIViewController()
+            dummy.tabBarItem.isEnabled = false
+            dummy.tabBarItem.title = nil
+            dummy.tabBarItem.image = UIImage()
+
         }
     }
     
@@ -87,16 +102,21 @@ class MainTabBarController: UITabBarController,
         
         circleButton.addTarget(self, action: #selector(circleTapped), for: .touchUpInside)
         
-        tabBar.addSubview(circleButton)
+        view.addSubview(circleButton)
         tabBar.bringSubviewToFront(circleButton)
     }
     
     func positionCircle() {
+        let tabFrame = tabBar.frame
+        let circleHalf = circleButton.bounds.height / 2
+
         circleButton.center = CGPoint(
-            x: tabBar.bounds.midX,
-            y: tabBar.bounds.minY + gapOffset
+            x: tabFrame.midX,
+            y: tabFrame.minY - circleHalf + gapOffset
         )
     }
+
+
     
     // ------------------------------------------------------------
     // ✅ Circle button tap → Go Home (root)
@@ -212,20 +232,33 @@ class UTabBarFixedDip: UITabBar {
     var circleButtonRef: UIButton?
     private var shapeLayer: CAShapeLayer?
 
-    // ✅ Always lock frame (no up/down movement)
-    override var frame: CGRect {
-        get { return super.frame }
-        set {
-            var fixed = newValue
-            if let superview = super.superview {
-                let bottom = superview.safeAreaInsets.bottom
-                fixed.origin.y = superview.bounds.height - fixed.height - bottom
-            }
-            super.frame = fixed
-        }
+    // ✅ DEVICE-AWARE VALUES
+    private var screenWidth: CGFloat {
+        return UIScreen.main.bounds.width
     }
 
-    override func draw(_ rect: CGRect) {
+    private var dipW: CGFloat {
+        return screenWidth * 0.28   // adaptive dip width
+    }
+
+    private let dipD: CGFloat = 26   // dip depth
+    private let tabBarHeight: CGFloat = 60
+
+//    // ✅ Always lock frame (no up/down movement)
+//    override var frame: CGRect {
+//        get { super.frame }
+//        set {
+//            var f = newValue
+//            if let superview = superview {
+//                f.origin.y = superview.bounds.height - f.height
+//            }
+//            super.frame = f
+//        }
+//    }
+
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
         addShape()
     }
 
@@ -262,15 +295,12 @@ class UTabBarFixedDip: UITabBar {
         return super.hitTest(point, with: event)
     }
 
-    // ✅ DIP SHAPE
     func dipPath() -> CGPath {
-        let w = bounds.width
-        let h: CGFloat = 60        // ✅ tab bar height
-        let mid = w / 2
 
-        let dipW: CGFloat = 110
-        let dipD: CGFloat = 30     // ✅ dip depth
-        let r: CGFloat = 26        // ✅ corner radius
+        let w = bounds.width
+        let h = tabBarHeight
+        let mid = w / 2
+        let r: CGFloat = 26
 
         let p = UIBezierPath()
 
@@ -283,21 +313,26 @@ class UTabBarFixedDip: UITabBar {
         p.addLine(to: CGPoint(x: w, y: r))
         p.addQuadCurve(to: CGPoint(x: w - r, y: 0),
                        controlPoint: CGPoint(x: w, y: 0))
+
         let start = mid + dipW / 2
         let end = mid - dipW / 2
+
         p.addLine(to: CGPoint(x: start, y: 0))
         p.addQuadCurve(to: CGPoint(x: mid, y: dipD),
                        controlPoint: CGPoint(x: mid + dipW / 4, y: dipD))
         p.addQuadCurve(to: CGPoint(x: end, y: 0),
                        controlPoint: CGPoint(x: mid - dipW / 4, y: dipD))
+
         p.addLine(to: CGPoint(x: r, y: 0))
         p.close()
+
         return p.cgPath
     }
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         var s = super.sizeThatFits(size)
-        s.height = 60
+        s.height = 60 + safeAreaInsets.bottom
         return s
     }
+
 }

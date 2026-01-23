@@ -19,6 +19,10 @@ class HomeController: UIViewController {
     
     @IBOutlet weak var segmentControl: UISegmentedControl!
     @IBOutlet weak var colVw: UICollectionView!
+    @IBOutlet weak var bannerVw: UIView!
+    @IBOutlet weak var logoImg: UIImageView!
+    @IBOutlet weak var titleLbl: UILabel!
+    @IBOutlet weak var calenderimg: UIImageView!
     @IBOutlet weak var lblCalenderPrompt: UILabel!
     
     @IBOutlet weak var lblCalenderTitle: UILabel!
@@ -90,8 +94,25 @@ class HomeController: UIViewController {
     var newsList: [Bulletin] = []
     
     @IBOutlet weak var heightOfSegment: NSLayoutConstraint!
-    override func viewDidLoad() {
+    override func viewDidLoad(){
         super.viewDidLoad()
+        logoImg.addFourSideShadow(
+            color: .black,
+            opacity: 0.3,
+            radius: 8
+        )
+        bannerVw.addFourSideShadow(color: .black,opacity: 0.3,radius: 8)
+        calenderimg.addFourSideShadow(color: .black,opacity: 0.3,radius: 8)
+//        userImage.loadImage(url: UserManager.shared.user?.profileImage ?? "", placeHolderImage: "dummy_kid_profile_pic")
+
+        titleLbl.applyOutlineWithBottomShadow(
+                textColor: UIColor(hex: "#23B915"),   // Green fill
+                outlineColor: .white,                 // White outline
+                outlineWidth: 1,                      // Adjust if needed
+                shadowOpacity: 0.1,
+                shadowOffset: CGSize(width: 1, height: 1)
+            )
+
         if let school = UserManager.shared.selectedSchool {
             schooluser = true
             segmentControl.isHidden = false

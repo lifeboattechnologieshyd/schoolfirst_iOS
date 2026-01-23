@@ -1001,3 +1001,53 @@ struct PasswordValidator {
         return nil
     }
 }
+
+
+extension UIView {
+
+    func addFourSideShadow(
+        color: UIColor = .black,
+        opacity: Float = 0.25,
+        radius: CGFloat = 6,
+        offset: CGSize = .zero
+    ) {
+        layer.masksToBounds = false
+        layer.shadowColor = color.cgColor
+        layer.shadowOpacity = opacity
+        layer.shadowRadius = radius
+        layer.shadowOffset = offset
+    }
+}
+extension UILabel {
+
+    func applyOutlineWithBottomShadow(
+        textColor: UIColor,
+        outlineColor: UIColor = .white,
+        outlineWidth: CGFloat = 3,
+        shadowColor: UIColor = .black,
+        shadowOpacity: Float = 0.35,
+        shadowOffset: CGSize = CGSize(width: 1, height: 1),
+        shadowRadius: CGFloat = 1
+    ) {
+        guard let text = self.text else { return }
+
+        // 1️⃣ Outline + Fill
+        let attributes: [NSAttributedString.Key: Any] = [
+            .strokeColor: outlineColor,
+            .foregroundColor: textColor,
+            .strokeWidth: -outlineWidth
+        ]
+
+        self.attributedText = NSAttributedString(
+            string: text,
+            attributes: attributes
+        )
+
+        // 2️⃣ Bottom Shadow
+        self.layer.masksToBounds = false
+        self.layer.shadowColor = shadowColor.cgColor
+        self.layer.shadowOpacity = shadowOpacity
+        self.layer.shadowOffset = shadowOffset
+        self.layer.shadowRadius = shadowRadius
+    }
+}

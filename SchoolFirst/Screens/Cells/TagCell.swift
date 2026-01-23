@@ -18,7 +18,7 @@ class TagCell: UICollectionViewCell {
 
     func setupUI() {
         contentView.backgroundColor = UIColor(hex: "#F5F5F5")
-        contentView.layer.cornerRadius = 12
+        contentView.layer.cornerRadius = 16
         contentView.layer.masksToBounds = true
         
         // Add border for better visibility

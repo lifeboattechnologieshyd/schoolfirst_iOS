@@ -28,6 +28,7 @@ class EdutainmentController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupSearchTF()
         setupUI()
         setupSegmentControl()
         setupTextFields()
@@ -70,7 +71,21 @@ class EdutainmentController: UIViewController {
             self.applySegmentCornerRadius()
         }
     }
-    
+    func setupSearchTF() {
+        searchTf.delegate = self
+        searchTf.addTarget(
+            self,
+            action: #selector(searchTextChanged(_:)),
+            for: .editingChanged
+        )
+    }
+    @objc func searchTextChanged(_ textField: UITextField) {
+        let text = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+
+        // Hide button when user starts typing
+        searchBtn.isHidden = !text.isEmpty
+    }
+
     func applySegmentCornerRadius() {
         guard segmentController.frame.height > 0 else { return }
         
@@ -773,8 +788,12 @@ extension EdutainmentController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if textField == searchTf {
             videonoTf.text = ""
-        } else if textField == videonoTf {
+            searchBtn.isHidden = !(searchTf.text?.isEmpty ?? true)
+        }
+        else if textField == videonoTf {
             searchTf.text = ""
+            searchBtn.isHidden = false   // show button back
+
             searchDebounceTimer?.invalidate()
             if isSearchActive {
                 isSearchActive = false
@@ -783,18 +802,23 @@ extension EdutainmentController: UITextFieldDelegate {
             }
         }
     }
+
     
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
         if textField == searchTf {
             searchDebounceTimer?.invalidate()
-            
+            searchBtn.isHidden = false   // SHOW button
+
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
                 guard let self = self else { return }
                 self.isSearchActive = false
-                self.currentFeed = self.segmentController.selectedSegmentIndex == 0 ? self.diyFeed : self.storiesFeed
+                self.currentFeed = self.segmentController.selectedSegmentIndex == 0
+                    ? self.diyFeed
+                    : self.storiesFeed
                 self.tblVw.reloadData()
             }
         }
         return true
     }
+
 }

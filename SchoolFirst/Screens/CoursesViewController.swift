@@ -13,9 +13,11 @@ class CoursesViewController: UIViewController {
 
 //    @IBOutlet weak var imgVw: UIImageView!
     @IBOutlet weak var tblVw: UITableView!
+    @IBOutlet weak var logoImg: UIImageView!
     @IBOutlet weak var colVw: UICollectionView!
     @IBOutlet weak var bannerColVw: UICollectionView!
-
+    @IBOutlet weak var userImg: UIImageView!
+    
     var selectedTab = 0
     var onlineCourses = [OnlineCourse]()
     var offlineCourses = [OfflineCourse]()
@@ -30,7 +32,13 @@ class CoursesViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        logoImg.addFourSideShadow(
+            color: .black,
+            opacity: 0.3,
+            radius: 8)
 //        imgVw.loadImage(url: UserManager.shared.selectedSchool?.fullLogo ?? "")
+        userImg.loadImage(url: UserManager.shared.user?.profileImage ?? "", placeHolderImage: "dummy_kid_profile_pic")
+
         setupViews()
         loadTab(0)
     }

@@ -13,7 +13,9 @@ class EdutainmentVC: UIViewController {
     @IBOutlet weak var segmentController: UISegmentedControl!
     @IBOutlet weak var searchTf: UITextField!
     @IBOutlet weak var micBtn: UIButton!
+    @IBOutlet weak var logoImg: UIImageView!
     
+    @IBOutlet weak var searchBtn: UIButton!
     @IBOutlet weak var tblVw: UITableView!
     @IBOutlet weak var goBtn: UIButton!
     @IBOutlet weak var videonoTf: UITextField!
@@ -28,9 +30,14 @@ class EdutainmentVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        logoImg.addFourSideShadow(
+            color: .black,
+            opacity: 0.3,
+            radius: 8)
         setupSegmentControl()
         setupTextFields()
         setupTableView()
+        setupSearchTF()
         segmentController.selectedSegmentIndex = 0
         getDiyFeed()
     }
@@ -100,7 +107,21 @@ class EdutainmentVC: UIViewController {
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
-    
+    func setupSearchTF() {
+        searchTf.delegate = self
+        searchTf.addTarget(
+            self,
+            action: #selector(searchTextChanged(_:)),
+            for: .editingChanged
+        )
+    }
+    @objc func searchTextChanged(_ textField: UITextField) {
+        let text = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+
+        // Hide button when user starts typing
+        searchBtn.isHidden = !text.isEmpty
+    }
+
     func setupTableView() {
         tblVw.register(UINib(nibName: "EdutainCell", bundle: nil), forCellReuseIdentifier: "EdutainCell")
         tblVw.register(UINib(nibName: "StoriesCell", bundle: nil), forCellReuseIdentifier: "StoriesCell")
@@ -766,8 +787,12 @@ extension EdutainmentVC: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if textField == searchTf {
             videonoTf.text = ""
-        } else if textField == videonoTf {
+            searchBtn.isHidden = !(searchTf.text?.isEmpty ?? true)
+        }
+        else if textField == videonoTf {
             searchTf.text = ""
+            searchBtn.isHidden = false   // show button back
+
             searchDebounceTimer?.invalidate()
             if isSearchActive {
                 isSearchActive = false
@@ -776,19 +801,24 @@ extension EdutainmentVC: UITextFieldDelegate {
             }
         }
     }
+
     
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
         if textField == searchTf {
             searchDebounceTimer?.invalidate()
-            
+            searchBtn.isHidden = false   // SHOW button
+
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
                 guard let self = self else { return }
                 self.isSearchActive = false
-                self.currentFeed = self.segmentController.selectedSegmentIndex == 0 ? self.diyFeed : self.storiesFeed
+                self.currentFeed = self.segmentController.selectedSegmentIndex == 0
+                    ? self.diyFeed
+                    : self.storiesFeed
                 self.tblVw.reloadData()
             }
         }
         return true
     }
+
 }
 

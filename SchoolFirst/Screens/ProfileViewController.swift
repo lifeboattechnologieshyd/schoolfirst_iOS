@@ -10,7 +10,7 @@ import UIKit
 class ProfileViewController: UIViewController {
     
     @IBOutlet weak var imgProfile: UIImageView!
-    @IBOutlet weak var imgVw: UIImageView!
+    @IBOutlet weak var logoImg: UIImageView!
     @IBOutlet weak var tblVw: UITableView!
     
     var hasKids: Bool {
@@ -19,8 +19,11 @@ class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        imgVw.addCardShadow()
-        
+        logoImg.addFourSideShadow(
+            color: .black,
+            opacity: 0.3,
+            radius: 8
+        )
         self.tblVw.register(UINib(nibName: "ProfileTableViewCell", bundle: nil), forCellReuseIdentifier: "ProfileTableViewCell")
         self.tblVw.register(UINib(nibName: "KidsCell", bundle: nil), forCellReuseIdentifier: "KidsCell")
         self.tblVw.register(UINib(nibName: "ProfileOthersCell", bundle: nil), forCellReuseIdentifier: "ProfileOthersCell")
@@ -34,6 +37,8 @@ class ProfileViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tblVw.reloadData()
+        imgProfile.loadImage(url: UserManager.shared.user?.profileImage ?? "", placeHolderImage: "dummy_kid_profile_pic")
+
     }
     
     func navigateToLogin() {

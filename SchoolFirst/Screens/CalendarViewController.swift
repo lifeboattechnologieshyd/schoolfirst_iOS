@@ -25,6 +25,8 @@ class CalendarViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 //        self.imgVw.loadImage(url: UserManager.shared.selectedSchool?.fullLogo ?? "", placeHolderImage: "")
+        imgProfile.loadImage(url: UserManager.shared.user?.profileImage ?? "", placeHolderImage: "dummy_kid_profile_pic")
+
         
         if let cal = DBManager.shared.calender {
             self.calender.append(cal)

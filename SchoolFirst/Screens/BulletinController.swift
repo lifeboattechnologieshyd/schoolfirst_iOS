@@ -27,7 +27,7 @@ class BulletinController: UIViewController {
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        headerView.addBottomShadow(shadowOpacity: 0.25, shadowRadius: 8, shadowHeight: 4)
+        headerView.addBottomShadow()
     }
     
     func getNews(){
