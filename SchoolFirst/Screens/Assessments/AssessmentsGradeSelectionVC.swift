@@ -29,8 +29,12 @@ class AssessmentsGradeSelectionVC: UIViewController {
             case .success(let info):
                 if info.success {
                     if let data = info.data {
-                        let sortedGrades = data.sorted { $0.numericGrade < $1.numericGrade }
-                        self.grades = sortedGrades
+                        self.grades = data.sorted {
+                            if $0.numericGrade == $1.numericGrade {
+                                return $0.name < $1.name
+                            }
+                            return $0.numericGrade < $1.numericGrade
+                        }
                         DispatchQueue.main.async {
                             self.colVw.reloadData()
                         }

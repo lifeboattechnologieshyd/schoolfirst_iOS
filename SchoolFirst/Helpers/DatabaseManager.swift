@@ -88,5 +88,18 @@ class UserManager {
     func deleteUser() {
         DBManager.shared.deleteUser()
     }
-}
+    func addKid(_ student: Student) {
+            guard var currentUser = getUser() else {
+                return
+            }
+            if currentUser.students == nil {
+                currentUser.students = []
+            }
+            if currentUser.students?.contains(where: { $0.studentID == student.studentID }) == false {
+                currentUser.students?.append(student)
+            }
+            
+            saveUser(user: currentUser)
+        }
+    }
 

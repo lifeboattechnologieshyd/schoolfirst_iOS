@@ -214,7 +214,7 @@ struct User: Codable {
     let referralCode: String
     let mobile: Int64?
     let deviceID: String?
-    let students : [Student]?
+    var students : [Student]?
 
     enum CodingKeys: String, CodingKey {
         case id

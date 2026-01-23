@@ -154,7 +154,7 @@ class AddKidVC: UIViewController {
                             school: nil
                         )
                         
-//                        UserManager.shared.addKid(newStudent)
+                        UserManager.shared.addKid(newStudent)
                         print("KID ADDED: \(newStudent.name) - \(newStudent.studentID)")
                         print("Total kids: \(UserManager.shared.kids.count)")
                         
@@ -172,7 +172,7 @@ class AddKidVC: UIViewController {
     }
     
     private func addKidToLocalUser(newStudent: Student) {
-        // UserManager.shared.addKid(newStudent)
+         UserManager.shared.addKid(newStudent)
         print("✅ Kid added! Total kids: \(UserManager.shared.kids.count)")
            
 //        UserManager.shared.kids.append(newStudent)
@@ -180,19 +180,21 @@ class AddKidVC: UIViewController {
     }
     
     private func showSuccessAndGoBack() {
-            let alert = UIAlertController(title: "Success", message: "Kid added successfully!", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-                if self.presentingViewController != nil {
-                    self.dismiss(animated: true) {
-                        // 👇 Call onKidAdded when kid is successfully added
-                        self.onKidAdded?()
-                    }
-                } else {
-                    self.navigationController?.popViewController(animated: true)
+        let alert = UIAlertController(title: "Success", message: "Kid added successfully!", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            if self.presentingViewController != nil {
+                // Presented modally
+                self.dismiss(animated: true) {
+                    self.onKidAdded?()
                 }
-            })
-            present(alert, animated: true)
-        }
+            } else {
+                // ✅ FIX: Call onKidAdded before popping
+                self.onKidAdded?()
+                self.navigationController?.popViewController(animated: true)
+            }
+        })
+        present(alert, animated: true)
+    }
     func openImagePicker(sourceType: UIImagePickerController.SourceType) {
         guard UIImagePickerController.isSourceTypeAvailable(sourceType) else {
             showAlert(msg: "This feature is not available on your device")

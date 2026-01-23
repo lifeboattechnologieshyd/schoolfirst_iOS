@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -138,6 +138,12 @@
                                         </collectionViewFlowLayout>
                                     </collectionView>
                                 </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="Tez-mz-A5G" secondAttribute="trailing" id="KPI-DF-YUa"/>
+                                    <constraint firstItem="Tez-mz-A5G" firstAttribute="top" secondItem="YF2-ch-B8I" secondAttribute="top" id="Yp2-cP-dKa"/>
+                                    <constraint firstAttribute="bottom" secondItem="Tez-mz-A5G" secondAttribute="bottom" id="njv-io-Z0o"/>
+                                    <constraint firstItem="Tez-mz-A5G" firstAttribute="leading" secondItem="YF2-ch-B8I" secondAttribute="leading" constant="76.670000000000002" id="p1a-c3-buB"/>
+                                </constraints>
                             </stackView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bTf-O7-44y">
                                 <rect key="frame" x="0.0" y="449" width="355" height="50"/>
