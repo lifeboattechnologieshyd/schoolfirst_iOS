@@ -179,7 +179,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             
             return 74
             
-        case 2: return 434
+        case 2: return 454
         default: return 0
         }
     }
