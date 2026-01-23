@@ -12,7 +12,7 @@ class MainTabBarController: UITabBarController,
                             UINavigationControllerDelegate {
     
     let circleButton = UIButton(type: .custom)
-    let middleLabel = UILabel()  // ✅ Label for middle button
+    let middleLabel = UILabel()
     let homeIndex = 2
     let gapOffset: CGFloat = 10
     
@@ -20,37 +20,37 @@ class MainTabBarController: UITabBarController,
     private var customTabBarView: UIView!
     private var tabButtons: [UIButton] = []
     
-    // ✅ Tab bar customization
+    private var isTabBarSetup = false
+    
     let tabBarBottomMargin: CGFloat = 1
     let tabBarCustomHeight: CGFloat = 60
     
-    // ✅ Tab items data (icon name, title)
     let tabItems: [(icon: String, title: String)] = [
         ("calendar_tab", "Calendar"),
         ("courses_tab", "CourseEdemy"),
-        ("", ""),  // Middle - will be set dynamically
+        ("", ""),
         ("edutain_tab", "Edutain"),
         ("profile_tab", "Profile")
     ]
     
-    // ✅ Colors
     let selectedColor = UIColor(red: 0.043, green: 0.337, blue: 0.604, alpha: 1)
     let normalColor = UIColor.gray
     
-    // ✅ Track if school user
     var isSchoolUser = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = self
         
-        // ✅ Hide default tab bar completely
-        tabBar.isHidden = true
+        // ✅ IMPORTANT: Hide native tab bar completely
+        hideNativeTabBar()
         
-        // ✅ Create custom tab bar
-        setupCustomTabBar()
-        setupCircleButton()
-        setupMiddleLabel()
+        if !isTabBarSetup {
+            setupCustomTabBar()
+            setupCircleButton()
+            setupMiddleLabel()
+            isTabBarSetup = true
+        }
         
         for vc in viewControllers ?? [] {
             if let nav = vc as? UINavigationController {
@@ -58,15 +58,59 @@ class MainTabBarController: UITabBarController,
             }
         }
         
-        // ✅ Update middle tab title & circle image dynamically
         updateMiddleTabTitleAndImage()
         updateTabSelection()
     }
     
-    // ✅ Create completely custom tab bar
+    // ✅ NEW: Properly hide native tab bar
+    func hideNativeTabBar() {
+        tabBar.isHidden = true
+        tabBar.alpha = 0
+        tabBar.frame = CGRect.zero
+        tabBar.isUserInteractionEnabled = false
+        
+        // ✅ Move it off screen
+        tabBar.frame.origin.y = UIScreen.main.bounds.height + 100
+    }
+    
+    // ✅ Called every time view appears - ensure native tab bar stays hidden
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        hideNativeTabBar()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // ✅ Always hide native tab bar when appearing
+        hideNativeTabBar()
+        
+        positionCustomTabBar()
+        positionCircle()
+        positionMiddleLabel()
+        updateVisibilityBasedOnDepth()
+        bringTabBarToFront()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        // ✅ Keep native tab bar hidden on every layout pass
+        hideNativeTabBar()
+        
+        positionCustomTabBar()
+        positionCircle()
+        positionMiddleLabel()
+    }
+    
+    // ✅ Rest of your code stays the same...
+    
     func setupCustomTabBar() {
+        customTabBarView?.removeFromSuperview()
+        
         customTabBarView = UIView()
         customTabBarView.backgroundColor = .clear
+        customTabBarView.tag = 999
         view.addSubview(customTabBarView)
         
         addTabBarShape()
@@ -74,6 +118,8 @@ class MainTabBarController: UITabBarController,
     }
     
     func positionCustomTabBar() {
+        guard customTabBarView != nil, customTabBarView.superview != nil else { return }
+        
         let bottomInset = view.safeAreaInsets.bottom
         customTabBarView.frame = CGRect(
             x: 0,
@@ -91,7 +137,6 @@ class MainTabBarController: UITabBarController,
         tabButtons.removeAll()
         
         for (index, item) in tabItems.enumerated() {
-            // Skip middle (circle button area)
             if index == homeIndex {
                 let emptyButton = UIButton()
                 emptyButton.isUserInteractionEnabled = false
@@ -109,13 +154,11 @@ class MainTabBarController: UITabBarController,
         }
     }
     
-    // ✅ Create tab button with icon and title
     func createTabButton(icon: String, title: String, tag: Int) -> UIButton {
         let button = UIButton(type: .custom)
         button.tag = tag
         button.addTarget(self, action: #selector(tabButtonTapped(_:)), for: .touchUpInside)
         
-        // ✅ Vertical stack: icon on top, label below
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.alignment = .center
@@ -123,7 +166,6 @@ class MainTabBarController: UITabBarController,
         stackView.spacing = 4
         stackView.isUserInteractionEnabled = false
         
-        // ✅ Icon
         let iconImageView = UIImageView()
         iconImageView.contentMode = .scaleAspectFit
         iconImageView.image = UIImage(named: icon)?.withRenderingMode(.alwaysTemplate)
@@ -135,7 +177,6 @@ class MainTabBarController: UITabBarController,
             iconImageView.heightAnchor.constraint(equalToConstant: 24)
         ])
         
-        // ✅ Label
         let titleLabel = UILabel()
         titleLabel.text = title
         titleLabel.font = UIFont.systemFont(ofSize: 10, weight: .medium)
@@ -187,7 +228,6 @@ class MainTabBarController: UITabBarController,
         circleButton.layer.borderColor = UIColor.clear.cgColor
     }
     
-    // ✅ Update tab selection highlighting
     func updateTabSelection() {
         for (index, button) in tabButtons.enumerated() {
             if index == homeIndex { continue }
@@ -195,7 +235,6 @@ class MainTabBarController: UITabBarController,
             let isSelected = (index == selectedIndex)
             
             if let stackView = button.subviews.first(where: { $0 is UIStackView }) as? UIStackView {
-                
                 if let iconView = stackView.arrangedSubviews.first as? UIImageView {
                     iconView.tintColor = isSelected ? selectedColor : normalColor
                 }
@@ -207,7 +246,6 @@ class MainTabBarController: UITabBarController,
             }
         }
         
-        // ✅ Update circle button and middle label
         if selectedIndex == homeIndex {
             circleButton.layer.borderColor = selectedColor.cgColor
             middleLabel.textColor = selectedColor
@@ -267,26 +305,21 @@ class MainTabBarController: UITabBarController,
         return p.cgPath
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        positionCustomTabBar()
-        positionCircle()
-        positionMiddleLabel()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        positionCustomTabBar()
-        positionCircle()
-        positionMiddleLabel()
-        updateVisibilityBasedOnDepth()
+    func bringTabBarToFront() {
+        if customTabBarView != nil {
+            view.bringSubviewToFront(customTabBarView)
+        }
+        view.bringSubviewToFront(circleButton)
     }
     
     func setupCircleButton() {
+        circleButton.removeFromSuperview()
+        
         let size: CGFloat = 60
         circleButton.frame = CGRect(x: 0, y: 0, width: size, height: size)
         circleButton.layer.cornerRadius = size / 2
         circleButton.backgroundColor = .white
+        circleButton.tag = 998
         
         circleButton.setImage(UIImage(named: "oasis_logo"), for: .normal)
         circleButton.imageView?.contentMode = .scaleAspectFit
@@ -300,25 +333,27 @@ class MainTabBarController: UITabBarController,
         circleButton.layer.shadowOffset = CGSize(width: 0, height: 3)
         circleButton.layer.shadowColor = UIColor.black.cgColor
         
+        circleButton.removeTarget(nil, action: nil, for: .allEvents)
         circleButton.addTarget(self, action: #selector(circleTapped), for: .touchUpInside)
         
         view.addSubview(circleButton)
         view.bringSubviewToFront(circleButton)
     }
     
-    // ✅ Setup middle label
     func setupMiddleLabel() {
-        middleLabel.text = "MySchool"  // Default, will be updated
+        middleLabel.removeFromSuperview()
+        
+        middleLabel.text = "MySchool"
         middleLabel.font = UIFont.systemFont(ofSize: 10, weight: .medium)
         middleLabel.textColor = normalColor
         middleLabel.textAlignment = .center
         middleLabel.adjustsFontSizeToFitWidth = true
         middleLabel.minimumScaleFactor = 0.7
+        middleLabel.tag = 997
         
         customTabBarView.addSubview(middleLabel)
     }
     
-    // ✅ Position middle label below the dip
     func positionMiddleLabel() {
         guard customTabBarView != nil else { return }
         
@@ -363,19 +398,14 @@ class MainTabBarController: UITabBarController,
         
         let isRoot = (nav.viewControllers.count == 1)
         
-        if isRoot {
-            customTabBarView.isHidden = false
-            circleButton.isHidden = false
-            middleLabel.isHidden = false
-            circleButton.alpha = 1
-            circleButton.isUserInteractionEnabled = true
-        } else {
-            customTabBarView.isHidden = true
-            circleButton.isHidden = true
-            middleLabel.isHidden = true
-            circleButton.alpha = 0
-            circleButton.isUserInteractionEnabled = false
-        }
+        customTabBarView?.isHidden = !isRoot
+        circleButton.isHidden = !isRoot
+        middleLabel.isHidden = !isRoot
+        circleButton.alpha = isRoot ? 1 : 0
+        circleButton.isUserInteractionEnabled = isRoot
+        
+        // ✅ ALWAYS keep native tab bar hidden
+        hideNativeTabBar()
     }
     
     override var selectedIndex: Int {
@@ -388,6 +418,7 @@ class MainTabBarController: UITabBarController,
                           didSelect viewController: UIViewController) {
         updateTabSelection()
         updateVisibilityBasedOnDepth()
+        hideNativeTabBar() // ✅ Extra safety
     }
     
     func navigationController(_ navigationController: UINavigationController,
@@ -395,6 +426,7 @@ class MainTabBarController: UITabBarController,
                               animated: Bool) {
         DispatchQueue.main.async {
             self.updateVisibilityBasedOnDepth()
+            self.hideNativeTabBar() // ✅ Extra safety
         }
     }
     
@@ -402,32 +434,25 @@ class MainTabBarController: UITabBarController,
                               didShow viewController: UIViewController,
                               animated: Bool) {
         updateVisibilityBasedOnDepth()
+        hideNativeTabBar() // ✅ Extra safety
     }
     
-    // ✅ LOGIC FROM YOUR OLD CODE - Update middle tab title & circle image dynamically
     func updateMiddleTabTitleAndImage() {
-        
         isSchoolUser = false
         
-        // ✅ Check if user has students with school
         if UserManager.shared.user?.students?.count ?? 0 > 0 {
             let first_student = UserManager.shared.user?.students?.first!
             if let school = first_student?.school {
                 isSchoolUser = true
-                // ✅ Load school logo into circle button
                 circleButton.loadImage(url: school.smallLogo ?? "")
             }
         }
         
-        // ✅ If not school user, use MyPlan image
         if !isSchoolUser {
             circleButton.setImage(UIImage(named: "MyPlan"), for: .normal)
         }
         
-        // ✅ Update middle label text based on user type
         middleLabel.text = isSchoolUser ? "MySchool" : "MyPlan"
-        
-        // ✅ Clear button title (we use separate label)
         circleButton.setTitle("", for: .normal)
     }
 }

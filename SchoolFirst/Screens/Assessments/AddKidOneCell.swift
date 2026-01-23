@@ -247,43 +247,52 @@ extension AddKidOneCell: UIPickerViewDelegate, UIPickerViewDataSource {
 extension AddKidOneCell {
     
     private func setupDatePicker() {
-        dateTf.isHidden = false
-        dateTf.inputView = UIView()
-
+        // Configure date picker
+        datePicker.datePickerMode = .date
+        datePicker.maximumDate = Date()
         
-        addDate.addTarget(self, action: #selector(showDatePicker), for: .touchUpInside)
-    }
-    
-    @objc private func showDatePicker() {
-        guard let parentVC = self.parentViewController else { return }
-        
-        let alert = UIAlertController(title: "Select Date of Birth", message: "\n\n\n\n\n\n\n\n\n", preferredStyle: .actionSheet)
-        
-        let picker = UIDatePicker()
-        picker.datePickerMode = .date
-        picker.preferredDatePickerStyle = .wheels
-        picker.maximumDate = Date()
-        picker.frame = CGRect(x: 0, y: 50, width: alert.view.bounds.width - 20, height: 200)
-        
-        alert.view.addSubview(picker)
-        
-        alert.addAction(UIAlertAction(title: "Done", style: .default) { _ in
-            let displayFormatter = DateFormatter()
-            displayFormatter.dateStyle = .medium
-            self.addDate.setTitle(displayFormatter.string(from: picker.date), for: .normal)
-            
-            let apiFormatter = DateFormatter()
-            apiFormatter.dateFormat = "yyyy-MM-dd"
-            self.selectedDob = apiFormatter.string(from: picker.date)
-        })
-        
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        
-        if let popover = alert.popoverPresentationController {
-            popover.sourceView = addDate
-            popover.sourceRect = addDate.bounds
+        // Set wheels style for consistency across iOS versions
+        if #available(iOS 13.4, *) {
+            datePicker.preferredDatePickerStyle = .wheels
         }
         
-        parentVC.present(alert, animated: true)
+        // IMPORTANT: Enable user interaction and make it editable
+        dateTf.isUserInteractionEnabled = true
+        dateTf.isEnabled = true
+        
+        // Set date picker as input view for text field
+        dateTf.inputView = datePicker
+        
+        // Create toolbar with Done button
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneBtn = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(dateDoneTapped))
+        toolbar.setItems([flexSpace, doneBtn], animated: false)
+        dateTf.inputAccessoryView = toolbar
+        
+        // Handle button tap to show picker
+        addDate.addTarget(self, action: #selector(dateButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc private func dateButtonTapped() {
+            DispatchQueue.main.async {
+            self.dateTf.becomeFirstResponder()
+        }
+    }
+    
+    @objc private func dateDoneTapped() {
+        let displayFormatter = DateFormatter()
+        displayFormatter.dateStyle = .medium
+        
+        let dateString = displayFormatter.string(from: datePicker.date)
+//        dateTf.text = dateString
+        addDate.setTitle(dateString, for: .normal)
+        
+        let apiFormatter = DateFormatter()
+        apiFormatter.dateFormat = "yyyy-MM-dd"
+        selectedDob = apiFormatter.string(from: datePicker.date)
+        
+        dateTf.resignFirstResponder()
     }
 }
