@@ -114,6 +114,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
                     return cell
                 } else {
                     let cell = tableView.dequeueReusableCell(withIdentifier: "AddKidsCell", for: indexPath) as! AddKidsCell
+                    cell.configure(showCardShadow: true)
                     cell.selectionStyle = .none
                     cell.backgroundColor = .clear
                     return cell
@@ -121,6 +122,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             }
             if indexPath.row == UserManager.shared.kids.count {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "AddKidsCell", for: indexPath) as! AddKidsCell
+                cell.configure(showCardShadow: true)
                 cell.selectionStyle = .none
                 cell.backgroundColor = .clear
                 return cell

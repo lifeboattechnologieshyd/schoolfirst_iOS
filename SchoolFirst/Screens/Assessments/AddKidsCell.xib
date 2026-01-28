@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -22,7 +21,7 @@
                         <rect key="frame" x="231" y="16" width="118" height="32"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0dm-Ym-FXc">
-                                <rect key="frame" x="16" y="8" width="16" height="16"/>
+                                <rect key="frame" x="18" y="8" width="16" height="16"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="16" id="iVq-7x-L52"/>
                                     <constraint firstAttribute="width" constant="16" id="wHO-ye-YCt"/>
@@ -31,7 +30,7 @@
                                 <buttonConfiguration key="configuration" style="plain" image="plus" title=" "/>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qhh-1P-y1s">
-                                <rect key="frame" x="40" y="7" width="76" height="18"/>
+                                <rect key="frame" x="42" y="7" width="74" height="18"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="18" id="0AJ-Ou-7EF"/>
                                 </constraints>
@@ -53,13 +52,13 @@
                                 </connections>
                             </button>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="118" id="7Pk-0i-LjI"/>
                             <constraint firstAttribute="trailing" secondItem="Qhh-1P-y1s" secondAttribute="trailing" constant="2" id="EjO-qA-Brf"/>
                             <constraint firstItem="Qhh-1P-y1s" firstAttribute="leading" secondItem="0dm-Ym-FXc" secondAttribute="trailing" constant="8" id="J2r-CK-4a3"/>
                             <constraint firstItem="0dm-Ym-FXc" firstAttribute="top" secondItem="wQI-og-MQh" secondAttribute="top" constant="8" id="LG2-bx-gVI"/>
-                            <constraint firstItem="0dm-Ym-FXc" firstAttribute="leading" secondItem="wQI-og-MQh" secondAttribute="leading" constant="16" id="PwI-x1-G24"/>
+                            <constraint firstItem="0dm-Ym-FXc" firstAttribute="leading" secondItem="wQI-og-MQh" secondAttribute="leading" constant="18" id="PwI-x1-G24"/>
                             <constraint firstItem="Qhh-1P-y1s" firstAttribute="centerY" secondItem="0dm-Ym-FXc" secondAttribute="centerY" id="uXD-Nt-Tod"/>
                             <constraint firstAttribute="height" constant="32" id="wz6-Xt-wvz"/>
                         </constraints>
@@ -85,8 +84,5 @@
     </objects>
     <resources>
         <image name="plus" width="16.003999710083008" height="16.003999710083008"/>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
     </resources>
 </document>

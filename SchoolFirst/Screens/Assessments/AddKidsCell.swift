@@ -14,8 +14,32 @@ class AddKidsCell: UITableViewCell {
     
     var onAddKidTapped: (() -> Void)?
     
+    private var shouldShowCardShadow = false
+    
     override func awakeFromNib() {
         super.awakeFromNib()
+        selectionStyle = .none
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        shouldShowCardShadow = false
+        bgVw.layer.shadowOpacity = 2
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        if shouldShowCardShadow {
+            bgVw.addCardShadow()
+        } else {
+            bgVw.layer.shadowOpacity = 2
+        }
+    }
+    
+    func configure(showCardShadow: Bool) {
+        self.shouldShowCardShadow = showCardShadow
+        setNeedsLayout()
     }
     
     @IBAction func addKidButton(_ sender: UIButton) {
