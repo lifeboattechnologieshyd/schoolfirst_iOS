@@ -24,9 +24,6 @@ class LeaveHistoryViewController: UIViewController {
     var allLeaveHistory: [LeaveHistoryData] = []
     var filteredLeaveHistory: [LeaveHistoryData] = []
     
-    // Loader view
-    private var loaderView: UIView?
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -84,32 +81,6 @@ class LeaveHistoryViewController: UIViewController {
         tblVw.register(UINib(nibName: "LeaveHistoryCell", bundle: nil), forCellReuseIdentifier: "LeaveHistoryCell")
     }
     
-    private func showLoader() {
-        DispatchQueue.main.async {
-            // Remove existing loader if any
-            self.loaderView?.removeFromSuperview()
-            
-            let loader = UIView(frame: self.view.bounds)
-            loader.backgroundColor = UIColor.black.withAlphaComponent(0.3)
-            
-            let activityIndicator = UIActivityIndicatorView(style: .large)
-            activityIndicator.color = .white
-            activityIndicator.center = loader.center
-            activityIndicator.startAnimating()
-            
-            loader.addSubview(activityIndicator)
-            self.view.addSubview(loader)
-            self.loaderView = loader
-        }
-    }
-    
-    private func hideLoader() {
-        DispatchQueue.main.async {
-            self.loaderView?.removeFromSuperview()
-            self.loaderView = nil
-        }
-    }
-    
     private func showToast(message: String) {
         DispatchQueue.main.async {
             let toastLabel = UILabel()
@@ -146,7 +117,7 @@ class LeaveHistoryViewController: UIViewController {
         
         let urlString = "\(API.LEAVE_HISTORY)?student_id=\(studentId)"
         
-        showLoader()
+        showLoader() // ✅ Added
         
         NetworkManager.shared.request(
             urlString: urlString,
@@ -156,7 +127,8 @@ class LeaveHistoryViewController: UIViewController {
         ) { [weak self] (result: Result<APIResponse<[LeaveHistoryData]>, NetworkError>) in
             
             DispatchQueue.main.async {
-                self?.hideLoader()
+                
+                self?.hideLoader() // ✅ Added
                 
                 switch result {
                 case .success(let response):
@@ -311,10 +283,8 @@ extension LeaveHistoryViewController: UITableViewDelegate, UITableViewDataSource
         
         let storyboard = UIStoryboard(name: "Attendance", bundle: nil)
         if let resubmitVC = storyboard.instantiateViewController(withIdentifier: "ReSubmitViewController") as? ReSubmitViewController {
-            resubmitVC.leaveData = leave 
+            resubmitVC.leaveData = leave
             navigationController?.pushViewController(resubmitVC, animated: true)
         }
-        
     }
-    
 }

@@ -98,8 +98,10 @@ class ViewController: UIViewController {
     }
     
     func getUserDetails(email: String) {
+        showLoader()
         let payload = ["email" : email ]
         NetworkManager.shared.request(urlString: API.EMAIL_SENDOTP, method: .POST, parameters: payload) { (result: Result<APIResponse<MobileCheckResponse>, NetworkError>) in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {
@@ -134,7 +136,9 @@ class ViewController: UIViewController {
         let payload = [
             "mobile": mobile
         ]
+        showLoader()
         NetworkManager.shared.request(urlString: API.SENDOTP, method: .POST, parameters: payload) { (result: Result<APIResponse<MobileCheckResponse>, NetworkError>) in
+            self.hideLoader() 
             switch result {
             case .success(let info):
                 if info.success {

@@ -33,8 +33,10 @@ class AssessmentLessonVC: UIViewController {
     
     
     func getLessons() {
+        showLoader()
         var subject_url = API.LESSON + "?grade=\(grade_id)&subject=\(subject_id)"
         NetworkManager.shared.request(urlString: subject_url,method: .GET) { (result: Result<APIResponse<[Lesson]>, NetworkError>)  in
+            self.hideLoader() 
             switch result {
             case .success(let info):
                 if info.success {

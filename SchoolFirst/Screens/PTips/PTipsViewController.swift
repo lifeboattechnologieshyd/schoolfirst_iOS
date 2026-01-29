@@ -55,8 +55,10 @@ class PTipsViewController: UIViewController {
     
     
     func getEdutainment(text: String = "Ptips"){
+        showLoader()
         let url = API.EDUTAIN_FEED + "?f_category=\(text)"
         NetworkManager.shared.request(urlString: url,method: .GET) { (result: Result<APIResponse<[Feed]>, NetworkError>)  in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {

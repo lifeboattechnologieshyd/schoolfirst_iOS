@@ -99,8 +99,8 @@ class SubmitLeaveViewController: UIViewController {
             return
         }
         
-        
-        showLoading(true)
+        showLoader()
+        submitButton.isEnabled = false
         
         NetworkManager.shared.request(
             urlString: API.APPLY_LEAVE,
@@ -111,7 +111,8 @@ class SubmitLeaveViewController: UIViewController {
             guard let self = self else { return }
             
             DispatchQueue.main.async {
-                self.showLoading(false)
+                self.hideLoader()
+                self.submitButton.isEnabled = true
                 
                 switch result {
                 case .success(let response):

@@ -24,7 +24,9 @@ class AssessmentsGradeSelectionVC: UIViewController {
     
     
     func getGrades() {
+        showLoader()
         NetworkManager.shared.request(urlString: API.GRADES,method: .GET) { (result: Result<APIResponse<[GradeModel]>, NetworkError>)  in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {

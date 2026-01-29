@@ -64,7 +64,9 @@ class CoursesVC: UIViewController {
     }
 
     func fetchOnline() {
+        showLoader()
         NetworkManager.shared.request(urlString: API.ONLINE_COURSES, method: .GET) { [weak self] (result: Result<APIResponse<[OnlineCourse]>, NetworkError>) in
+            self?.hideLoader()
             if case .success(let res) = result, let data = res.data {
                 self?.onlineCourses = data
                 DispatchQueue.main.async { self?.tblVw.reloadData() }
@@ -73,7 +75,9 @@ class CoursesVC: UIViewController {
     }
 
     func fetchWebinars() {
+        showLoader()
         NetworkManager.shared.request(urlString: API.WEBINARS, method: .GET) { [weak self] (result: Result<APIResponse<[Webinar]>, NetworkError>) in
+            self?.hideLoader()
             if case .success(let res) = result, let data = res.data {
                 self?.webinars = data
                 DispatchQueue.main.async { self?.tblVw.reloadData() }
@@ -82,7 +86,9 @@ class CoursesVC: UIViewController {
     }
 
     func fetchOffline() {
+        showLoader()
         NetworkManager.shared.request(urlString: API.OFFLINE_COURSES, method: .GET) { [weak self] (result: Result<APIResponse<[OfflineCourse]>, NetworkError>) in
+            self?.hideLoader()
             if case .success(let res) = result, let data = res.data {
                 self?.offlineCourses = data
                 DispatchQueue.main.async { self?.tblVw.reloadData() }

@@ -36,7 +36,9 @@ class GalleryViewController: UIViewController {
 
 extension GalleryViewController {
     func getGalleryData() {
+        showLoader()
         NetworkManager.shared.request(urlString: API.EVENT_GALLERY,method: .GET) { (result: Result<APIResponse<[EventGallery]>, NetworkError>)  in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {

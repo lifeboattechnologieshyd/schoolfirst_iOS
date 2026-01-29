@@ -49,6 +49,7 @@ class FeeTransactionsVC: UIViewController {
     }
     
     func getTransactions() {
+        showLoader()
         guard let studentId = feeDetails?.studentUUID else {
             print("❌ No student ID found")
             showNoData()
@@ -67,7 +68,7 @@ class FeeTransactionsVC: UIViewController {
             
             DispatchQueue.main.async {
                 guard let self = self else { return }
-                
+                self.hideLoader()
                 switch result {
                 case .success(let response):
                     if response.success, let data = response.data {

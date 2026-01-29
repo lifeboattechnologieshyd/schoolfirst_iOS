@@ -34,7 +34,9 @@ class MySchoolViewController: UIViewController {
         self.navigationController?.popViewController(animated: true)
     }
     func getGalleryData(){
+        showLoader()
         NetworkManager.shared.request(urlString: API.EVENT_GALLERY,method: .GET) { (result: Result<APIResponse<[EventGallery]>, NetworkError>)  in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {
@@ -61,7 +63,9 @@ class MySchoolViewController: UIViewController {
     }
     
     func getSchoolInfo() {
+        showLoader()
         NetworkManager.shared.request(urlString: API.SCHOOL_INFO,method: .GET) { (result: Result<APIResponse<[SchoolInfo]>, NetworkError>)  in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {

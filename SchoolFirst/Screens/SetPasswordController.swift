@@ -85,8 +85,10 @@ class SetPasswordController: UIViewController {
         let payload = [
             "password": txtFieldPassword.text!
         ]
+        showLoader()
         
         NetworkManager.shared.request(urlString: API.SET_PASSWORD, method: .POST, parameters: payload) { (result: Result<APIResponse<EmptyResponse>, NetworkError>) in
+            self.hideLoader() 
             switch result {
             case .success(let info):
                 if info.success {

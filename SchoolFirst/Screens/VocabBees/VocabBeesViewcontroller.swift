@@ -73,6 +73,7 @@ class VocabBeesViewController: UIViewController {
     }
     
     func fetchVocabBeeStatistics() {
+        showLoader()
         guard let studentID = UserManager.shared.vocabBee_selected_student?.studentID else {
             print("No student selected")
             return
@@ -85,6 +86,7 @@ class VocabBeesViewController: UIViewController {
         
         NetworkManager.shared.request(urlString: url, parameters: parameters) { [weak self] (result: Result<APIResponse<[VocabBeeStatistics]>, NetworkError>) in
             DispatchQueue.main.async {
+                self?.hideLoader() 
                 switch result {
                 case .success(let response):
 //                    if self?.didOptimisticUpdate == true {

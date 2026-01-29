@@ -251,8 +251,7 @@ class ReSubmitViewController: UIViewController {
             return
         }
         
-        
-        // ✅ Using leaveData.id for API URL
+        showLoader()
         let url = API.BASE_URL + "attendance/leave/\(leave.id)"
         
         // Build final reason with additional details
@@ -276,7 +275,7 @@ class ReSubmitViewController: UIViewController {
         
         NetworkManager.shared.request(urlString: url, method: .PUT, parameters: parameters) { (result: Result<APIResponse<LeaveUpdateResponse>, NetworkError>) in
             DispatchQueue.main.async {
-                
+                self.hideLoader()
                 switch result {
                 case .success(let response):
                     if response.success {

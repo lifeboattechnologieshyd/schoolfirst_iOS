@@ -142,7 +142,9 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
     }
     
     func getCurriculumType() {
+        showLoader()
         NetworkManager.shared.request(urlString: API.CURRICULUM_TYPES, method: .GET) { (result: Result<APIResponse<[Curriculum]>, NetworkError>) in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {

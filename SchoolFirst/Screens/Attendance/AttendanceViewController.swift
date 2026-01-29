@@ -59,11 +59,14 @@ class AttendanceViewController: UIViewController {
     }
     
     func getAttandanceReport() {
+        showLoader()
+
         guard let studentID = selectedStudentID else { return }
         
         let url = API.ATTENDANCE_STATS + "student_id=\(studentID)"
         NetworkManager.shared.request(urlString: url, method: .GET) { [weak self] (result: Result<APIResponse<Attendance>, NetworkError>) in
             guard let self = self else { return }
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success, let data = info.data {
@@ -84,12 +87,14 @@ class AttendanceViewController: UIViewController {
     
     func getLeaveDetails(date: Date) {
         guard let studentID = selectedStudentID else { return }
+        showLoader()
         
         let (sd, ed) = getMonthStartEnd(from: date)
         let url = API.ATTENDANCE_LEAVE_HISTORY + "student_id=\(studentID)&start_date=\(sd)&end_date=\(ed)"
         
         NetworkManager.shared.request(urlString: url, method: .GET) { [weak self] (result: Result<APIResponse<[Leave]>, NetworkError>) in
             guard let self = self else { return }
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success, let data = info.data {

@@ -71,6 +71,7 @@ class ImageViewerVC: UIViewController, UIScrollViewDelegate {
     }
     
     func loadImage() {
+        showLoader()
         guard let urlString = passedImageURL,
               let url = URL(string: urlString) else { return }
         
@@ -78,6 +79,7 @@ class ImageViewerVC: UIViewController, UIScrollViewDelegate {
             guard let d = data, let img = UIImage(data: d) else { return }
             
             DispatchQueue.main.async {
+                self.hideLoader()
                 self.imageView.image = img
                 self.imageView.contentMode = .scaleAspectFit
                 

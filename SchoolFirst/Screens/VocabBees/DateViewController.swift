@@ -27,8 +27,10 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func getDates() {
+        showLoader()
         let url = API.VOCABEE_GET_DATES + "?student_id=\(UserManager.shared.vocabBee_selected_student.gradeID)&grade=\(UserManager.shared.vocabBee_selected_grade.id)"
         NetworkManager.shared.request(urlString: url, method: .GET) { (result: Result<APIResponse<[VocabeeDate]>, NetworkError>)  in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {

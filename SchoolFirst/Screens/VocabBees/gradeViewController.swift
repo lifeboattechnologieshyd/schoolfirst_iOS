@@ -19,7 +19,9 @@ class gradeViewController: UIViewController,UICollectionViewDelegate,UICollectio
     var selected_student = 0
     
     func getGrades() {
+        showLoader()
         NetworkManager.shared.request(urlString: API.GRADES,method: .GET) { (result: Result<APIResponse<[GradeModel]>, NetworkError>)  in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {

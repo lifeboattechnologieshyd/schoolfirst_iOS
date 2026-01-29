@@ -126,7 +126,7 @@ class SaveAddressVC: UIViewController {
             showAlert(message: "Address ID not found")
             return
         }
-        
+        showLoader()
         let mobile = Int(cell.phoneTf.text ?? "0") ?? 0
         
         let fullAddressDict: [String: Any] = [
@@ -160,7 +160,7 @@ class SaveAddressVC: UIViewController {
             
             DispatchQueue.main.async {
                 guard let self = self else { return }
-                
+                self.hideLoader()
                 switch result {
                 case .success(let response):
                     if response.success {
@@ -178,7 +178,7 @@ class SaveAddressVC: UIViewController {
     }
     
     private func createAddressAPI(cell: SaveAddressCell) {
-        
+        showLoader()
         let mobile = Int(cell.phoneTf.text ?? "0") ?? 0
         
         let fullAddressDict: [String: Any] = [
@@ -208,7 +208,7 @@ class SaveAddressVC: UIViewController {
             
             DispatchQueue.main.async {
                 guard let self = self else { return }
-                
+                self.hideLoader()
                 switch result {
                 case .success(let response):
                     if response.success {

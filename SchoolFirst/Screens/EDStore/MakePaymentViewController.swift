@@ -300,6 +300,7 @@ extension MakePaymentViewController: UITableViewDataSource, UITableViewDelegate 
 extension MakePaymentViewController {
     
     func getAddressAPI() {
+        showLoader()
         NetworkManager.shared.request(
             urlString: API.GET_ADDRESS,
             method: .GET,
@@ -307,6 +308,7 @@ extension MakePaymentViewController {
             headers: nil
         ) { [weak self] (result: Result<APIResponse<[AddressModel]>, NetworkError>) in
             DispatchQueue.main.async {
+                self?.hideLoader()
                 switch result {
                 case .success(let response):
                     if let addresses = response.data, !addresses.isEmpty {
@@ -360,7 +362,7 @@ extension MakePaymentViewController {
             "state_name": stateName,
             "pin_code": pinCode
         ]
-        
+        showLoader()
         NetworkManager.shared.request(
             urlString: API.CREATE_ADDRESS,
             method: .POST,
@@ -368,6 +370,7 @@ extension MakePaymentViewController {
             headers: nil
         ) { [weak self] (result: Result<APIResponse<CreateAddressResponseModel>, NetworkError>) in
             DispatchQueue.main.async {
+                self?.hideLoader()
                 switch result {
                 case .success:
                     self?.showAlert(title: "Success", message: "Address saved successfully")

@@ -167,9 +167,13 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
     
     func getEdutainment() {
         
+        
         guard !isLoading else { return }
         isLoading = true
         
+        if page == 1 {
+                showLoader()
+            }
         var url = ""
         
         // Serial number search
@@ -193,7 +197,7 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
             
             guard let self = self else { return }
             self.isLoading = false
-            
+            self.hideLoader()
             switch result {
             case .success(let info):
                 

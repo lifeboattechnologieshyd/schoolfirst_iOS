@@ -186,7 +186,9 @@ class HomeController: UIViewController {
     
     
     func getBanners() {
+        showLoader()
         NetworkManager.shared.request(urlString: API.BANNER,method: .GET) { (result: Result<APIResponse<[Banner]>, NetworkError>)  in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {
@@ -215,6 +217,7 @@ class HomeController: UIViewController {
     
     
     func getCalender() {
+        showLoader()
         self.calender = []
         let today = Date()
         let dateFormatter = DateFormatter()
@@ -222,6 +225,7 @@ class HomeController: UIViewController {
         let start_date = dateFormatter.string(from: today)
         
         NetworkManager.shared.request(urlString: API.BROADCAST_CALENDER+start_date, method: .GET) { (result: Result<APIResponse<[LifeSkillPrompt]>, NetworkError>)  in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {
@@ -288,7 +292,9 @@ class HomeController: UIViewController {
     
     
     func getRawData(){
+        showLoader()
         NetworkManager.shared.request(urlString: API.DASHBOARD,method: .GET) { (result: Result<APIResponse<DashboardResponse>, NetworkError>)  in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {

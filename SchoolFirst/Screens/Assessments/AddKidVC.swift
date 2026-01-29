@@ -52,12 +52,15 @@ class AddKidVC: UIViewController {
     }
     
     private func fetchGrades() {
+        showLoader()
         NetworkManager.shared.request(
             urlString: API.GRADES_LIST,
             method: .GET
         ) { (result: Result<APIResponse<[Grade]>, NetworkError>) in
             
             DispatchQueue.main.async {
+                self.hideLoader()
+                
                 switch result {
                 case .success(let response):
                     
@@ -105,7 +108,7 @@ class AddKidVC: UIViewController {
             showAlert(msg: "Please select date of birth")
             return
         }
-        
+        showLoader()
         let notesText = cell.notesTv.text ?? ""
         var notesArray: [String] = []
         if !notesText.trimmingCharacters(in: .whitespaces).isEmpty {
@@ -132,6 +135,7 @@ class AddKidVC: UIViewController {
         ) { (result: Result<APIResponse<StudentUpdateResponse>, NetworkError>) in
             
             DispatchQueue.main.async {
+                self.hideLoader()
                 switch result {
                 case .success(let response):
                     if response.success, let data = response.data {

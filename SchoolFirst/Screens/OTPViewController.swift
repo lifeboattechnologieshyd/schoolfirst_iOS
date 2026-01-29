@@ -92,8 +92,10 @@ class OTPViewController: UIViewController {
             "fcm_id": "",
             "device_os": "iOS"
         ]
+        showLoader()
         
         NetworkManager.shared.request(urlString: API.EMAIL_OTP,method: .POST, is_testing: true, parameters: payload) { (result: Result<APIResponse<LoginResponse>, NetworkError>) in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {
@@ -119,8 +121,10 @@ class OTPViewController: UIViewController {
             "mobile": mobile,
             "otp": self.txtFieldOTP.text!
         ]
+        showLoader()
         
         NetworkManager.shared.request(urlString: API.VERIFY_OTP, method: .POST, parameters: payload) { (result: Result<APIResponse<LoginResponse>, NetworkError>) in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {

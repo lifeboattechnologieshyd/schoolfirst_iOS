@@ -207,11 +207,13 @@ class QuestionVC: UIViewController {
     }
     
     func getStats() {
+        showLoader()
         let payload = [
             "assessment_id":"\(UserManager.shared.assessment_created_assessment.id)",
             "student_id":"\(UserManager.shared.assessmentSelectedStudent.studentID)"
         ]
         NetworkManager.shared.request(urlString: API.ASSESSMENT_RESULTS, method: .POST, parameters: payload) { (result: Result<APIResponse<AssessmentResult>, NetworkError>) in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {
@@ -249,6 +251,7 @@ class QuestionVC: UIViewController {
     }
     
     func attemptAns(ans: String, index: Int) {
+        showLoader()
         let url = API.ASSESSMENT_ATTEMPT
         let payload = [
             "question_id":"\(UserManager.shared.assessment_created_assessment.questions[self.current_question].id)",
@@ -258,6 +261,7 @@ class QuestionVC: UIViewController {
         ]
         
         NetworkManager.shared.request(urlString: url, method: .POST, parameters: payload) { (result: Result<APIResponse<AssessmentAnswerResponse>, NetworkError>) in
+            self.hideLoader() 
             switch result {
             case .success(let info):
                 if info.success {

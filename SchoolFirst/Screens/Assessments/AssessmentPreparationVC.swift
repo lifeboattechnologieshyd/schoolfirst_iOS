@@ -19,6 +19,7 @@ class AssessmentPreparationVC: UIViewController {
     }
     
     func createAssessment() {
+        showLoader()
         guard !UserManager.shared.assessment_selected_lesson_ids.isEmpty else {
             showAlert(msg: "Please select at least one lesson")
             navigationController?.popViewController(animated: true)
@@ -34,7 +35,7 @@ class AssessmentPreparationVC: UIViewController {
             navigationController?.popViewController(animated: true)
             return
         }
-        
+        showLoader()
         let payload: [String: Any] = [
             "grade_id": grade.id,
             "subject_id": subject.id,
@@ -47,6 +48,7 @@ class AssessmentPreparationVC: UIViewController {
             
             DispatchQueue.main.async {
                 guard let self = self else { return }
+                self.hideLoader()
                 
                 switch result {
                 case .success(let info):

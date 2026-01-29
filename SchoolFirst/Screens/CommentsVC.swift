@@ -77,6 +77,7 @@ class CommentsVC: UIViewController {
     
     
     func fetchComments() {
+        showLoader()
         guard let feedId = feed?.id else { return }
         
         let url = API.GET_COMMENTS + "?feed_id=\(feedId)"
@@ -85,6 +86,7 @@ class CommentsVC: UIViewController {
             guard let self = self else { return }
             
             DispatchQueue.main.async {
+                self.hideLoader()
                 switch result {
                 case .success(let info):
                     if info.success, let data = info.data {
@@ -105,7 +107,7 @@ class CommentsVC: UIViewController {
             completion(false)
             return
         }
-        
+        showLoader()
         let url = API.POST_COMMENT
         let parameters: [String: Any] = [
             "feed_id": feedId,
@@ -116,6 +118,7 @@ class CommentsVC: UIViewController {
             guard let self = self else { return }
             
             DispatchQueue.main.async {
+                self.hideLoader()
                 switch result {
                 case .success(let info):
                     if info.success {

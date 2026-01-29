@@ -24,8 +24,10 @@ class CurriculumLessonController: UIViewController, UITableViewDelegate, UITable
     
     
     func getLessons() {
+        showLoader()
         let subject_url = API.LESSON + "?grade=\(UserManager.shared.curriculamSelectedStudent.gradeID)&subject=\(subj.id)"
         NetworkManager.shared.request(urlString: subject_url,method: .GET) { (result: Result<APIResponse<[Lesson]>, NetworkError>)  in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {

@@ -127,6 +127,7 @@ class SchoolFeesVC: UIViewController {
     }
     
     func createPaymentOrder(studentFeeId: String, installmentNumber: Int, amount: Double) {
+        showLoader()
         
         let payload: [String: Any] = [
             "student_fee_id": studentFeeId,
@@ -142,7 +143,7 @@ class SchoolFeesVC: UIViewController {
             
             DispatchQueue.main.async {
                 guard let self = self else { return }
-                
+                self.hideLoader()
                 switch result {
                 case .success(let response):
                     if response.success, let data = response.data {

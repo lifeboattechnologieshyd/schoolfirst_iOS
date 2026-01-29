@@ -30,9 +30,11 @@ class TimeTableViewController: UIViewController {
     }
     
     func getTimeTable(){
+        showLoader()
         let grade = UserManager.shared.kids[selected_student].gradeID
         let url = API.ATTENDANCE_TIMETABLE + "date=\(Date().toddMMYYYY())&grade_id=\(grade)"
         NetworkManager.shared.request(urlString: url, method: .GET) { (result: Result<APIResponse<TimetableResponse>, NetworkError>)  in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {

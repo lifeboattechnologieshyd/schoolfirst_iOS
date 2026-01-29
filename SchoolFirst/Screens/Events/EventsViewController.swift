@@ -34,11 +34,13 @@ class EventsViewController: UIViewController {
     }
     
     func getMyEvents() {
+        showLoader()
         let params: [String:Any] = [:]
         
         NetworkManager.shared.request(urlString: API.EVENTS_GETEVENTS,
                                       method: .GET,
                                       parameters: params) { (result: Result<APIResponse<[Event]>, NetworkError>)  in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {

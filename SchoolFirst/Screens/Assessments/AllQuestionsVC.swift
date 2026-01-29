@@ -33,8 +33,10 @@ class AllQuestionsVC: UIViewController {
       }
     
     func getHistoryQuestoins() {
+        showLoader()
         let url = API.ASSESSMENT_HISTORY_ANSWERS + "?student_id=\(UserManager.shared.assessmentSelectedStudent.studentID)&assessment=\(assessmentId!)"
         NetworkManager.shared.request(urlString: url,method: .GET) { (result: Result<APIResponse<[AssessmentQuestionHistoryDetails]>, NetworkError>)  in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {

@@ -23,8 +23,10 @@ class AssessmentSubjectSelectionVC: UIViewController {
     
     
     func getSubjects() {
+        showLoader()
         let subject_url = API.SUBJECTS + "\(grade_id)"
         NetworkManager.shared.request(urlString: subject_url,method: .GET) { (result: Result<APIResponse<[GradeSubject]>, NetworkError>)  in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {

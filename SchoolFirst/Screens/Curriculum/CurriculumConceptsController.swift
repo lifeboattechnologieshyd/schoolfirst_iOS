@@ -26,8 +26,10 @@ class CurriculumConceptsController: UIViewController, UITableViewDelegate, UITab
         self.navigationController?.popViewController(animated: true)
     }
     func getConcepts() {
+        showLoader()
         let subject_url = API.CONCEPTS + "\(selected_lesson.id)"
         NetworkManager.shared.request(urlString: subject_url,method: .GET) { (result: Result<APIResponse<[LessonConcept]>, NetworkError>)  in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {

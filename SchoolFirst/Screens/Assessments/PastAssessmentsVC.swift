@@ -35,8 +35,10 @@ class PastAssessmentsVC: UIViewController {
     
     
     func getHistory() {
+        showLoader()
         let url = API.ASSESSMENT_HISTORY + "?student_id=\(UserManager.shared.assessmentSelectedStudent.studentID)"
         NetworkManager.shared.request(urlString: url,method: .GET) { (result: Result<APIResponse<[AssessmentSummary]>, NetworkError>)  in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {

@@ -89,10 +89,12 @@ class HomeworkViewController: UIViewController {
         
         let requestID = UUID()
         currentRequestID = requestID
+        showLoader()
         
         NetworkManager.shared.request(urlString: API.HOMEWORK + "?grade_id=\(gradeID)", method: .GET) { [weak self] (result: Result<APIResponse<[Homework]>, NetworkError>) in
             DispatchQueue.main.async {
                 guard let self = self, self.currentRequestID == requestID, self.segmentControl.selectedSegmentIndex == 1 else { return }
+                self.hideLoader()
                 self.handleHomeworkResult(result, isPast: false)
             }
         }
@@ -106,10 +108,12 @@ class HomeworkViewController: UIViewController {
         
         let requestID = UUID()
         currentRequestID = requestID
+        showLoader()
         
         NetworkManager.shared.request(urlString: API.HOMEWORK_PAST + "grade_id=\(gradeID)", method: .GET) { [weak self] (result: Result<APIResponse<[Homework]>, NetworkError>) in
             DispatchQueue.main.async {
                 guard let self = self, self.currentRequestID == requestID, self.segmentControl.selectedSegmentIndex == 0 else { return }
+                self.hideLoader()
                 self.handleHomeworkResult(result, isPast: true)
             }
         }
@@ -131,10 +135,12 @@ class HomeworkViewController: UIViewController {
 
     func markHomeworkAsDone(trackerId: String, cell: HWSubjectWiseCell, section: Int) {
         cell.doneBtn.isUserInteractionEnabled = false
+        showLoader()
         
         NetworkManager.shared.request(urlString: API.DONE_HOMEWORK, method: .POST, parameters: ["homework_tracker_id": trackerId]) { [weak self] (result: Result<APIResponse<EmptyResponse>, NetworkError>) in
             DispatchQueue.main.async {
                 guard let self = self else { return }
+                self.hideLoader()
                 switch result {
                 case .success(let response):
                     if response.success {

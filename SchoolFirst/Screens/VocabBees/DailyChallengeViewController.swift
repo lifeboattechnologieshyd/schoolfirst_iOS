@@ -259,7 +259,7 @@ class DailyChallengeViewController: UIViewController {
             print("⚠️ Invalid word index on submitWord: \(currentWordIndex)")
             return
         }
-        
+        showLoader()
         let enteredText = txtField.text ?? ""
         
         let payload: [String: Any] = [
@@ -277,6 +277,7 @@ class DailyChallengeViewController: UIViewController {
             
             DispatchQueue.main.async {
                 self.stopTimer()
+                self.hideLoader()
                 switch result {
                     
                 case .success(let info):
@@ -369,6 +370,7 @@ class DailyChallengeViewController: UIViewController {
     }
     
     func getWords() {
+        showLoader()
         let url = API.VOCABEE_GET_WORDS_BY_DATES +
             "?student_id=\(UserManager.shared.vocabBee_selected_student.studentID)" +
             "&grade=\(UserManager.shared.vocabBee_selected_grade.id)" +
@@ -380,6 +382,7 @@ class DailyChallengeViewController: UIViewController {
         ) { (result: Result<APIResponse<[WordInfo]>, NetworkError>) in
             
             DispatchQueue.main.async {
+                self.hideLoader()
                 switch result {
                     
                 case .success(let info):

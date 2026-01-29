@@ -52,7 +52,9 @@ class CalendarViewController: UIViewController {
     
     func getCalender() {
         self.calender = []
+        showLoader()
         NetworkManager.shared.request(urlString: API.BROADCAST_CALENDER+start_date, method: .GET) { (result: Result<APIResponse<[LifeSkillPrompt]>, NetworkError>)  in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {
@@ -74,11 +76,13 @@ class CalendarViewController: UIViewController {
     
     
     func getMyEvents(){
+        showLoader()
         let params: [String:Any] = [
             "start_date": start_date,
             "end_date": start_date,
         ]
         NetworkManager.shared.request(urlString: API.EVENTS_GETEVENTS, method: .GET, parameters: params) { (result: Result<APIResponse<[Event]>, NetworkError>)  in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {

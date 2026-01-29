@@ -40,8 +40,10 @@ class CurriculumSubjectController: UIViewController {
     }
     
     func getSubjects() {
+        showLoader()
         let subject_url = API.SUBJECTS + "\(UserManager.shared.curriculamSelectedStudent.gradeID)&category=\(selected_category.id)"
         NetworkManager.shared.request(urlString: subject_url,method: .GET) { (result: Result<APIResponse<[GradeSubject]>, NetworkError>)  in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {

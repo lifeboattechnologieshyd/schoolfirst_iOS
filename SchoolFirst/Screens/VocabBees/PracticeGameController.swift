@@ -141,7 +141,7 @@ class PracticeGameController: UIViewController {
             print("⚠️ No word available to submit")
             return
         }
-        
+        showLoader()
         let enteredText = txtField.text?
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .lowercased() ?? ""
@@ -161,6 +161,7 @@ class PracticeGameController: UIViewController {
 
             guard let self = self else { return } // avoid retain cycles
             DispatchQueue.main.async {
+                self.hideLoader()
                 switch result {
                 case .success(let info):
                     guard info.success, let data = info.data else {
@@ -270,6 +271,7 @@ class PracticeGameController: UIViewController {
 
 
     func getWords() {
+        showLoader()
         
         let url = API.VOCABEE_GET_PRACTISE_WORDS +
             "?student_id=\(UserManager.shared.vocabBee_selected_student.studentID)" +
@@ -281,6 +283,7 @@ class PracticeGameController: UIViewController {
         ) { (result: Result<APIResponse<WordInfo>, NetworkError>) in
 
             DispatchQueue.main.async {
+                self.hideLoader()
                 switch result {
 
                 case .success(let info):

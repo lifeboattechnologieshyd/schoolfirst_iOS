@@ -77,8 +77,10 @@ class LoginController: UIViewController {
             payload["mobile"] = mobile
 
         }
+        showLoader()
         
         NetworkManager.shared.request(urlString: ur, method: .POST, parameters: payload) { (result: Result<APIResponse<MobileCheckResponse>, NetworkError>) in
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {
@@ -105,11 +107,10 @@ class LoginController: UIViewController {
         }else {
             payload["email"] = mobile
         }
-      
-        
-        
         print(payload)
+        showLoader()
         NetworkManager.shared.request(urlString: API.LOGIN, method: .POST, parameters: payload) { (result: Result<APIResponse<LoginResponse>, NetworkError>) in
+            self.hideLoader() 
             switch result {
             case .success(let info):
                 if info.success, let data = info.data {

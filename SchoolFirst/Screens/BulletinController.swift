@@ -34,13 +34,17 @@ class BulletinController: UIViewController {
         guard !isLoading else { return }
         isLoading = true
         
+        if page == 1 {
+                showLoader()
+            }
         var url = API.NEWS
         if let gradeId = UserManager.shared.selectedKid?.gradeID {
             url += "?grade_id=\(gradeId)&page=\(page)&page_size=\(page_size)"
         }
         NetworkManager.shared.request(urlString: url,method: .GET) { (result: Result<APIResponse<[Bulletin]>, NetworkError>)  in
             self.isLoading = false
-            
+            self.hideLoader() 
+
             switch result {
             case .success(let info):
                 if info.success {
