@@ -17,8 +17,6 @@ class PracticeGameController: UIViewController {
     var remainingSeconds: Int = 60
     var isTimeOutSubmission: Bool = false
 
-
-    
     @IBOutlet weak var txtField: UITextField!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var btnBack: UIButton!
@@ -27,6 +25,7 @@ class PracticeGameController: UIViewController {
     @IBOutlet weak var timerLbl: UILabel!
     @IBOutlet weak var congratsLbl: UILabel!
     @IBOutlet weak var bottomlbl: UILabel!
+    @IBOutlet weak var SkipBtn: UIButton!
     @IBOutlet weak var resultView: UIView!
     @IBOutlet weak var topLbl: UILabel!
     @IBOutlet weak var lblActualSpelling: UILabel!
@@ -36,7 +35,6 @@ class PracticeGameController: UIViewController {
     var word_info: WordInfo?
     var wordsCompleted: Int = 0
     
-    // Safety check
     var hasWord: Bool {
         return word_info != nil
     }
@@ -53,12 +51,12 @@ class PracticeGameController: UIViewController {
         getWords()
     }
 
-    
     func updateWordsCount() {
         lblWordsCount.text = "Words: \(wordsCompleted)"
     }
     
     @IBAction func onClickBack(_ sender: UIButton) {
+        stopTimer()
         navigationController?.popViewController(animated: true)
     }
     
@@ -71,15 +69,80 @@ class PracticeGameController: UIViewController {
         submitWord()
     }
 
-    
     @IBAction func onClickSkip(_ sender: UIButton) {
-        guard hasWord else { return }
+        guard let word = word_info else { return }
+        
+        stopTimer()
+        
+        submitSkippedWord()
+        
+        resultView.isHidden = false
+        
+        viewLottie.stop()
+        viewLottie.isHidden = true
+        
+        congratsLbl.text = "Word Skipped!"
+        topLbl.text = "You skipped this word"
+        topLbl.textAlignment = .center
+        topLbl.isHidden = false
+        
+        bottomlbl.isHidden = true
+        
+        lblEnteredSpelling.text = "The correct spelling is:"
+        lblEnteredSpelling.font = UIFont(name: "Lexend-Medium", size: 16)
+        lblEnteredSpelling.textColor = .black
+        lblEnteredSpelling.textAlignment = .center
+        lblEnteredSpelling.isHidden = false
+        
+        let userFont = txtField.font ?? UIFont.systemFont(ofSize: 24)
+        let correctWordAttr = NSAttributedString(
+            string: word.word.uppercased(),
+            attributes: [
+                .font: userFont,
+                .foregroundColor: UIColor.black
+            ]
+        )
+        
+        lblActualSpelling.attributedText = correctWordAttr
+        lblActualSpelling.textAlignment = .center
+        lblActualSpelling.isHidden = false
+        lblActualSpelling.font = UIFont.boldSystemFont(ofSize: 24)
+        
+        txtField.text = ""
+    }
+
+    @IBAction func onClickNextWord(_ sender: UIButton) {
+        stopTimer()
         resultView.isHidden = true
         lblEnteredSpelling.isHidden = true
         txtField.text = ""
         viewLottie.stop()
         viewLottie.isHidden = true
-        getWords()
+        getWords(playAudio: true)
+    }
+
+    func submitSkippedWord() {
+        guard let word = word_info else { return }
+        
+        let payload: [String: Any] = [
+            "user_answer": "",
+            "word_id": word.id,
+            "grade_id": UserManager.shared.vocabBee_selected_grade.id,
+            "student_id": UserManager.shared.vocabBee_selected_student.studentID
+        ]
+        
+        NetworkManager.shared.request(
+            urlString: API.VOCABEE_PRACTICE_SUBMIT,
+            method: .POST,
+            parameters: payload
+        ) { (result: Result<APIResponse<VocabBeeWordResponse>, NetworkError>) in
+            switch result {
+            case .success(let info):
+                print("Skip submitted: \(info.success)")
+            case .failure(let error):
+                print("Skip submit error: \(error.localizedDescription)")
+            }
+        }
     }
     
     @IBAction func onTapListen(_ sender: UIButton) {
@@ -113,29 +176,21 @@ class PracticeGameController: UIViewController {
     }
     
     @IBAction func onClickExit(_ sender: UIButton) {
+        stopTimer()
         navigationController?.popViewController(animated: true)
     }
     
-    @IBAction func onClickNextWord(_ sender: UIButton) {
-        resultView.isHidden = true
-        lblEnteredSpelling.isHidden = true
-        txtField.text = ""
-        viewLottie.stop()
-        viewLottie.isHidden = true
-        getWords()
-    }
-    
+   
     func setupPlayer() {
         guard let word = word_info else {
             print("⚠️ No word available for player")
             return
         }
 
-        startTimer() // ✅ compiler will find it now
+        startTimer()
         playWordAudio(url: word.pronunciation)
     }
 
-    
     func submitWord() {
         guard let word = word_info else {
             print("⚠️ No word available to submit")
@@ -159,7 +214,7 @@ class PracticeGameController: UIViewController {
             parameters: payload
         ) { [weak self] (result: Result<APIResponse<VocabBeeWordResponse>, NetworkError>) in
 
-            guard let self = self else { return } // avoid retain cycles
+            guard let self = self else { return }
             DispatchQueue.main.async {
                 self.hideLoader()
                 switch result {
@@ -180,15 +235,13 @@ class PracticeGameController: UIViewController {
                         self.playSuccessLottie()
                         self.congratsLbl.text = "Congratulations! Try new word"
 
-                        // Show message
-                        self.lblEnteredSpelling.text = "You’ve got it right!"
+                        self.lblEnteredSpelling.text = "You've got it right!"
                         self.lblEnteredSpelling.font = self.txtField.font
                         self.lblEnteredSpelling.textColor = .black
                         self.lblEnteredSpelling.textAlignment = .center
                         self.lblEnteredSpelling.numberOfLines = 0
                         self.lblEnteredSpelling.isHidden = false
 
-                        // Show actual correct word
                         let userFont = self.txtField.font ?? UIFont.systemFont(ofSize: 24)
                         let correctAttr = NSAttributedString(
                             string: data.correctAnswer.uppercased(),
@@ -211,10 +264,10 @@ class PracticeGameController: UIViewController {
                         let wrongText = self.txtField.text ?? ""
 
                         if self.isTimeOutSubmission {
-                            self.congratsLbl.text = "Time’s up! ⏰"
+                            self.congratsLbl.text = "Time's up! ⏰"
                             self.topLbl.text = "You ran out of time"
                         } else {
-                            self.congratsLbl.text = "That’s Okay! Try the next word!"
+                            self.congratsLbl.text = "That's Okay! Try the next word!"
                             self.topLbl.text = "Oops! You got it wrong"
                         }
 
@@ -266,16 +319,16 @@ class PracticeGameController: UIViewController {
                 }
             }
         }
-
     }
 
-
-    func getWords() {
+    func getWords(playAudio: Bool = true) {
         showLoader()
         
         let url = API.VOCABEE_GET_PRACTISE_WORDS +
             "?student_id=\(UserManager.shared.vocabBee_selected_student.studentID)" +
             "&grade=\(UserManager.shared.vocabBee_selected_grade.id)"
+        
+        let shouldPlayAudio = playAudio
 
         NetworkManager.shared.request(
             urlString: url,
@@ -292,7 +345,12 @@ class PracticeGameController: UIViewController {
                         self.resultView.isHidden = true
                         self.lblEnteredSpelling.isHidden = true
                         self.viewLottie.isHidden = true
-                        self.setupPlayer()
+                        
+                        if shouldPlayAudio {
+                            self.setupPlayer()
+                        } else {
+                            self.startTimer()
+                        }
                     } else {
                         self.showNoMoreWordsAlert()
                     }
@@ -369,8 +427,6 @@ class PracticeGameController: UIViewController {
         print("🔊 Playing audio...")
     }
 
-    // ⏱ TIMER FUNCTIONS (CLASS LEVEL)
-
     func startTimer() {
         stopTimer()
         remainingSeconds = 60
@@ -400,7 +456,6 @@ class PracticeGameController: UIViewController {
         txtField.text = ""
         submitWord()
     }
-
 
     func playSuccessLottie() {
         viewLottie.animation = LottieAnimation.named("vocabbee_success")

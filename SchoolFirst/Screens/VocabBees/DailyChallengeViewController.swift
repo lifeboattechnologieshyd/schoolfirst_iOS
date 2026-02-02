@@ -17,8 +17,6 @@ class DailyChallengeViewController: UIViewController {
     var remainingSeconds: Int = 60
     var isTimeOutSubmission: Bool = false
 
-
-    
     @IBOutlet weak var viewLottie: LottieAnimationView!
     @IBOutlet weak var slider: UISlider!
     @IBOutlet weak var txtField: UITextField!
@@ -87,20 +85,21 @@ class DailyChallengeViewController: UIViewController {
     }
     
     @IBAction func onClickExit(_ sender: UIButton) {
+        stopTimer()
         navigationController?.popViewController(animated: true)
     }
     
     @IBAction func onClickBack(_ sender: UIButton) {
+        stopTimer()
         navigationController?.popViewController(animated: true)
     }
     
     @IBAction func onClickNextWord(_ sender: UIButton) {
-        self.stopTimer()
+        stopTimer()
         resetResultView()
         
         guard currentWordIndex + 1 < totalWords else {
-            print("✅ Daily challenge completed")
-            navigationController?.popViewController(animated: true)
+            showChallengeCompleteAlert()
             return
         }
         currentWordIndex += 1
@@ -114,23 +113,52 @@ class DailyChallengeViewController: UIViewController {
     }
     
     @IBAction func onClickSkip(_ sender: UIButton) {
-        self.stopTimer()
         guard hasValidWord else { return }
-        resetResultView()
         
-        guard currentWordIndex + 1 < totalWords else {
-            print("✅ Daily challenge completed")
-            navigationController?.popViewController(animated: true)
-            return
-        }
-        currentWordIndex += 1
-        setupPlayer()
+        stopTimer()
+        
+        submitSkippedWord()
+        
+        resultView.isHidden = false
+        
+        viewLottie.stop()
+        viewLottie.isHidden = true
+        
+        congratsLbl.text = "Word Skipped!"
+        congratsLbl.isHidden = false
+        
+        topLbl.text = "You skipped this word"
+        topLbl.textAlignment = .center
+        topLbl.isHidden = false
+        
+        bottomlbl.isHidden = true
+        
+        lblEnteredSpelling.text = "The correct spelling is:"
+        lblEnteredSpelling.font = UIFont(name: "Lexend-Medium", size: 16)
+        lblEnteredSpelling.textColor = .black
+        lblEnteredSpelling.textAlignment = .center
+        lblEnteredSpelling.isHidden = false
+        
+        let userFont = txtField.font ?? UIFont.systemFont(ofSize: 24)
+        let correctWordAttr = NSAttributedString(
+            string: words[currentWordIndex].word.uppercased(),
+            attributes: [
+                .font: userFont,
+                .foregroundColor: UIColor.black
+            ]
+        )
+        
+        lblActualSpelling.attributedText = correctWordAttr
+        lblActualSpelling.textAlignment = .center
+        lblActualSpelling.isHidden = false
+        lblActualSpelling.font = UIFont.boldSystemFont(ofSize: 24)
+        
+        txtField.text = ""
     }
     
     @IBAction func onTapListen(_ sender: UIButton) {
         guard hasValidWord else { return }
         playWordAudio(url: words[currentWordIndex].pronunciation)
-
     }
     
     @IBAction func onClickDefination(_ sender: UITapGestureRecognizer) {
@@ -200,7 +228,6 @@ class DailyChallengeViewController: UIViewController {
             return
         }
 
-        // Remove previous observer
         if let observer = playerObserver {
             NotificationCenter.default.removeObserver(observer)
             playerObserver = nil
@@ -209,7 +236,6 @@ class DailyChallengeViewController: UIViewController {
         let playerItem = AVPlayerItem(url: audioURL)
         player = AVPlayer(playerItem: playerItem)
 
-        // ✅ START PLAYING
         player?.play()
 
         playerObserver = NotificationCenter.default.addObserver(
@@ -222,7 +248,6 @@ class DailyChallengeViewController: UIViewController {
     }
 
     func startTimer() {
-        // Reset first
         stopTimer()
         remainingSeconds = 60
         timerLbl.text = "\(remainingSeconds) Seconds Left..."
@@ -239,21 +264,42 @@ class DailyChallengeViewController: UIViewController {
             }
         }
     }
+    
     func autoSubmitEmptyAnswer() {
         isTimeOutSubmission = true
         txtField.text = ""
         submitWord()
     }
 
-
-
-
     func stopTimer() {
         timer?.invalidate()
         timer = nil
     }
-
     
+    func submitSkippedWord() {
+        guard hasValidWord else { return }
+        
+        let payload: [String: Any] = [
+            "answer": "",
+            "word_id": words[currentWordIndex].id,
+            "grade_id": UserManager.shared.vocabBee_selected_grade.id,
+            "student_id": UserManager.shared.vocabBee_selected_student.studentID
+        ]
+        
+        NetworkManager.shared.request(
+            urlString: API.VOCABEE_SUBMIT_WORD,
+            method: .POST,
+            parameters: payload
+        ) { (result: Result<APIResponse<WordAnswer>, NetworkError>) in
+            switch result {
+            case .success(let info):
+                print("Skip submitted: \(info.success)")
+            case .failure(let error):
+                print("Skip submit error: \(error.localizedDescription)")
+            }
+        }
+    }
+
     func submitWord() {
         guard hasValidWord else {
             print("⚠️ Invalid word index on submitWord: \(currentWordIndex)")
@@ -282,7 +328,6 @@ class DailyChallengeViewController: UIViewController {
                     
                 case .success(let info):
                     guard info.success, let data = info.data else {
-                        
                         self.showAlert(msg: info.description ?? "Something went wrong")
                         return
                     }
@@ -291,21 +336,18 @@ class DailyChallengeViewController: UIViewController {
                     
                     if data.isCorrect {
                         
-                        // Hide wrong answer UI elements
                         self.bottomlbl.isHidden = true
                         self.topLbl.isHidden = true
                         self.congratsLbl.isHidden = false
                         
-                        // Play Success Lottie
                         self.playSuccessLottie()
                         
                         self.congratsLbl.text = "Congratulations! Try the next word!"
-                        self.lblEnteredSpelling.text = "You’ve got it right!"
+                        self.lblEnteredSpelling.text = "You've got it right!"
                         self.lblEnteredSpelling.textAlignment = .center
                         self.lblEnteredSpelling.numberOfLines = 0
                         self.lblEnteredSpelling.isHidden = false
                         
-                        // Show correct spelling in green
                         self.lblActualSpelling.text = data.correctAnswer.uppercased()
                         self.lblActualSpelling.font = UIFont.boldSystemFont(ofSize: 28)
                         self.lblActualSpelling.textColor = UIColor.black
@@ -314,13 +356,12 @@ class DailyChallengeViewController: UIViewController {
                         
                     } else {
 
-                        // Stop and hide lottie
                         self.viewLottie.stop()
                         self.viewLottie.isHidden = true
 
                         if self.isTimeOutSubmission {
                             self.topLbl.text = "You ran out of time"
-                            self.congratsLbl.text = "Time’s up! ⏰"
+                            self.congratsLbl.text = "Time's up! ⏰"
                         } else {
                             self.topLbl.text = "Oops! You got it wrong"
                             self.congratsLbl.text = "That's Okay! Try the next word!"
@@ -330,7 +371,6 @@ class DailyChallengeViewController: UIViewController {
                         self.topLbl.isHidden = false
                         self.congratsLbl.isHidden = false
 
-                        // Show wrong answer with strikethrough
                         let wrongText = self.txtField.text ?? ""
                         let wrongAttr = NSAttributedString(
                             string: wrongText.uppercased(),
@@ -347,7 +387,6 @@ class DailyChallengeViewController: UIViewController {
                         self.bottomlbl.numberOfLines = 0
                         self.bottomlbl.isHidden = false
 
-                        // Show correct answer
                         self.lblActualSpelling.text = data.correctAnswer.uppercased()
                         self.lblActualSpelling.font = UIFont(name: "Lora-Bold", size: 32) ?? UIFont.boldSystemFont(ofSize: 32)
                         self.lblActualSpelling.textColor = UIColor.black
@@ -414,6 +453,18 @@ class DailyChallengeViewController: UIViewController {
         let alert = UIAlertController(
             title: "No Words",
             message: "There are no words available for today. Please check another date.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            self.navigationController?.popViewController(animated: true)
+        })
+        present(alert, animated: true)
+    }
+    
+    func showChallengeCompleteAlert() {
+        let alert = UIAlertController(
+            title: "Challenge Complete! 🎉",
+            message: "You've completed today's daily challenge. Great job!",
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
