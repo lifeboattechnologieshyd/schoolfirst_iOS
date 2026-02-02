@@ -1318,20 +1318,24 @@ struct AssessmentQuestion: Codable {
         case levelOfDifficulty = "level_of_difficulty"
     }
 }
-class AssessmentAnswerResponse: Codable {
+struct AssessmentAnswerResponse: Codable {
     let id: String
     let questionId: String
     let assessmentId: String
     let userId: String
     let studentId: String
     let userAnswer: String
+    let correctAnswer: String
     let isCorrect: Bool
     let marks: Int
     let totalMarks: Int
     let attemptedQuestions: Int
+    let correctQuestions: Int
+    let wrongQuestions: Int
+    let skippedQuestions: Int
     let totalQuestions: Int
     let assessmentStatus: String
-
+    
     enum CodingKeys: String, CodingKey {
         case id
         case questionId = "question_id"
@@ -1339,14 +1343,19 @@ class AssessmentAnswerResponse: Codable {
         case userId = "user_id"
         case studentId = "student_id"
         case userAnswer = "user_answer"
+        case correctAnswer = "correct_answer"
         case isCorrect = "is_correct"
         case marks
         case totalMarks = "total_marks"
         case attemptedQuestions = "attempted_questions"
+        case correctQuestions = "correct_questions"
+        case wrongQuestions = "wrong_questions"
+        case skippedQuestions = "skipped_questions"
         case totalQuestions = "total_questions"
         case assessmentStatus = "assessment_status"
     }
 }
+
 struct AssessmentSummary: Codable {
     let assessmentId: String
     let assessmentName: String

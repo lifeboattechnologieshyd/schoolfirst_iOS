@@ -7,6 +7,7 @@
 
 import UIKit
 import Lottie
+import AVFoundation
 
 class QuestionVC: UIViewController {
     
@@ -20,7 +21,10 @@ class QuestionVC: UIViewController {
     @IBOutlet weak var bgView: UIView!
     @IBOutlet weak var lblQuestionNumber: UILabel!
     @IBOutlet weak var lblQuestion: UILabel!
+    @IBOutlet weak var questionscoreLbl: UILabel!
     @IBOutlet weak var lblDesciption: UILabel!
+    @IBOutlet weak var topVw: UIView!
+    @IBOutlet weak var playBtn: UIButton!
     @IBOutlet weak var hintVw: UIView!
     @IBOutlet weak var hintLbl: UILabel!
     @IBOutlet weak var stackViewOptions: UIStackView!
@@ -53,6 +57,9 @@ class QuestionVC: UIViewController {
     var darkOverlayView: UIView!
     
     let slashLayer = CAShapeLayer()
+    let speechSynthesizer = AVSpeechSynthesizer()
+    var celebrationLottieView: LottieAnimationView!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,14 +72,61 @@ class QuestionVC: UIViewController {
         self.lblDesciption.text = ""
         self.stackViewOptions.isHidden = true
         self.resultPopup.isHidden = true
+        self.lottieViewImage.isHidden = true
+        self.questionscoreLbl.text = ""
         
         setupHintView()
         
         self.setupQuestionsView()
         
         drawSlash()
+        setupCelebrationLottie()
+
     }
-    
+    func setupCelebrationLottie() {
+        celebrationLottieView = LottieAnimationView()
+        celebrationLottieView.animation = LottieAnimation.named("Celebration")
+        celebrationLottieView.contentMode = .scaleAspectFit
+        celebrationLottieView.loopMode = .playOnce
+        celebrationLottieView.animationSpeed = 1.0
+        celebrationLottieView.backgroundColor = .clear
+        celebrationLottieView.isHidden = true
+        celebrationLottieView.isUserInteractionEnabled = false
+        
+        view.addSubview(celebrationLottieView)
+        
+        celebrationLottieView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            celebrationLottieView.topAnchor.constraint(equalTo: view.topAnchor),
+            celebrationLottieView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            celebrationLottieView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            celebrationLottieView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+    }
+    func playCorrectAnswerLottie() {
+        guard celebrationLottieView != nil else {
+            return
+        }
+        
+        guard celebrationLottieView.animation != nil else {
+            return
+        }
+                
+        view.bringSubviewToFront(celebrationLottieView)
+        
+        celebrationLottieView.isHidden = false
+        celebrationLottieView.currentProgress = 0
+        
+        celebrationLottieView.play { [weak self] completed in
+            guard let self = self else { return }
+            print("DEBUG: Lottie completed = \(completed)")
+            DispatchQueue.main.async {
+                self.celebrationLottieView.stop()
+                self.celebrationLottieView.isHidden = true
+                self.celebrationLottieView.currentProgress = 0
+            }
+        }
+    }
     func setupHintView() {
         hintVw.isHidden = true
         hintVw.layer.masksToBounds = true
@@ -123,7 +177,23 @@ class QuestionVC: UIViewController {
             self.darkOverlayView.alpha = 0.5
         }
     }
-    
+    @IBAction func onClickPlayBtn(_ sender: UIButton) {
+        let questionText = UserManager.shared.assessment_created_assessment.questions[current_question].question
+        let descriptionText = UserManager.shared.assessment_created_assessment.questions[current_question].description
+        
+        let fullText = "\(questionText). \(descriptionText)"
+        
+        if speechSynthesizer.isSpeaking {
+            speechSynthesizer.stopSpeaking(at: .immediate)
+        }
+        
+        let utterance = AVSpeechUtterance(string: fullText)
+        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        utterance.rate = 0.5
+        utterance.pitchMultiplier = 1.0
+        
+        speechSynthesizer.speak(utterance)
+    }
     @IBAction func onClickOkBtn(_ sender: UIButton) {
     self.okBtn.titleLabel?.font = UIFont.lexend(.semiBold, size: 16)
 
@@ -144,6 +214,9 @@ class QuestionVC: UIViewController {
     }
     
     @IBAction func onClickHome() {
+         if speechSynthesizer.isSpeaking {
+            speechSynthesizer.stopSpeaking(at: .immediate)
+        }
         self.navigationController?.popToRootViewController(animated: true)
     }
     
@@ -155,6 +228,8 @@ class QuestionVC: UIViewController {
     func changeQuestion() {
         hintVw.isHidden = true
         darkOverlayView.isHidden = true
+        let questionMarks = UserManager.shared.assessment_created_assessment.questions[current_question].marks
+        self.questionscoreLbl.text = "\(questionMarks)"
         
         lblQuestionNumber.text = "Question \(current_question+1)/\(UserManager.shared.assessment_created_assessment.numberOfQuestions)"
         lblQuestion.animateTyping(text: UserManager.shared.assessment_created_assessment.questions[current_question].question) {
@@ -201,9 +276,14 @@ class QuestionVC: UIViewController {
     func displayResultPopup() {
         self.bgView.isHidden = true
         self.resultPopup.isHidden = false
+        self.topVw.isHidden = true
         self.slider.maximumValue = Float(UserManager.shared.assessment_created_assessment.totalMarks)
         self.lblTotalMarks.text = "\((UserManager.shared.assessment_created_assessment.totalMarks))"
         self.viewanswersButton.titleLabel?.font = UIFont.lexend(.semiBold, size: 20)
+        
+        if speechSynthesizer.isSpeaking {
+            speechSynthesizer.stopSpeaking(at: .immediate)
+        }
     }
     
     func getStats() {
@@ -261,11 +341,11 @@ class QuestionVC: UIViewController {
         ]
         
         NetworkManager.shared.request(urlString: url, method: .POST, parameters: payload) { (result: Result<APIResponse<AssessmentAnswerResponse>, NetworkError>) in
-            self.hideLoader() 
+            self.hideLoader()
             switch result {
             case .success(let info):
                 if info.success {
-                    if let _ = info.data {
+                    if let data = info.data {
                         DispatchQueue.main.async {
                             self.highlightSelection(at: index)
                         }
@@ -318,29 +398,41 @@ class QuestionVC: UIViewController {
     
     func highlightSelection(at index: Int) {
         let ans = UserManager.shared.assessment_created_assessment.questions[self.current_question].answer
+        var isCorrectAnswer = false
+        
         switch index {
         case 0:
-            self.optionAView.backgroundColor = ans == lblOptionA.text ? UIColor(hex: "00BB00") : UIColor(hex: "#FFA700")
+            isCorrectAnswer = (ans == lblOptionA.text)
+            self.optionAView.backgroundColor = isCorrectAnswer ? UIColor(hex: "00BB00") : UIColor(hex: "#FFA700")
         case 1:
-            self.optionBView.backgroundColor = ans == lblOptionB.text ? UIColor(hex: "00BB00") : UIColor(hex: "#FFA700")
+            isCorrectAnswer = (ans == lblOptionB.text)
+            self.optionBView.backgroundColor = isCorrectAnswer ? UIColor(hex: "00BB00") : UIColor(hex: "#FFA700")
         case 2:
-            self.optionCView.backgroundColor = ans == lblOptionC.text ? UIColor(hex: "00BB00") : UIColor(hex: "#FFA700")
+            isCorrectAnswer = (ans == lblOptionC.text)
+            self.optionCView.backgroundColor = isCorrectAnswer ? UIColor(hex: "00BB00") : UIColor(hex: "#FFA700")
         case 3:
-            self.optionDView.backgroundColor = ans == lblOptionD.text ? UIColor(hex: "00BB00") : UIColor(hex: "#FFA700")
+            isCorrectAnswer = (ans == lblOptionD.text)
+            self.optionDView.backgroundColor = isCorrectAnswer ? UIColor(hex: "00BB00") : UIColor(hex: "#FFA700")
         case 4:
             self.optionHintView.backgroundColor = UIColor(hex: "#FFA700")
         default:
             break
         }
+                
+        if isCorrectAnswer {
+            playCorrectAnswerLottie()
+        }
         
-        if ans == lblOptionA.text {
-            self.optionAView.backgroundColor = UIColor(hex: "00BB00")
-        } else if ans == lblOptionB.text {
-            self.optionBView.backgroundColor = UIColor(hex: "00BB00")
-        } else if ans == lblOptionC.text {
-            self.optionCView.backgroundColor = UIColor(hex: "00BB00")
-        } else if ans == lblOptionD.text {
-            self.optionDView.backgroundColor = UIColor(hex: "00BB00")
+        if !isCorrectAnswer {
+            if ans == lblOptionA.text {
+                self.optionAView.backgroundColor = UIColor(hex: "00BB00")
+            } else if ans == lblOptionB.text {
+                self.optionBView.backgroundColor = UIColor(hex: "00BB00")
+            } else if ans == lblOptionC.text {
+                self.optionCView.backgroundColor = UIColor(hex: "00BB00")
+            } else if ans == lblOptionD.text {
+                self.optionDView.backgroundColor = UIColor(hex: "00BB00")
+            }
         }
         
         if UserManager.shared.assessment_created_assessment.numberOfQuestions > current_question + 1 {
@@ -351,7 +443,6 @@ class QuestionVC: UIViewController {
             self.getStats()
         }
     }
-    
     func resetOptionsAndMoveToNextQuestion() {
         for (_, v) in self.stackViewOptions.arrangedSubviews.enumerated() {
             v.backgroundColor = .systemBackground
@@ -385,9 +476,21 @@ class QuestionVC: UIViewController {
         self.hintVw.isHidden = true
         self.darkOverlayView.isHidden = true
         
+        self.lottieViewImage.isHidden = true
+        self.lottieViewImage.stop()
+        
+        // Hide programmatic lottie view
+        self.celebrationLottieView?.stop()
+        self.celebrationLottieView?.isHidden = true
+        self.celebrationLottieView?.currentProgress = 0
+        if speechSynthesizer.isSpeaking {
+            speechSynthesizer.stopSpeaking(at: .immediate)
+        }
+        
         self.current_question += 1
         self.changeQuestion()
     }
+
     
     @IBAction func onClickAnswers(_ sender: UIButton) {
         let vc = storyboard?.instantiateViewController(withIdentifier: "AllQuestionsVC") as! AllQuestionsVC

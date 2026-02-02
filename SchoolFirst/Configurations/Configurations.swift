@@ -89,6 +89,9 @@ struct API {
     
     
     static let BANNER = BASE_URL + "broadcast/banner?screen=Home"
+         
+         
+         
     
     static let HOMEWORK = BASE_URL + "school/homework"
     static let HOMEWORK_PAST = BASE_URL + "school/homework/past?"
