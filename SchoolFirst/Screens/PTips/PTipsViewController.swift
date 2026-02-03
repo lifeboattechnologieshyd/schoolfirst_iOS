@@ -138,10 +138,8 @@ class PTipsViewController: UIViewController {
         
         let keyword = textField.text?.trimmingCharacters(in: .whitespaces) ?? ""
         
-        // Update search button visibility
-        if let searchBtn = searchBtn {
-            searchBtn.isHidden = !keyword.isEmpty
-        }
+        // REMOVED: searchBtn hide/show logic from here
+        // Button visibility is now handled in textFieldDidBeginEditing and textFieldDidEndEditing
         
         if keyword.isEmpty {
             isSearchActive = false
@@ -721,17 +719,20 @@ extension PTipsViewController: UITextFieldDelegate {
         return true
     }
     
+    // MARK: - THIS IS THE MAIN FIX
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if textField == searchTf {
             postTf.text = ""
-            if let searchBtn = searchBtn {
-                searchBtn.isHidden = !(searchTf.text?.isEmpty ?? true)
-            }
+            
+            // Hide search button immediately when user taps on search field
+            searchBtn.isHidden = true
+            
         } else if textField == postTf {
             searchTf.text = ""
-            if let searchBtn = searchBtn {
-                searchBtn.isHidden = false
-            }
+            
+            // Show search button when user taps on post number field
+            searchBtn.isHidden = false
+            
             searchDebounceTimer?.invalidate()
             if isSearchActive {
                 isSearchActive = false
@@ -745,12 +746,24 @@ extension PTipsViewController: UITextFieldDelegate {
         }
     }
     
+    // MARK: - Show button back when user finishes editing with empty text
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if textField == searchTf {
+            let keyword = searchTf.text?.trimmingCharacters(in: .whitespaces) ?? ""
+            
+            // If search field is empty after editing ends, show the search button again
+            if keyword.isEmpty {
+                searchBtn.isHidden = false
+            }
+        }
+    }
+    
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
         if textField == searchTf {
             searchDebounceTimer?.invalidate()
-            if let searchBtn = searchBtn {
-                searchBtn.isHidden = false
-            }
+            
+            // Show search button when user clears the text
+            searchBtn.isHidden = false
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
                 guard let self = self else { return }

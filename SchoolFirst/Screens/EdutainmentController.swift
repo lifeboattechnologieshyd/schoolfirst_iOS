@@ -28,7 +28,7 @@ class EdutainmentController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupSearchTF()
+//        setupSearchTF()
         setupUI()
         setupSegmentControl()
         setupTextFields()
@@ -71,14 +71,14 @@ class EdutainmentController: UIViewController {
             self.applySegmentCornerRadius()
         }
     }
-    func setupSearchTF() {
-        searchTf.delegate = self
-        searchTf.addTarget(
-            self,
-            action: #selector(searchTextChanged(_:)),
-            for: .editingChanged
-        )
-    }
+//    func setupSearchTF() {
+//        searchTf.delegate = self
+//        searchTf.addTarget(
+//            self,
+//            action: #selector(searchTextChanged(_:)),
+//            for: .editingChanged
+//        )
+//    }
     @objc func searchTextChanged(_ textField: UITextField) {
         let text = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
 
@@ -779,54 +779,67 @@ extension EdutainmentController: UITableViewDelegate, UITableViewDataSource {
 
 extension EdutainmentController: UITextFieldDelegate {
     
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
         
-        if textField == searchTf {
-            searchDebounceTimer?.invalidate()
-            let keyword = searchTf.text?.trimmingCharacters(in: .whitespaces) ?? ""
-            if !keyword.isEmpty {
-                searchByKeyword(keyword: keyword)
+        func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+            textField.resignFirstResponder()
+            
+            if textField == searchTf {
+                searchDebounceTimer?.invalidate()
+                let keyword = searchTf.text?.trimmingCharacters(in: .whitespaces) ?? ""
+                if !keyword.isEmpty {
+                    searchByKeyword(keyword: keyword)
+                }
+            }
+            
+            return true
+        }
+        
+        func textFieldDidBeginEditing(_ textField: UITextField) {
+            if textField == searchTf {
+                videonoTf.text = ""
+                
+                searchBtn.isHidden = true
+                
+            } else if textField == videonoTf {
+                searchTf.text = ""
+                
+                searchBtn.isHidden = false
+                
+                searchDebounceTimer?.invalidate()
+                if isSearchActive {
+                    isSearchActive = false
+                    currentFeed = segmentController.selectedSegmentIndex == 0 ? diyFeed : storiesFeed
+                    tblVw.reloadData()
+                }
             }
         }
         
-        return true
-    }
-    
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        if textField == searchTf {
-            videonoTf.text = ""
-            searchBtn.isHidden = !(searchTf.text?.isEmpty ?? true)
-        }
-        else if textField == videonoTf {
-            searchTf.text = ""
-            searchBtn.isHidden = false   // show button back
-
-            searchDebounceTimer?.invalidate()
-            if isSearchActive {
-                isSearchActive = false
-                currentFeed = segmentController.selectedSegmentIndex == 0 ? diyFeed : storiesFeed
-                tblVw.reloadData()
+        func textFieldDidEndEditing(_ textField: UITextField) {
+            if textField == searchTf {
+                let keyword = searchTf.text?.trimmingCharacters(in: .whitespaces) ?? ""
+                
+                if keyword.isEmpty {
+                    searchBtn.isHidden = false
+                }
             }
         }
-    }
-
-    
-    func textFieldShouldClear(_ textField: UITextField) -> Bool {
-        if textField == searchTf {
-            searchDebounceTimer?.invalidate()
-            searchBtn.isHidden = false   // SHOW button
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-                guard let self = self else { return }
-                self.isSearchActive = false
-                self.currentFeed = self.segmentController.selectedSegmentIndex == 0
-                    ? self.diyFeed
-                    : self.storiesFeed
-                self.tblVw.reloadData()
+        
+        func textFieldShouldClear(_ textField: UITextField) -> Bool {
+            if textField == searchTf {
+                searchDebounceTimer?.invalidate()
+                
+                // Show search button when user clears the text
+                searchBtn.isHidden = false
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                    guard let self = self else { return }
+                    self.isSearchActive = false
+                    self.currentFeed = self.segmentController.selectedSegmentIndex == 0
+                        ? self.diyFeed
+                        : self.storiesFeed
+                    self.tblVw.reloadData()
+                }
             }
+            return true
         }
-        return true
     }
-
-}

@@ -24,11 +24,11 @@
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qTp-me-Gvw">
-                        <rect key="frame" x="4" y="4" width="146" height="38"/>
+                        <rect key="frame" x="0.0" y="0.0" width="154" height="46"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="That's Awesome!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8QG-N4-OmK">
-                                <rect key="frame" x="10" y="9" width="128.66666666666666" height="20"/>
-                                <fontDescription key="fontDescription" name="Lexend-Medium" family="Lexend" pointSize="16"/>
+                                <rect key="frame" x="12" y="8" width="130" height="30"/>
+                                <fontDescription key="fontDescription" name="Lexend-Medium" family="Lexend" pointSize="14"/>
                                 <color key="textColor" name="primaryColor"/>
                                 <nil key="highlightedColor"/>
                                 <userDefinedRuntimeAttributes>
@@ -43,10 +43,11 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="8QG-N4-OmK" firstAttribute="leading" secondItem="qTp-me-Gvw" secondAttribute="leading" constant="10" id="1Qf-GZ-KGM"/>
-                            <constraint firstAttribute="trailing" secondItem="8QG-N4-OmK" secondAttribute="trailing" constant="7.3300000000000001" id="E3Z-1g-vu2"/>
-                            <constraint firstItem="8QG-N4-OmK" firstAttribute="top" secondItem="qTp-me-Gvw" secondAttribute="top" constant="9" id="feE-0U-cyP"/>
-                            <constraint firstAttribute="bottom" secondItem="8QG-N4-OmK" secondAttribute="bottom" constant="9" id="vdi-UZ-exX"/>
+                            <constraint firstItem="8QG-N4-OmK" firstAttribute="top" secondItem="qTp-me-Gvw" secondAttribute="top" constant="8" id="7fv-KP-KOq"/>
+                            <constraint firstAttribute="trailing" secondItem="8QG-N4-OmK" secondAttribute="trailing" constant="12" id="DMF-Ja-yGb"/>
+                            <constraint firstItem="8QG-N4-OmK" firstAttribute="leading" secondItem="qTp-me-Gvw" secondAttribute="leading" constant="12" id="Mp5-1c-NcJ"/>
+                            <constraint firstAttribute="bottom" secondItem="8QG-N4-OmK" secondAttribute="bottom" constant="8" id="PP6-he-PlJ"/>
+                            <constraint firstItem="8QG-N4-OmK" firstAttribute="centerY" secondItem="qTp-me-Gvw" secondAttribute="centerY" id="av1-9u-NUw"/>
                         </constraints>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
@@ -63,11 +64,12 @@
                 </subviews>
             </view>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
-                <constraint firstItem="qTp-me-Gvw" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="4" id="0Vb-SL-xWP"/>
-                <constraint firstAttribute="bottom" secondItem="qTp-me-Gvw" secondAttribute="bottom" constant="4" id="Z6R-2v-xy5"/>
-                <constraint firstAttribute="trailing" secondItem="qTp-me-Gvw" secondAttribute="trailing" constant="4" id="nBd-qd-qnB"/>
-                <constraint firstItem="qTp-me-Gvw" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="4" id="zum-xx-5jU"/>
+                <constraint firstItem="qTp-me-Gvw" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="0Vb-SL-xWP"/>
+                <constraint firstAttribute="bottom" secondItem="qTp-me-Gvw" secondAttribute="bottom" id="Z6R-2v-xy5"/>
+                <constraint firstAttribute="trailing" secondItem="qTp-me-Gvw" secondAttribute="trailing" id="nBd-qd-qnB"/>
+                <constraint firstItem="qTp-me-Gvw" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="zum-xx-5jU"/>
             </constraints>
             <size key="customSize" width="154" height="46"/>
             <connections>

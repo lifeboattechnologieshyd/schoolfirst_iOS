@@ -37,7 +37,7 @@ class EdutainmentVC: UIViewController {
         setupSegmentControl()
         setupTextFields()
         setupTableView()
-        setupSearchTF()
+//        setupSearchTF()
         segmentController.selectedSegmentIndex = 0
         getDiyFeed()
     }
@@ -107,14 +107,14 @@ class EdutainmentVC: UIViewController {
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
-    func setupSearchTF() {
-        searchTf.delegate = self
-        searchTf.addTarget(
-            self,
-            action: #selector(searchTextChanged(_:)),
-            for: .editingChanged
-        )
-    }
+//    func setupSearchTF() {
+//        searchTf.delegate = self
+//        searchTf.addTarget(
+//            self,
+//            action: #selector(searchTextChanged(_:)),
+//            for: .editingChanged
+//        )
+//    }
     @objc func searchTextChanged(_ textField: UITextField) {
         let text = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
 
@@ -795,12 +795,14 @@ extension EdutainmentVC: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if textField == searchTf {
             videonoTf.text = ""
-            searchBtn.isHidden = !(searchTf.text?.isEmpty ?? true)
-        }
-        else if textField == videonoTf {
+            
+            searchBtn.isHidden = true
+            
+        } else if textField == videonoTf {
             searchTf.text = ""
-            searchBtn.isHidden = false   // show button back
-
+            
+            searchBtn.isHidden = false
+            
             searchDebounceTimer?.invalidate()
             if isSearchActive {
                 isSearchActive = false
@@ -809,13 +811,23 @@ extension EdutainmentVC: UITextFieldDelegate {
             }
         }
     }
-
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if textField == searchTf {
+            let keyword = searchTf.text?.trimmingCharacters(in: .whitespaces) ?? ""
+            
+            if keyword.isEmpty {
+                searchBtn.isHidden = false
+            }
+        }
+    }
     
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
         if textField == searchTf {
             searchDebounceTimer?.invalidate()
-            searchBtn.isHidden = false   // SHOW button
-
+            
+            searchBtn.isHidden = false
+            
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
                 guard let self = self else { return }
                 self.isSearchActive = false
@@ -827,6 +839,4 @@ extension EdutainmentVC: UITextFieldDelegate {
         }
         return true
     }
-
 }
-

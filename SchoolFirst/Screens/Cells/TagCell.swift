@@ -21,9 +21,11 @@ class TagCell: UICollectionViewCell {
         contentView.layer.cornerRadius = 16
         contentView.layer.masksToBounds = true
         
-        // Add border for better visibility
         contentView.layer.borderWidth = 1
         contentView.layer.borderColor = UIColor.clear.cgColor
+        
+        lblText.numberOfLines = 1
+        lblText.textAlignment = .center
     }
     
     func setSelected(_ selected: Bool) {

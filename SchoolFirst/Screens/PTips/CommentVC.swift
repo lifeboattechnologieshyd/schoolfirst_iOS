@@ -27,6 +27,8 @@ class CommentVC: UIViewController {
     
     var isPostingComment = false
     
+    let tagFont = UIFont.systemFont(ofSize: 14)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -63,12 +65,13 @@ class CommentVC: UIViewController {
         colVw.register(UINib(nibName: "TagCell", bundle: nil), forCellWithReuseIdentifier: "TagCell")
         
         let layout = UICollectionViewFlowLayout()
-        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-        layout.scrollDirection = .horizontal
-        layout.minimumInteritemSpacing = 8
-        layout.minimumLineSpacing = 8
-        colVw.collectionViewLayout = layout
         
+        
+        layout.scrollDirection = .horizontal
+        layout.minimumInteritemSpacing = 10
+        layout.minimumLineSpacing = 10
+        
+        colVw.collectionViewLayout = layout
         colVw.delegate = self
         colVw.dataSource = self
         colVw.showsHorizontalScrollIndicator = false
@@ -172,7 +175,6 @@ class CommentVC: UIViewController {
         }
     }
     
-    // MARK: - WhatsApp Share
     func handleWhatsAppShare(feed: Feed, updateCountClosure: @escaping () -> Void) {
         let shareText = "test"
         guard let encodedText = shareText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
@@ -245,7 +247,6 @@ class CommentVC: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    // MARK: - Native Share
     func shareContent(feed: Feed, sourceView: UIView, completion: @escaping (Bool) -> Void) {
         let shareText = """
         📚 \(feed.heading)
@@ -401,7 +402,6 @@ extension CommentVC: UITableViewDelegate, UITableViewDataSource {
         let cell = tblVw.dequeueReusableCell(withIdentifier: "CommentsCell", for: indexPath) as! CommentsCell
         let comment = comments[indexPath.row]
         
-        // Show topLbl only for first comment cell (index 0)
         let isFirstComment = indexPath.row == 0
         cell.configure(with: comment, showTopLabel: isFirstComment)
         
@@ -413,7 +413,7 @@ extension CommentVC: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-extension CommentVC: UICollectionViewDelegate, UICollectionViewDataSource {
+extension CommentVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return quickReactions.count
@@ -423,13 +423,31 @@ extension CommentVC: UICollectionViewDelegate, UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TagCell", for: indexPath) as! TagCell
         cell.lblText.text = quickReactions[indexPath.row]
         
-        // Add some styling to make it look tappable
-        cell.contentView.layer.cornerRadius = 8
-        cell.contentView.layer.borderWidth = 1
-        cell.contentView.layer.borderColor = UIColor.lightGray.cgColor
-        cell.contentView.backgroundColor = UIColor(hex: "#F5F5F5")
+        // Reset to default state
+        cell.setSelected(false)
         
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        // 1. Get the text for THIS specific cell
+        let text = quickReactions[indexPath.row]
+        
+        // 2. Calculate the width of THIS text using the font
+        let fontAttributes = [NSAttributedString.Key.font: tagFont]
+        let textSize = (text as NSString).size(withAttributes: fontAttributes)
+        
+        // 3. Add horizontal padding (Left 16 + Right 16 = 32) + small buffer
+        let horizontalPadding: CGFloat = 32
+        let buffer: CGFloat = 4 // Extra safety buffer
+        let totalWidth = ceil(textSize.width) + horizontalPadding + buffer
+        
+        // 4. Fixed height for all cells (adjust as needed: 36, 40, 44)
+        let height: CGFloat = 36
+        
+        // 5. Return the calculated size
+        return CGSize(width: totalWidth, height: height)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -442,10 +460,8 @@ extension CommentVC: UICollectionViewDelegate, UICollectionViewDataSource {
         if let cell = collectionView.cellForItem(at: indexPath) as? TagCell {
             isPostingComment = true
             
-            // Visual feedback - change background color
-            UIView.animate(withDuration: 0.1) {
-                cell.contentView.backgroundColor = UIColor(hex: "#CDE9FA")
-            }
+            // Visual feedback - show selected state
+            cell.setSelected(true)
             
             // Animate the cell
             UIView.animate(withDuration: 0.1, animations: {
@@ -463,9 +479,7 @@ extension CommentVC: UICollectionViewDelegate, UICollectionViewDataSource {
                 self.isPostingComment = false
                 
                 // Reset cell appearance
-                UIView.animate(withDuration: 0.2) {
-                    cell.contentView.backgroundColor = UIColor(hex: "#F5F5F5")
-                }
+                cell.setSelected(false)
                 
                 if success {
                     // Scroll to show the new comment

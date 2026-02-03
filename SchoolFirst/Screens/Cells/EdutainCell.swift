@@ -40,7 +40,7 @@ class EdutainCell: UITableViewCell {
     var whatsappClicked: ((Int, Feed) -> Void)?
     var shareClicked: ((Int, Feed) -> Void)?
     var commentClicked: ((Int, Feed) -> Void)?
-    var tagClicked: ((Int, Feed, String) -> Void)?  // NEW: Tag click callback
+    var tagClicked: ((Int, Feed, String) -> Void)?
 
     // Track states
     var isLiked: Bool = false
@@ -55,6 +55,8 @@ class EdutainCell: UITableViewCell {
     var arr = ["That's awesome!", "This is Very useful!",
                "This is exactly what I needed!", "I learned something new!", "I already knew this!"]
 
+    let tagFont = UIFont.systemFont(ofSize: 14)
+   
     override func awakeFromNib() {
         super.awakeFromNib()
         selectionStyle = .none
@@ -65,8 +67,13 @@ class EdutainCell: UITableViewCell {
         colVw.register(UINib(nibName: "TagCell", bundle: nil), forCellWithReuseIdentifier: "TagCell")
         
         let layout = UICollectionViewFlowLayout()
-        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+          
+        layout.minimumInteritemSpacing = 10
+        layout.minimumLineSpacing = 10
         layout.scrollDirection = .horizontal
+        
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        
         colVw.collectionViewLayout = layout
         colVw.showsHorizontalScrollIndicator = false
         
@@ -272,12 +279,10 @@ class EdutainCell: UITableViewCell {
         updateLikeUI(isLiked: isLiked)
     }
     
-    // Update comment count after posting
     func incrementCommentCount() {
         currentCommentCount += 1
         setupCommentButton(count: currentCommentCount)
         
-        // Animate the comment button
         UIView.animate(withDuration: 0.1, animations: {
             self.commentBtn.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
         }) { _ in
@@ -287,7 +292,6 @@ class EdutainCell: UITableViewCell {
         }
     }
     
-    // Reset tag selection
     func resetTagSelection() {
         selectedTagIndex = nil
         colVw.reloadData()
@@ -314,7 +318,8 @@ class EdutainCell: UITableViewCell {
     }
 }
 
-extension EdutainCell: UICollectionViewDelegate, UICollectionViewDataSource {
+// MARK: - CollectionView Delegate, DataSource & FlowLayout
+extension EdutainCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return arr.count
@@ -324,7 +329,6 @@ extension EdutainCell: UICollectionViewDelegate, UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TagCell", for: indexPath) as! TagCell
         cell.lblText.text = arr[indexPath.row]
         
-        // Update UI based on selection
         if selectedTagIndex == indexPath.row {
             cell.setSelected(true)
         } else {
@@ -334,17 +338,36 @@ extension EdutainCell: UICollectionViewDelegate, UICollectionViewDataSource {
         return cell
     }
     
-    // Handle tag selection
+    // MARK: - DYNAMIC SIZE CALCULATION (THE FIX)
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        // 1. Get the text for THIS specific cell
+        let text = arr[indexPath.row]
+        
+        // 2. Calculate the width of THIS text using the font
+        let fontAttributes = [NSAttributedString.Key.font: tagFont]
+        let textSize = (text as NSString).size(withAttributes: fontAttributes)
+        
+        // 3. Add horizontal padding (Left 16 + Right 16 = 32) + small buffer
+        let horizontalPadding: CGFloat = 32
+        let buffer: CGFloat = 4 // Extra safety buffer
+        let totalWidth = ceil(textSize.width) + horizontalPadding + buffer
+        
+        // 4. Fixed height for all cells (adjust as needed: 36, 40, 44)
+        let height: CGFloat = 36
+        
+        // 5. Return the calculated size
+        return CGSize(width: totalWidth, height: height)
+    }
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let feed = currentFeed else { return }
         
         let selectedText = arr[indexPath.row]
         
-        // Update selected state
         selectedTagIndex = indexPath.row
         collectionView.reloadData()
         
-        // Animate the selected cell
         if let cell = collectionView.cellForItem(at: indexPath) as? TagCell {
             UIView.animate(withDuration: 0.1, animations: {
                 cell.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
@@ -355,7 +378,6 @@ extension EdutainCell: UICollectionViewDelegate, UICollectionViewDataSource {
             }
         }
         
-        // Call the callback with selected tag text
         tagClicked?(cellIndex, feed, selectedText)
     }
 }

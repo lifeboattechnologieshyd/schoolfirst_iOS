@@ -107,6 +107,9 @@
                                                 </fragment>
                                             </attributedString>
                                         </buttonConfiguration>
+                                        <connections>
+                                            <action selector="onClickGo:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="3yb-le-Opp"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" red="0.077784277499999999" green="0.3335567713" blue="0.541552484" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -198,6 +201,7 @@
                         <outlet property="goBtn" destination="0fZ-bS-Gdp" id="5Wi-H5-Xg6"/>
                         <outlet property="lblTitle" destination="ONe-Qu-YcU" id="y5j-zn-lPo"/>
                         <outlet property="postTf" destination="yBB-Ww-pYZ" id="gTI-fP-ADm"/>
+                        <outlet property="searchBtn" destination="0qf-fu-sFY" id="Hci-jG-CZZ"/>
                         <outlet property="searchTf" destination="PtU-aa-vVF" id="kgL-m4-Jv4"/>
                         <outlet property="segmentControl" destination="5S3-Ip-05p" id="JZ6-K8-ZrF"/>
                         <outlet property="tblView" destination="m43-sG-LvI" id="KTr-6l-kOk"/>
@@ -301,7 +305,7 @@
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="fwY-ej-C0c"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="6k2-wY-VV0" firstAttribute="trailing" secondItem="fwY-ej-C0c" secondAttribute="trailing" id="2wC-fb-DC0"/>
                             <constraint firstItem="fwY-ej-C0c" firstAttribute="bottom" secondItem="hDv-oR-QRg" secondAttribute="bottom" constant="90" id="4lK-Dy-fKu"/>
