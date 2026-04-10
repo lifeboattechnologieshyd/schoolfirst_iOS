@@ -64,9 +64,15 @@ class UserManager {
     var kids: [Student] {
         return getUser()?.students ?? []
     }
+    
+    // Store the currently active student index
+    var selectedKidIndex: Int = 0
 
     var selectedKid: Student? {
-        return kids.first ?? nil
+        guard !kids.isEmpty, selectedKidIndex < kids.count else {
+            return kids.first
+        }
+        return kids[selectedKidIndex]
     }
     
     var selectedSchool: School? {

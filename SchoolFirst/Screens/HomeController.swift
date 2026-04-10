@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import QPassLib
 
 enum RowType {
     case modules
@@ -32,17 +33,6 @@ class HomeController: UIViewController {
     
     var schoolImages = [
         [
-            "school_building",
-            "news",
-            "event",
-            "attendence",
-            "homework",
-            "time_table",
-            "fee",
-            "school_bus",
-            "gallery",
-        ],
-        [
             "curriculum",
             "assessments",
             "Ptips",
@@ -52,21 +42,21 @@ class HomeController: UIViewController {
             "online-course",
             "EdStore",
             "ask_us",
+        ],
+        [
+            "school_building",
+            "news",
+            "event",
+            "attendence",
+            "homework",
+            "time_table",
+            "fee",
+            "school_bus",
+            "gallery",
         ]
     ]
     
     var schoolNames = [
-        [
-            "My School",
-            "Bulletin",
-            "Events",
-            "Attendance",
-            "Homework",
-            "Time Table",
-            "Fee",
-            "School Bus",
-            "Gallery",
-         ],
         [
             "Curriculum",
             "Assessments",
@@ -77,7 +67,18 @@ class HomeController: UIViewController {
             "Courses",
             "Ed Store",
             "Ask Us"
-        ]
+        ],
+        [
+            "My School",
+            "Bulletin",
+            "Events",
+            "Attendance",
+            "Homework",
+            "Time Table",
+            "Fee",
+            "School Bus",
+            "Gallery",
+         ]
     ]
     @IBOutlet weak var userImage: UIImageView!
 //    @IBOutlet weak var logoImage: UIImageView!
@@ -128,24 +129,46 @@ class HomeController: UIViewController {
         }
         self.getCalender()
         self.getBanners()
-//        self.logoImage.loadImage(url: UserManager.shared.selectedSchool?.fullLogo ?? "", placeHolderImage: "")
-        self.colVw.register(UINib(nibName: "HomeViewCell", bundle: nil), forCellWithReuseIdentifier: "HomeViewCell")
         self.colVw.register(UINib(nibName: "HomeCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "HomeCollectionViewCell")
         colVw.delegate = self
         colVw.dataSource = self
+        
+        // Family Zone is now Index 0 (Natural Default)
+        self.segmentControl.setTitle("Family Zone", forSegmentAt: 0)
+        self.segmentControl.setTitle("School Zone", forSegmentAt: 1)
+        self.segmentControl.selectedSegmentIndex = 0
+        
+        // Disable manual scrolling as requested
+        self.colVw.isScrollEnabled = false
+        
+        // Add swipe gesture to trigger School Zone SDK
+        let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+        swipeLeft.direction = .left
+        self.colVw.addGestureRecognizer(swipeLeft)
+    }
+    
+    @objc func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
+        if gesture.direction == .left {
+            self.launchQPass()
+        }
     }
     
     @IBAction func onClickSegment(_ sender: UISegmentedControl) {
-        
         let index: Int = sender.selectedSegmentIndex
+        
+        if index == 1 {
+            // Immediately launch SDK and reset segment
+            self.launchQPass()
+            sender.selectedSegmentIndex = 0
+            return
+        }
+        
+        // Standard scrolling only for other indices (if any)
         let pageWidth: CGFloat = colVw.bounds.width
         let targetOffsetX: CGFloat = CGFloat(index) * pageWidth
-        // clamp offset
         let maxOffset = colVw.contentSize.width - pageWidth
         let finalOffset = max(0, min(targetOffsetX, maxOffset))
         colVw.setContentOffset(CGPoint(x: finalOffset, y: 0), animated: true)
-        
-        
     }
     
     @IBAction func onClickImage(_ sender: UITapGestureRecognizer) {
@@ -317,6 +340,21 @@ class HomeController: UIViewController {
             }
         }
     }
+
+    func launchQPass() {
+        // Bhagya Laxmi Demo Credentials
+        let domain = "ppsfqpassdev"
+        let authToken = "182f8aa8b85248979e0e4863f2750c61"
+        let sessionToken = "13gGgZI7fKmv/1vz4bfYvdTOiZGa5B6GtTJAO6CQloY2M6arRck0LmYSurAacwI+pUzwLQw/IjxS4jdQOoAYWQbjW9b2hAhAf1CZTMGGTsj1Ucq0UIqFQabxDv9ZP2+tpusb+IG+pcbM6BZkI3x+xqgYohqY0u3kr8eDu9H3lnz8RgbehLoBxRi2KiVXD13+ybi/r82E4KTh/wgw5B7n0w=="
+        
+        print("🚀 Launching Growth Zone with Demo Credentials (Bhagya Laxmi)")
+        
+        QPassManager.shared.launchMFE(
+            domain: domain,
+            authToken: authToken,
+            sessionToken: sessionToken
+        )
+    }
 }
 
 extension HomeController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
@@ -440,6 +478,10 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
             self.FamilyZoneItemSelection(index: index)
         } else {
             if selectedIndex == 0 {
+                // Now ItemSelection is for Family Zone on Index 0
+                self.FamilyZoneItemSelection(index: index)
+            } else {
+                // School logic moved to Index 1
                 switch index {
                 case 0:
                     let vc = self.storyboard?.instantiateViewController(identifier: "MySchoolViewController") as! MySchoolViewController
@@ -477,9 +519,6 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
                 default:
                     break
                 }
-                
-            } else {
-                self.FamilyZoneItemSelection(index: index)
             }
         }
     }

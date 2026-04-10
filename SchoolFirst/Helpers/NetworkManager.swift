@@ -988,13 +988,16 @@ struct WordInfo: Codable {
     let partsOfSpeech: String?
     let others: String?
     let othersVoice: String?
-    let pronunciation: String
-    let partsOfSpeechVoice: String
-    let definitionVoice: String
-    let originVoice: String
-    let usageVoice: String
+    let pronunciation: String = ""
+    let partsOfSpeechVoice: String = ""
+    let definitionVoice: String = ""
+    let originVoice: String = ""
+    let usageVoice: String = ""
     let date: String?
 
+    
+    
+    
     enum CodingKeys: String, CodingKey {
         case id
         case word

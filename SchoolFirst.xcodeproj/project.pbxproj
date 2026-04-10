@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		44E37597B8CB89D020425855 /* Pods_SchoolFirst.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0A370ED3D358E19AE94C07E /* Pods_SchoolFirst.framework */; };
 		8803F35D2E0AB958000F7784 /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8803F35C2E0AB958000F7784 /* IQKeyboardManagerSwift */; };
 		8803F6112E11CA68000F7784 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 8803F6102E11CA68000F7784 /* Lottie */; };
 		884DAD6D2EB1FDD60088EBA7 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 884DAD6C2EB1FDD60088EBA7 /* FirebaseAnalyticsCore */; };
@@ -30,7 +31,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2E354042E29126B019AF8558 /* Pods-SchoolFirst.debug dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchoolFirst.debug dev.xcconfig"; path = "Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst.debug dev.xcconfig"; sourceTree = "<group>"; };
+		7D0E02E8B0273FC487AB2016 /* Pods-SchoolFirst.release dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchoolFirst.release dev.xcconfig"; path = "Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst.release dev.xcconfig"; sourceTree = "<group>"; };
 		884DB5D62DFC0394003F154E /* School First.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "School First.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B0A370ED3D358E19AE94C07E /* Pods_SchoolFirst.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SchoolFirst.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E7A23E4ABB3E4C4CF4461B55 /* Pods-SchoolFirst.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchoolFirst.debug.xcconfig"; path = "Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst.debug.xcconfig"; sourceTree = "<group>"; };
+		EA37FEF8EE954464166931FE /* Pods-SchoolFirst.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchoolFirst.release.xcconfig"; path = "Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -79,17 +85,32 @@
 				884F56E62EAF7958000645BE /* FirebaseAnalytics in Frameworks */,
 				884F56E82EAF7958000645BE /* FirebaseCore in Frameworks */,
 				889390E92E5D82880064AFEE /* YouTubeiOSPlayerHelper in Frameworks */,
+				44E37597B8CB89D020425855 /* Pods_SchoolFirst.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6E879F4E8A5D5783DFE19CD2 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				E7A23E4ABB3E4C4CF4461B55 /* Pods-SchoolFirst.debug.xcconfig */,
+				2E354042E29126B019AF8558 /* Pods-SchoolFirst.debug dev.xcconfig */,
+				EA37FEF8EE954464166931FE /* Pods-SchoolFirst.release.xcconfig */,
+				7D0E02E8B0273FC487AB2016 /* Pods-SchoolFirst.release dev.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		884DB5CD2DFC0394003F154E = {
 			isa = PBXGroup;
 			children = (
 				884DB5D82DFC0394003F154E /* SchoolFirst */,
 				884DB5D72DFC0394003F154E /* Products */,
+				6E879F4E8A5D5783DFE19CD2 /* Pods */,
+				A5B6D83129FA4F760ADBA4BD /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -101,6 +122,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		A5B6D83129FA4F760ADBA4BD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B0A370ED3D358E19AE94C07E /* Pods_SchoolFirst.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -108,11 +137,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 884DB5E92DFC0396003F154E /* Build configuration list for PBXNativeTarget "SchoolFirst" */;
 			buildPhases = (
+				4E3BF4F0CA4B0674907530D3 /* [CP] Check Pods Manifest.lock */,
 				880D2EC62EBB558A006979A5 /* Copy Firebase Configurations */,
 				884DB5D22DFC0394003F154E /* Sources */,
 				884DB5D32DFC0394003F154E /* Frameworks */,
 				884DB5D42DFC0394003F154E /* Resources */,
 				880D2ED02EBB7A80006979A5 /* Upload Crashlytics dSYMs */,
+				11F5FEFA52759816D05C512F /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -202,6 +233,45 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		11F5FEFA52759816D05C512F /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		4E3BF4F0CA4B0674907530D3 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SchoolFirst-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		880D2EC62EBB558A006979A5 /* Copy Firebase Configurations */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -259,6 +329,7 @@
 /* Begin XCBuildConfiguration section */
 		884DB5EA2DFC0396003F154E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E7A23E4ABB3E4C4CF4461B55 /* Pods-SchoolFirst.debug.xcconfig */;
 			baseConfigurationReferenceAnchor = 884DB5D82DFC0394003F154E /* SchoolFirst */;
 			baseConfigurationReferenceRelativePath = Configurations/Prod.xcconfig;
 			buildSettings = {
@@ -299,6 +370,7 @@
 		};
 		884DB5EB2DFC0396003F154E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = EA37FEF8EE954464166931FE /* Pods-SchoolFirst.release.xcconfig */;
 			baseConfigurationReferenceAnchor = 884DB5D82DFC0394003F154E /* SchoolFirst */;
 			baseConfigurationReferenceRelativePath = Configurations/Prod.xcconfig;
 			buildSettings = {
@@ -529,6 +601,7 @@
 		};
 		884DB5EF2DFC0B3F003F154E /* Debug Dev */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2E354042E29126B019AF8558 /* Pods-SchoolFirst.debug dev.xcconfig */;
 			baseConfigurationReferenceAnchor = 884DB5D82DFC0394003F154E /* SchoolFirst */;
 			baseConfigurationReferenceRelativePath = Configurations/Dev.xcconfig;
 			buildSettings = {
@@ -627,6 +700,7 @@
 		};
 		884DB5F12DFC0B47003F154E /* Release Dev */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7D0E02E8B0273FC487AB2016 /* Pods-SchoolFirst.release dev.xcconfig */;
 			baseConfigurationReferenceAnchor = 884DB5D82DFC0394003F154E /* SchoolFirst */;
 			baseConfigurationReferenceRelativePath = Configurations/Dev.xcconfig;
 			buildSettings = {
