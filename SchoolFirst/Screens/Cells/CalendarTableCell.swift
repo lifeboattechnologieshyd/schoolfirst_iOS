@@ -42,6 +42,22 @@ class CalendarTableCell: UITableViewCell {
     }
     
     func configure(calender: LifeSkillPrompt) {
+        if calender.id == "fallback" {
+            // Fallback state: Only show the prompt text without any prefixes
+            lblPrompt.attributedText = NSAttributedString(
+                string: calender.prompt,
+                attributes: [.font: UIFont.lexend(.regular, size: 16), .foregroundColor: UIColor.label]
+            )
+            lblBenifit.text = ""
+            lblWriteup.text = ""
+            imgVw.isHidden = true
+            btnPlay.isHidden = true
+            return
+        }
+        
+        // Normal state
+        imgVw.isHidden = false
+        btnPlay.isHidden = false
         imgVw.loadImage(url: calender.image)
         let prompt = madeAttributeString(boldPart: "Prompt:", desc: " \(calender.prompt)")
         let benifit = madeAttributeString(boldPart: "Benifit:", desc: " \(calender.benefit)")

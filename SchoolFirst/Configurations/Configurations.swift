@@ -53,9 +53,9 @@ struct API {
     
     static let SENDOTP = BASE_URL + "user/authentication/mobile/send-otp"
     static let EMAIL_SENDOTP = BASE_URL + "user/authentication/email/send-otp"
-    static let LOGIN = BASE_URL + "user/authentication/login"
+    static let LOGIN = BASE_URL + "user/authentication/login/v2"
     
-    static let VERIFY_OTP = BASE_URL + "user/authentication/mobile/verify-otp"
+    static let VERIFY_OTP = BASE_URL + "user/authentication/mobile/verify-otp/v2"
     static let EMAIL_OTP = BASE_URL + "user/authentication/email/verify-otp"
     static let SET_PASSWORD = BASE_URL + "user/authentication/set-password"
     
@@ -79,13 +79,13 @@ struct API {
 
     static let EDUTAIN_FEEL = BASE_URL + "events/get/feels"
     static let EVENT_GALLERY = BASE_URL + "events/gallery"
-    static let EVENTS_GETEVENTS = BASE_URL + "events/events"
+    static let EVENTS_GETEVENTS = BASE_URL + "event/get/event"
     
     
     static let VOCABEE_STATISTICS = BASE_URL + "vocabee/get/statistics"
     
     
-    static let BROADCAST_CALENDER = BASE_URL + "broadcast/calendar/"
+    static let BROADCAST_CALENDER = BASE_URL + "broadcast/calendar"
     
     
     static let BANNER = BASE_URL + "broadcast/banner?screen=Home"

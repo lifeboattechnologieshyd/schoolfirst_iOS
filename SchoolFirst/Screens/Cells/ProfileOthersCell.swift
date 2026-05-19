@@ -31,7 +31,7 @@ class ProfileOthersCell: UITableViewCell {
     }
     
     @IBAction func onClickDelete(_ sender: UIButton) {
-        self.onClickDelete!()
+        onClickDelete?()
     }
     @IBAction func onClickLogout(_ sender: UIButton) {
         onLogoutTapped?()

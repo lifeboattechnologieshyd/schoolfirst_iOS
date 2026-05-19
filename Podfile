@@ -5,6 +5,6 @@ target 'SchoolFirst' do
   use_frameworks!
 
   # Pods for SchoolFirst
-  pod 'qpass_lib', :path => './qpass_lib'
+  pod 'QPassLib', :path => './QPassLib'
 
 end

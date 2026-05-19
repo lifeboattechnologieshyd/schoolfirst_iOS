@@ -100,7 +100,6 @@
 				EA37FEF8EE954464166931FE /* Pods-SchoolFirst.release.xcconfig */,
 				7D0E02E8B0273FC487AB2016 /* Pods-SchoolFirst.release dev.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -143,7 +142,7 @@
 				884DB5D32DFC0394003F154E /* Frameworks */,
 				884DB5D42DFC0394003F154E /* Resources */,
 				880D2ED02EBB7A80006979A5 /* Upload Crashlytics dSYMs */,
-				11F5FEFA52759816D05C512F /* [CP] Embed Pods Frameworks */,
+				CAF73337A82CAD7D9BBECCAA /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -233,23 +232,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		11F5FEFA52759816D05C512F /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		4E3BF4F0CA4B0674907530D3 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -314,6 +296,27 @@
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nset -e\n\necho \"------------------------------------\"\necho \"🔥 Crashlytics dSYM Upload Script (SPM Safe Version)\"\necho \"Active configuration: ${CONFIGURATION}\"\necho \"------------------------------------\"\n\nCONFIGS_DIR=\"${PROJECT_DIR}/SchoolFirst/Configurations\"\nPLIST_PATH=\"\"\nDSYM_PATH=\"\"\n\n# Make sure build dir exists\nif [ ! -d \"${BUILD_DIR}\" ]; then\n  echo \"⚠️ BUILD_DIR missing — creating...\"\n  mkdir -p \"${BUILD_DIR}\"\nfi\n\n# Select Firebase plist file\ncase \"${CONFIGURATION}\" in\n  \"Debug Dev\"|\"Release Dev\")\n    PLIST_PATH=\"${CONFIGS_DIR}/GoogleService-Info-DEV.plist\"\n    ;;\n  \"Debug\"|\"Release\")\n    PLIST_PATH=\"${CONFIGS_DIR}/GoogleService-Info-PROD.plist\"\n    ;;\n  *)\n    echo \"⚠️ Unknown configuration: ${CONFIGURATION}\"\n    ls \"${CONFIGS_DIR}\"\n    exit 0\n    ;;\nesac\n\n# Check plist exists\nif [ ! -f \"${PLIST_PATH}\" ]; then\n  echo \"❌ Firebase plist not found at: ${PLIST_PATH}\"\n  exit 0\nfi\n\n# Wait for dSYM path\nif [ ! -d \"${DWARF_DSYM_FOLDER_PATH}\" ]; then\n  echo \"⚠️ Waiting for dSYM folder...\"\n  \nfi\n\nDSYM_PATH=\"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}\"\n\nif [ ! -d \"${DSYM_PATH}\" ]; then\n  echo \"⚠️ Waiting for dSYM file...\"\n  \nfi\n\n# Crashlytics upload path (SPM)\nCRASHLYTICS_RUN_PATH=\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\nif [ ! -f \"${CRASHLYTICS_RUN_PATH}\" ]; then\n  CRASHLYTICS_RUN_PATH=\"${PROJECT_DIR}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\nfi\n\nif [ ! -f \"${CRASHLYTICS_RUN_PATH}\" ]; then\n  echo \"❌ Crashlytics run script not found!\"\n  exit 0\nfi\n\necho \"✅ Using plist: ${PLIST_PATH}\"\necho \"✅ Using dSYM path: ${DSYM_PATH}\"\necho \"✅ Using Crashlytics script: ${CRASHLYTICS_RUN_PATH}\"\n\nsleep 3\n\n\n# ✅ Upload dSYMs\n\n\"${CRASHLYTICS_RUN_PATH}\" \\\n  --google-service-info \"${PLIST_PATH}\" \\\n  --path \"${DWARF_DSYM_FOLDER_PATH}\"\n  \necho \"------------------------------------\"\necho \"✅ Crashlytics dSYM upload complete\"\necho \"------------------------------------\"\n\n# Cleanup\n\n\n\n\n";
 		};
+		CAF73337A82CAD7D9BBECCAA /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -330,14 +333,12 @@
 		884DB5EA2DFC0396003F154E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E7A23E4ABB3E4C4CF4461B55 /* Pods-SchoolFirst.debug.xcconfig */;
-			baseConfigurationReferenceAnchor = 884DB5D82DFC0394003F154E /* SchoolFirst */;
-			baseConfigurationReferenceRelativePath = Configurations/Prod.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = SchoolFirst/SchoolFirst.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 7CN8AS9ANR;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -357,7 +358,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.39;
+				MARKETING_VERSION = 1.41;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(app_bundle_identifier)";
 				PRODUCT_NAME = "$(app_name)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -371,14 +372,12 @@
 		884DB5EB2DFC0396003F154E /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = EA37FEF8EE954464166931FE /* Pods-SchoolFirst.release.xcconfig */;
-			baseConfigurationReferenceAnchor = 884DB5D82DFC0394003F154E /* SchoolFirst */;
-			baseConfigurationReferenceRelativePath = Configurations/Prod.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = SchoolFirst/SchoolFirst.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 7CN8AS9ANR;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -398,7 +397,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.39;
+				MARKETING_VERSION = 1.41;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(app_bundle_identifier)";
 				PRODUCT_NAME = "$(app_name)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -602,14 +601,12 @@
 		884DB5EF2DFC0B3F003F154E /* Debug Dev */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2E354042E29126B019AF8558 /* Pods-SchoolFirst.debug dev.xcconfig */;
-			baseConfigurationReferenceAnchor = 884DB5D82DFC0394003F154E /* SchoolFirst */;
-			baseConfigurationReferenceRelativePath = Configurations/Dev.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = SchoolFirst/SchoolFirst.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 7CN8AS9ANR;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -629,7 +626,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.39;
+				MARKETING_VERSION = 1.41;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(app_bundle_identifier)";
 				PRODUCT_NAME = "$(app_name)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -701,14 +698,12 @@
 		884DB5F12DFC0B47003F154E /* Release Dev */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7D0E02E8B0273FC487AB2016 /* Pods-SchoolFirst.release dev.xcconfig */;
-			baseConfigurationReferenceAnchor = 884DB5D82DFC0394003F154E /* SchoolFirst */;
-			baseConfigurationReferenceRelativePath = Configurations/Dev.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = SchoolFirst/SchoolFirst.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 7CN8AS9ANR;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -728,7 +723,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.39;
+				MARKETING_VERSION = 1.41;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(app_bundle_identifier)";
 				PRODUCT_NAME = "$(app_name)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEV;

@@ -13,10 +13,6 @@ class ProfileViewController: UIViewController {
     @IBOutlet weak var logoImg: UIImageView!
     @IBOutlet weak var tblVw: UITableView!
     
-    var hasKids: Bool {
-        return UserManager.shared.kids.count > 0
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         logoImg.addFourSideShadow(
@@ -25,10 +21,7 @@ class ProfileViewController: UIViewController {
             radius: 8
         )
         self.tblVw.register(UINib(nibName: "ProfileTableViewCell", bundle: nil), forCellReuseIdentifier: "ProfileTableViewCell")
-        self.tblVw.register(UINib(nibName: "KidsCell", bundle: nil), forCellReuseIdentifier: "KidsCell")
         self.tblVw.register(UINib(nibName: "ProfileOthersCell", bundle: nil), forCellReuseIdentifier: "ProfileOthersCell")
-        self.tblVw.register(UINib(nibName: "ImageCell", bundle: nil), forCellReuseIdentifier: "ImageCell")
-        self.tblVw.register(UINib(nibName: "AddKidsCell", bundle: nil), forCellReuseIdentifier: "AddKidsCell")
         
         tblVw.delegate = self
         tblVw.dataSource = self
@@ -38,7 +31,6 @@ class ProfileViewController: UIViewController {
         super.viewWillAppear(animated)
         tblVw.reloadData()
         imgProfile.loadImage(url: UserManager.shared.user?.profileImage ?? "", placeHolderImage: "dummy_kid_profile_pic")
-
     }
     
     func navigateToLogin() {
@@ -73,24 +65,29 @@ extension ProfileViewController {
         alert.addAction(noAction)
         self.present(alert, animated: true)
     }
+    
+    func deleteAccountConfirmation() {
+        let alert = UIAlertController(
+            title: "Delete Account",
+            message: "Are you sure you want to delete your account? This action cannot be undone.",
+            preferredStyle: .alert
+        )
+        let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
+            self?.navigateToLogin()
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+        alert.addAction(deleteAction)
+        alert.addAction(cancelAction)
+        self.present(alert, animated: true)
+    }
 }
 
 extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
     
-    func numberOfSections(in tableView: UITableView) -> Int { 3 }
+    func numberOfSections(in tableView: UITableView) -> Int { 2 }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch section {
-        case 0: return 1
-        case 1:
-            if hasKids {
-                return UserManager.shared.kids.count + 1
-            } else {
-                return 2
-            }
-        case 2: return 1
-        default: return 0
-        }
+        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -105,38 +102,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             return cell
             
         case 1:
-            if !hasKids {
-                if indexPath.row == 0 {
-                    let cell = tableView.dequeueReusableCell(withIdentifier: "ImageCell", for: indexPath) as! ImageCell
-                    cell.selectionStyle = .none
-                    cell.backgroundColor = .clear
-                    cell.titleLbl.textColor = .black
-                    return cell
-                } else {
-                    let cell = tableView.dequeueReusableCell(withIdentifier: "AddKidsCell", for: indexPath) as! AddKidsCell
-                    cell.configure(showCardShadow: true)
-                    cell.selectionStyle = .none
-                    cell.backgroundColor = .clear
-                    return cell
-                }
-            }
-            if indexPath.row == UserManager.shared.kids.count {
-                let cell = tableView.dequeueReusableCell(withIdentifier: "AddKidsCell", for: indexPath) as! AddKidsCell
-                cell.configure(showCardShadow: true)
-                cell.selectionStyle = .none
-                cell.backgroundColor = .clear
-                return cell
-            }
-            
-            let cell = tableView.dequeueReusableCell(withIdentifier: "KidsCell", for: indexPath) as! KidsCell
-            cell.setupCell(student: UserManager.shared.kids[indexPath.row])
-            return cell
-            
-        case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: "ProfileOthersCell") as! ProfileOthersCell
-            
-            cell.onClickDelete = { [weak self] in
-            }
             
             cell.onTermsTapped = { [weak self] in
                 let vc = self?.storyboard?.instantiateViewController(identifier: "WebViewController") as? WebViewController
@@ -156,6 +122,10 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
                 self?.logoutConfirmation()
             }
             
+            cell.onClickDelete = { [weak self] in
+                self?.deleteAccountConfirmation()
+            }
+            
             return cell
             
         default:
@@ -166,49 +136,18 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.section {
         case 0: return 145
-        case 1:
-            if !hasKids {
-                if indexPath.row == 0 {
-                    return 218
-                } else {
-                    return 48
-                }
-            }
-            
-            if indexPath.row == UserManager.shared.kids.count {
-                return 48
-            }
-            
-            return 80
-            
-        case 2: return 434
+        case 1: return 434
         default: return 0
         }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
-        guard indexPath.section == 1 else { return }
-        
-        if !hasKids {
-            if indexPath.row == 1 {
-                let vc = storyboard?.instantiateViewController(identifier: "AddKidVC") as! AddKidVC
-                self.navigationController?.pushViewController(vc, animated: true)
-            }
-            return
-        }
-        
-        if indexPath.row == UserManager.shared.kids.count {
-            let vc = storyboard?.instantiateViewController(identifier: "AddKidVC") as! AddKidVC
-            self.navigationController?.pushViewController(vc, animated: true)
-        }
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
-        case 1: return "My Kids"
-        case 2: return "Others"
+        case 1: return "Others"
         default: return ""
         }
     }

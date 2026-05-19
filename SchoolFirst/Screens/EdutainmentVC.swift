@@ -5,8 +5,8 @@
 //  Created by Lifeboat on 03/01/26.
 //
 
-
 import UIKit
+import QPassLib
 
 class EdutainmentVC: UIViewController {
     
@@ -14,829 +14,229 @@ class EdutainmentVC: UIViewController {
     @IBOutlet weak var searchTf: UITextField!
     @IBOutlet weak var micBtn: UIButton!
     @IBOutlet weak var logoImg: UIImageView!
-    
     @IBOutlet weak var searchBtn: UIButton!
     @IBOutlet weak var tblVw: UITableView!
     @IBOutlet weak var goBtn: UIButton!
     @IBOutlet weak var videonoTf: UITextField!
     
-    var diyFeed = [Feed]()
-    var storiesFeed = [Feed]()
-    var currentFeed = [Feed]()
+    var kids: [Student] {
+        return UserManager.shared.kids
+    }
     
-    var searchResults = [Feed]()
-    var isSearchActive = false
-    var searchDebounceTimer: Timer?
+    private var emptyStateView: UIView?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        logoImg.addFourSideShadow(
-            color: .black,
-            opacity: 0.3,
-            radius: 8)
-        setupSegmentControl()
-        setupTextFields()
+        
+        setupUI()
         setupTableView()
-//        setupSearchTF()
-        segmentController.selectedSegmentIndex = 0
-        getDiyFeed()
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        applySegmentCornerRadius()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tblVw.reloadData()
+        setupEmptyState()
+    }
+    
+    func setupUI() {
+        // Nuclear cleanup: Hide all subviews first
+        for subview in view.subviews {
+            subview.isHidden = true
+            // Also remove from superview if it's a segmented control or background image
+            if subview is UISegmentedControl {
+                subview.removeFromSuperview()
+            }
+        }
+        
+        // Only show the table view
+        tblVw?.isHidden = false
+        tblVw?.backgroundColor = .white
+        view.backgroundColor = .white
+        
+        // Find and show the logo banner if it exists, but skip any 'bg' images
+        for subview in view.subviews {
+            if let imageView = subview as? UIImageView, imageView.image == UIImage(named: "bg") {
+                imageView.removeFromSuperview()
+            }
+            
+            // If it's the header container view (nxn-at-BAE in XML), we need to be careful
+            if subview.frame.height > 100 && subview.frame.origin.y == 0 {
+                // This is the header view. Let's hide its background image but keep its logos
+                subview.isHidden = false
+                subview.backgroundColor = .clear
+                for innerView in subview.subviews {
+                    if let imgV = innerView as? UIImageView {
+                        if imgV.image == UIImage(named: "bg") {
+                            imgV.isHidden = true
+                            imgV.removeFromSuperview()
+                        } else {
+                            innerView.isHidden = false
+                        }
+                    } else {
+                        innerView.isHidden = true
+                    }
+                }
+            }
+        }
+        
+        // Clear existing constraints to prevent conflicts with storyboard
+        for constraint in view.constraints {
+            if constraint.firstItem === tblVw || constraint.secondItem === tblVw {
+                view.removeConstraint(constraint)
+            }
+        }
+        
+        // Position table view with some space from the top
+        tblVw.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            tblVw.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 50),
+            tblVw.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tblVw.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tblVw.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
+        ])
+        
+        setupEmptyState()
+    }
+    
+    private func setupEmptyState() {
+        if kids.isEmpty {
+            tblVw.isHidden = true
+            
+            if emptyStateView == nil {
+                let emptyView = UIView()
+                emptyView.backgroundColor = .white
+                view.addSubview(emptyView)
+                emptyView.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    emptyView.topAnchor.constraint(equalTo: view.topAnchor),
+                    emptyView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                    emptyView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                    emptyView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+                ])
+                
+                // Content Stack
+                let stack = UIStackView()
+                stack.axis = .vertical
+                stack.alignment = .center
+                stack.spacing = 20
+                emptyView.addSubview(stack)
+                stack.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    stack.centerXAnchor.constraint(equalTo: emptyView.centerXAnchor),
+                    stack.centerYAnchor.constraint(equalTo: emptyView.centerYAnchor, constant: -20),
+                    stack.leadingAnchor.constraint(equalTo: emptyView.leadingAnchor, constant: 20),
+                    stack.trailingAnchor.constraint(equalTo: emptyView.trailingAnchor, constant: -20)
+                ])
+                
+                // Illustration
+                let illustration = UIImageView(image: UIImage(named: "bannerImg"))
+                illustration.contentMode = .scaleAspectFit
+                illustration.translatesAutoresizingMaskIntoConstraints = false
+                illustration.heightAnchor.constraint(equalToConstant: 200).isActive = true
+                stack.addArrangedSubview(illustration)
+                
+                // Footer text
+                let footerLbl = UILabel()
+                footerLbl.text = "Create your Kids Profiles & Access their Grade Curriculums & much more..."
+                footerLbl.font = UIFont.lexend(.regular, size: 14)
+                footerLbl.textColor = .gray
+                footerLbl.textAlignment = .center
+                footerLbl.numberOfLines = 0
+                stack.addArrangedSubview(footerLbl)
+                
+                emptyStateView = emptyView
+            }
+            emptyStateView?.isHidden = false
+        } else {
+            tblVw.isHidden = false
+            emptyStateView?.isHidden = true
+        }
+    }
+    
+    private func removeSegmentedControls(from view: UIView) {
+        for subview in view.subviews {
+            if subview is UISegmentedControl {
+                subview.removeFromSuperview()
+            } else {
+                removeSegmentedControls(from: subview)
+            }
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        applySegmentCornerRadius()
+        removeSegmentedControls(from: self.view)
     }
     
-    
-    
-    func setupSegmentControl() {
-        let normalAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.lexend(.regular, size: 16),
-            .foregroundColor: UIColor.gray
-        ]
-        segmentController.setTitleTextAttributes(normalAttributes, for: .normal)
-
-        let selectedAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.lexend(.semiBold, size: 16),
-            .foregroundColor: UIColor.white
-        ]
-        segmentController.setTitleTextAttributes(selectedAttributes, for: .selected)
-        
-        segmentController.backgroundColor = UIColor.white
-        
-        DispatchQueue.main.async {
-            self.applySegmentCornerRadius()
-        }
-    }
-    
-    func applySegmentCornerRadius() {
-        guard segmentController.frame.height > 0 else { return }
-        
-        let cornerRadius = segmentController.frame.height / 2
-        segmentController.layer.cornerRadius = cornerRadius
-        segmentController.layer.masksToBounds = true
-        segmentController.clipsToBounds = true
-    }
-    
-    func setupTextFields() {
-        searchTf.delegate = self
-        searchTf.returnKeyType = .search
-        searchTf.addTarget(self, action: #selector(searchTextFieldDidChange(_:)), for: .editingChanged)
-        
-        videonoTf.delegate = self
-        videonoTf.keyboardType = .numberPad
-        videonoTf.addTarget(self, action: #selector(videoNumberTextFieldDidChange(_:)), for: .editingChanged)
-        
-        addDoneButtonToKeyboard()
-    }
-    
-    func addDoneButtonToKeyboard() {
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(dismissKeyboard))
-        toolbar.items = [flexSpace, doneButton]
-        videonoTf.inputAccessoryView = toolbar
-    }
-    
-    @objc func dismissKeyboard() {
-        view.endEditing(true)
-    }
-//    func setupSearchTF() {
-//        searchTf.delegate = self
-//        searchTf.addTarget(
-//            self,
-//            action: #selector(searchTextChanged(_:)),
-//            for: .editingChanged
-//        )
-//    }
-    @objc func searchTextChanged(_ textField: UITextField) {
-        let text = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-
-        // Hide button when user starts typing
-        searchBtn.isHidden = !text.isEmpty
-    }
-
     func setupTableView() {
-        tblVw.register(UINib(nibName: "EdutainCell", bundle: nil), forCellReuseIdentifier: "EdutainCell")
-        tblVw.register(UINib(nibName: "StoriesCell", bundle: nil), forCellReuseIdentifier: "StoriesCell")
+        tblVw.register(UINib(nibName: "KidsCell", bundle: nil), forCellReuseIdentifier: "KidsCell")
         tblVw.delegate = self
         tblVw.dataSource = self
-        tblVw.keyboardDismissMode = .onDrag
-    }
-    
-    
-    func navigateToComments(feed: Feed, cellType: FeedCellType) {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "CommentsVC") as? CommentsVC else { return }
-        vc.feed = feed
-        vc.cellType = cellType
-        navigationController?.pushViewController(vc, animated: true)
-    }
-    
-    
-    @IBAction func onChangeSegment(_ sender: UISegmentedControl) {
-        clearSearch()
-  
-        if sender.selectedSegmentIndex == 0 {
-            diyFeed.isEmpty ? getDiyFeed() : { currentFeed = diyFeed; tblVw.reloadData() }()
-        } else {
-            storiesFeed.isEmpty ? getStoriesFeed() : { currentFeed = storiesFeed; tblVw.reloadData() }()
-        }
-    }
-    
-    @IBAction func onClickGo(_ sender: UIButton) {
-        dismissKeyboard()
-        
-        guard let serialText = videonoTf.text?.trimmingCharacters(in: .whitespaces), !serialText.isEmpty else {
-            showAlert(msg: "Please enter a video number")
-            return
-        }
-        
-        guard let serialNumber = Int(serialText) else {
-            showAlert(msg: "Please enter a valid number")
-            return
-        }
-        
-        searchTf.text = ""
-        searchDebounceTimer?.invalidate()
-        
-        searchBySerialNumber(serialNumber: serialNumber)
-    }
-    
-    
-    
-    func clearSearch() {
-        searchDebounceTimer?.invalidate()
-        searchTf.text = ""
-        videonoTf.text = ""
-        isSearchActive = false
-        searchResults.removeAll()
-    }
-    
-    func getCurrentCategory() -> String {
-        return segmentController.selectedSegmentIndex == 0 ? "Diy" : "Stories"
-    }
-    
-    @objc func searchTextFieldDidChange(_ textField: UITextField) {
-        searchDebounceTimer?.invalidate()
-        videonoTf.text = ""
-        
-        let keyword = textField.text?.trimmingCharacters(in: .whitespaces) ?? ""
-        
-        if keyword.isEmpty {
-            isSearchActive = false
-            currentFeed = segmentController.selectedSegmentIndex == 0 ? diyFeed : storiesFeed
-            tblVw.reloadData()
-            return
-        }
-        
-        guard keyword.count >= 1 else { return }
-        
-        searchDebounceTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
-            self?.searchByKeyword(keyword: keyword)
-        }
-    }
-    
-    @objc func videoNumberTextFieldDidChange(_ textField: UITextField) {
-        searchTf.text = ""
-        searchDebounceTimer?.invalidate()
-    }
-    
-    func searchByKeyword(keyword: String) {
-        showLoader()
-        guard !keyword.isEmpty else { return }
-        
-        let category = getCurrentCategory()
-        let encodedKeyword = keyword.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? keyword
-        let url = API.EDUTAIN_SEARCH + "?keyword=\(encodedKeyword)"
-        
-        NetworkManager.shared.request(urlString: url, method: .GET) { [weak self] (result: Result<APIResponse<[Feed]>, NetworkError>) in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                self.hideLoader()
-                let currentKeyword = self.searchTf.text?.trimmingCharacters(in: .whitespaces) ?? ""
-                guard currentKeyword == keyword else { return }
-                
-                switch result {
-                case .success(let info):
-                    if info.success, let data = info.data {
-                        self.searchResults = data.filter { feed in
-                            feed.f_category?.lowercased() == category.lowercased()
-                        }
-                        self.isSearchActive = true
-                        self.currentFeed = self.searchResults
-                        self.tblVw.reloadData()
-                        
-                        if !self.currentFeed.isEmpty {
-                            self.tblVw.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
-                        }
-                    } else {
-                        self.showAlert(msg: info.description)
-                    }
-                case .failure(let error):
-                    self.showAlert(msg: error.localizedDescription)
-                }
-            }
-        }
-    }
-    
-    func searchBySerialNumber(serialNumber: Int) {
-        showLoader()
-        let category = getCurrentCategory()
-        let sourceData = segmentController.selectedSegmentIndex == 0 ? diyFeed : storiesFeed
-        
-        if let foundFeed = sourceData.first(where: { $0.serial_number == serialNumber }) {
-            isSearchActive = true
-            searchResults = [foundFeed]
-            currentFeed = searchResults
-            tblVw.reloadData()
-            
-            if !currentFeed.isEmpty {
-                tblVw.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
-            }
-        } else {
-            searchSerialNumberFromAPI(serialNumber: serialNumber, category: category)
-        }
-    }
-    
-    func searchSerialNumberFromAPI(serialNumber: Int, category: String) {
-        let url = API.EDUTAIN_SEARCH + "?keyword=\(serialNumber)"
-        
-        NetworkManager.shared.request(urlString: url, method: .GET) { [weak self] (result: Result<APIResponse<[Feed]>, NetworkError>) in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                self.hideLoader()
-                switch result {
-                case .success(let info):
-                    if info.success, let data = info.data {
-                        self.searchResults = data.filter { feed in
-                            feed.f_category?.lowercased() == category.lowercased() &&
-                            feed.serial_number == serialNumber
-                        }
-                        
-                        if self.searchResults.isEmpty {
-                            self.searchResults = data.filter { feed in
-                                feed.f_category?.lowercased() == category.lowercased()
-                            }
-                        }
-                        
-                        self.isSearchActive = true
-                        self.currentFeed = self.searchResults
-                        self.tblVw.reloadData()
-                        
-                        if self.searchResults.isEmpty {
-                            self.showNoResultsMessage(for: "Video #\(serialNumber)")
-                        } else {
-                            self.tblVw.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
-                        }
-                    } else {
-                        self.showAlert(msg: info.description)
-                    }
-                case .failure(let error):
-                    self.showAlert(msg: error.localizedDescription)
-                }
-            }
-        }
-    }
-    
-    func showNoResultsMessage(for searchTerm: String) {
-        let category = getCurrentCategory()
-        showAlert(msg: "No results found for \(searchTerm) in \(category)")
-    }
-    
-    
-    func getDiyFeed() {
-        showLoader()
-        let url = API.EDUTAIN_FEED + "?f_category=Diy"
-        NetworkManager.shared.request(urlString: url, method: .GET) { [weak self] (result: Result<APIResponse<[Feed]>, NetworkError>) in
-            guard let self = self else { return }
-            self.hideLoader()
-            switch result {
-            case .success(let info):
-                if info.success, let data = info.data {
-                    self.diyFeed = data
-                    if !self.isSearchActive {
-                        self.currentFeed = data
-                    }
-                    DispatchQueue.main.async { self.tblVw.reloadData() }
-                } else {
-                    DispatchQueue.main.async { self.showAlert(msg: info.description) }
-                }
-            case .failure(let error):
-                DispatchQueue.main.async { self.showAlert(msg: error.localizedDescription) }
-            }
-        }
-    }
-    
-    func getStoriesFeed() {
-        showLoader()
-        let url = API.EDUTAIN_FEED + "?f_category=Stories"
-        NetworkManager.shared.request(urlString: url, method: .GET) { [weak self] (result: Result<APIResponse<[Feed]>, NetworkError>) in
-            guard let self = self else { return }
-            self.hideLoader()
-            switch result {
-            case .success(let info):
-                if info.success, let data = info.data {
-                    self.storiesFeed = data
-                    if !self.isSearchActive {
-                        self.currentFeed = data
-                    }
-                    DispatchQueue.main.async { self.tblVw.reloadData() }
-                } else {
-                    DispatchQueue.main.async { self.showAlert(msg: info.description) }
-                }
-            case .failure(let error):
-                DispatchQueue.main.async { self.showAlert(msg: error.localizedDescription) }
-            }
-        }
-    }
-    
-    func likeFeed(at index: Int) {
-        guard index < currentFeed.count else { return }
-        let feed = currentFeed[index]
-        let feedId = feed.id
-        let url = API.LIKE_FEED + feedId + "/like"
-        
-        NetworkManager.shared.request(urlString: url, method: .POST) { [weak self] (result: Result<APIResponse<LikeResponse>, NetworkError>) in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let info):
-                    if info.success, let data = info.data {
-                        self.currentFeed[index].likesCount = data.likes_count
-                        self.currentFeed[index].isLiked = data.is_liked
-                        
-                        if self.isSearchActive {
-                            if let searchIndex = self.searchResults.firstIndex(where: { $0.id == feedId }) {
-                                self.searchResults[searchIndex].likesCount = data.likes_count
-                                self.searchResults[searchIndex].isLiked = data.is_liked
-                            }
-                        }
-                        
-                        if self.segmentController.selectedSegmentIndex == 0 {
-                            if let diyIndex = self.diyFeed.firstIndex(where: { $0.id == feedId }) {
-                                self.diyFeed[diyIndex].likesCount = data.likes_count
-                                self.diyFeed[diyIndex].isLiked = data.is_liked
-                            }
-                        } else {
-                            if let storiesIndex = self.storiesFeed.firstIndex(where: { $0.id == feedId }) {
-                                self.storiesFeed[storiesIndex].likesCount = data.likes_count
-                                self.storiesFeed[storiesIndex].isLiked = data.is_liked
-                            }
-                        }
-                    } else {
-                        self.showAlert(msg: info.description)
-                    }
-                    
-                case .failure(let error):
-                    self.showAlert(msg: error.localizedDescription)
-                    let indexPath = IndexPath(row: index, section: 0)
-                    self.tblVw.reloadRows(at: [indexPath], with: .none)
-                }
-            }
-        }
-    }
-    
-    
-    func postQuickComment(feedId: String, comment: String, at index: Int, completion: @escaping (Bool) -> Void) {
-        let url = API.POST_COMMENT  // Replace with your actual comment API endpoint
-        
-        let parameters: [String: Any] = [
-            "feed_id": feedId,
-            "comment": comment
-        ]
-        
-        NetworkManager.shared.request(urlString: url, method: .POST, parameters: parameters) { [weak self] (result: Result<APIResponse<EmptyResponse>, NetworkError>) in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let info):
-                    if info.success {
-                        print("✅ Quick comment posted successfully: \(comment)")
-                        
-                        // Update comment count in current feed
-                        self.currentFeed[index].commentsCount += 1
-                        
-                        // Update search results if active
-                        if self.isSearchActive {
-                            if let searchIndex = self.searchResults.firstIndex(where: { $0.id == feedId }) {
-                                self.searchResults[searchIndex].commentsCount += 1
-                            }
-                        }
-                        
-                        // Update source array
-                        if self.segmentController.selectedSegmentIndex == 0 {
-                            if let diyIndex = self.diyFeed.firstIndex(where: { $0.id == feedId }) {
-                                self.diyFeed[diyIndex].commentsCount += 1
-                            }
-                        } else {
-                            if let storiesIndex = self.storiesFeed.firstIndex(where: { $0.id == feedId }) {
-                                self.storiesFeed[storiesIndex].commentsCount += 1
-                            }
-                        }
-                        
-                        completion(true)
-                        
-                        // Show success feedback
-                        self.showSuccessToast(message: "Comment posted!")
-                        
-                    } else {
-                        self.showAlert(msg: info.description)
-                        completion(false)
-                    }
-                case .failure(let error):
-                    self.showAlert(msg: error.localizedDescription)
-                    completion(false)
-                }
-            }
-        }
-    }
-    
-    
-    func showSuccessToast(message: String) {
-        let toastLabel = UILabel()
-        toastLabel.backgroundColor = UIColor.black.withAlphaComponent(0.8)
-        toastLabel.textColor = .white
-        toastLabel.textAlignment = .center
-        toastLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
-        toastLabel.text = "  ✓ \(message)  "
-        toastLabel.alpha = 0
-        toastLabel.layer.cornerRadius = 20
-        toastLabel.clipsToBounds = true
-        toastLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.addSubview(toastLabel)
-        
-        NSLayoutConstraint.activate([
-            toastLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            toastLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
-            toastLabel.heightAnchor.constraint(equalToConstant: 40),
-            toastLabel.widthAnchor.constraint(greaterThanOrEqualToConstant: 150)
-        ])
-        
-        UIView.animate(withDuration: 0.3, animations: {
-            toastLabel.alpha = 1
-        }) { _ in
-            UIView.animate(withDuration: 0.3, delay: 1.5, options: [], animations: {
-                toastLabel.alpha = 0
-            }) { _ in
-                toastLabel.removeFromSuperview()
-            }
-        }
-    }
-    
-    
-    func callWhatsAppShareAPI(feedId: String, completion: @escaping (Bool) -> Void) {
-        let url = API.WHATSAPP_SHARE
-        let parameters: [String: Any] = ["feed_id": feedId]
-        
-        NetworkManager.shared.request(urlString: url, method: .POST, parameters: parameters) { [weak self] (result: Result<APIResponse<EmptyResponse>, NetworkError>) in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let info):
-                    if info.success {
-                        print("✅ WhatsApp share logged successfully")
-                        completion(true)
-                    } else {
-                        print("❌ WhatsApp share API failed: \(info.description)")
-                        self.showAlert(msg: info.description)
-                        completion(false)
-                    }
-                case .failure(let error):
-                    print("❌ WhatsApp share API error: \(error.localizedDescription)")
-                    self.showAlert(msg: error.localizedDescription)
-                    completion(false)
-                }
-            }
-        }
-    }
-    
-    func openWhatsApp(with feed: Feed) -> Bool {
-        let shareText = """
-        📚 *\(feed.heading)*
-        
-        \(feed.description.stripHTML())
-        
-        🔗 \(feed.youtubeVideo ?? "")
-        
-        📲 Download SchoolFirst App for more!
-        """
-        
-        guard let encodedText = shareText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-              let url = URL(string: "whatsapp://send?text=\(encodedText)") else {
-            return false
-        }
-        
-        if UIApplication.shared.canOpenURL(url) {
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            return true
-        } else {
-            showWhatsAppNotInstalledAlert()
-            return false
-        }
-    }
-    
-    func showWhatsAppNotInstalledAlert() {
-        let alert = UIAlertController(
-            title: "WhatsApp Not Installed",
-            message: "WhatsApp is not installed on your device. Would you like to download it?",
-            preferredStyle: .alert
-        )
-        
-        alert.addAction(UIAlertAction(title: "Download", style: .default) { _ in
-            if let appStoreURL = URL(string: "https://apps.apple.com/app/whatsapp-messenger/id310633997") {
-                UIApplication.shared.open(appStoreURL, options: [:], completionHandler: nil)
-            }
-        })
-        
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        
-        present(alert, animated: true, completion: nil)
-    }
-    
-    func handleWhatsAppShare(at index: Int, feed: Feed, updateCountClosure: @escaping () -> Void) {
-        let shareText = "test"
-        guard let encodedText = shareText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-              let testURL = URL(string: "whatsapp://send?text=\(encodedText)"),
-              UIApplication.shared.canOpenURL(testURL) else {
-            showWhatsAppNotInstalledAlert()
-            return
-        }
-        
-        callWhatsAppShareAPI(feedId: feed.id) { [weak self] success in
-            guard let self = self else { return }
-            
-            if success {
-                self.currentFeed[index].whatsappShareCount += 1
-                
-                if self.isSearchActive {
-                    if let searchIndex = self.searchResults.firstIndex(where: { $0.id == feed.id }) {
-                        self.searchResults[searchIndex].whatsappShareCount += 1
-                    }
-                }
-                
-                if self.segmentController.selectedSegmentIndex == 0 {
-                    if let diyIndex = self.diyFeed.firstIndex(where: { $0.id == feed.id }) {
-                        self.diyFeed[diyIndex].whatsappShareCount += 1
-                    }
-                } else {
-                    if let storiesIndex = self.storiesFeed.firstIndex(where: { $0.id == feed.id }) {
-                        self.storiesFeed[storiesIndex].whatsappShareCount += 1
-                    }
-                }
-                
-                updateCountClosure()
-                _ = self.openWhatsApp(with: feed)
-            }
-        }
-    }
-    
-    
-    func shareContent(feed: Feed, sourceView: UIView, completion: @escaping (Bool) -> Void) {
-        let shareText = """
-        📚 \(feed.heading)
-        
-        \(feed.description.stripHTML())
-        
-        🔗 \(feed.youtubeVideo ?? "")
-        
-        📲 Download SchoolFirst App for more!
-        """
-        
-        var itemsToShare: [Any] = [shareText]
-        
-        if let imageUrlString = feed.image, let imageUrl = URL(string: imageUrlString) {
-            itemsToShare.append(imageUrl)
-        }
-        
-        if let youtubeUrl = feed.youtubeVideo, let url = URL(string: youtubeUrl) {
-            itemsToShare.append(url)
-        }
-        
-        let activityVC = UIActivityViewController(activityItems: itemsToShare, applicationActivities: nil)
-        
-        if let popover = activityVC.popoverPresentationController {
-            popover.sourceView = sourceView
-            popover.sourceRect = sourceView.bounds
-        }
-        
-        activityVC.completionWithItemsHandler = { activity, success, items, error in
-            completion(success)
-        }
-        
-        present(activityVC, animated: true)
+        tblVw.allowsSelection = true
+        tblVw.separatorStyle = .none
+        tblVw.backgroundColor = .white
     }
 }
-
 
 extension EdutainmentVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return currentFeed.count
+        return kids.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let feed = currentFeed[indexPath.row]
-        
-        if segmentController.selectedSegmentIndex == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "EdutainCell") as! EdutainCell
-            cell.setup(feed: feed, index: indexPath.row)
-            cell.btnLike.tag = indexPath.row
-            cell.whatsappBtn.tag = indexPath.row
-            cell.shareBtn.tag = indexPath.row
-            cell.commentBtn.tag = indexPath.row
-            
-            // Like Action
-            cell.likeClicked = { [weak self] index in
-                self?.likeFeed(at: index)
-            }
-            
-            // WhatsApp Share Action
-            cell.whatsappClicked = { [weak self] index, feed in
-                guard let self = self else { return }
-                self.handleWhatsAppShare(at: index, feed: feed) {
-                    cell.updateWhatsappCount()
-                }
-            }
-            
-            // Native Share Action
-            cell.shareClicked = { [weak self] index, feed in
-                guard let self = self else { return }
-                self.shareContent(feed: feed, sourceView: cell.shareBtn) { success in
-                    if success {
-                        cell.updateShareCount()
-                    }
-                }
-            }
-            
-            // Comment Action
-            cell.commentClicked = { [weak self] index, feed in
-                guard let self = self else { return }
-                self.navigateToComments(feed: feed, cellType: .diy)
-            }
-            
-            // NEW: Tag Click Action - Post quick comment
-            cell.tagClicked = { [weak self] index, feed, commentText in
-                guard let self = self else { return }
-                
-                self.postQuickComment(feedId: feed.id, comment: commentText, at: index) { success in
-                    if success {
-                        // Update the cell's comment count
-                        cell.incrementCommentCount()
-                        
-                        // Reset the tag selection after a delay
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                            cell.resetTagSelection()
-                        }
-                    } else {
-                        // Reset selection on failure
-                        cell.resetTagSelection()
-                    }
-                }
-            }
-            
-            return cell
-            
-        } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "StoriesCell") as! StoriesCell
-            cell.setup(feed: feed, index: indexPath.row)
-            cell.btnLike.tag = indexPath.row
-            cell.whatsappBtn.tag = indexPath.row
-            cell.shareBTn.tag = indexPath.row
-            cell.commentBtn.tag = indexPath.row
-            
-            // Like Action
-            cell.likeClicked = { [weak self] index in
-                self?.likeFeed(at: index)
-            }
-            
-            // WhatsApp Share Action
-            cell.whatsappClicked = { [weak self] index, feed in
-                guard let self = self else { return }
-                self.handleWhatsAppShare(at: index, feed: feed) {
-                    cell.updateWhatsappCount()
-                }
-            }
-            
-            // Native Share Action
-            cell.shareClicked = { [weak self] index, feed in
-                guard let self = self else { return }
-                self.shareContent(feed: feed, sourceView: cell.shareBTn) { success in
-                    if success {
-                        cell.updateShareCount()
-                    }
-                }
-            }
-            
-            // Comment Action
-            cell.commentClicked = { [weak self] index, feed in
-                guard let self = self else { return }
-                self.navigateToComments(feed: feed, cellType: .stories)
-            }
-            
-            // NEW: Tag Click Action - Post quick comment
-            cell.tagClicked = { [weak self] index, feed, commentText in
-                guard let self = self else { return }
-                
-                self.postQuickComment(feedId: feed.id, comment: commentText, at: index) { success in
-                    if success {
-                        // Update the cell's comment count
-                        cell.incrementCommentCount()
-                        
-                        // Reset the tag selection after a delay
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                            cell.resetTagSelection()
-                        }
-                    } else {
-                        // Reset selection on failure
-                        cell.resetTagSelection()
-                    }
-                }
-            }
-            
-            return cell
-        }
+        let cell = tableView.dequeueReusableCell(withIdentifier: "KidsCell", for: indexPath) as! KidsCell
+        cell.setupCell(student: kids[indexPath.row])
+        cell.selectionStyle = .none
+        return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return segmentController.selectedSegmentIndex == 0 ? UITableView.automaticDimension : 420
+        return 100 // Adjusted for card height
     }
-}
-
-
-extension EdutainmentVC: UITextFieldDelegate {
     
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 40))
+        headerView.backgroundColor = .white
         
-        if textField == searchTf {
-            searchDebounceTimer?.invalidate()
-            let keyword = searchTf.text?.trimmingCharacters(in: .whitespaces) ?? ""
-            if !keyword.isEmpty {
-                searchByKeyword(keyword: keyword)
-            }
+        let label = UILabel(frame: CGRect(x: 16, y: 0, width: tableView.frame.width - 32, height: 40))
+        label.text = "My School"
+        label.font = UIFont.lexend(.semiBold, size: 24)
+        label.textColor = .gray
+        
+        headerView.addSubview(label)
+        return headerView
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 40
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectedStudent = kids[indexPath.row]
+        
+        print("👤 Selected Student: \(selectedStudent.name)")
+        print("🆔 Student ID: \(selectedStudent.studentID)")
+        print("🆔 QPass ID: \(selectedStudent.qpass_id ?? "nil")")
+        print("🔑 Student Access Token: \(selectedStudent.student_access_token ?? "nil")")
+        
+        guard let sessionToken = selectedStudent.student_access_token,
+              let qpassId = selectedStudent.qpass_id else {
+            print("❌ Missing tokens for SDK")
+            let alert = UIAlertController(title: "Error", message: "Missing student token or ID for this kid.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            self.present(alert, animated: true)
+            return
         }
         
-        return true
-    }
-    
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        if textField == searchTf {
-            videonoTf.text = ""
-            
-            searchBtn.isHidden = true
-            
-        } else if textField == videonoTf {
-            searchTf.text = ""
-            
-            searchBtn.isHidden = false
-            
-            searchDebounceTimer?.invalidate()
-            if isSearchActive {
-                isSearchActive = false
-                currentFeed = segmentController.selectedSegmentIndex == 0 ? diyFeed : storiesFeed
-                tblVw.reloadData()
-            }
-        }
-    }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        if textField == searchTf {
-            let keyword = searchTf.text?.trimmingCharacters(in: .whitespaces) ?? ""
-            
-            if keyword.isEmpty {
-                searchBtn.isHidden = false
-            }
-        }
-    }
-    
-    func textFieldShouldClear(_ textField: UITextField) -> Bool {
-        if textField == searchTf {
-            searchDebounceTimer?.invalidate()
-            
-            searchBtn.isHidden = false
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-                guard let self = self else { return }
-                self.isSearchActive = false
-                self.currentFeed = self.segmentController.selectedSegmentIndex == 0
-                    ? self.diyFeed
-                    : self.storiesFeed
-                self.tblVw.reloadData()
-            }
-        }
-        return true
+        // Use real student credentials from API
+        let domain = "ppsfqpassdev"
+        
+        print("🚀 Launching SDK for \(selectedStudent.name)")
+        QPassManager.shared.launchMFE(
+            domain: domain,
+            authToken: qpassId,
+            sessionToken: sessionToken
+        )
     }
 }

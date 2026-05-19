@@ -29,7 +29,7 @@ class MainTabBarController: UITabBarController,
         ("calendar_tab", "Calendar"),
         ("courses_tab", "CourseEdemy"),
         ("", ""),
-        ("edutain_tab", "Edutain"),
+        ("myschool", "My School"),
         ("profile_tab", "Profile")
     ]
     
@@ -168,7 +168,11 @@ class MainTabBarController: UITabBarController,
         
         let iconImageView = UIImageView()
         iconImageView.contentMode = .scaleAspectFit
-        iconImageView.image = UIImage(named: icon)?.withRenderingMode(.alwaysTemplate)
+        if let systemImage = UIImage(systemName: icon) {
+            iconImageView.image = systemImage.withRenderingMode(.alwaysTemplate)
+        } else {
+            iconImageView.image = UIImage(named: icon)?.withRenderingMode(.alwaysTemplate)
+        }
         iconImageView.tintColor = normalColor
         iconImageView.tag = 100
         iconImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -191,29 +195,39 @@ class MainTabBarController: UITabBarController,
         
         button.addSubview(stackView)
         stackView.translatesAutoresizingMaskIntoConstraints = false
+        let leadingConstraint = stackView.leadingAnchor.constraint(greaterThanOrEqualTo: button.leadingAnchor, constant: 2)
+        let trailingConstraint = stackView.trailingAnchor.constraint(lessThanOrEqualTo: button.trailingAnchor, constant: -2)
+        
+        // Lower priority to avoid conflicts when button width is 0 during initial layout
+        leadingConstraint.priority = .defaultHigh
+        trailingConstraint.priority = .defaultHigh
+        
         NSLayoutConstraint.activate([
             stackView.centerXAnchor.constraint(equalTo: button.centerXAnchor),
             stackView.centerYAnchor.constraint(equalTo: button.centerYAnchor),
-            stackView.leadingAnchor.constraint(greaterThanOrEqualTo: button.leadingAnchor, constant: 2),
-            stackView.trailingAnchor.constraint(lessThanOrEqualTo: button.trailingAnchor, constant: -2)
+            leadingConstraint,
+            trailingConstraint
         ])
         
         return button
     }
     
     func positionTabButtons() {
-        let buttonWidth = view.bounds.width / CGFloat(tabItems.count)
-        let buttonHeight = tabBarCustomHeight
-        
         for (index, button) in tabButtons.enumerated() {
             if index == homeIndex { continue }
             
-            button.frame = CGRect(
-                x: CGFloat(index) * buttonWidth,
-                y: 0,
-                width: buttonWidth,
-                height: buttonHeight
-            )
+            button.translatesAutoresizingMaskIntoConstraints = false
+            if button.superview == nil {
+                customTabBarView.addSubview(button)
+            }
+            
+            // ✅ Use multiplier for proportional width
+            NSLayoutConstraint.activate([
+                button.widthAnchor.constraint(equalTo: customTabBarView.widthAnchor, multiplier: 1.0 / CGFloat(tabItems.count)),
+                button.heightAnchor.constraint(equalToConstant: tabBarCustomHeight),
+                button.topAnchor.constraint(equalTo: customTabBarView.topAnchor),
+                button.leadingAnchor.constraint(equalTo: customTabBarView.leadingAnchor, constant: CGFloat(index) * (view.bounds.width / CGFloat(tabItems.count)))
+            ])
         }
     }
     
@@ -343,7 +357,7 @@ class MainTabBarController: UITabBarController,
     func setupMiddleLabel() {
         middleLabel.removeFromSuperview()
         
-        middleLabel.text = "MySchool"
+        middleLabel.text = "Home"
         middleLabel.font = UIFont.systemFont(ofSize: 10, weight: .medium)
         middleLabel.textColor = normalColor
         middleLabel.textAlignment = .center
@@ -452,7 +466,7 @@ class MainTabBarController: UITabBarController,
             circleButton.setImage(UIImage(named: "MyPlan"), for: .normal)
         }
         
-        middleLabel.text = isSchoolUser ? "MySchool" : "MyPlan"
+        middleLabel.text = "Home"
         circleButton.setTitle("", for: .normal)
     }
 }

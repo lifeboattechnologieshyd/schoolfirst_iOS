@@ -1925,6 +1925,8 @@ struct Student: Codable {
     let gradeID: String
     let section: String?
     let numeric_grade: Int
+    let student_access_token: String?
+    let qpass_id: String?
     @SafeOptional var school : School?
 
 
@@ -1938,9 +1940,46 @@ struct Student: Codable {
         case address
         case mobile
         case grade
+        case clss
         case gradeID = "grade_id"
         case school = "schools"
         case section, numeric_grade
+        case student_access_token, qpass_id
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        studentID = try container.decodeIfPresent(String.self, forKey: .studentID) ?? ""
+        name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
+        image = try container.decodeIfPresent(String.self, forKey: .image)
+        fatherName = try container.decodeIfPresent(String.self, forKey: .fatherName)
+        motherName = try container.decodeIfPresent(String.self, forKey: .motherName)
+        dob = try container.decodeIfPresent(String.self, forKey: .dob)
+        address = try container.decodeIfPresent(String.self, forKey: .address)
+        mobile = try container.decodeIfPresent(String.self, forKey: .mobile)
+        email_json = try container.decodeIfPresent([[String:String]].self, forKey: .email_json)
+        mobile_json = try container.decodeIfPresent([ContactJson].self, forKey: .mobile_json)
+        
+        // Handle grade fallback to clss
+        if let g = try container.decodeIfPresent(String.self, forKey: .grade) {
+            grade = g
+        } else if let c = try container.decodeIfPresent(String.self, forKey: .clss) {
+            grade = c
+        } else {
+            grade = ""
+        }
+        
+        gradeID = try container.decodeIfPresent(String.self, forKey: .gradeID) ?? ""
+        section = try container.decodeIfPresent(String.self, forKey: .section)
+        numeric_grade = try container.decodeIfPresent(Int.self, forKey: .numeric_grade) ?? 0
+        student_access_token = try container.decodeIfPresent(String.self, forKey: .student_access_token)
+        qpass_id = try container.decodeIfPresent(String.self, forKey: .qpass_id)
+        
+        if let schoolData = try container.decodeIfPresent(School.self, forKey: .school) {
+            _school = SafeOptional(wrappedValue: schoolData)
+        } else {
+            _school = SafeOptional(wrappedValue: nil)
+        }
     }
     
     // ✅ Add computed property for id
@@ -1978,6 +2017,31 @@ struct Student: Codable {
         self.school = nil
         self.mobile_json = nil
         self.email_json = nil
+        self.student_access_token = nil
+        self.qpass_id = nil
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(studentID, forKey: .studentID)
+        try container.encode(name, forKey: .name)
+        try container.encodeIfPresent(image, forKey: .image)
+        try container.encodeIfPresent(fatherName, forKey: .fatherName)
+        try container.encodeIfPresent(motherName, forKey: .motherName)
+        try container.encodeIfPresent(dob, forKey: .dob)
+        try container.encodeIfPresent(address, forKey: .address)
+        try container.encodeIfPresent(mobile, forKey: .mobile)
+        try container.encodeIfPresent(email_json, forKey: .email_json)
+        try container.encodeIfPresent(mobile_json, forKey: .mobile_json)
+        try container.encode(grade, forKey: .grade)
+        try container.encode(gradeID, forKey: .gradeID)
+        try container.encodeIfPresent(section, forKey: .section)
+        try container.encode(numeric_grade, forKey: .numeric_grade)
+        try container.encodeIfPresent(student_access_token, forKey: .student_access_token)
+        try container.encodeIfPresent(qpass_id, forKey: .qpass_id)
+        if let schoolVal = school {
+            try container.encodeIfPresent(schoolVal, forKey: .school)
+        }
     }
 }
 struct LikeResponse: Decodable {

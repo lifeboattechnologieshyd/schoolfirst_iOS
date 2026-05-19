@@ -104,6 +104,9 @@ class HomeController: UIViewController {
         )
         bannerVw.addFourSideShadow(color: .black,opacity: 0.3,radius: 8)
         calenderimg.addFourSideShadow(color: .black,opacity: 0.3,radius: 8)
+        calenderimg.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(navigateToCalendar))
+        calenderimg.addGestureRecognizer(tap)
 //        userImage.loadImage(url: UserManager.shared.user?.profileImage ?? "", placeHolderImage: "dummy_kid_profile_pic")
 
         titleLbl.applyOutlineWithBottomShadow(
@@ -114,29 +117,25 @@ class HomeController: UIViewController {
                 shadowOffset: CGSize(width: 1, height: 1)
             )
 
-        if let school = UserManager.shared.selectedSchool {
-            schooluser = true
-            segmentControl.isHidden = false
-            heightOfSegment.isActive = true
-            self.segmentControl.applyCustomStyle()
-        }else{
+        // Always hide segment control and move collection view up
+        segmentControl.isHidden = true
+        heightOfSegment.constant = 0
+        
+        if UserManager.shared.selectedSchool == nil {
             schooluser = false
-            segmentControl.isHidden = true
-            heightOfSegment.isActive = false
-            schoolNames.removeFirst()
-            schoolImages.removeFirst()
-            
+        } else {
+            schooluser = true
         }
+        
+        // Remove School Zone (index 1) to only show Family Zone (index 0)
+        schoolNames.removeLast()
+        schoolImages.removeLast()
+
         self.getCalender()
         self.getBanners()
         self.colVw.register(UINib(nibName: "HomeCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "HomeCollectionViewCell")
         colVw.delegate = self
         colVw.dataSource = self
-        
-        // Family Zone is now Index 0 (Natural Default)
-        self.segmentControl.setTitle("Family Zone", forSegmentAt: 0)
-        self.segmentControl.setTitle("School Zone", forSegmentAt: 1)
-        self.segmentControl.selectedSegmentIndex = 0
         
         // Disable manual scrolling as requested
         self.colVw.isScrollEnabled = false
@@ -242,32 +241,71 @@ class HomeController: UIViewController {
     func getCalender() {
         showLoader()
         self.calender = []
-        let today = Date()
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd-MM-YYYY"
-        let start_date = dateFormatter.string(from: today)
+        dateFormatter.dateFormat = "dd-MM-yyyy"
+        let todayString = dateFormatter.string(from: Date())
         
-        NetworkManager.shared.request(urlString: API.BROADCAST_CALENDER+start_date, method: .GET) { (result: Result<APIResponse<[LifeSkillPrompt]>, NetworkError>)  in
+        // Try the specific date endpoint first as suggested (broadcast/calendar/dd-MM-yyyy)
+        let specificDateUrl = API.BROADCAST_CALENDER + "/" + todayString
+        
+        NetworkManager.shared.request(urlString: specificDateUrl, method: .GET) { (result: Result<APIResponse<[LifeSkillPrompt]>, NetworkError>) in
+            switch result {
+            case .success(let info):
+                if info.success, let content = info.data?.first {
+                    self.hideLoader()
+                    DBManager.shared.calender = content
+                    DispatchQueue.main.async {
+                        self.setupCalendar(content: content)
+                    }
+                    return // Success with specific date, exit early
+                }
+                // If specific date fails or returns no data, fall back to bulk fetch
+                self.fetchBulkCalendar(todayString: todayString)
+                
+            case .failure:
+                // Fallback to bulk fetch if the specific endpoint fails
+                self.fetchBulkCalendar(todayString: todayString)
+            }
+        }
+    }
+    
+    private func fetchBulkCalendar(todayString: String) {
+        NetworkManager.shared.request(urlString: API.BROADCAST_CALENDER, method: .GET, parameters: ["limit": 400, "page": 1]) { (result: Result<APIResponse<[LifeSkillPrompt]>, NetworkError>) in
             self.hideLoader()
             switch result {
             case .success(let info):
-                if info.success {
-                    if let data = info.data {
-                        self.calender = data
-                        if self.calender.count > 0 {
-                            DBManager.shared.calender = self.calender[0]
-                            DispatchQueue.main.async {
-                                self.setupCalendar(content: self.calender[0])
-                            }
+                if let data = info.data {
+                    self.calender = data
+                    // Find today's entry
+                    if let todaysEntry = data.first(where: { $0.date == todayString }) {
+                        DBManager.shared.calender = todaysEntry
+                        DispatchQueue.main.async {
+                            self.setupCalendar(content: todaysEntry)
                         }
+                    } else {
+                        // Today's entry not found, show the "Stay Tuned" fallback message
+                        self.showHomeFallbackMessage(for: todayString)
                     }
-                    
-                }else{
-                    print(info.description)
                 }
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure:
+                self.showHomeFallbackMessage(for: todayString)
             }
+        }
+    }
+    
+    private func showHomeFallbackMessage(for dateString: String) {
+        let fallbackPrompt = LifeSkillPrompt(
+            id: "fallback",
+            date: dateString,
+            prompt: "Stay tuned! Exciting things are on the horizon at SchoolFirst. Everyday in 2026 brings something extraordinary. See you soon!",
+            benefit: "Coming Soon",
+            youtubeVideoURL: "",
+            description: "We are preparing exciting new activities for you. Check back soon!",
+            image: ""
+        )
+        DBManager.shared.calender = fallbackPrompt
+        DispatchQueue.main.async {
+            self.setupCalendar(content: fallbackPrompt)
         }
     }
     func setupCalendar(content: LifeSkillPrompt){
@@ -283,7 +321,12 @@ class HomeController: UIViewController {
             lblDate.text = "\(day)"
             lblMonth.text = "\(month)"
         }
-        lblCalenderPrompt.text = "Today's Prompt :" + content.prompt
+        lblCalenderTitle.text = content.prompt
+        if content.id == "fallback" {
+            lblCalenderPrompt.text = content.prompt
+        } else {
+            lblCalenderPrompt.text = "Today's Prompt: " + content.prompt
+        }
     }
     
     func upload_user_name(image: UIImage){
@@ -342,18 +385,23 @@ class HomeController: UIViewController {
     }
 
     func launchQPass() {
-        // Bhagya Laxmi Demo Credentials
         let domain = "ppsfqpassdev"
-        let authToken = "182f8aa8b85248979e0e4863f2750c61"
-        let sessionToken = "13gGgZI7fKmv/1vz4bfYvdTOiZGa5B6GtTJAO6CQloY2M6arRck0LmYSurAacwI+pUzwLQw/IjxS4jdQOoAYWQbjW9b2hAhAf1CZTMGGTsj1Ucq0UIqFQabxDv9ZP2+tpusb+IG+pcbM6BZkI3x+xqgYohqY0u3kr8eDu9H3lnz8RgbehLoBxRi2KiVXD13+ybi/r82E4KTh/wgw5B7n0w=="
         
-        print("🚀 Launching Growth Zone with Demo Credentials (Bhagya Laxmi)")
-        
-        QPassManager.shared.launchMFE(
-            domain: domain,
-            authToken: authToken,
-            sessionToken: sessionToken
-        )
+        if let student = UserManager.shared.selectedKid,
+           let qpassId = student.qpass_id,
+           let sessionToken = student.student_access_token {
+            
+            print("🚀 Launching SDK for \(student.name)")
+            QPassManager.shared.launchMFE(
+                domain: domain,
+                authToken: qpassId,
+                sessionToken: sessionToken
+            )
+        }
+    }
+    @objc func navigateToCalendar() {
+        let vc = storyboard?.instantiateViewController(identifier: "CalendarViewController") as! CalendarViewController
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
 
