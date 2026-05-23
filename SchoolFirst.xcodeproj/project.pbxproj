@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		44E37597B8CB89D020425855 /* Pods_SchoolFirst.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0A370ED3D358E19AE94C07E /* Pods_SchoolFirst.framework */; };
+		69ECB9333DD72F5BCE464818 /* Pods_SchoolFirst.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C297BB56EAE4ADA0120029B /* Pods_SchoolFirst.framework */; };
 		8803F35D2E0AB958000F7784 /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8803F35C2E0AB958000F7784 /* IQKeyboardManagerSwift */; };
 		8803F6112E11CA68000F7784 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 8803F6102E11CA68000F7784 /* Lottie */; };
 		884DAD6D2EB1FDD60088EBA7 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 884DAD6C2EB1FDD60088EBA7 /* FirebaseAnalyticsCore */; };
@@ -31,18 +31,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		2E354042E29126B019AF8558 /* Pods-SchoolFirst.debug dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchoolFirst.debug dev.xcconfig"; path = "Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst.debug dev.xcconfig"; sourceTree = "<group>"; };
-		7D0E02E8B0273FC487AB2016 /* Pods-SchoolFirst.release dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchoolFirst.release dev.xcconfig"; path = "Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst.release dev.xcconfig"; sourceTree = "<group>"; };
-		884DB5D62DFC0394003F154E /* School First.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "School First.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		B0A370ED3D358E19AE94C07E /* Pods_SchoolFirst.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SchoolFirst.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E7A23E4ABB3E4C4CF4461B55 /* Pods-SchoolFirst.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchoolFirst.debug.xcconfig"; path = "Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst.debug.xcconfig"; sourceTree = "<group>"; };
-		EA37FEF8EE954464166931FE /* Pods-SchoolFirst.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchoolFirst.release.xcconfig"; path = "Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst.release.xcconfig"; sourceTree = "<group>"; };
+		0FB5E7414516D087F6E02142 /* Pods-SchoolFirst.release dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchoolFirst.release dev.xcconfig"; path = "Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst.release dev.xcconfig"; sourceTree = "<group>"; };
+		2D913125AE2233F09B4D76D4 /* Pods-SchoolFirst.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchoolFirst.release.xcconfig"; path = "Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst.release.xcconfig"; sourceTree = "<group>"; };
+		884DB5D62DFC0394003F154E /* SchoolFirst.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SchoolFirst.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9C297BB56EAE4ADA0120029B /* Pods_SchoolFirst.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SchoolFirst.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DFE7C246BD19C737F6783B80 /* Pods-SchoolFirst.debug dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchoolFirst.debug dev.xcconfig"; path = "Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst.debug dev.xcconfig"; sourceTree = "<group>"; };
+		FF5DF5C5B45624FBD5DEFE06 /* Pods-SchoolFirst.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchoolFirst.debug.xcconfig"; path = "Target Support Files/Pods-SchoolFirst/Pods-SchoolFirst.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		885E77E82EB5E72400256F9F /* Exceptions for "SchoolFirst" folder in "SchoolFirst" target */ = {
+		96AC4C542FC0E33600583C55 /* Exceptions for "SchoolFirst" folder in "SchoolFirst" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"Configurations/GoogleService-Info-DEV.plist",
+				"Configurations/GoogleService-Info-PROD.plist",
 				Info.plist,
 			);
 			target = 884DB5D52DFC0394003F154E /* SchoolFirst */;
@@ -53,7 +55,7 @@
 		884DB5D82DFC0394003F154E /* SchoolFirst */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				885E77E82EB5E72400256F9F /* Exceptions for "SchoolFirst" folder in "SchoolFirst" target */,
+				96AC4C542FC0E33600583C55 /* Exceptions for "SchoolFirst" folder in "SchoolFirst" target */,
 			);
 			path = SchoolFirst;
 			sourceTree = "<group>";
@@ -85,20 +87,28 @@
 				884F56E62EAF7958000645BE /* FirebaseAnalytics in Frameworks */,
 				884F56E82EAF7958000645BE /* FirebaseCore in Frameworks */,
 				889390E92E5D82880064AFEE /* YouTubeiOSPlayerHelper in Frameworks */,
-				44E37597B8CB89D020425855 /* Pods_SchoolFirst.framework in Frameworks */,
+				69ECB9333DD72F5BCE464818 /* Pods_SchoolFirst.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0C1269B02B5A04D5D4FCF3D9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9C297BB56EAE4ADA0120029B /* Pods_SchoolFirst.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		6E879F4E8A5D5783DFE19CD2 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				E7A23E4ABB3E4C4CF4461B55 /* Pods-SchoolFirst.debug.xcconfig */,
-				2E354042E29126B019AF8558 /* Pods-SchoolFirst.debug dev.xcconfig */,
-				EA37FEF8EE954464166931FE /* Pods-SchoolFirst.release.xcconfig */,
-				7D0E02E8B0273FC487AB2016 /* Pods-SchoolFirst.release dev.xcconfig */,
+				FF5DF5C5B45624FBD5DEFE06 /* Pods-SchoolFirst.debug.xcconfig */,
+				DFE7C246BD19C737F6783B80 /* Pods-SchoolFirst.debug dev.xcconfig */,
+				2D913125AE2233F09B4D76D4 /* Pods-SchoolFirst.release.xcconfig */,
+				0FB5E7414516D087F6E02142 /* Pods-SchoolFirst.release dev.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -109,24 +119,16 @@
 				884DB5D82DFC0394003F154E /* SchoolFirst */,
 				884DB5D72DFC0394003F154E /* Products */,
 				6E879F4E8A5D5783DFE19CD2 /* Pods */,
-				A5B6D83129FA4F760ADBA4BD /* Frameworks */,
+				0C1269B02B5A04D5D4FCF3D9 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
 		884DB5D72DFC0394003F154E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				884DB5D62DFC0394003F154E /* School First.app */,
+				884DB5D62DFC0394003F154E /* SchoolFirst.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		A5B6D83129FA4F760ADBA4BD /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				B0A370ED3D358E19AE94C07E /* Pods_SchoolFirst.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -136,13 +138,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 884DB5E92DFC0396003F154E /* Build configuration list for PBXNativeTarget "SchoolFirst" */;
 			buildPhases = (
-				4E3BF4F0CA4B0674907530D3 /* [CP] Check Pods Manifest.lock */,
+				476F22F592134209ABA7CA96 /* [CP] Check Pods Manifest.lock */,
 				880D2EC62EBB558A006979A5 /* Copy Firebase Configurations */,
 				884DB5D22DFC0394003F154E /* Sources */,
 				884DB5D32DFC0394003F154E /* Frameworks */,
 				884DB5D42DFC0394003F154E /* Resources */,
 				880D2ED02EBB7A80006979A5 /* Upload Crashlytics dSYMs */,
-				CAF73337A82CAD7D9BBECCAA /* [CP] Embed Pods Frameworks */,
+				CEF2022BAC47BD095933E23E /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -175,7 +177,7 @@
 				887C17272F102169003A5C58 /* CashfreePGUISDK */,
 			);
 			productName = SchoolFirst;
-			productReference = 884DB5D62DFC0394003F154E /* School First.app */;
+			productReference = 884DB5D62DFC0394003F154E /* SchoolFirst.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -232,7 +234,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		4E3BF4F0CA4B0674907530D3 /* [CP] Check Pods Manifest.lock */ = {
+		476F22F592134209ABA7CA96 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -296,7 +298,7 @@
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nset -e\n\necho \"------------------------------------\"\necho \"🔥 Crashlytics dSYM Upload Script (SPM Safe Version)\"\necho \"Active configuration: ${CONFIGURATION}\"\necho \"------------------------------------\"\n\nCONFIGS_DIR=\"${PROJECT_DIR}/SchoolFirst/Configurations\"\nPLIST_PATH=\"\"\nDSYM_PATH=\"\"\n\n# Make sure build dir exists\nif [ ! -d \"${BUILD_DIR}\" ]; then\n  echo \"⚠️ BUILD_DIR missing — creating...\"\n  mkdir -p \"${BUILD_DIR}\"\nfi\n\n# Select Firebase plist file\ncase \"${CONFIGURATION}\" in\n  \"Debug Dev\"|\"Release Dev\")\n    PLIST_PATH=\"${CONFIGS_DIR}/GoogleService-Info-DEV.plist\"\n    ;;\n  \"Debug\"|\"Release\")\n    PLIST_PATH=\"${CONFIGS_DIR}/GoogleService-Info-PROD.plist\"\n    ;;\n  *)\n    echo \"⚠️ Unknown configuration: ${CONFIGURATION}\"\n    ls \"${CONFIGS_DIR}\"\n    exit 0\n    ;;\nesac\n\n# Check plist exists\nif [ ! -f \"${PLIST_PATH}\" ]; then\n  echo \"❌ Firebase plist not found at: ${PLIST_PATH}\"\n  exit 0\nfi\n\n# Wait for dSYM path\nif [ ! -d \"${DWARF_DSYM_FOLDER_PATH}\" ]; then\n  echo \"⚠️ Waiting for dSYM folder...\"\n  \nfi\n\nDSYM_PATH=\"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}\"\n\nif [ ! -d \"${DSYM_PATH}\" ]; then\n  echo \"⚠️ Waiting for dSYM file...\"\n  \nfi\n\n# Crashlytics upload path (SPM)\nCRASHLYTICS_RUN_PATH=\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\nif [ ! -f \"${CRASHLYTICS_RUN_PATH}\" ]; then\n  CRASHLYTICS_RUN_PATH=\"${PROJECT_DIR}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\nfi\n\nif [ ! -f \"${CRASHLYTICS_RUN_PATH}\" ]; then\n  echo \"❌ Crashlytics run script not found!\"\n  exit 0\nfi\n\necho \"✅ Using plist: ${PLIST_PATH}\"\necho \"✅ Using dSYM path: ${DSYM_PATH}\"\necho \"✅ Using Crashlytics script: ${CRASHLYTICS_RUN_PATH}\"\n\nsleep 3\n\n\n# ✅ Upload dSYMs\n\n\"${CRASHLYTICS_RUN_PATH}\" \\\n  --google-service-info \"${PLIST_PATH}\" \\\n  --path \"${DWARF_DSYM_FOLDER_PATH}\"\n  \necho \"------------------------------------\"\necho \"✅ Crashlytics dSYM upload complete\"\necho \"------------------------------------\"\n\n# Cleanup\n\n\n\n\n";
 		};
-		CAF73337A82CAD7D9BBECCAA /* [CP] Embed Pods Frameworks */ = {
+		CEF2022BAC47BD095933E23E /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -332,16 +334,18 @@
 /* Begin XCBuildConfiguration section */
 		884DB5EA2DFC0396003F154E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E7A23E4ABB3E4C4CF4461B55 /* Pods-SchoolFirst.debug.xcconfig */;
+			baseConfigurationReference = FF5DF5C5B45624FBD5DEFE06 /* Pods-SchoolFirst.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = SchoolFirst/SchoolFirst.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 7CN8AS9ANR;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
-				GENERATE_INFOPLIST_FILE = YES;
+				EXECUTABLE_NAME = "$(PRODUCT_NAME)";
+				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = SchoolFirst/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SchoolFirst;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
@@ -358,9 +362,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				"MACH_O_TYPE[arch=*]" = mh_execute;
 				MARKETING_VERSION = 1.41;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(app_bundle_identifier)";
-				PRODUCT_NAME = "$(app_name)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.paranpara.schoolfirst;
+				PRODUCT_NAME = SchoolFirst;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "\nPROD\nPROD\nPROD\nPROD";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -371,7 +376,7 @@
 		};
 		884DB5EB2DFC0396003F154E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EA37FEF8EE954464166931FE /* Pods-SchoolFirst.release.xcconfig */;
+			baseConfigurationReference = 2D913125AE2233F09B4D76D4 /* Pods-SchoolFirst.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -380,7 +385,8 @@
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 7CN8AS9ANR;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
-				GENERATE_INFOPLIST_FILE = YES;
+				EXECUTABLE_NAME = "$(PRODUCT_NAME)";
+				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = SchoolFirst/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SchoolFirst;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
@@ -398,8 +404,8 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.41;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(app_bundle_identifier)";
-				PRODUCT_NAME = "$(app_name)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.paranpara.schoolfirst;
+				PRODUCT_NAME = SchoolFirst;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = PROD;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -410,8 +416,6 @@
 		};
 		884DB5EC2DFC0396003F154E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReferenceAnchor = 884DB5D82DFC0394003F154E /* SchoolFirst */;
-			baseConfigurationReferenceRelativePath = Configurations/Prod.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -600,7 +604,7 @@
 		};
 		884DB5EF2DFC0B3F003F154E /* Debug Dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2E354042E29126B019AF8558 /* Pods-SchoolFirst.debug dev.xcconfig */;
+			baseConfigurationReference = DFE7C246BD19C737F6783B80 /* Pods-SchoolFirst.debug dev.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -609,7 +613,8 @@
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 7CN8AS9ANR;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
-				GENERATE_INFOPLIST_FILE = YES;
+				EXECUTABLE_NAME = SchoolFirstDev;
+				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = SchoolFirst/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "SchoolFirst Dev";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
@@ -627,8 +632,8 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.41;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(app_bundle_identifier)";
-				PRODUCT_NAME = "$(app_name)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.paranpara.schoolfirst.dev;
+				PRODUCT_NAME = SchoolFirstDev;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -697,7 +702,7 @@
 		};
 		884DB5F12DFC0B47003F154E /* Release Dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7D0E02E8B0273FC487AB2016 /* Pods-SchoolFirst.release dev.xcconfig */;
+			baseConfigurationReference = 0FB5E7414516D087F6E02142 /* Pods-SchoolFirst.release dev.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -706,7 +711,8 @@
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 7CN8AS9ANR;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
-				GENERATE_INFOPLIST_FILE = YES;
+				EXECUTABLE_NAME = SchoolFirstDev;
+				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = SchoolFirst/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "SchoolFirst Dev";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
@@ -724,8 +730,8 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.41;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(app_bundle_identifier)";
-				PRODUCT_NAME = "$(app_name)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.paranpara.schoolfirst.dev;
+				PRODUCT_NAME = SchoolFirstDev;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEV;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

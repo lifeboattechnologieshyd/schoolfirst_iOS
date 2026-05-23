@@ -8,8 +8,8 @@ import UIKit
 import IQKeyboardManagerSwift
 import Firebase
 import FirebaseCore
-import FirebaseMessaging
 import FirebaseCrashlytics
+import FirebaseMessaging
 import FirebaseAnalytics
 import UserNotifications
 
@@ -153,7 +153,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // ---------------------------------------------------------
     // MARK: KEYBOARD MANAGER
     // ---------------------------------------------------------
-
+    //import FirebaseCrashlytics
     private func setupKeyboardManager() {
         IQKeyboardManager.shared.isEnabled = true
         IQKeyboardManager.shared.enableAutoToolbar = true
@@ -173,7 +173,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-   
+   //import FirebaseMessaging
     func application(
         _ application: UIApplication,
         configurationForConnecting connectingSceneSession: UISceneSession,

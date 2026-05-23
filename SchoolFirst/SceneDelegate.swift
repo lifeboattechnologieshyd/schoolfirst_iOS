@@ -33,8 +33,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             print("Unable to find a valid window")
             return
         }
-        window.rootViewController = tabBarController
-        window.makeKeyAndVisible()
+      // VM window.rootViewController = tabBarController
+       // VMwindow.makeKeyAndVisible()
     }
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
