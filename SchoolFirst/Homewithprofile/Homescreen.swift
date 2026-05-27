@@ -3,6 +3,11 @@
 //  SchoolFirst
 //
 
+//
+//  Homescreen.swift
+//  SchoolFirst
+//
+
 import UIKit
 
 class Homescreen: UIViewController {
@@ -32,7 +37,7 @@ class Homescreen: UIViewController {
         ],
         
         [
-            "title" : "Fee Management",
+            "title" : "Fee",
             "image" : "feemanagement"
         ],
         
@@ -57,8 +62,8 @@ class Homescreen: UIViewController {
         ],
         
         [
-            "title" : "Communicate",
-            "image" : "communicate"
+            "title" : "Transport",
+            "image" : "transport"
         ],
         
         [
@@ -72,8 +77,8 @@ class Homescreen: UIViewController {
         ],
         
         [
-            "title" : "Transport",
-            "image" : "transport"
+            "title" : "Contact us",
+            "image" : "communicate"
         ]
     ]
     
@@ -113,6 +118,13 @@ class Homescreen: UIViewController {
         CollectionView.isScrollEnabled = true
         setupContainer()
         setupCollectionView()
+        CollectionView.isScrollEnabled = false
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // HIDE DEFAULT NAVIGATION BAR
+        navigationController?.setNavigationBarHidden(true, animated: animated)
     }
     
     override func viewDidLayoutSubviews() {
@@ -251,7 +263,65 @@ UICollectionViewDelegateFlowLayout {
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
         let width = (collectionView.frame.width - 24) / 3
-        return CGSize(width: width, height: 104)
+        return CGSize(width: width, height: 96)
+    }
+    
+    // MARK: - DID SELECT ITEM
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        didSelectItemAt indexPath: IndexPath
+    ) {
+        let item = modulesData[indexPath.row]
+        let title = item["title"] ?? ""
+        
+        switch title {
+            
+        case "Profile":
+            navigateToStudentProfile()
+            
+        // ADD MORE CASES HERE LATER FOR OTHER MODULES
+            
+        default:
+            print("Tapped: \(title)")
+        }
+    }
+    
+    // MARK: - NAVIGATION
+    
+    private func navigateToStudentProfile() {
+        
+        // OPTION 1: If StudentprofileVC is in Storyboard with identifier "StudentprofileVC"
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
+        if let profileVC = storyboard.instantiateViewController(
+            withIdentifier: "StudentprofileVC"
+        ) as? StudentprofileVC {
+            
+            profileVC.hidesBottomBarWhenPushed = true
+            
+            if let nav = navigationController {
+                nav.setNavigationBarHidden(true, animated: false)
+                nav.pushViewController(profileVC, animated: true)
+            } else {
+                profileVC.modalPresentationStyle = .fullScreen
+                present(profileVC, animated: true)
+            }
+        }
+        
+        // OPTION 2: If StudentprofileVC is created programmatically (no storyboard ID), use this instead:
+        /*
+        let profileVC = StudentprofileVC()
+        profileVC.hidesBottomBarWhenPushed = true
+        
+        if let nav = navigationController {
+            nav.setNavigationBarHidden(true, animated: false)
+            nav.pushViewController(profileVC, animated: true)
+        } else {
+            profileVC.modalPresentationStyle = .fullScreen
+            present(profileVC, animated: true)
+        }
+        */
     }
 }
 
