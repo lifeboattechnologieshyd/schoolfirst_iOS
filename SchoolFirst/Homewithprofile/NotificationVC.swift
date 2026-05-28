@@ -74,7 +74,7 @@ class NotificationVC: UIViewController {
     
     private lazy var backButton: UIButton = {
         let button = UIButton(type: .system)
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .semibold)
+        let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)
         button.setImage(UIImage(systemName: "arrow.left", withConfiguration: config), for: .normal)
         button.tintColor = primaryColor
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -85,7 +85,7 @@ class NotificationVC: UIViewController {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Notifications"
-        label.font = .systemFont(ofSize: 24, weight: .bold)
+        label.font = .systemFont(ofSize: 17, weight: .bold)
         label.textColor = primaryColor
         label.translatesAutoresizingMaskIntoConstraints = false
         return label

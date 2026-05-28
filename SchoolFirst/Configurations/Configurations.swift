@@ -31,7 +31,9 @@ private enum BuildConfiguration {
 enum PLISTVALUES {
     static var baseUrl : String {
         do{
-            return try BuildConfiguration.value(for: "server_url")
+            let url: String = try BuildConfiguration.value(for: "server_url")
+            print("✅ BASE URL:", url)
+            return url
         } catch {
             fatalError(error.localizedDescription)
         }

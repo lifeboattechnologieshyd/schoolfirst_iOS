@@ -4,17 +4,10 @@
 //
 //  Created by vamshi krishna on 25/05/26.
 //
-//
-//  EditProfileVC.swift
-//  SchoolFirst
-//
-//  Created by vamshi krishna on 25/05/26.
-//
 
 import UIKit
 
 // MARK: - PaddingLabel
-
 
 class EditProfileVC: UIViewController {
     
@@ -339,7 +332,7 @@ class EditProfileVC: UIViewController {
         addressView.text = "123 Maple St, Springfield, IL 62704"
         addressView.font = .systemFont(ofSize: 14)
         addressView.textColor = .black
-        addressView.backgroundColor = UIColor(red: 0.97, green: 0.98, blue: 1.0, alpha: 1)
+        addressView.backgroundColor = .white  // Changed: White background instead of blue
         addressView.layer.borderWidth = 1
         addressView.layer.borderColor = UIColor.systemGray5.cgColor
         addressView.layer.cornerRadius = 8
@@ -487,7 +480,7 @@ class EditProfileVC: UIViewController {
         tf.text = text
         tf.font = .systemFont(ofSize: 14)
         tf.textColor = .black
-        tf.backgroundColor = UIColor(red: 0.97, green: 0.98, blue: 1.0, alpha: 1)
+        tf.backgroundColor = .white  // Changed: White background instead of light blue
         tf.layer.borderWidth = 1
         tf.layer.borderColor = UIColor.systemGray5.cgColor
         tf.layer.cornerRadius = 8
