@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -12,7 +12,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="AttendanceCell" rowHeight="290" id="KGk-i7-Jjw" customClass="AttendanceCell" customModule="SF_Dev" customModuleProvider="target">
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="AttendanceCell" rowHeight="290" id="KGk-i7-Jjw" customClass="AttendanceCell" customModule="SchoolFirst" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="372" height="290"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
@@ -36,7 +36,7 @@
                                 <attributedString key="attributedText">
                                     <fragment content=" Attendance Snapshot">
                                         <attributes>
-                                            <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                            <font key="NSFont" metaFont="system" size="16"/>
                                         </attributes>
                                     </fragment>
                                 </attributedString>
@@ -60,7 +60,7 @@
                                         <attributedString key="attributedText">
                                             <fragment content=" Present Days">
                                                 <attributes>
-                                                    <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                                    <font key="NSFont" metaFont="cellTitle"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
@@ -75,7 +75,7 @@
                                         <attributedString key="attributedText">
                                             <fragment content=" 129">
                                                 <attributes>
-                                                    <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                                    <font key="NSFont" metaFont="system" size="16"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
@@ -104,7 +104,7 @@
                                         <attributedString key="attributedText">
                                             <fragment content=" Absent Days">
                                                 <attributes>
-                                                    <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                                    <font key="NSFont" metaFont="cellTitle"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
@@ -120,7 +120,7 @@
                                             <fragment content=" 11">
                                                 <attributes>
                                                     <color key="NSColor" red="0.99892729520000001" green="0.0040644132529999996" blue="0.1059660539" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                                    <font key="NSFont" metaFont="system" size="16"/>
                                                     <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                                 </attributes>
                                             </fragment>
@@ -173,7 +173,7 @@
                             <attributedString key="attributedTitle">
                                 <fragment content=" Leave History">
                                     <attributes>
-                                        <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                        <font key="NSFont" metaFont="system" size="16"/>
                                         <font key="NSOriginalFont" size="12" name="Helvetica"/>
                                     </attributes>
                                 </fragment>
@@ -192,7 +192,7 @@
                             <attributedString key="attributedTitle">
                                 <fragment content=" Request Leave">
                                     <attributes>
-                                        <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                        <font key="NSFont" metaFont="system" size="16"/>
                                         <font key="NSOriginalFont" size="12" name="Helvetica"/>
                                     </attributes>
                                 </fragment>
