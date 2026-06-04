@@ -40,7 +40,7 @@ class EditProfileVC: UIViewController {
     private lazy var headerTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "Edit Profile"
-        label.font = .systemFont(ofSize: 20, weight: .bold)
+        label.font = .systemFont(ofSize: 18, weight: .bold)
         label.textColor = primaryColor
         label.translatesAutoresizingMaskIntoConstraints = false
         return label

@@ -79,6 +79,11 @@ class Homescreen: UIViewController {
         [
             "title" : "Contact us",
             "image" : "communicate"
+        ],
+        
+        [
+            "title" : "Events",
+            "image" : "event"
         ]
     ]
     
@@ -115,10 +120,14 @@ class Homescreen: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        CollectionView.isScrollEnabled = true
+        
         setupContainer()
         setupCollectionView()
-        CollectionView.isScrollEnabled = false
+        
+        // MAKE COLLECTIONVIEW SCROLLABLE
+        CollectionView.isScrollEnabled = true
+        CollectionView.alwaysBounceVertical = true
+        CollectionView.showsVerticalScrollIndicator = false
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -170,7 +179,7 @@ extension Homescreen {
         
         layout.itemSize = CGSize(
             width: 100,
-            height: 104
+            height: 140
         )
         
         CollectionView.collectionViewLayout = layout
@@ -280,6 +289,9 @@ UICollectionViewDelegateFlowLayout {
         case "Profile":
             navigateToStudentProfile()
             
+        case "Calendar":
+            navigateToCalendar()
+            
         // ADD MORE CASES HERE LATER FOR OTHER MODULES
             
         default:
@@ -320,6 +332,43 @@ UICollectionViewDelegateFlowLayout {
         } else {
             profileVC.modalPresentationStyle = .fullScreen
             present(profileVC, animated: true)
+        }
+        */
+    }
+    
+    // MARK: - NAVIGATE TO CALENDAR
+    
+    private func navigateToCalendar() {
+        
+        // OPTION 1: If CalenderVC is in Storyboard with identifier "CalenderVC"
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
+        if let calendarVC = storyboard.instantiateViewController(
+            withIdentifier: "CalenderVC"
+        ) as? CalenderVC {
+            
+            calendarVC.hidesBottomBarWhenPushed = true
+            
+            if let nav = navigationController {
+                nav.setNavigationBarHidden(true, animated: false)
+                nav.pushViewController(calendarVC, animated: true)
+            } else {
+                calendarVC.modalPresentationStyle = .fullScreen
+                present(calendarVC, animated: true)
+            }
+        }
+        
+        // OPTION 2: If CalenderVC is created programmatically (no storyboard ID), use this instead:
+        /*
+        let calendarVC = CalenderVC()
+        calendarVC.hidesBottomBarWhenPushed = true
+        
+        if let nav = navigationController {
+            nav.setNavigationBarHidden(true, animated: false)
+            nav.pushViewController(calendarVC, animated: true)
+        } else {
+            calendarVC.modalPresentationStyle = .fullScreen
+            present(calendarVC, animated: true)
         }
         */
     }

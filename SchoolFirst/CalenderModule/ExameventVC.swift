@@ -9,6 +9,7 @@ import UIKit
 
 class ExameventVC: UIViewController {
 
+    @IBOutlet weak var BackButton: UIButton!
     @IBOutlet weak var tableview: UITableView!
 
     let titles = [
@@ -34,12 +35,25 @@ class ExameventVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         tableview.allowsSelection = false
-        
         tableview.separatorStyle = .none
 
         setupTableView()
     }
+
+    // MARK: - Back Button Action
+
+    @IBAction func BackButtonTapped(_ sender: UIButton) {
+
+        if let nav = navigationController {
+            nav.popViewController(animated: true)
+        } else {
+            dismiss(animated: true)
+        }
+    }
+
+    // MARK: - TableView Setup
 
     private func setupTableView() {
 
@@ -56,7 +70,6 @@ class ExameventVC: UIViewController {
             forCellReuseIdentifier: "ExameventTableViewCell2"
         )
 
-        // NEW CELL
         tableview.register(
             UINib(nibName: "ExameventTableViewCell3", bundle: nil),
             forCellReuseIdentifier: "ExameventTableViewCell3"
@@ -65,6 +78,8 @@ class ExameventVC: UIViewController {
         tableview.separatorStyle = .none
     }
 }
+
+// MARK: - UITableView Delegate & DataSource
 
 extension ExameventVC: UITableViewDelegate, UITableViewDataSource {
 

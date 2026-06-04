@@ -9,12 +9,24 @@ import UIKit
 
 class FeeEventVC: UIViewController {
 
+    @IBOutlet weak var BackButton: UIButton!
     @IBOutlet weak var tableview: UITableView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupTableView()
+    }
+
+    // MARK: - Back Button Action
+
+    @IBAction func BackButtonTapped(_ sender: UIButton) {
+
+        if let nav = navigationController {
+            nav.popViewController(animated: true)
+        } else {
+            dismiss(animated: true)
+        }
     }
 
     // MARK: - Setup TableView
@@ -25,7 +37,10 @@ class FeeEventVC: UIViewController {
         tableview.dataSource = self
 
         tableview.register(
-            UINib(nibName: "FeeEventTableViewCell1", bundle: nil),
+            UINib(
+                nibName: "FeeEventTableViewCell1",
+                bundle: nil
+            ),
             forCellReuseIdentifier: "FeeEventTableViewCell1"
         )
 
@@ -37,13 +52,18 @@ class FeeEventVC: UIViewController {
 
 extension FeeEventVC: UITableViewDelegate, UITableViewDataSource {
 
-    func tableView(_ tableView: UITableView,
-                   numberOfRowsInSection section: Int) -> Int {
+    func tableView(
+        _ tableView: UITableView,
+        numberOfRowsInSection section: Int
+    ) -> Int {
+
         return 1
     }
 
-    func tableView(_ tableView: UITableView,
-                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath
+    ) -> UITableViewCell {
 
         let cell = tableView.dequeueReusableCell(
             withIdentifier: "FeeEventTableViewCell1",
@@ -55,8 +75,11 @@ extension FeeEventVC: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
 
-    func tableView(_ tableView: UITableView,
-                   heightForRowAt indexPath: IndexPath) -> CGFloat {
+    func tableView(
+        _ tableView: UITableView,
+        heightForRowAt indexPath: IndexPath
+    ) -> CGFloat {
+
         return 1000
     }
 }
