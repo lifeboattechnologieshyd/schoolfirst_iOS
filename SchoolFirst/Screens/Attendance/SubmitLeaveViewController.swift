@@ -162,6 +162,8 @@ class SubmitLeaveViewController: UIViewController {
             message = "Data error: \(errorMessage)"
         case .invalidURL:
             message = "Invalid request. Please contact support."
+        @unknown default:
+            message = "An unexpected error occurred. Please try again."
         }
         
         showAlert(title: "Error", message: message)
@@ -247,3 +249,4 @@ class SubmitLeaveViewController: UIViewController {
             return currentCellHeight
         }
     }
+

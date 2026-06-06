@@ -28,6 +28,7 @@
 		887C17282F102169003A5C58 /* CashfreePGUISDK in Frameworks */ = {isa = PBXBuildFile; productRef = 887C17272F102169003A5C58 /* CashfreePGUISDK */; };
 		889390E92E5D82880064AFEE /* YouTubeiOSPlayerHelper in Frameworks */ = {isa = PBXBuildFile; productRef = 889390E82E5D82880064AFEE /* YouTubeiOSPlayerHelper */; };
 		88BD71232E5362D900CC824D /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 88BD71222E5362D900CC824D /* Kingfisher */; };
+		96E59BAD2FD2B6010022DAE9 /* PhonePePayment in Frameworks */ = {isa = PBXBuildFile; productRef = 96E59BAC2FD2B6010022DAE9 /* PhonePePayment */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -70,6 +71,7 @@
 				885A8AB92EFD2B0E00F5A9F9 /* CashfreePGUISDK in Frameworks */,
 				887C17202F102169003A5C58 /* CFNetworkSDK in Frameworks */,
 				887C17262F102169003A5C58 /* CashfreePGCoreSDK in Frameworks */,
+				96E59BAD2FD2B6010022DAE9 /* PhonePePayment in Frameworks */,
 				884F56EF2EAF8F43000645BE /* FirebaseMessaging in Frameworks */,
 				88BD71232E5362D900CC824D /* Kingfisher in Frameworks */,
 				887C17242F102169003A5C58 /* CashfreePG in Frameworks */,
@@ -175,6 +177,7 @@
 				887C17232F102169003A5C58 /* CashfreePG */,
 				887C17252F102169003A5C58 /* CashfreePGCoreSDK */,
 				887C17272F102169003A5C58 /* CashfreePGUISDK */,
+				96E59BAC2FD2B6010022DAE9 /* PhonePePayment */,
 			);
 			productName = SchoolFirst;
 			productReference = 884DB5D62DFC0394003F154E /* SchoolFirst.app */;
@@ -212,6 +215,7 @@
 				884F56E42EAF7958000645BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				884DAD6E2EB20F190088EBA7 /* XCRemoteSwiftPackageReference "FSCalendar" */,
 				887C171E2F102169003A5C58 /* XCRemoteSwiftPackageReference "core-ios-sdk" */,
+				96E59BAB2FD2B6010022DAE9 /* XCRemoteSwiftPackageReference "PhonePePayment" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 884DB5D72DFC0394003F154E /* Products */;
@@ -825,6 +829,14 @@
 				minimumVersion = 8.5.0;
 			};
 		};
+		96E59BAB2FD2B6010022DAE9 /* XCRemoteSwiftPackageReference "PhonePePayment" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/PhonePe/PhonePePayment.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.4.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -922,6 +934,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 88BD71212E5362D900CC824D /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		96E59BAC2FD2B6010022DAE9 /* PhonePePayment */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 96E59BAB2FD2B6010022DAE9 /* XCRemoteSwiftPackageReference "PhonePePayment" */;
+			productName = PhonePePayment;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

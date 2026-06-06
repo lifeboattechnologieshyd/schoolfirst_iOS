@@ -20,6 +20,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        
+        _ = ReachabilityManager.shared
 
         configureFirebase()
         setupPushNotifications(application: application)

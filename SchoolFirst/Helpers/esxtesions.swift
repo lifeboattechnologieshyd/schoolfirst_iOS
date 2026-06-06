@@ -1,14 +1,12 @@
 //
 //  esxtesions.swift
-//  
 //
 //  Created by vamshi krishna on 21/05/26.
 //
 
-
-
-
 import UIKit
+
+// MARK: - UIView Extension
 
 extension UIView {
     
@@ -33,7 +31,7 @@ extension UIView {
         get { return layer.cornerRadius }
         set {
             layer.cornerRadius = newValue
-            layer.masksToBounds = false   // ⚠️ Important for shadow
+            layer.masksToBounds = false
         }
     }
     
@@ -52,7 +50,7 @@ extension UIView {
         get { return layer.shadowOpacity }
         set {
             layer.shadowOpacity = newValue
-            layer.masksToBounds = false   // ⚠️ must for shadow
+            layer.masksToBounds = false
         }
     }
     
@@ -64,15 +62,59 @@ extension UIView {
     @IBInspectable var shadowOffsetWidthIB: CGFloat {
         get { return layer.shadowOffset.width }
         set {
-            layer.shadowOffset = CGSize(width: newValue, height: layer.shadowOffset.height)
+            layer.shadowOffset = CGSize(
+                width: newValue,
+                height: layer.shadowOffset.height
+            )
         }
     }
     
     @IBInspectable var shadowOffsetHeightIB: CGFloat {
         get { return layer.shadowOffset.height }
         set {
-            layer.shadowOffset = CGSize(width: layer.shadowOffset.width, height: newValue)
+            layer.shadowOffset = CGSize(
+                width: layer.shadowOffset.width,
+                height: newValue
+            )
         }
     }
 }
 
+// MARK: - UIButton Tap Effect Extension
+
+extension UIButton {
+    
+    func applyTapEffect() {
+        
+        addTarget(
+            self,
+            action: #selector(buttonPressed),
+            for: .touchDown
+        )
+        
+        addTarget(
+            self,
+            action: #selector(buttonReleased),
+            for: [.touchUpInside, .touchUpOutside, .touchCancel]
+        )
+    }
+    
+    @objc private func buttonPressed() {
+        
+        UIView.animate(withDuration: 0.1) {
+            self.transform = CGAffineTransform(
+                scaleX: 0.95,
+                y: 0.95
+            )
+            self.alpha = 0.8
+        }
+    }
+    
+    @objc private func buttonReleased() {
+        
+        UIView.animate(withDuration: 0.1) {
+            self.transform = .identity
+            self.alpha = 1.0
+        }
+    }
+}

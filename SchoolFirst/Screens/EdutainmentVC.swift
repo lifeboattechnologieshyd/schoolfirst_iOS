@@ -213,30 +213,15 @@ extension EdutainmentVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedStudent = kids[indexPath.row]
         
-        print("👤 Selected Student: \(selectedStudent.name)")
-        print("🆔 Student ID: \(selectedStudent.studentID)")
-        print("🆔 QPass ID: \(selectedStudent.qpass_id ?? "nil")")
-        print("🔑 Student Access Token: \(selectedStudent.student_access_token ?? "nil")")
+        print("Cell Tapped")
         
-        guard let sessionToken = selectedStudent.student_access_token,
-              let qpassId = selectedStudent.qpass_id else {
-            print("❌ Missing tokens for SDK")
-            let alert = UIAlertController(title: "Error", message: "Missing student token or ID for this kid.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            self.present(alert, animated: true)
-            return
-        }
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
-        // Use real student credentials from API
-        let domain = "ppsfqpassdev"
-        
-        print("🚀 Launching SDK for \(selectedStudent.name)")
-        QPassManager.shared.launchMFE(
-            domain: domain,
-            authToken: qpassId,
-            sessionToken: sessionToken
+        let vc = storyboard.instantiateViewController(
+            withIdentifier: "Homescreen"
         )
+        
+        navigationController?.pushViewController(vc, animated: true)
     }
 }

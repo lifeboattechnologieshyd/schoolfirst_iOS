@@ -18,10 +18,10 @@ enum NetworkError: Error {
     case invalidURL
     case noData
     case noaccess
+    case noInternet
     case decodingError(String)
     case serverError(String)
 }
-
 class NetworkManager {
     static let shared = NetworkManager()
     
@@ -35,6 +35,16 @@ class NetworkManager {
         headers: [String: String]? = nil,
         completion: @escaping (Result<APIResponse<T>, NetworkError>) -> Void
     ) {
+        
+        guard ReachabilityManager.shared.isConnected else {
+
+            DispatchQueue.main.async {
+                AlertManager.shared.showNoInternetAlert()
+            }
+
+            completion(.failure(.noInternet))
+            return
+        }
         
         guard var urlComponents = URLComponents(string: urlString) else {
             completion(.failure(.invalidURL))

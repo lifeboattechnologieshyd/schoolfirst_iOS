@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="xQk-ro-l25">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="xl8-Gi-yve">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -3202,7 +3202,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="Zol-a4-UcY" kind="relationship" relationship="rootViewController" id="ZJU-PH-5gv"/>
+                        <segue destination="hz9-wh-ZiZ" kind="relationship" relationship="rootViewController" id="OhB-hj-PV0"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5g6-C9-fu0" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -3818,6 +3818,9 @@
                                         <buttonConfiguration key="configuration" style="plain">
                                             <backgroundConfiguration key="background" image="Whitebackbutton"/>
                                         </buttonConfiguration>
+                                        <connections>
+                                            <action selector="BackButtonTapped:" destination="Zol-a4-UcY" eventType="touchUpInside" id="LAE-mi-zed"/>
+                                        </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Harshini" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p8Z-IJ-Flo">
                                         <rect key="frame" x="64" y="45" width="100" height="24"/>
@@ -3851,7 +3854,7 @@
                                         </buttonConfiguration>
                                     </button>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="edit" translatesAutoresizingMaskIntoConstraints="NO" id="ra2-lj-S37">
-                                        <rect key="frame" x="354" y="86" width="20" height="20"/>
+                                        <rect key="frame" x="354" y="74" width="20" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="20" id="Blz-Jr-25G"/>
                                             <constraint firstAttribute="height" constant="20" id="bse-wm-70g"/>
@@ -3866,7 +3869,7 @@
                                     <constraint firstItem="Y46-tK-Sza" firstAttribute="top" secondItem="p8Z-IJ-Flo" secondAttribute="bottom" constant="2" id="cXY-WH-4Gz"/>
                                     <constraint firstItem="p8Z-IJ-Flo" firstAttribute="leading" secondItem="pOW-bz-6o4" secondAttribute="trailing" constant="16" id="d65-oE-a6l"/>
                                     <constraint firstItem="mcH-It-rJp" firstAttribute="top" secondItem="p8Z-IJ-Flo" secondAttribute="top" id="fPG-Fa-XKb"/>
-                                    <constraint firstItem="ra2-lj-S37" firstAttribute="top" secondItem="lPO-qn-sus" secondAttribute="top" constant="86" id="jpa-vI-zVD"/>
+                                    <constraint firstItem="ra2-lj-S37" firstAttribute="top" secondItem="lPO-qn-sus" secondAttribute="top" constant="74" id="jpa-vI-zVD"/>
                                     <constraint firstItem="pOW-bz-6o4" firstAttribute="leading" secondItem="lPO-qn-sus" secondAttribute="leading" constant="16" id="rN9-vk-t6c"/>
                                     <constraint firstItem="p8Z-IJ-Flo" firstAttribute="top" secondItem="pOW-bz-6o4" secondAttribute="top" id="uvn-Uk-ePy"/>
                                     <constraint firstItem="Y46-tK-Sza" firstAttribute="leading" secondItem="p8Z-IJ-Flo" secondAttribute="leading" id="vCK-y1-Uaa"/>
@@ -3904,7 +3907,7 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="cWF-aq-qm0">
-                                <rect key="frame" x="16" y="358" width="361" height="357"/>
+                                <rect key="frame" x="16" y="358" width="361" height="406"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="AgA-RR-LDB">
                                     <size key="itemSize" width="128" height="128"/>
@@ -3934,6 +3937,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="l8H-kk-ACD"/>
                     <connections>
+                        <outlet property="BackButton" destination="pOW-bz-6o4" id="uWk-OH-XLM"/>
                         <outlet property="CollectionView" destination="cWF-aq-qm0" id="ebw-mi-FAT"/>
                         <outlet property="ContainerView" destination="cmR-wp-W2Y" id="ZcF-jm-vcE"/>
                     </connections>
@@ -4136,9 +4140,14 @@
                                     <constraint firstAttribute="height" constant="100" id="iaT-dv-zEW"/>
                                     <constraint firstItem="cQb-MZ-Z6d" firstAttribute="centerY" secondItem="4GL-mR-ljR" secondAttribute="centerY" id="kIB-nT-yCC"/>
                                 </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="shadowOffsetWidthIB">
+                                        <real key="value" value="0.0"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Pbs-SV-U30">
-                                <rect key="frame" x="0.0" y="154" width="393" height="630"/>
+                                <rect key="frame" x="0.0" y="158" width="393" height="626"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <view key="tableFooterView" contentMode="scaleToFill" id="zcU-gE-nFF">
                                     <rect key="frame" x="0.0" y="0.0" width="393" height="44"/>
@@ -4161,7 +4170,7 @@
                             <constraint firstItem="6xv-G1-5OQ" firstAttribute="bottom" secondItem="Pbs-SV-U30" secondAttribute="bottom" id="It1-Nn-zvp"/>
                             <constraint firstItem="dTX-4I-Jy4" firstAttribute="leading" secondItem="Y2O-nx-01q" secondAttribute="leading" id="Nb1-dI-OFF"/>
                             <constraint firstItem="Pbs-SV-U30" firstAttribute="leading" secondItem="6xv-G1-5OQ" secondAttribute="leading" id="Szr-8J-2W5"/>
-                            <constraint firstItem="Pbs-SV-U30" firstAttribute="top" secondItem="6xv-G1-5OQ" secondAttribute="top" constant="36" id="YBh-Q7-DzO"/>
+                            <constraint firstItem="Pbs-SV-U30" firstAttribute="top" secondItem="6xv-G1-5OQ" secondAttribute="top" constant="40" id="YBh-Q7-DzO"/>
                             <constraint firstItem="dTX-4I-Jy4" firstAttribute="top" secondItem="Y2O-nx-01q" secondAttribute="top" id="xgE-3j-xry"/>
                             <constraint firstAttribute="trailing" secondItem="dTX-4I-Jy4" secondAttribute="trailing" id="yJx-OB-85g"/>
                         </constraints>
@@ -6871,7 +6880,7 @@
                                 </connections>
                             </segmentedControl>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="gx6-86-f3Y">
-                                <rect key="frame" x="0.0" y="224" width="393" height="560"/>
+                                <rect key="frame" x="0.0" y="224" width="393" height="511"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" usesAttributedText="YES" borderStyle="roundedRect" placeholder="  Video No." minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="U6V-Ju-xsd">
@@ -7083,8 +7092,8 @@
                         <outlet property="videonoTf" destination="U6V-Ju-xsd" id="GMR-oe-a76"/>
                     </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="SdY-4K-Qoa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <exit id="aLt-hF-EcU" userLabel="Exit" sceneMemberID="exit"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SdY-4K-Qoa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="5390" y="167"/>
         </scene>

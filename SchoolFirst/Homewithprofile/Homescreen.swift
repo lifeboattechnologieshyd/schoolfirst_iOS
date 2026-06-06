@@ -14,6 +14,7 @@ class Homescreen: UIViewController {
     
     // MARK: - OUTLETS
     
+    @IBOutlet weak var BackButton: UIButton!
     @IBOutlet weak var CollectionView: UICollectionView!
     @IBOutlet weak var ContainerView: UIView!
     
@@ -130,6 +131,12 @@ class Homescreen: UIViewController {
         CollectionView.showsVerticalScrollIndicator = false
     }
     
+    @IBAction func BackButtonTapped(_ sender: UIButton) {
+
+        // If Homescreen was pushed from EdutainmentVC
+        navigationController?.popViewController(animated: true)
+
+    }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // HIDE DEFAULT NAVIGATION BAR
