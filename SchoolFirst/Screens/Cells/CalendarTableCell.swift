@@ -50,6 +50,8 @@ class CalendarTableCell: UITableViewCell {
             )
             lblBenifit.text = ""
             lblWriteup.text = ""
+            lblBenifit.isHidden = true
+            lblWriteup.isHidden = true
             imgVw.isHidden = true
             btnPlay.isHidden = true
             return
@@ -58,6 +60,8 @@ class CalendarTableCell: UITableViewCell {
         // Normal state
         imgVw.isHidden = false
         btnPlay.isHidden = false
+        lblBenifit.isHidden = false
+        lblWriteup.isHidden = false
         imgVw.loadImage(url: calender.image)
         let prompt = madeAttributeString(boldPart: "Prompt:", desc: " \(calender.prompt)")
         let benifit = madeAttributeString(boldPart: "Benifit:", desc: " \(calender.benefit)")

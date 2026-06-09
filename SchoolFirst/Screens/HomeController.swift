@@ -321,12 +321,8 @@ class HomeController: UIViewController {
             lblDate.text = "\(day)"
             lblMonth.text = "\(month)"
         }
-        lblCalenderTitle.text = content.prompt
-        if content.id == "fallback" {
-            lblCalenderPrompt.text = content.prompt
-        } else {
-            lblCalenderPrompt.text = "Today's Prompt: " + content.prompt
-        }
+        lblCalenderTitle.text = "DAILY LIFESKILLS VIDEO - TODAY"
+        lblCalenderPrompt.text = content.prompt
     }
     
     func upload_user_name(image: UIImage){
