@@ -14,6 +14,9 @@ class Homescreen: UIViewController {
     
     // MARK: - OUTLETS
     
+    
+    @IBOutlet weak var ProfileEditButton: UIButton!
+    @IBOutlet weak var ProfileImageView: UIImageView!
     @IBOutlet weak var BackButton: UIButton!
     @IBOutlet weak var CollectionView: UICollectionView!
     @IBOutlet weak var ContainerView: UIView!
@@ -129,6 +132,7 @@ class Homescreen: UIViewController {
         CollectionView.isScrollEnabled = true
         CollectionView.alwaysBounceVertical = true
         CollectionView.showsVerticalScrollIndicator = false
+        ProfileImageView.backgroundColor = .clear
     }
     
     @IBAction func BackButtonTapped(_ sender: UIButton) {
@@ -307,7 +311,9 @@ UICollectionViewDelegateFlowLayout {
     }
     
     // MARK: - NAVIGATION
-    
+    @IBAction func ButtonTapped(_ sender: UIButton) {
+        navigateToStudentProfile()
+    }
     private func navigateToStudentProfile() {
         
         // OPTION 1: If StudentprofileVC is in Storyboard with identifier "StudentprofileVC"
@@ -341,6 +347,32 @@ UICollectionViewDelegateFlowLayout {
             present(profileVC, animated: true)
         }
         */
+    }
+    @IBAction func ProfileEditButtonTapped(_ sender: UIButton) {
+        navigateToEditProfile()
+    }
+    
+    private func navigateToEditProfile() {
+
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+        if let editVC = storyboard.instantiateViewController(
+            withIdentifier: "StudentprofileVC"
+        ) as? EditProfileVC {
+
+            editVC.hidesBottomBarWhenPushed = true
+
+            if let nav = navigationController {
+
+                nav.setNavigationBarHidden(true, animated: false)
+                nav.pushViewController(editVC, animated: true)
+
+            } else {
+
+                editVC.modalPresentationStyle = .fullScreen
+                present(editVC, animated: true)
+            }
+        }
     }
     
     // MARK: - NAVIGATE TO CALENDAR

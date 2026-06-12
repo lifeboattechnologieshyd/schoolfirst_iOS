@@ -32,4 +32,25 @@ final class AlertManager {
 
         rootVC.present(alert, animated: true)
     }
+    
+    func showAlert(title: String, message: String) {
+
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let rootVC = windowScene.windows.first?.rootViewController else {
+            return
+        }
+
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(
+            title: "OK",
+            style: .default
+        ))
+
+        rootVC.present(alert, animated: true)
+    }
 }

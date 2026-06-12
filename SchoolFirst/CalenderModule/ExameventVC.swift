@@ -8,7 +8,8 @@
 import UIKit
 
 class ExameventVC: UIViewController {
-
+    @IBOutlet weak var NotificationButton: UIButton!
+    
     @IBOutlet weak var BackButton: UIButton!
     @IBOutlet weak var tableview: UITableView!
 
@@ -40,6 +41,26 @@ class ExameventVC: UIViewController {
         tableview.separatorStyle = .none
 
         setupTableView()
+    }
+    
+    @IBAction func NotificationButtonTapped(_ sender: UIButton) {
+        navigateToNotificationVC()
+    }
+    private func navigateToNotificationVC() {
+
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+        if let notificationVC = storyboard.instantiateViewController(
+            withIdentifier: "NotificationVC"
+        ) as? NotificationVC {
+
+            notificationVC.hidesBottomBarWhenPushed = true
+
+            navigationController?.pushViewController(
+                notificationVC,
+                animated: true
+            )
+        }
     }
 
     // MARK: - Back Button Action

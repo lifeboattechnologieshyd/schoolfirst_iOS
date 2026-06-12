@@ -12,6 +12,7 @@ class AnnualsportsdayVC: UIViewController {
     @IBOutlet weak var BackButton: UIButton!
     @IBOutlet weak var tableview: UITableView!
 
+    @IBOutlet weak var NotificationButton: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -28,7 +29,26 @@ class AnnualsportsdayVC: UIViewController {
             dismiss(animated: true)
         }
     }
+    
+    @IBAction func NotificationButtonTapped(_ sender: UIButton) {
+        navigateToNotificationVC()
+    }
+    private func navigateToNotificationVC() {
 
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+        if let notificationVC = storyboard.instantiateViewController(
+            withIdentifier: "NotificationVC"
+        ) as? NotificationVC {
+
+            notificationVC.hidesBottomBarWhenPushed = true
+
+            navigationController?.pushViewController(
+                notificationVC,
+                animated: true
+            )
+        }
+    }
     // MARK: - Setup TableView
 
     private func setupTableView() {

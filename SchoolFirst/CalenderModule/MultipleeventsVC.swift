@@ -9,6 +9,7 @@ import UIKit
 
 class MultipleeventsVC: UIViewController {
 
+    @IBOutlet weak var NotificationButton: UIButton!
     @IBOutlet weak var BackButton: UIButton!
     @IBOutlet weak var tableview: UITableView!
 
@@ -28,8 +29,30 @@ class MultipleeventsVC: UIViewController {
             dismiss(animated: true)
         }
     }
+    @IBAction func NotificationButtonTapped(_ sender: UIButton) {
+        navigateToNotificationVC()
+    }
+    
+    private func navigateToNotificationVC() {
+
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+        if let notificationVC = storyboard.instantiateViewController(
+            withIdentifier: "NotificationVC"
+        ) as? NotificationVC {
+
+            notificationVC.hidesBottomBarWhenPushed = true
+
+            navigationController?.pushViewController(
+                notificationVC,
+                animated: true
+            )
+        }
+    }
+
 
     // MARK: - Setup TableView
+    
 
     private func setupTableView() {
 

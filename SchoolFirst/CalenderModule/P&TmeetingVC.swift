@@ -9,6 +9,7 @@ import UIKit
 
 class P_TmeetingVC: UIViewController {
 
+    @IBOutlet weak var NotificationButton: UIButton!
     @IBOutlet weak var tableview: UITableView!
     @IBOutlet weak var BackButton: UIButton!
 
@@ -16,6 +17,26 @@ class P_TmeetingVC: UIViewController {
         super.viewDidLoad()
 
         setupTableView()
+    }
+    
+    @IBAction func NotificationButtonTapped(_ sender: UIButton) {
+        navigateToNotificationVC()
+    }
+    private func navigateToNotificationVC() {
+
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+        if let notificationVC = storyboard.instantiateViewController(
+            withIdentifier: "NotificationVC"
+        ) as? NotificationVC {
+
+            notificationVC.hidesBottomBarWhenPushed = true
+
+            navigationController?.pushViewController(
+                notificationVC,
+                animated: true
+            )
+        }
     }
 
     // MARK: - Back Button Action

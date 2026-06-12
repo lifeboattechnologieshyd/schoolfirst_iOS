@@ -1095,6 +1095,7 @@ extension UIViewController {
             self.loaderView = loader
         }
     }
+    
 
     func hideLoader() {
         DispatchQueue.main.async {
@@ -1103,4 +1104,21 @@ extension UIViewController {
         }
     }
 }
+extension UIView {
+
+    
+    func addBottomOnlyShadow(
+        color: UIColor = .black,
+        opacity: Float = 0.25,
+        radius: CGFloat = 6,
+        height: CGFloat = 4
+    ) {
+        layer.masksToBounds = false
+        layer.shadowColor = color.cgColor
+        layer.shadowOpacity = opacity
+        layer.shadowRadius = radius
+        layer.shadowOffset = CGSize(width: 0, height: height)
+    }
+}
+
 

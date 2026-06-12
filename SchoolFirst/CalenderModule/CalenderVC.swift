@@ -9,19 +9,50 @@ import UIKit
 
 class CalenderVC: UIViewController {
 
-    @IBOutlet weak var ProfileButton: UIButton!
+    @IBOutlet weak var NotificationButton: UIButton!
+    @IBOutlet weak var TopView: UIView!
+    
+    @IBOutlet weak var BackButton: UIButton!
     @IBOutlet weak var tableview: UITableView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        TopView.addBottomOnlyShadow(
+                color: .lightGray,
+                opacity: 0.4,
+                radius: 4,
+                height: 6
+            )
         setupTableView()
     }
+    
+    
+    @IBAction func NotificationButtonTapped(_ sender: UIButton) {
+        navigateToNotificationVC()
+    }
+    
+    private func navigateToNotificationVC() {
 
-    // MARK: - Profile Button Action
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
-    @IBAction func ProfileButtonTapped(_ sender: UIButton) {
-        navigateToStudentProfileVC()
+        if let notificationVC = storyboard.instantiateViewController(
+            withIdentifier: "NotificationVC"
+        ) as? NotificationVC {
+
+            notificationVC.hidesBottomBarWhenPushed = true
+
+            navigationController?.pushViewController(
+                notificationVC,
+                animated: true
+            )
+        }
+    }
+
+    // MARK: - BackButton Action
+
+    @IBAction func BackButtonTapped(_ sender: UIButton) {
+
+        navigationController?.popViewController(animated: true)
     }
 
     // MARK: - TableView Setup

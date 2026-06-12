@@ -18,6 +18,7 @@ protocol StudentdetailsTableViewCellDelegate: AnyObject {
 
 class StudentdetailsTableViewCell: UITableViewCell {
 
+    @IBOutlet weak var Profilebackgroundview: UIView!
     @IBOutlet weak var EditButton: UIButton!
     @IBOutlet weak var Viewcontainer: UIView!
     
@@ -45,6 +46,8 @@ class StudentdetailsTableViewCell: UITableViewCell {
     @objc private func editButtonTapped() {
         delegate?.didTapEditButton()
     }
+    
+    
 
     // MARK: - Setup Cards
 

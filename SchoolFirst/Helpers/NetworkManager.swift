@@ -104,11 +104,65 @@ class NetworkManager {
                         print(decodedData)
                         completion(.success(decodedData))
                     }else {
-                        if httpResponse.statusCode == 401 {
+
+                        print("❌ Error: Status code is \(httpResponse.statusCode)")
+
+                        switch httpResponse.statusCode {
+
+                        case 401:
+
+                            DispatchQueue.main.async {
+                                AlertManager.shared.showAlert(
+                                    title: "Session Expired",
+                                    message: "Please login again."
+                                )
+                            }
+
                             completion(.failure(.noaccess))
-                        }else{
-                            print("❌ Error: Status code is \(httpResponse.statusCode)")
+
+                        case 404:
+
+                            DispatchQueue.main.async {
+                                AlertManager.shared.showAlert(
+                                    title: "Not Found",
+                                    message: "Requested data not found."
+                                )
+                            }
+
                             completion(.failure(.noData))
+
+                        case 405:
+
+                            DispatchQueue.main.async {
+                                AlertManager.shared.showAlert(
+                                    title: "Method Not Allowed",
+                                    message: "Something went wrong. Please try again."
+                                )
+                            }
+
+                            completion(.failure(.serverError("405")))
+
+                        case 500:
+
+                            DispatchQueue.main.async {
+                                AlertManager.shared.showAlert(
+                                    title: "Server Error",
+                                    message: "Server is temporarily unavailable. Please try again later."
+                                )
+                            }
+
+                            completion(.failure(.serverError("500")))
+
+                        default:
+
+                            DispatchQueue.main.async {
+                                AlertManager.shared.showAlert(
+                                    title: "Error",
+                                    message: "Unexpected error occurred."
+                                )
+                            }
+
+                            completion(.failure(.serverError("Status Code: \(httpResponse.statusCode)")))
                         }
                     }
                 }
