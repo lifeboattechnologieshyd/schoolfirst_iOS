@@ -79,7 +79,7 @@ class LoginController: UIViewController {
         }
         showLoader()
         
-        NetworkManager.shared.request(urlString: ur, method: .POST, parameters: payload) { (result: Result<APIResponse<MobileCheckResponse>, NetworkError>) in
+        NetworkManager.shared.request(urlString: ur, method: .POST, requiresAuth: false, parameters: payload) { (result: Result<APIResponse<MobileCheckResponse>, NetworkError>) in
             self.hideLoader()
             switch result {
             case .success(let info):
@@ -109,7 +109,7 @@ class LoginController: UIViewController {
         }
         print(payload)
         showLoader()
-        NetworkManager.shared.request(urlString: API.LOGIN, method: .POST, parameters: payload) { (result: Result<APIResponse<LoginResponse>, NetworkError>) in
+        NetworkManager.shared.request(urlString: API.LOGIN, method: .POST, requiresAuth: false, parameters: payload) { (result: Result<APIResponse<LoginResponse>, NetworkError>) in
             self.hideLoader() 
             switch result {
             case .success(let info):

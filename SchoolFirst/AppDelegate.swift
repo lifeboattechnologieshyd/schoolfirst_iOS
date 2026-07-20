@@ -123,6 +123,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
 
+        // Save FCM token so it can be sent with OTP API calls
+        UserDefaults.standard.set(token, forKey: "FCMToken")
+        print("✅ FCM token saved to UserDefaults")
+
         #if DEBUG
         print("🧩 DEV FCM token: \(token)")
         #else

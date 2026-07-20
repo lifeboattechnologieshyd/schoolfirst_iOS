@@ -131,8 +131,8 @@ class HomeController: UIViewController {
         schoolNames.removeLast()
         schoolImages.removeLast()
 
-        self.getCalender()
-        self.getBanners()
+    self.getCalender()
+    self.getBanners()
         self.colVw.register(UINib(nibName: "HomeCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "HomeCollectionViewCell")
         colVw.delegate = self
         colVw.dataSource = self
@@ -209,7 +209,7 @@ class HomeController: UIViewController {
     
     func getBanners() {
         showLoader()
-        NetworkManager.shared.request(urlString: API.BANNER,method: .GET) { (result: Result<APIResponse<[Banner]>, NetworkError>)  in
+        NetworkManager.shared.request(urlString: API.BANNER, method: .GET) { (result: Result<APIResponse<[Banner]>, NetworkError>)  in
             self.hideLoader()
             switch result {
             case .success(let info):
@@ -220,19 +220,12 @@ class HomeController: UIViewController {
                     DispatchQueue.main.async {
                         self.imgVw.loadImage(url: self.banners.first?.image ?? "")
                     }
-                }else{
-                    print(info.description)
+                } else {
+                    print("Banners info: \(info.description)")
                 }
             case .failure(let error):
-                DispatchQueue.main.async {
-                    switch error {
-                    case .noaccess:
-                        self.handleLogout()
-                    default:
-                        self.showAlert(msg: error.localizedDescription)
-                    }
-                }
-                
+                // BANNER is a public BASE_URL_2 endpoint — errors here must NOT trigger logout
+                print("⚠️ getBanners silently failed: \(error)")
             }
         }
     }

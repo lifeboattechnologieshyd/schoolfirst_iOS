@@ -99,33 +99,49 @@ class ViewController: UIViewController {
     
     func getUserDetails(email: String) {
         showLoader()
-        let payload = ["email" : email ]
-        NetworkManager.shared.request(urlString: API.EMAIL_SENDOTP, method: .POST, parameters: payload) { (result: Result<APIResponse<MobileCheckResponse>, NetworkError>) in
+        let fcmToken = UserDefaults.standard.string(forKey: "FCMToken") ?? ""
+        let deviceId = UIDevice.current.identifierForVendor?.uuidString ?? ""
+        let payload: [String: Any] = [
+            "email": email,
+            "fcm_id": fcmToken,
+            "device_id": deviceId,
+            "device_type": "iOS"
+        ]
+        NetworkManager.shared.request(urlString: API.EMAIL_SENDOTP, method: .POST, requiresAuth: false, parameters: payload) { (result: Result<APIResponse<MobileCheckResponse>, NetworkError>) in
             self.hideLoader()
             switch result {
             case .success(let info):
+                print("📩 Send OTP (Email) Response → success: \(info.success), description: \(info.description)")
+                if let otp = info.data?.otp {
+                    print("🔑 [SIMULATOR DEBUG] OTP = \(otp)")
+                }
                 if info.success {
-                    if info.data!.password_required! {
-                        DispatchQueue.main.async {
-                            let vc = self.storyboard?.instantiateViewController(withIdentifier: "LoginController") as? LoginController
-                            vc?.mobile = self.txtFieldMobile.text!
-                            vc?.isMobileLogin = false
-                            vc?.username = info.data!.username!
-                            self.navigationController?.pushViewController(vc!, animated: true)
-                        }
-                    }else{
-                        DispatchQueue.main.async {
-                            let vc = self.storyboard?.instantiateViewController(withIdentifier: "OTPViewController") as? OTPViewController
-                            vc?.mobile = self.txtFieldMobile.text!
-                            self.navigationController?.pushViewController(vc!, animated: true)
-                        }
+                    DispatchQueue.main.async {
+                        let vc = self.storyboard?.instantiateViewController(withIdentifier: "OTPViewController") as? OTPViewController
+                        vc?.mobile = self.txtFieldMobile.text!
+                        #if targetEnvironment(simulator)
+                        vc?.simulatorOTP = info.data?.otp
+                        #endif
+                        self.navigationController?.pushViewController(vc!, animated: true)
                     }
-                }else{
-                    self.showAlert(msg: "Something wrong")
+                } else {
+                    DispatchQueue.main.async {
+                        self.showAlert(msg: info.description.isEmpty ? "Failed to send OTP. Please try again." : info.description)
+                    }
                 }
                 break
             case .failure(let error):
-                self.showAlert(msg: error.localizedDescription)
+                print("❌ Send OTP (Email) Network Error: \(error)")
+                DispatchQueue.main.async {
+                    switch error {
+                    case .serverError(let msg):
+                        self.showAlert(msg: "Server error: \(msg)")
+                    case .noInternet:
+                        self.showAlert(msg: "No internet connection.")
+                    default:
+                        self.showAlert(msg: "Failed to send OTP. Please check your connection and try again.")
+                    }
+                }
                 break
             }
         }
@@ -133,36 +149,50 @@ class ViewController: UIViewController {
     }
     
     func getUserDetails(mobile: String) {
-        let payload = [
-            "mobile": mobile
+        let fcmToken = UserDefaults.standard.string(forKey: "FCMToken") ?? ""
+        let deviceId = UIDevice.current.identifierForVendor?.uuidString ?? ""
+        let payload: [String: Any] = [
+            "mobile": mobile,
+            "fcm_id": fcmToken,
+            "device_id": deviceId,
+            "device_type": "iOS"
         ]
         showLoader()
-        NetworkManager.shared.request(urlString: API.SENDOTP, method: .POST, parameters: payload) { (result: Result<APIResponse<MobileCheckResponse>, NetworkError>) in
-            self.hideLoader() 
+        NetworkManager.shared.request(urlString: API.SENDOTP, method: .POST, requiresAuth: false, parameters: payload) { (result: Result<APIResponse<MobileCheckResponse>, NetworkError>) in
+            self.hideLoader()
             switch result {
             case .success(let info):
+                print("📩 Send OTP (Mobile) Response → success: \(info.success), description: \(info.description)")
+                if let otp = info.data?.otp {
+                    print("🔑 [SIMULATOR DEBUG] OTP = \(otp)")
+                }
                 if info.success {
-                    if info.data!.password_required! {
-                        DispatchQueue.main.async {
-                            let vc = self.storyboard?.instantiateViewController(withIdentifier: "LoginController") as? LoginController
-                            vc?.mobile = self.txtFieldMobile.text!
-                            vc?.username = info.data!.username!
-                            vc?.isMobileLogin = true
-                            self.navigationController?.pushViewController(vc!, animated: true)
-                        }
-                    }else{
-                        DispatchQueue.main.async {
-                            let vc = self.storyboard?.instantiateViewController(withIdentifier: "OTPViewController") as? OTPViewController
-                            vc?.mobile = self.txtFieldMobile.text!
-                            self.navigationController?.pushViewController(vc!, animated: true)
-                        }
+                    DispatchQueue.main.async {
+                        let vc = self.storyboard?.instantiateViewController(withIdentifier: "OTPViewController") as? OTPViewController
+                        vc?.mobile = self.txtFieldMobile.text!
+                        #if targetEnvironment(simulator)
+                        vc?.simulatorOTP = info.data?.otp
+                        #endif
+                        self.navigationController?.pushViewController(vc!, animated: true)
                     }
-                }else{
-                    self.showAlert(msg: "Something wrong")
+                } else {
+                    DispatchQueue.main.async {
+                        self.showAlert(msg: info.description.isEmpty ? "Mobile number not registered. Please contact your school admin." : info.description)
+                    }
                 }
                 break
             case .failure(let error):
-                self.showAlert(msg: error.localizedDescription)
+                print("❌ Send OTP (Mobile) Network Error: \(error)")
+                DispatchQueue.main.async {
+                    switch error {
+                    case .serverError(let msg):
+                        self.showAlert(msg: "Server error: \(msg)")
+                    case .noInternet:
+                        self.showAlert(msg: "No internet connection.")
+                    default:
+                        self.showAlert(msg: "Failed to send OTP. Please check your connection and try again.")
+                    }
+                }
                 break
             }
         }

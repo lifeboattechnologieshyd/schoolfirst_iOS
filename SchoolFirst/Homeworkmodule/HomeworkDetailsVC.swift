@@ -9,6 +9,8 @@ import UIKit
 
 class HomeworkDetailsVC: UIViewController {
     
+    @IBOutlet weak var NotificationButton: UIButton!
+    @IBOutlet weak var BackButton: UIButton!
     @IBOutlet weak var TableView: UITableView!
     @IBOutlet weak var TopView: UIView!
     
@@ -18,7 +20,39 @@ class HomeworkDetailsVC: UIViewController {
         setupTopViewShadow()
         setupTableView()
     }
+    @IBAction func BackButtonTapped(_ sender: UIButton) {
+
+        if let nav = navigationController {
+            nav.popViewController(animated: true)
+        } else {
+            dismiss(animated: true)
+        }
+    }
     
+    @IBAction func NotificationButtonTapped(_ sender: UIButton) {
+        navigateToNotificationVC()
+    }
+    private func navigateToNotificationVC() {
+
+        let storyboard = UIStoryboard(
+            name: "Main",
+            bundle: nil
+        )
+
+        if let notificationVC =
+            storyboard.instantiateViewController(
+                withIdentifier: "NotificationVC"
+            ) as? NotificationVC {
+
+            notificationVC.hidesBottomBarWhenPushed = true
+
+            navigationController?.pushViewController(
+                notificationVC,
+                animated: true
+            )
+        }
+    }
+
     private func setupTopViewShadow() {
         TopView.layer.shadowColor = UIColor.lightGray.cgColor
         TopView.layer.shadowOpacity = 0.4

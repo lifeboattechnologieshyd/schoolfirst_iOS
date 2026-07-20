@@ -68,7 +68,7 @@ class CalendarViewController: UIViewController {
         // Try the specific date endpoint first (broadcast/calendar/dd-MM-yyyy)
         let specificDateUrl = API.BROADCAST_CALENDER + "/" + targetDate
         
-        NetworkManager.shared.request(urlString: specificDateUrl, method: .GET) { (result: Result<APIResponse<[LifeSkillPrompt]>, NetworkError>) in
+        NetworkManager.shared.request(urlString: specificDateUrl, method: .GET, requiresAuth: false) { (result: Result<APIResponse<[LifeSkillPrompt]>, NetworkError>) in
             switch result {
             case .success(let info):
                 if info.success, let content = info.data?.first {

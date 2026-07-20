@@ -3,17 +3,11 @@
 //  SchoolFirst
 //
 
-//
-//  Homescreen.swift
-//  SchoolFirst
-//
-
 import UIKit
 
 class Homescreen: UIViewController {
     
     // MARK: - OUTLETS
-    
     
     @IBOutlet weak var ProfileEditButton: UIButton!
     @IBOutlet weak var ProfileImageView: UIImageView!
@@ -88,6 +82,15 @@ class Homescreen: UIViewController {
         [
             "title" : "Events",
             "image" : "event"
+        ],
+        
+        [
+            "title" : "PTM",
+            "image" : "PTMimage"
+        ],
+        [
+            "title" : "Portofolio",
+            "image" : "Portofolioimg"
         ]
     ]
     
@@ -141,6 +144,7 @@ class Homescreen: UIViewController {
         navigationController?.popViewController(animated: true)
 
     }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // HIDE DEFAULT NAVIGATION BAR
@@ -302,8 +306,19 @@ UICollectionViewDelegateFlowLayout {
             
         case "Calendar":
             navigateToCalendar()
+        case "PTM":
+            navigateToPTM()
+        
+        // ✅ ADDED: Fee module navigation
+        case "Fee":
+            navigateToParentfeeVC()
             
         // ADD MORE CASES HERE LATER FOR OTHER MODULES
+        case "Homework":
+            navigateToHomework()
+            
+        case "Portofolio":
+            navigateToPortofolio()
             
         default:
             print("Tapped: \(title)")
@@ -311,9 +326,11 @@ UICollectionViewDelegateFlowLayout {
     }
     
     // MARK: - NAVIGATION
+    
     @IBAction func ButtonTapped(_ sender: UIButton) {
         navigateToStudentProfile()
     }
+    
     private func navigateToStudentProfile() {
         
         // OPTION 1: If StudentprofileVC is in Storyboard with identifier "StudentprofileVC"
@@ -333,21 +350,8 @@ UICollectionViewDelegateFlowLayout {
                 present(profileVC, animated: true)
             }
         }
-        
-        // OPTION 2: If StudentprofileVC is created programmatically (no storyboard ID), use this instead:
-        /*
-        let profileVC = StudentprofileVC()
-        profileVC.hidesBottomBarWhenPushed = true
-        
-        if let nav = navigationController {
-            nav.setNavigationBarHidden(true, animated: false)
-            nav.pushViewController(profileVC, animated: true)
-        } else {
-            profileVC.modalPresentationStyle = .fullScreen
-            present(profileVC, animated: true)
-        }
-        */
     }
+    
     @IBAction func ProfileEditButtonTapped(_ sender: UIButton) {
         navigateToEditProfile()
     }
@@ -375,11 +379,34 @@ UICollectionViewDelegateFlowLayout {
         }
     }
     
+    
     // MARK: - NAVIGATE TO CALENDAR
+    
+    private func navigateToPTM() {
+
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+        if let PTMVC = storyboard.instantiateViewController(
+            withIdentifier: "PTMhomeVC"
+        ) as? PTMhomeVC {
+
+            PTMVC.hidesBottomBarWhenPushed = true
+
+            if let nav = navigationController {
+
+                nav.setNavigationBarHidden(true, animated: false)
+                nav.pushViewController(PTMVC, animated: true)
+
+            } else {
+
+                PTMVC.modalPresentationStyle = .fullScreen
+                present(PTMVC, animated: true)
+            }
+        }
+    }
     
     private func navigateToCalendar() {
         
-        // OPTION 1: If CalenderVC is in Storyboard with identifier "CalenderVC"
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
         if let calendarVC = storyboard.instantiateViewController(
@@ -396,20 +423,67 @@ UICollectionViewDelegateFlowLayout {
                 present(calendarVC, animated: true)
             }
         }
+    }
+    
+    private func navigateToHomework() {
         
-        // OPTION 2: If CalenderVC is created programmatically (no storyboard ID), use this instead:
-        /*
-        let calendarVC = CalenderVC()
-        calendarVC.hidesBottomBarWhenPushed = true
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
-        if let nav = navigationController {
-            nav.setNavigationBarHidden(true, animated: false)
-            nav.pushViewController(calendarVC, animated: true)
-        } else {
-            calendarVC.modalPresentationStyle = .fullScreen
-            present(calendarVC, animated: true)
+        if let HomeworkVC = storyboard.instantiateViewController(
+            withIdentifier: "HomeworkVC"
+        ) as? HomeworkVC {
+            
+            HomeworkVC.hidesBottomBarWhenPushed = true
+            
+            if let nav = navigationController {
+                nav.setNavigationBarHidden(true, animated: false)
+                nav.pushViewController(HomeworkVC, animated: true)
+            } else {
+                HomeworkVC.modalPresentationStyle = .fullScreen
+                present(HomeworkVC, animated: true)
+            }
         }
-        */
+    }
+    private func navigateToPortofolio() {
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
+        if let StudentportfolioVC = storyboard.instantiateViewController(
+            withIdentifier: "StudentportfolioVC"
+        ) as? StudentportfolioVC {
+            
+            StudentportfolioVC.hidesBottomBarWhenPushed = true
+            
+            if let nav = navigationController {
+                nav.setNavigationBarHidden(true, animated: false)
+                nav.pushViewController(StudentportfolioVC, animated: true)
+            } else {
+                StudentportfolioVC.modalPresentationStyle = .fullScreen
+                present(StudentportfolioVC, animated: true)
+            }
+        }
+    }
+    
+    // MARK: - NAVIGATE TO PAYMENT GATEWAY ✅ NEWLY ADDED
+    
+    private func navigateToParentfeeVC() {
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
+        if let paymentVC = storyboard.instantiateViewController(
+            withIdentifier: "ParentfeeVC"
+        ) as? ParentfeeVC {
+            
+            paymentVC.hidesBottomBarWhenPushed = true
+            
+            if let nav = navigationController {
+                nav.setNavigationBarHidden(true, animated: false)
+                nav.pushViewController(paymentVC, animated: true)
+            } else {
+                paymentVC.modalPresentationStyle = .fullScreen
+                present(paymentVC, animated: true)
+            }
+        }
     }
 }
 

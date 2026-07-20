@@ -2,8 +2,6 @@
 //  NetworkManager.swift
 //  SchoolFirst
 //
-//  Created by Ranjith Padidala on 26/06/25.
-//
 
 import Foundation
 
@@ -31,6 +29,7 @@ class NetworkManager {
         urlString: String,
         method: HTTPMethod = .GET,
         is_testing : Bool = false,
+        requiresAuth: Bool = true,
         parameters: [String: Any]? = nil,
         headers: [String: String]? = nil,
         completion: @escaping (Result<APIResponse<T>, NetworkError>) -> Void
@@ -78,7 +77,16 @@ class NetworkManager {
                 return
             }
         }
-        if let at = UserDefaults.standard.string(forKey: "ACCESSTOKEN") {
+        
+        // ✅ FIX 1: BASE_URL_2 checked FIRST — public server never gets Bearer token
+        if requiresAuth,
+           let at = UserDefaults.standard.string(forKey: "ACCESSTOKEN"),
+           !urlString.contains(API.BASE_URL_2),
+           !(urlString.contains(API.SENDOTP) ||
+             urlString.contains(API.LOGIN) ||
+             urlString.contains(API.VERIFY_OTP) ||
+             urlString.contains(API.EMAIL_OTP) ||
+             urlString.contains(API.SET_PASSWORD)) {
             request.setValue("Bearer \(at)", forHTTPHeaderField: "Authorization")
         }
 
@@ -97,8 +105,11 @@ class NetworkManager {
                     if (200...399).contains(httpResponse.statusCode)  {
                         print("✅ Success: Status code is \(httpResponse.statusCode)")
                         if is_testing {
-                            let decodedData = try JSONDecoder().decode(TestResponsere.self, from: data)
-                            print(decodedData)
+                            if let json = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers),
+                               let prettyData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted),
+                               let prettyString = String(data: prettyData, encoding: .utf8) {
+                                print("🧪 TEST RAW RESPONSE:\n\(prettyString)")
+                            }
                         }
                         let decodedData = try JSONDecoder().decode(APIResponse<T>.self, from: data)
                         print(decodedData)
@@ -111,63 +122,89 @@ class NetworkManager {
 
                         case 401:
 
-                            DispatchQueue.main.async {
-                                AlertManager.shared.showAlert(
-                                    title: "Session Expired",
-                                    message: "Please login again."
-                                )
+                            // BASE_URL_2 is a PUBLIC server — its 401 must never
+                            // clear the session or redirect to login.
+                            if urlString.contains(API.BASE_URL_2) {
+                                // Public endpoint — just silently fail, no logout
+                                print("⚠️ BASE_URL_2 returned 401 (public endpoint, ignoring auth error)")
+                                completion(.failure(.serverError("401")))
+                            } else if requiresAuth {
+                                // Private endpoint — real session expiry
+                                UserDefaults.standard.removeObject(forKey: "ACCESSTOKEN")
+                                UserDefaults.standard.removeObject(forKey: "LOGGEDIN")
+                                NotificationCenter.default.post(name: Notification.Name("UserSessionExpired"), object: nil)
+                                DispatchQueue.main.async {
+                                    AlertManager.shared.showAlert(
+                                        title: "Session Expired",
+                                        message: "Please login again."
+                                    )
+                                }
+                                completion(.failure(.noaccess))
+                            } else {
+                                completion(.failure(.noaccess))
                             }
-
-                            completion(.failure(.noaccess))
 
                         case 404:
-
-                            DispatchQueue.main.async {
-                                AlertManager.shared.showAlert(
-                                    title: "Not Found",
-                                    message: "Requested data not found."
-                                )
+                            // Suppress popup for BASE_URL_2 public endpoints
+                            if !urlString.contains(API.BASE_URL_2) {
+                                DispatchQueue.main.async {
+                                    AlertManager.shared.showAlert(
+                                        title: "Not Found",
+                                        message: "Requested data not found."
+                                    )
+                                }
+                            } else {
+                                print("⚠️ BASE_URL_2 returned 404 for \(urlString)")
                             }
-
                             completion(.failure(.noData))
 
                         case 405:
-
-                            DispatchQueue.main.async {
-                                AlertManager.shared.showAlert(
-                                    title: "Method Not Allowed",
-                                    message: "Something went wrong. Please try again."
-                                )
+                            // Suppress popup for BASE_URL_2 public endpoints
+                            if !urlString.contains(API.BASE_URL_2) {
+                                DispatchQueue.main.async {
+                                    AlertManager.shared.showAlert(
+                                        title: "Method Not Allowed",
+                                        message: "Something went wrong. Please try again."
+                                    )
+                                }
+                            } else {
+                                print("⚠️ BASE_URL_2 returned 405 for \(urlString)")
                             }
-
                             completion(.failure(.serverError("405")))
 
                         case 500:
-
-                            DispatchQueue.main.async {
-                                AlertManager.shared.showAlert(
-                                    title: "Server Error",
-                                    message: "Server is temporarily unavailable. Please try again later."
-                                )
+                            // Suppress popup for BASE_URL_2 public endpoints
+                            if !urlString.contains(API.BASE_URL_2) {
+                                DispatchQueue.main.async {
+                                    AlertManager.shared.showAlert(
+                                        title: "Server Error",
+                                        message: "Server is temporarily unavailable. Please try again later."
+                                    )
+                                }
+                            } else {
+                                print("⚠️ BASE_URL_2 returned 500 for \(urlString)")
                             }
-
                             completion(.failure(.serverError("500")))
 
                         default:
-
-                            DispatchQueue.main.async {
-                                AlertManager.shared.showAlert(
-                                    title: "Error",
-                                    message: "Unexpected error occurred."
-                                )
+                            // Suppress popup for BASE_URL_2 public endpoints
+                            if !urlString.contains(API.BASE_URL_2) {
+                                DispatchQueue.main.async {
+                                    AlertManager.shared.showAlert(
+                                        title: "Error",
+                                        message: "Unexpected error occurred."
+                                    )
+                                }
+                            } else {
+                                print("⚠️ BASE_URL_2 returned \(httpResponse.statusCode) for \(urlString)")
                             }
-
                             completion(.failure(.serverError("Status Code: \(httpResponse.statusCode)")))
                         }
                     }
                 }
             } catch {
-                print(error.localizedDescription)
+                self.logDecodingError(error)
+                print("❌ Decoding failed: \(error.localizedDescription)")
                 completion(.failure(.decodingError(error.localizedDescription)))
             }
         }.resume()
@@ -213,8 +250,18 @@ struct TestResponsere: Decodable {
     let errorCode: Int
     let total : Int?
     let description: String
-    let data: LoginResponse
-    
+
+    enum CodingKeys: String, CodingKey {
+        case success, errorCode, description, total
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        success     = try container.decodeIfPresent(Bool.self, forKey: .success) ?? false
+        errorCode   = try container.decodeIfPresent(Int.self, forKey: .errorCode) ?? 0
+        description = try container.decodeIfPresent(String.self, forKey: .description) ?? ""
+        total       = try? container.decode(Int.self, forKey: .total)
+    }
 }
 
 struct APIResponse<T: Decodable>: Decodable {
@@ -231,8 +278,8 @@ struct APIResponse<T: Decodable>: Decodable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         success = try container.decode(Bool.self, forKey: .success)
-        errorCode = try container.decode(Int.self, forKey: .errorCode)
-        description = try container.decode(String.self, forKey: .description)
+        errorCode = try container.decodeIfPresent(Int.self, forKey: .errorCode) ?? 0
+        description = try container.decodeIfPresent(String.self, forKey: .description) ?? ""
         total = try? container.decode(Int.self, forKey: .total)
         // 👇 This safely handles {} or missing fields
         data = try? container.decodeIfPresent(T.self, forKey: .data)
@@ -245,7 +292,7 @@ struct MobileCheckResponse : Decodable {
     var profile_pic : String?
     var message : String?
     var password_required : Bool?
-
+    var otp : String?        // Dev backend may return OTP — used for simulator auto-fill
 }
 
 
@@ -255,6 +302,7 @@ struct LoginResponse: Decodable {
     let refreshToken: String
     let accessToken: String
     let isNewUser: Bool
+    
     let setNewPassword: Bool
     let user: User
 
@@ -264,6 +312,21 @@ struct LoginResponse: Decodable {
         case isNewUser = "is_new_user"
         case setNewPassword = "set_new_password"
         case user
+    }
+}
+
+struct VerifyOTPResponse: Decodable {
+    let access: String
+    let refresh: String
+    let userId: String
+    let schoolId: String?
+    let students: [Student]
+
+    enum CodingKeys: String, CodingKey {
+        case access, refresh
+        case userId = "user_id"
+        case schoolId = "school_id"
+        case students
     }
 }
 
@@ -300,6 +363,182 @@ struct User: Codable {
     }
 
 }
+
+// MARK: - PTM Response Data
+
+// MARK: - PTM Class Teacher
+struct PTMClassTeacher: Decodable {
+    let id: String
+    let name: String
+}
+
+// MARK: - PTM Student
+struct PTMStudent: Decodable {
+    let id: String
+    let name: String
+    let admissionNumber: String
+    let classTeacher: PTMClassTeacher?  // ✅ Fixed: Object not String
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case admissionNumber = "admission_number"
+        case classTeacher    = "class_teacher"
+    }
+}
+
+// MARK: - PTM Staff
+struct PTMStaff: Decodable {
+    let id: String
+    let name: String
+    let staffType: String
+    let profileImage: String?
+    let isHost: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case staffType    = "staff_type"
+        case profileImage = "profile_image"
+        case isHost       = "is_host"
+    }
+}
+
+// MARK: - PTM Meeting
+struct PTMMeeting: Decodable {
+    let id: String
+    let title: String
+    let description: String
+    let meetingType: String
+    let meetingDate: String
+    let startTime: String
+    let endTime: String
+    let meetingMode: String
+    let location: String?
+    let meetingLink: String?
+    let status: String
+    let academicYear: PTMIdName
+    let branch: PTMIdName
+    let grade: PTMIdName
+    let section: PTMIdName
+    let staffs: [PTMStaff]
+    let response: PTMMeetingResponse?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case title
+        case description
+        case meetingType  = "meeting_type"
+        case meetingDate  = "meeting_date"
+        case startTime    = "start_time"
+        case endTime      = "end_time"
+        case meetingMode  = "meeting_mode"
+        case location
+        case meetingLink  = "meeting_link"
+        case status
+        case academicYear = "academic_year"
+        case branch
+        case grade
+        case section
+        case staffs
+        case response
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id           = try container.decode(String.self, forKey: .id)
+        title        = try container.decodeIfPresent(String.self, forKey: .title)       ?? ""
+        description  = try container.decodeIfPresent(String.self, forKey: .description) ?? ""
+        meetingType  = try container.decodeIfPresent(String.self, forKey: .meetingType) ?? ""
+        meetingDate  = try container.decodeIfPresent(String.self, forKey: .meetingDate) ?? ""
+        startTime    = try container.decodeIfPresent(String.self, forKey: .startTime)   ?? ""
+        endTime      = try container.decodeIfPresent(String.self, forKey: .endTime)     ?? ""
+        meetingMode  = try container.decodeIfPresent(String.self, forKey: .meetingMode) ?? ""
+        location     = try container.decodeIfPresent(String.self, forKey: .location)
+        meetingLink  = try container.decodeIfPresent(String.self, forKey: .meetingLink)
+        status       = try container.decodeIfPresent(String.self, forKey: .status)      ?? ""
+        academicYear = try container.decode(PTMIdName.self, forKey: .academicYear)
+        branch       = try container.decode(PTMIdName.self, forKey: .branch)
+        grade        = try container.decode(PTMIdName.self, forKey: .grade)
+        section      = try container.decode(PTMIdName.self, forKey: .section)
+        staffs       = try container.decodeIfPresent([PTMStaff].self, forKey: .staffs)  ?? []
+        response     = try container.decodeIfPresent(PTMMeetingResponse.self, forKey: .response)
+    }
+
+    // MARK: - Formatted date helper
+    var formattedDate: String {
+        let inputFormatter        = DateFormatter()
+        inputFormatter.dateFormat = "yyyy-MM-dd"
+        let outputFormatter        = DateFormatter()
+        outputFormatter.dateFormat = "dd MMM yyyy"
+        if let date = inputFormatter.date(from: meetingDate) {
+            return outputFormatter.string(from: date)
+        }
+        return meetingDate
+    }
+
+    // MARK: - Formatted time range helper
+    var formattedTimeRange: String {
+        let inputFormatter        = DateFormatter()
+        inputFormatter.dateFormat = "HH:mm:ss"
+        let outputFormatter        = DateFormatter()
+        outputFormatter.dateFormat = "h:mm a"
+
+        let start = inputFormatter.date(from: startTime).map {
+            outputFormatter.string(from: $0)
+        } ?? startTime
+
+        let end = inputFormatter.date(from: endTime).map {
+            outputFormatter.string(from: $0)
+        } ?? endTime
+
+        return "\(start) - \(end)"
+    }
+
+    // MARK: - Host staff helper
+    var hostStaff: PTMStaff? {
+        return staffs.first(where: { $0.isHost })
+    }
+
+    // MARK: - Non-host staffs helper
+    var nonHostStaffs: [PTMStaff] {
+        return staffs.filter { !$0.isHost }
+    }
+}
+
+// MARK: - Reusable Id + Name object
+struct PTMIdName: Decodable {
+    let id: String
+    let name: String
+}
+
+// MARK: - Meeting Response (parent RSVP)
+struct PTMMeetingResponse: Decodable {
+    let responseStatus: String
+    let respondedAt: String?
+    let remarks: String?
+
+    enum CodingKeys: String, CodingKey {
+        case responseStatus = "response_status"
+        case respondedAt    = "responded_at"
+        case remarks
+    }
+
+    var statusDisplayText: String {
+        switch responseStatus {
+        case "ATTENDING":     return "Attending"
+        case "NOT_ATTENDING": return "Not Attending"
+        case "MAYBE":         return "Maybe"
+        default:              return responseStatus
+        }
+    }
+}
+
+// MARK: - PTM Response Data
+struct PTMResponseData: Decodable {
+    let student: PTMStudent
+    let meetings: [PTMMeeting]
+}
 struct School: Codable {
     let schoolID: String
     let schoolName: String
@@ -328,14 +567,26 @@ struct School: Codable {
         case website, email
         case mapLink = "map_link"
         case latitude, longitude
+        // Fallback keys for verify-otp API which returns "id"/"name"
+        case id, name
     }
     
-    // ✅ Custom init to handle missing students key
+    // ✅ Custom init to handle both "school_id"/"school_name" and "id"/"name" formats
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        schoolID = try container.decode(String.self, forKey: .schoolID)
-        schoolName = try container.decode(String.self, forKey: .schoolName)
+        // Try "school_id" first, fall back to "id"
+        if let sid = try? container.decode(String.self, forKey: .schoolID) {
+            schoolID = sid
+        } else {
+            schoolID = try container.decode(String.self, forKey: .id)
+        }
+        // Try "school_name" first, fall back to "name"
+        if let sname = try? container.decode(String.self, forKey: .schoolName) {
+            schoolName = sname
+        } else {
+            schoolName = (try? container.decode(String.self, forKey: .name)) ?? ""
+        }
         smallLogo = try container.decodeIfPresent(String.self, forKey: .smallLogo)
         fullLogo = try container.decodeIfPresent(String.self, forKey: .fullLogo)
         district = try container.decodeIfPresent(String.self, forKey: .district)
@@ -349,6 +600,24 @@ struct School: Codable {
         latitude = try container.decodeIfPresent(String.self, forKey: .latitude)
         longitude = try container.decodeIfPresent(String.self, forKey: .longitude)
         
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(schoolID, forKey: .schoolID)
+        try container.encode(schoolName, forKey: .schoolName)
+        try container.encodeIfPresent(smallLogo, forKey: .smallLogo)
+        try container.encodeIfPresent(fullLogo, forKey: .fullLogo)
+        try container.encodeIfPresent(district, forKey: .district)
+        try container.encodeIfPresent(state, forKey: .state)
+        try container.encodeIfPresent(coverPic, forKey: .coverPic)
+        try container.encodeIfPresent(address, forKey: .address)
+        try container.encodeIfPresent(phoneNumber, forKey: .phoneNumber)
+        try container.encodeIfPresent(website, forKey: .website)
+        try container.encodeIfPresent(email, forKey: .email)
+        try container.encodeIfPresent(mapLink, forKey: .mapLink)
+        try container.encodeIfPresent(latitude, forKey: .latitude)
+        try container.encodeIfPresent(longitude, forKey: .longitude)
     }
 }
 struct Course: Codable {
@@ -1059,9 +1328,6 @@ struct WordInfo: Codable {
     let usageVoice: String = ""
     let date: String?
 
-    
-    
-    
     enum CodingKeys: String, CodingKey {
         case id
         case word
@@ -1427,7 +1693,6 @@ struct AssessmentSummary: Codable {
     let assessmentId: String
     let assessmentName: String
     let description: String
-//    let answer: String
     let numberOfQuestions: Int
     let totalMarks: Int
     let studentMarks: Int
@@ -1437,7 +1702,6 @@ struct AssessmentSummary: Codable {
         case assessmentId = "assessment_id"
         case assessmentName = "assessment_name"
         case description
-//        case answer
         case numberOfQuestions = "number_of_questions"
         case totalMarks = "total_marks"
         case studentMarks = "student_marks"
@@ -1529,6 +1793,7 @@ struct ScheduleItem: Decodable {
     let session_number: Int?
     let now: Bool
 }
+
 struct VocabBeeStatistics: Codable {
     let total_questions: Int?
     let correct_answers: Int?
@@ -1539,19 +1804,10 @@ struct VocabBeeStatistics: Codable {
     let total_words: Int?
 }
 
-    enum CodingKeys: String, CodingKey {
-        case totalQuestions = "total_questions"
-        case correctAnswers = "correct_answers"
-        case wrongAnswers = "wrong_answers"
-        case totalPoints = "total_points"
-        case lastAnswerPoints = "last_answer_points"
-        case level
-        case totalWords = "total_words"
-    }
 struct VocabBeeWordResponse: Codable {
     let id: String
     let wordID: String
-    let userAnswer: String?        
+    let userAnswer: String?
     let correctAnswer: String
     let isCorrect: Bool
     let points: Int
@@ -1565,6 +1821,7 @@ struct VocabBeeWordResponse: Codable {
         case points
     }
 }
+
 struct Product: Decodable {
     let id: String
     let itemName: String
@@ -1577,8 +1834,7 @@ struct Product: Decodable {
     let highlights: [String]?
     let isTrending: Bool
     let variants: Variants?
-    let specification: [String]?  // 👈 This is important
-
+    let specification: [String]?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -1593,7 +1849,6 @@ struct Product: Decodable {
         case isTrending = "is_trending"
         case variants
         case specification
-
     }
 }
 struct Variants: Decodable {
@@ -1633,7 +1888,6 @@ struct CreateOrderResponseModel: Codable {
         case message
     }
 
-    
     var getOrderId: String? {
         return orderId ?? id
     }
@@ -1755,7 +2009,6 @@ extension FullAddress {
 // MARK:  AddressModel Extension
 extension AddressModel {
     
-    // Convert to API parameters dictionary
     func toParameters() -> [String: Any] {
         var params: [String: Any] = [:]
         
@@ -1784,7 +2037,6 @@ extension AddressModel {
         return params
     }
     
-    // Get formatted display address
     func getDisplayAddress() -> String {
         var addressComponents: [String] = []
         
@@ -1816,7 +2068,6 @@ extension AddressModel {
         return addressComponents.joined(separator: ", ")
     }
     
-    // Get short display address (for limited space)
     func getShortDisplayAddress() -> String {
         var addressComponents: [String] = []
         
@@ -1836,9 +2087,10 @@ extension AddressModel {
         return addressComponents.joined(separator: ", ")
     }
 }
+
 struct PaymentVerificationResponse: Codable {
     let orderId: String
-    let paymentStatus: String  // "SUCCESS", "FAILED", "PENDING", "CANCELLED"
+    let paymentStatus: String
     let transactionId: String?
     let amount: Double?
     
@@ -1873,7 +2125,6 @@ struct StudentUpdateResponse: Codable {
         case status
     }
     
-    // Helper: Get final ID and name
     var finalID: String {
         return id ?? studentID ?? ""
     }
@@ -1888,7 +2139,7 @@ struct Grade: Codable {
     let name: String
     let section: String?
     let numericGrade: Int?
-    let age: String?  
+    let age: String?
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -1973,7 +2224,10 @@ struct SafeOptional<T: Codable>: Codable {
 }
 struct SafeAnyDecodable: Codable {}
 
-
+struct IdNameObj: Codable {
+    let id: String
+    let name: String
+}
 struct Student: Codable {
     let studentID: String
     let name: String
@@ -1997,16 +2251,17 @@ struct Student: Codable {
     enum CodingKeys: String, CodingKey {
         case studentID = "student_id"
         case name, mobile_json, email_json
-        case image
+        case image, photo_url
         case fatherName = "father_name"
         case motherName = "mother_name"
-        case dob
+        case dob, date_of_birth
         case address
-        case mobile
+        case mobile, father_mobile
         case grade
         case clss
         case gradeID = "grade_id"
         case school = "schools"
+        case schoolAlt = "school"  // verify-otp API uses "school" key
         case section, numeric_grade
         case student_access_token, qpass_id
     }
@@ -2015,48 +2270,64 @@ struct Student: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         studentID = try container.decodeIfPresent(String.self, forKey: .studentID) ?? ""
         name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
-        image = try container.decodeIfPresent(String.self, forKey: .image)
+        image = (try? container.decodeIfPresent(String.self, forKey: .image)) ?? (try? container.decodeIfPresent(String.self, forKey: .photo_url))
         fatherName = try container.decodeIfPresent(String.self, forKey: .fatherName)
         motherName = try container.decodeIfPresent(String.self, forKey: .motherName)
-        dob = try container.decodeIfPresent(String.self, forKey: .dob)
+        dob = (try? container.decodeIfPresent(String.self, forKey: .dob)) ?? (try? container.decodeIfPresent(String.self, forKey: .date_of_birth))
         address = try container.decodeIfPresent(String.self, forKey: .address)
-        mobile = try container.decodeIfPresent(String.self, forKey: .mobile)
+        mobile = (try? container.decodeIfPresent(String.self, forKey: .mobile)) ?? (try? container.decodeIfPresent(String.self, forKey: .father_mobile))
         email_json = try container.decodeIfPresent([[String:String]].self, forKey: .email_json)
         mobile_json = try container.decodeIfPresent([ContactJson].self, forKey: .mobile_json)
         
-        // Handle grade fallback to clss
-        if let g = try container.decodeIfPresent(String.self, forKey: .grade) {
+        var tempGradeID = ""
+        if let g = try? container.decodeIfPresent(String.self, forKey: .grade) {
             grade = g
-        } else if let c = try container.decodeIfPresent(String.self, forKey: .clss) {
+        } else if let c = try? container.decodeIfPresent(String.self, forKey: .clss) {
             grade = c
+        } else if let obj = try? container.decodeIfPresent(IdNameObj.self, forKey: .grade) {
+            grade = obj.name
+            tempGradeID = obj.id
         } else {
             grade = ""
         }
         
-        gradeID = try container.decodeIfPresent(String.self, forKey: .gradeID) ?? ""
-        section = try container.decodeIfPresent(String.self, forKey: .section)
+        gradeID = (try? container.decodeIfPresent(String.self, forKey: .gradeID)) ?? tempGradeID
+        
+        if let s = try? container.decodeIfPresent(String.self, forKey: .section) {
+            section = s
+        } else if let obj = try? container.decodeIfPresent(IdNameObj.self, forKey: .section) {
+            section = obj.name
+        } else {
+            section = nil
+        }
+        
         numeric_grade = try container.decodeIfPresent(Int.self, forKey: .numeric_grade) ?? 0
         student_access_token = try container.decodeIfPresent(String.self, forKey: .student_access_token)
         qpass_id = try container.decodeIfPresent(String.self, forKey: .qpass_id)
         
-        if let schoolData = try container.decodeIfPresent(School.self, forKey: .school) {
-            _school = SafeOptional(wrappedValue: schoolData)
-        } else {
+        // Try "schools" key first, fall back to "school" key (verify-otp API)
+        do {
+            if let schoolData = try container.decodeIfPresent(School.self, forKey: .school) {
+                _school = SafeOptional(wrappedValue: schoolData)
+            } else if let schoolData = try container.decodeIfPresent(School.self, forKey: .schoolAlt) {
+                _school = SafeOptional(wrappedValue: schoolData)
+            } else {
+                _school = SafeOptional(wrappedValue: nil)
+            }
+        } catch {
+            print("❌ Failed to decode school: \(error)")
             _school = SafeOptional(wrappedValue: nil)
         }
     }
     
-    // ✅ Add computed property for id
     var id: String {
         return studentID
     }
     
-    // ✅ Add display name for convenience
     var displayName: String {
         return name.isEmpty ? "Student" : name
     }
     
-    // ✅ Add grade section for display
     var gradeSection: String {
         if !grade.isEmpty && (section != nil) {
             return "\(grade) - \(section)"
@@ -2064,7 +2335,6 @@ struct Student: Codable {
         return grade
     }
     
-    // ✅ Keep your initializer
     init(studentID: String, name: String, image: String?, fatherName: String, motherName: String, dob: String?, address: String?, mobile: String?, grade: String, gradeID: String, section: String, numeric_grade: Int, school: School?) {
         self.studentID = studentID
         self.name = name
@@ -2114,7 +2384,6 @@ struct LikeResponse: Decodable {
 }
 extension String {
     
-    // Strip HTML tags from string
     func stripHTML() -> String {
         guard let data = self.data(using: .utf8) else { return self }
         
@@ -2127,7 +2396,6 @@ extension String {
             return attributedString.string
         }
         
-        // Fallback: Simple regex replacement
         return self
             .replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
             .replacingOccurrences(of: "&nbsp;", with: " ")
@@ -2140,17 +2408,14 @@ extension String {
     
 }
 
-// Response wrapper for GET comments
 struct CommentsResponse: Codable {
     let comments: [Comment]
 }
 
-// Response wrapper for POST comment
 struct PostCommentResponse: Codable {
     let id: String
 }
 
-// Comment Model
 struct Comment: Codable {
     let commentId: String
     let userId: String
@@ -2174,7 +2439,6 @@ struct Comment: Codable {
         case createdAt = "created_at"
     }
     
-    // Helper to get formatted time
     var formattedTime: String {
         let date = Date(timeIntervalSince1970: TimeInterval(createdAt))
         let formatter = RelativeDateTimeFormatter()
@@ -2238,7 +2502,6 @@ struct LeaveHistoryData: Codable {
         case holidays
     }
     
-    // Helper computed properties
     var formattedDateRange: String {
         if fromDate == toDate {
             return formatDate(fromDate)
@@ -2268,7 +2531,6 @@ struct LeaveHistoryData: Codable {
         return dateString
     }
     
-    // Get month from fromDate (1-12)
     var leaveMonth: Int? {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
@@ -2288,7 +2550,7 @@ struct LeaveDayDetail: Codable {
         case sessionType = "session_type"
     }
 }
-// MARK: Leave Update Response Model
+
 struct LeaveUpdateResponse: Codable {
     let id: String
     let gradeId: String
@@ -2328,8 +2590,8 @@ struct OnlineCourse: Codable {
     let description: String
     let duration: Int
     let audience: String
-    let thumbnailImage: String        // ← Yeh sahi hai
-    let profileImage: String?          // ← Isse ignore karo
+    let thumbnailImage: String
+    let profileImage: String?
     let demoVideo: [String]?
     let courseFee: String
     let finalCourseFee: String
@@ -2337,8 +2599,8 @@ struct OnlineCourse: Codable {
 
     enum CodingKeys: String, CodingKey {
         case id, name, description, duration, audience, trending
-        case thumbnailImage = "thumbnail_image"     // ← API key
-        case profileImage = "profile_image"         // ← Ignore this
+        case thumbnailImage = "thumbnail_image"
+        case profileImage = "profile_image"
         case demoVideo = "demo_video"
         case courseFee = "course_fee"
         case finalCourseFee = "final_course_fee"
@@ -2394,8 +2656,8 @@ struct Webinar: Codable {
         case thumbnailImage = "thumbnail_image"
     }
 }
+
 func formatEntryFee(_ fee: String) -> String {
-    // Convert string to double and format
     if let feeValue = Double(fee) {
         let formattedFee = String(format: "%.2f", feeValue)
         return "₹\(formattedFee)/-"
@@ -2405,4 +2667,3 @@ func formatEntryFee(_ fee: String) -> String {
         return "₹\(fee)/-"
     }
 }
-
