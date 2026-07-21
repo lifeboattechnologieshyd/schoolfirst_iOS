@@ -9,7 +9,16 @@ class PTMhomeTableViewCell1TableViewCell2: UITableViewCell {
 
     @IBOutlet weak var collectionview: UICollectionView!
 
-    var meetingsData: [Any] = [1, 2, 3]
+    // ── NEW: Height constraint outlet (connect from Storyboard/XIB) ──
+    @IBOutlet weak var collectionViewHeightConstraint: NSLayoutConstraint!
+
+    // ── Holds real completed meetings ──
+    var meetingsData: [PTMCompletedMeeting] = []
+
+    // ── Constants for height calculation ──
+    private let itemHeight: CGFloat = 81       // must match sizeForItemAt
+    private let itemSpacing: CGFloat = 1       // must match minimumLineSpacing
+    private let emptyStateHeight: CGFloat = 81 // when no data → show 1 empty cell
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -33,30 +42,27 @@ class PTMhomeTableViewCell1TableViewCell2: UITableViewCell {
 
         if let layout = collectionview.collectionViewLayout as? UICollectionViewFlowLayout {
             layout.scrollDirection = .vertical
-            // Figma look: 1px separator line between cells
-            layout.minimumLineSpacing = 1
+            layout.minimumLineSpacing = itemSpacing
             layout.minimumInteritemSpacing = 0
             layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         }
 
-        // Background color acts as the separator line color
         collectionview.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
         collectionview.showsVerticalScrollIndicator = false
+
+        // ── Disable scrolling — table cell height will grow instead ──
+        collectionview.isScrollEnabled = false
     }
-    
+
     private func applyFigmaStyling() {
-        // 1. Border and Corner Radius
-        collectionview.layer.cornerRadius = 12 // Matches Figma card rounding
+        collectionview.layer.cornerRadius = 12
         collectionview.layer.borderWidth = 1.0
         collectionview.layer.borderColor = UIColor.lightGray.withAlphaComponent(0.5).cgColor
         collectionview.clipsToBounds = true
-        
-        // 2. Shadow (Applied to the Cell's content view or a wrapper if necessary)
-        // Note: For a true Figma shadow, the TableViewCell background should be clear
+
         self.backgroundColor = .clear
         self.contentView.backgroundColor = .clear
-        
-        // Shadow configuration on the collection view's layer parent or the container
+
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOffset = CGSize(width: 0, height: 4)
         layer.shadowRadius = 4
@@ -64,9 +70,41 @@ class PTMhomeTableViewCell1TableViewCell2: UITableViewCell {
         layer.masksToBounds = false
     }
 
-    func configure(with data: [Any]) {
+    // ── Configure ──
+    func configure(with data: [PTMCompletedMeeting]) {
         meetingsData = data
         collectionview.reloadData()
+
+        // ── Update dynamic height ──
+        updateCollectionViewHeight()
+
+        print("📋 PTMhomeTableViewCell1TableViewCell2 configure() → \(data.count) completed meetings")
+        print("   → New CV height:", collectionViewHeightConstraint?.constant ?? 0)
+    }
+
+    // MARK: - Dynamic Height Calculation
+    private func updateCollectionViewHeight() {
+
+        let itemCount   = max(meetingsData.count, 1) // at least 1 empty cell
+        let totalHeight = (CGFloat(itemCount) * itemHeight) + (CGFloat(itemCount - 1) * itemSpacing)
+
+        // Update constraint (if connected)
+        collectionViewHeightConstraint?.constant = totalHeight
+
+        // Also invalidate layout so cells re-render properly
+        collectionview.collectionViewLayout.invalidateLayout()
+        contentView.setNeedsLayout()
+        contentView.layoutIfNeeded()
+    }
+
+    /// Public helper — call from parent VC to know total cell height
+    func requiredHeight() -> CGFloat {
+        let itemCount   = max(meetingsData.count, 1)
+        let totalHeight = (CGFloat(itemCount) * itemHeight) + (CGFloat(itemCount - 1) * itemSpacing)
+
+        // Add padding for top/bottom breathing space in the tableview cell
+        let verticalPadding: CGFloat = 40
+        return totalHeight + verticalPadding
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -79,7 +117,7 @@ class PTMhomeTableViewCell1TableViewCell2: UITableViewCell {
 extension PTMhomeTableViewCell1TableViewCell2: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return meetingsData.count
+        return max(meetingsData.count, 1)
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -88,14 +126,19 @@ extension PTMhomeTableViewCell1TableViewCell2: UICollectionViewDelegate, UIColle
             for: indexPath
         ) as! PTMcompletedmeetingsCollectionViewCell
 
-        // Ensure cell background is white to hide the collectionview background color
         cell.backgroundColor = .white
-        
+
+        if meetingsData.isEmpty {
+            cell.configureEmpty()
+        } else if indexPath.item < meetingsData.count {
+            let meeting = meetingsData[indexPath.item]
+            cell.configure(with: meeting)
+        }
+
         return cell
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        // Use full width of collection view
-        return CGSize(width: collectionView.frame.width, height: 81)
+        return CGSize(width: collectionView.frame.width, height: itemHeight)
     }
 }

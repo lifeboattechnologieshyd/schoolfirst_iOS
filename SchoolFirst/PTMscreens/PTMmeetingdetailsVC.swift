@@ -320,7 +320,7 @@ extension PTMmeetingdetailsVC: UITableViewDelegate, UITableViewDataSource {
         if isLoading || displayMeetings.isEmpty {
             return 150
         }
-        return 1400
+        return 980
     }
 
     // MARK: - Navigate to MeetingConfirmationVC

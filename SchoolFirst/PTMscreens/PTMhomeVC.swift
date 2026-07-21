@@ -17,134 +17,26 @@ class PTMhomeVC: UIViewController {
     private var ptmData: PTMResponseData?
     private var isLoading: Bool = true
 
+    // ── Completed Meetings Data ─────────────────────────────────────
+    private var completedData: PTMCompletedMeetingsResponse?
+    private var isLoadingCompleted: Bool = true
+
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTopViewShadow()
         setupTableView()
         fetchPTMMeetings()
+        fetchPTMCompletedMeetings()
     }
-
-    // MARK: - Resolve School ID
-    private func resolvedSchoolID() -> String {
-
-        // Priority 1: UserManager in-memory selectedKid's school
-        if let scid = UserManager.shared.selectedKid?.school?.schoolID,
-           !scid.isEmpty {
-            print("✅ resolvedSchoolID → from selectedKid.school:", scid)
-            return scid
-        }
-
-        // Priority 2: UserManager selectedSchool
-        if let scid = UserManager.shared.selectedSchool?.schoolID,
-           !scid.isEmpty {
-            print("✅ resolvedSchoolID → from selectedSchool:", scid)
-            return scid
-        }
-
-        // Priority 3: UserDefaults SCHOOL_ID
-        if let scid = UserDefaults.standard.string(forKey: "SCHOOL_ID"),
-           !scid.isEmpty {
-            print("✅ resolvedSchoolID → from UserDefaults[SCHOOL_ID]:", scid)
-            return scid
-        }
-
-        // Priority 4: UserDefaults SchoolID
-        if let scid = UserDefaults.standard.string(forKey: "SchoolID"),
-           !scid.isEmpty {
-            print("✅ resolvedSchoolID → from UserDefaults[SchoolID]:", scid)
-            return scid
-        }
-
-        // Priority 5: UserDefaults school_id
-        if let scid = UserDefaults.standard.string(forKey: "school_id"),
-           !scid.isEmpty {
-            print("✅ resolvedSchoolID → from UserDefaults[school_id]:", scid)
-            return scid
-        }
-
-        // Priority 6: Decode from USER_INFO
-        if let data = UserDefaults.standard.data(forKey: "USER_INFO"),
-           let user = try? JSONDecoder().decode(User.self, from: data),
-           let scid = user.students?.first?.school?.schoolID,
-           !scid.isEmpty {
-            print("✅ resolvedSchoolID → from USER_INFO decode:", scid)
-            return scid
-        }
-
-        print("❌ resolvedSchoolID → all sources empty")
-        return ""
-    }
-
-    // MARK: - Resolve Student ID
-    private func resolvedStudentID() -> String {
-
-        // Priority 1: UserManager in-memory selectedKid
-        if let sid = UserManager.shared.selectedKid?.studentID,
-           !sid.isEmpty {
-            print("✅ resolvedStudentID → from selectedKid:", sid)
-            return sid
-        }
-
-        // Priority 2: UserDefaults STUDENT_ID
-        if let sid = UserDefaults.standard.string(forKey: "STUDENT_ID"),
-           !sid.isEmpty {
-            print("✅ resolvedStudentID → from UserDefaults[STUDENT_ID]:", sid)
-            return sid
-        }
-
-        // Priority 3: Decode from USER_INFO
-        if let data = UserDefaults.standard.data(forKey: "USER_INFO"),
-           let user = try? JSONDecoder().decode(User.self, from: data),
-           let sid = user.students?.first?.studentID,
-           !sid.isEmpty {
-            print("✅ resolvedStudentID → from USER_INFO decode:", sid)
-            return sid
-        }
-
-        print("❌ resolvedStudentID → all sources empty")
-        return ""
-    }
-
-    // MARK: - Navigate to PTMmeetingdetailsVC
-    func navigateToPTMDetails(meeting: PTMMeeting? = nil) {
-
-        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-        print("🚀 navigateToPTMDetails called")
-        print("   meeting   :", meeting?.title ?? "nil → show all")
-        print("   meetingID :", meeting?.id    ?? "nil → show all")
-        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-
-        guard let detailsVC = storyboard.instantiateViewController(
-            withIdentifier: "PTMmeetingdetailsVC"
-        ) as? PTMmeetingdetailsVC else {
-            print("❌ PTMmeetingdetailsVC not found — check storyboard identifier")
-            return
-        }
-
-        // ── Pass resolved IDs ────────────────────────────────────────────
-        detailsVC.schoolID          = resolvedSchoolID()
-        detailsVC.studentID         = resolvedStudentID()
-        detailsVC.selectedMeeting   = meeting
-        detailsVC.selectedMeetingID = meeting?.id
-
-        print("📌 Passing to PTMmeetingdetailsVC:")
-        print("   schoolID  :", detailsVC.schoolID.isEmpty  ? "⚠️ EMPTY" : detailsVC.schoolID)
-        print("   studentID :", detailsVC.studentID.isEmpty ? "⚠️ EMPTY" : detailsVC.studentID)
-        print("   meetingID :", detailsVC.selectedMeetingID ?? "nil")
-
+    @IBAction func BackButtonTapped(_ sender: UIButton) {
         if let nav = navigationController {
-            nav.pushViewController(detailsVC, animated: true)
+            nav.popViewController(animated: true)
         } else {
-            print("⚠️ navigationController is nil — presenting modally")
-            detailsVC.modalPresentationStyle = .fullScreen
-            present(detailsVC, animated: true)
+            dismiss(animated: true)
         }
     }
-
-    // MARK: - Actions
+    
     @IBAction func NotificationButtonTapped(_ sender: UIButton) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         if let notificationVC = storyboard.instantiateViewController(
@@ -161,30 +53,56 @@ class PTMhomeVC: UIViewController {
         }
     }
 
-    @IBAction func BackButtonTapped(_ sender: UIButton) {
+
+    // MARK: - Resolve School ID
+    private func resolvedSchoolID() -> String {
+        if let scid = UserManager.shared.selectedKid?.school?.schoolID, !scid.isEmpty { return scid }
+        if let scid = UserManager.shared.selectedSchool?.schoolID, !scid.isEmpty { return scid }
+        if let scid = UserDefaults.standard.string(forKey: "SCHOOL_ID"), !scid.isEmpty { return scid }
+        if let scid = UserDefaults.standard.string(forKey: "SchoolID"), !scid.isEmpty { return scid }
+        if let scid = UserDefaults.standard.string(forKey: "school_id"), !scid.isEmpty { return scid }
+        if let data = UserDefaults.standard.data(forKey: "USER_INFO"),
+           let user = try? JSONDecoder().decode(User.self, from: data),
+           let scid = user.students?.first?.school?.schoolID, !scid.isEmpty { return scid }
+        return ""
+    }
+
+    // MARK: - Resolve Student ID
+    private func resolvedStudentID() -> String {
+        if let sid = UserManager.shared.selectedKid?.studentID, !sid.isEmpty { return sid }
+        if let sid = UserDefaults.standard.string(forKey: "STUDENT_ID"), !sid.isEmpty { return sid }
+        if let data = UserDefaults.standard.data(forKey: "USER_INFO"),
+           let user = try? JSONDecoder().decode(User.self, from: data),
+           let sid = user.students?.first?.studentID, !sid.isEmpty { return sid }
+        return ""
+    }
+
+    // MARK: - Navigate to PTMmeetingdetailsVC
+    func navigateToPTMDetails(meeting: PTMMeeting? = nil) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let detailsVC = storyboard.instantiateViewController(withIdentifier: "PTMmeetingdetailsVC") as? PTMmeetingdetailsVC else { return }
+
+        detailsVC.schoolID          = resolvedSchoolID()
+        detailsVC.studentID         = resolvedStudentID()
+        detailsVC.selectedMeeting   = meeting
+        detailsVC.selectedMeetingID = meeting?.id
+
         if let nav = navigationController {
-            nav.popViewController(animated: true)
+            nav.pushViewController(detailsVC, animated: true)
         } else {
-            dismiss(animated: true)
+            detailsVC.modalPresentationStyle = .fullScreen
+            present(detailsVC, animated: true)
         }
     }
 
-    // MARK: - API
+    // MARK: - API: Upcoming Meetings
     private func fetchPTMMeetings() {
         isLoading = true
         tableview.reloadData()
-
         let schoolId  = resolvedSchoolID()
         let studentId = resolvedStudentID()
 
-        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-        print("🌐 PTMhomeVC — fetchPTMMeetings()")
-        print("   schoolId  :", schoolId.isEmpty  ? "⚠️ EMPTY" : schoolId)
-        print("   studentId :", studentId.isEmpty ? "⚠️ EMPTY" : studentId)
-        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-
         guard !schoolId.isEmpty, !studentId.isEmpty else {
-            print("❌ PTMhomeVC — cannot fetch, IDs are empty")
             isLoading = false
             tableview.reloadData()
             return
@@ -197,213 +115,163 @@ class PTMhomeVC: UIViewController {
             parameters: ["student_id": studentId],
             headers: ["X-School-Id": schoolId]
         ) { [weak self] (result: Result<APIResponse<PTMResponseData>, NetworkError>) in
-
             guard let self = self else { return }
-
             DispatchQueue.main.async {
                 self.isLoading = false
-
                 switch result {
                 case .success(let response):
                     if response.success, let data = response.data {
                         self.ptmData = data
-                        print("✅ PTM meetings fetched:", data.meetings.count, "meeting(s)")
-                        print("   Student name :", data.student.name)
-                    } else {
-                        print("⚠️ PTM API returned success=false or nil data")
                     }
                     self.tableview.reloadData()
-
-                case .failure(let error):
-                    print("❌ PTM API error:", error)
+                case .failure:
                     self.tableview.reloadData()
                 }
             }
         }
     }
 
-    // MARK: - TableView Setup
-    private func setupTableView() {
-        tableview.delegate   = self
-        tableview.dataSource = self
-        tableview.separatorStyle               = .none
-        tableview.showsVerticalScrollIndicator = false
+    // MARK: - API: Completed Meetings
+    private func fetchPTMCompletedMeetings() {
+        isLoadingCompleted = true
+        let schoolId  = resolvedSchoolID()
+        let studentId = resolvedStudentID()
 
-        tableview.register(
-            UINib(nibName: "PTMhomeTableViewCell1", bundle: nil),
-            forCellReuseIdentifier: "PTMhomeTableViewCell1"
-        )
-        tableview.register(
-            UINib(nibName: "PTMhomeupcomingmeetingsTableViewCell", bundle: nil),
-            forCellReuseIdentifier: "PTMhomeupcomingmeetingsTableViewCell"
-        )
-        tableview.register(
-            UINib(nibName: "PTMhomeTableViewCell1TableViewCell2", bundle: nil),
-            forCellReuseIdentifier: "PTMhomeTableViewCell1TableViewCell2"
-        )
+        guard !schoolId.isEmpty, !studentId.isEmpty else {
+            isLoadingCompleted = false
+            return
+        }
+
+        NetworkManager.shared.request(
+            urlString: API.PTM_COMPLETED_MEETINGS,
+            method: .GET,
+            requiresAuth: true,
+            parameters: ["student_id": studentId],
+            headers: ["X-School-Id": schoolId]
+        ) { [weak self] (result: Result<APIResponse<PTMCompletedMeetingsResponse>, NetworkError>) in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                self.isLoadingCompleted = false
+                if case .success(let response) = result, let data = response.data {
+                    self.completedData = data
+                }
+                self.tableview.reloadData()
+            }
+        }
     }
 
-    // MARK: - Shadow
+    private func setupTableView() {
+        tableview.delegate = self
+        tableview.dataSource = self
+        tableview.register(UINib(nibName: "PTMhomeTableViewCell1", bundle: nil), forCellReuseIdentifier: "PTMhomeTableViewCell1")
+        tableview.register(UINib(nibName: "PTMhomeupcomingmeetingsTableViewCell", bundle: nil), forCellReuseIdentifier: "PTMhomeupcomingmeetingsTableViewCell")
+        tableview.register(UINib(nibName: "PTMhomeTableViewCell1TableViewCell2", bundle: nil), forCellReuseIdentifier: "PTMhomeTableViewCell1TableViewCell2")
+    }
+
     private func setupTopViewShadow() {
-        Topview.layer.shadowColor   = UIColor.lightGray.cgColor
+        Topview.layer.shadowColor = UIColor.lightGray.cgColor
         Topview.layer.shadowOpacity = 0.4
-        Topview.layer.shadowOffset  = CGSize(width: 0, height: 4)
-        Topview.layer.shadowRadius  = 2
+        Topview.layer.shadowOffset = CGSize(width: 0, height: 4)
+        Topview.layer.shadowRadius = 2
         Topview.layer.masksToBounds = false
     }
 }
 
-// MARK: - UITableViewDelegate & UITableViewDataSource
 extension PTMhomeVC: UITableViewDelegate, UITableViewDataSource {
 
-    // MARK: - Row Count
-    func tableView(
-        _ tableView: UITableView,
-        numberOfRowsInSection section: Int
-    ) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if isLoading { return 3 }
-
         let meetingCount = ptmData?.meetings.count ?? 0
-        if meetingCount == 0 { return 3 }
-
-        // Row 0        → Header cell
-        // Row 1...n    → Meeting cells
-        // Row n+1      → Footer cell
         return 1 + meetingCount + 1
     }
 
-    // MARK: - Cell For Row
-    func tableView(
-        _ tableView: UITableView,
-        cellForRowAt indexPath: IndexPath
-    ) -> UITableViewCell {
-
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let meetingCount = ptmData?.meetings.count ?? 0
-        let lastRow      = (meetingCount == 0) ? 2 : (1 + meetingCount)
+        let lastRow = (meetingCount == 0) ? 2 : (1 + meetingCount)
 
-        // ── Row 0 → Header cell ──────────────────────────────────────────
+        // ── Row 0: Header Cell ──
         if indexPath.row == 0 {
-            let cell = tableView.dequeueReusableCell(
-                withIdentifier: "PTMhomeTableViewCell1",
-                for: indexPath
-            ) as! PTMhomeTableViewCell1
-
+            let cell = tableView.dequeueReusableCell(withIdentifier: "PTMhomeTableViewCell1", for: indexPath) as! PTMhomeTableViewCell1
             cell.selectionStyle = .none
 
             if let student = ptmData?.student {
                 cell.StudentnameLBl.text = "Hello, \(student.name)"
-            } else {
-                cell.StudentnameLBl.text = "Hello!"
             }
 
             let count = ptmData?.meetings.count ?? 0
             if isLoading {
-                cell.upcomingCountLabel.text = "Loading your PTM meetings..."
+                cell.upcomingCountLabel.text = "Loading..."
             } else if count == 0 {
-                cell.upcomingCountLabel.text = "No upcoming PTM meetings this week."
-            } else if count == 1 {
-                cell.upcomingCountLabel.text = "You have 1 upcoming PTM this week."
+                cell.upcomingCountLabel.text = "No upcoming PTM meetings."
             } else {
-                cell.upcomingCountLabel.text = "You have \(count) upcoming PTMs this week."
+                cell.upcomingCountLabel.text = "You have \(count) upcoming PTM\(count > 1 ? "s" : "") this week."
             }
 
-            // Calendar tap → CalendarVC
+            if let nextMeeting = ptmData?.meetings.first {
+                cell.UpcomingmeetingDateLbl.text = nextMeeting.formattedDate
+            } else {
+                cell.UpcomingmeetingDateLbl.text = "No upcoming date"
+            }
+
+            if isLoadingCompleted {
+                cell.TotalmeetingattendedcountLbl.text = "..."
+            } else {
+                cell.TotalmeetingattendedcountLbl.text = "\(completedData?.summary.attendedCount ?? 0)"
+            }
+
             cell.onCalendarTapped = { [weak self] in
-                guard let self = self else { return }
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                if let calendarVC = storyboard.instantiateViewController(
-                    withIdentifier: "CalenderVC"
-                ) as? CalenderVC {
-                    if let nav = self.navigationController {
-                        nav.pushViewController(calendarVC, animated: true)
-                    } else {
-                        calendarVC.modalPresentationStyle = .fullScreen
-                        self.present(calendarVC, animated: true)
-                    }
+                if let vc = storyboard.instantiateViewController(withIdentifier: "CalenderVC") as? CalenderVC {
+                    self?.navigationController?.pushViewController(vc, animated: true)
                 }
             }
 
-            // Details tap → show ALL meetings
             cell.onDetailsTapped = { [weak self] in
-                guard let self = self else { return }
-                self.navigateToPTMDetails(meeting: nil)
+                self?.navigateToPTMDetails(meeting: nil)
             }
 
             return cell
         }
 
-        // ── Last Row → Footer cell ───────────────────────────────────────
+        // ── Last Row: Footer cell ──
         if indexPath.row == lastRow {
-            let cell = tableView.dequeueReusableCell(
-                withIdentifier: "PTMhomeTableViewCell1TableViewCell2",
-                for: indexPath
-            ) as! PTMhomeTableViewCell1TableViewCell2
-
-            cell.selectionStyle = .none
-            cell.configure(with: [1, 2, 3])
+            let cell = tableView.dequeueReusableCell(withIdentifier: "PTMhomeTableViewCell1TableViewCell2", for: indexPath) as! PTMhomeTableViewCell1TableViewCell2
+            cell.configure(with: completedData?.meetings ?? [])
             return cell
         }
 
-        // ── Middle rows → Meeting cells ──────────────────────────────────
-        let cell = tableView.dequeueReusableCell(
-            withIdentifier: "PTMhomeupcomingmeetingsTableViewCell",
-            for: indexPath
-        ) as! PTMhomeupcomingmeetingsTableViewCell
-
-        cell.selectionStyle = .none
-
-        // Always set parentVC first
+        // ── Middle Rows: Meeting Cells ──
+        let cell = tableView.dequeueReusableCell(withIdentifier: "PTMhomeupcomingmeetingsTableViewCell", for: indexPath) as! PTMhomeupcomingmeetingsTableViewCell
         cell.configureParent(parentVC: self)
-
         let meetingIndex = indexPath.row - 1
-
-        if meetingCount > 0,
-           meetingIndex >= 0,
-           meetingIndex < meetingCount,
-           let meeting = ptmData?.meetings[meetingIndex] {
-
-            let studentName = ptmData?.student.name ?? "Student"
-            cell.configure(with: meeting, studentName: studentName, parentVC: self)
+        if let meeting = ptmData?.meetings[meetingIndex] {
+            cell.configure(with: meeting, studentName: ptmData?.student.name ?? "Student", parentVC: self)
         }
-
         return cell
     }
 
-    // MARK: - didSelectRowAt
-    func tableView(
-        _ tableView: UITableView,
-        didSelectRowAt indexPath: IndexPath
-    ) {
-        tableView.deselectRow(at: indexPath, animated: true)
-
+    // MARK: - UPDATED: Dynamic height for footer cell
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let meetingCount = ptmData?.meetings.count ?? 0
-        let lastRow      = (meetingCount == 0) ? 2 : (1 + meetingCount)
+        let lastRow = (meetingCount == 0) ? 2 : (1 + meetingCount)
 
-        // Ignore header and footer rows
-        guard indexPath.row != 0,
-              indexPath.row != lastRow else { return }
+        if indexPath.row == 0 { return 230 }
 
-        let meetingIndex = indexPath.row - 1
+        // ── Footer row → dynamic height based on completed meetings ──
+        if indexPath.row == lastRow {
+            let completedCount = max(completedData?.meetings.count ?? 0, 1)
+            let itemHeight: CGFloat = 100
+            let spacing: CGFloat    = 1
+            let verticalPadding: CGFloat = 40  // top + bottom breathing space
 
-        guard meetingCount > 0,
-              meetingIndex >= 0,
-              meetingIndex < meetingCount,
-              let meeting = ptmData?.meetings[meetingIndex] else { return }
+            let totalHeight = (CGFloat(completedCount) * itemHeight)
+                            + (CGFloat(completedCount - 1) * spacing)
+                            + verticalPadding
 
-        print("✅ Meeting cell tapped:", meeting.title, "| id:", meeting.id)
-        navigateToPTMDetails(meeting: meeting)
-    }
+            print("📐 Footer row dynamic height → completed:", completedCount, "| height:", totalHeight)
+            return totalHeight
+        }
 
-    // MARK: - Row Heights
-    func tableView(
-        _ tableView: UITableView,
-        heightForRowAt indexPath: IndexPath
-    ) -> CGFloat {
-        let meetingCount = ptmData?.meetings.count ?? 0
-        let lastRow      = (meetingCount == 0) ? 2 : (1 + meetingCount)
-
-        if indexPath.row == 0       { return 230 }
-        if indexPath.row == lastRow { return 350 }
         return 330
     }
 }

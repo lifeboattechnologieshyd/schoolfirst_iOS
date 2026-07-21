@@ -23,9 +23,23 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gc8-ZG-ADr">
                                 <rect key="frame" x="16" y="16" width="40" height="40"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="H" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LGj-YW-Clm">
+                                        <rect key="frame" x="14" y="8" width="12" height="24"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="24" id="J2x-H0-w98"/>
+                                            <constraint firstAttribute="width" constant="12" id="pKP-70-w9N"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                        <color key="textColor" red="0.2039794922" green="0.4633789062" blue="0.3498535156" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
                                 <color key="backgroundColor" red="0.5844726562" green="0.97265625" blue="0.7607421875" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <constraints>
+                                    <constraint firstItem="LGj-YW-Clm" firstAttribute="centerX" secondItem="gc8-ZG-ADr" secondAttribute="centerX" id="1XE-Dh-4vQ"/>
                                     <constraint firstAttribute="height" constant="40" id="TAp-nc-4Wa"/>
+                                    <constraint firstItem="LGj-YW-Clm" firstAttribute="centerY" secondItem="gc8-ZG-ADr" secondAttribute="centerY" id="bWv-rv-1LC"/>
                                     <constraint firstAttribute="width" constant="40" id="cy2-8J-aT7"/>
                                 </constraints>
                                 <userDefinedRuntimeAttributes>
@@ -204,8 +218,9 @@ Review</string>
             <connections>
                 <outlet property="Meetingdate" destination="KQl-q2-duZ" id="7DU-L7-zN0"/>
                 <outlet property="Meetinglocation" destination="MSc-hy-5mZ" id="5jo-fh-Iry"/>
+                <outlet property="NamefirstletterLbl" destination="LGj-YW-Clm" id="b3J-in-bz1"/>
                 <outlet property="Studentgrade" destination="N9T-O2-5tS" id="jqS-Rk-GiY"/>
-                <outlet property="StudentnameLBl" destination="N9T-O2-5tS" id="hIm-K4-ad8"/>
+                <outlet property="StudentnameLBl" destination="xVd-0Y-6QV" id="lCU-gS-kzV"/>
                 <outlet property="ViewdetailsButton" destination="CrE-t9-78d" id="BRq-LY-Oaw"/>
             </connections>
             <point key="canvasLocation" x="61.068702290076331" y="136.26760563380282"/>

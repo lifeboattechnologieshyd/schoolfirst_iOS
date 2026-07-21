@@ -364,6 +364,162 @@ struct User: Codable {
 
 }
 
+
+// MARK: - PTM Completed Meetings API Models
+// Endpoint: /ptm/completed-meetings
+
+// MARK: - PTM Completed Meetings Response Data
+struct PTMCompletedMeetingsResponse: Decodable {
+    let summary: PTMCompletedSummary
+    let meetings: [PTMCompletedMeeting]
+}
+
+// MARK: - Summary
+struct PTMCompletedSummary: Decodable {
+    let totalCompleted: Int
+    let attendedCount: Int
+    let absentCount: Int
+
+    enum CodingKeys: String, CodingKey {
+        case totalCompleted = "total_completed"
+        case attendedCount  = "attended_count"
+        case absentCount    = "absent_count"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        totalCompleted = try container.decodeIfPresent(Int.self, forKey: .totalCompleted) ?? 0
+        attendedCount  = try container.decodeIfPresent(Int.self, forKey: .attendedCount)  ?? 0
+        absentCount    = try container.decodeIfPresent(Int.self, forKey: .absentCount)    ?? 0
+    }
+}
+
+// MARK: - PTM Completed Meeting
+struct PTMCompletedMeeting: Decodable {
+    let id: String
+    let title: String
+    let meetingType: String
+    let meetingDate: String
+    let startTime: String
+    let endTime: String
+    let meetingMode: String
+    let location: String?
+    let meetingLink: String?
+    let attendanceStatus: String
+    let isAttended: Bool
+    let attendedAt: String?
+    let remarks: String?
+    let staffs: [PTMCompletedStaff]
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case title
+        case meetingType      = "meeting_type"
+        case meetingDate      = "meeting_date"
+        case startTime        = "start_time"
+        case endTime          = "end_time"
+        case meetingMode      = "meeting_mode"
+        case location
+        case meetingLink      = "meeting_link"
+        case attendanceStatus = "attendance_status"
+        case isAttended       = "is_attended"
+        case attendedAt       = "attended_at"
+        case remarks
+        case staffs
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id               = try container.decode(String.self, forKey: .id)
+        title            = try container.decodeIfPresent(String.self, forKey: .title)            ?? ""
+        meetingType      = try container.decodeIfPresent(String.self, forKey: .meetingType)      ?? ""
+        meetingDate      = try container.decodeIfPresent(String.self, forKey: .meetingDate)      ?? ""
+        startTime        = try container.decodeIfPresent(String.self, forKey: .startTime)        ?? ""
+        endTime          = try container.decodeIfPresent(String.self, forKey: .endTime)          ?? ""
+        meetingMode      = try container.decodeIfPresent(String.self, forKey: .meetingMode)      ?? ""
+        location         = try container.decodeIfPresent(String.self, forKey: .location)
+        meetingLink      = try container.decodeIfPresent(String.self, forKey: .meetingLink)
+        attendanceStatus = try container.decodeIfPresent(String.self, forKey: .attendanceStatus) ?? "NOT_MARKED"
+        isAttended       = try container.decodeIfPresent(Bool.self,   forKey: .isAttended)       ?? false
+        attendedAt       = try container.decodeIfPresent(String.self, forKey: .attendedAt)
+        remarks          = try container.decodeIfPresent(String.self, forKey: .remarks)
+        staffs           = try container.decodeIfPresent([PTMCompletedStaff].self, forKey: .staffs) ?? []
+    }
+
+    // MARK: - Formatted date helper
+    var formattedDate: String {
+        let inputFormatter        = DateFormatter()
+        inputFormatter.dateFormat = "yyyy-MM-dd"
+        let outputFormatter       = DateFormatter()
+        outputFormatter.dateFormat = "dd MMM yyyy"
+        if let date = inputFormatter.date(from: meetingDate) {
+            return outputFormatter.string(from: date)
+        }
+        return meetingDate
+    }
+
+    // MARK: - Formatted time range helper
+    var formattedTimeRange: String {
+        let inputFormatter        = DateFormatter()
+        inputFormatter.dateFormat = "HH:mm:ss"
+        let outputFormatter       = DateFormatter()
+        outputFormatter.dateFormat = "h:mm a"
+
+        let start = inputFormatter.date(from: startTime).map {
+            outputFormatter.string(from: $0)
+        } ?? startTime
+
+        let end = inputFormatter.date(from: endTime).map {
+            outputFormatter.string(from: $0)
+        } ?? endTime
+
+        return "\(start) - \(end)"
+    }
+
+    // MARK: - Attendance status display text
+    var attendanceStatusDisplayText: String {
+        switch attendanceStatus.uppercased() {
+        case "ATTENDED":    return "Attended"
+        case "ABSENT":      return "Absent"
+        case "NOT_MARKED":  return "Not Marked"
+        default:            return attendanceStatus
+        }
+    }
+
+    // MARK: - Host staff helper
+    var hostStaff: PTMCompletedStaff? {
+        return staffs.first(where: { $0.isHost })
+    }
+
+    // MARK: - Non-host staffs helper
+    var nonHostStaffs: [PTMCompletedStaff] {
+        return staffs.filter { !$0.isHost }
+    }
+}
+
+// MARK: - PTM Completed Staff (no profile_image field in completed API)
+struct PTMCompletedStaff: Decodable {
+    let id: String
+    let name: String
+    let staffType: String
+    let isHost: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case staffType = "staff_type"
+        case isHost    = "is_host"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id        = try container.decode(String.self, forKey: .id)
+        name      = try container.decodeIfPresent(String.self, forKey: .name)      ?? ""
+        staffType = try container.decodeIfPresent(String.self, forKey: .staffType) ?? ""
+        isHost    = try container.decodeIfPresent(Bool.self,   forKey: .isHost)    ?? false
+    }
+}
+
 // MARK: - PTM Response Data
 
 // MARK: - PTM Class Teacher

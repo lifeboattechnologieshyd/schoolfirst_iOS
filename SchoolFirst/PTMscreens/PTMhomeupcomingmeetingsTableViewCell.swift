@@ -8,6 +8,7 @@ import UIKit
 class PTMhomeupcomingmeetingsTableViewCell: UITableViewCell {
 
     // MARK: - Outlets
+    @IBOutlet weak var NamefirstletterLbl: UILabel!
     @IBOutlet weak var Studentgrade: UILabel!
     @IBOutlet weak var StudentnameLBl: UILabel!
     @IBOutlet weak var Meetinglocation: UILabel!
@@ -31,24 +32,26 @@ class PTMhomeupcomingmeetingsTableViewCell: UITableViewCell {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        Studentgrade.text    = nil
-        StudentnameLBl.text  = nil
-        Meetinglocation.text = nil
-        Meetingdate.text     = nil
-        meeting              = nil
-        studentName          = ""
-        parentVC             = nil
+        Studentgrade.text        = nil
+        StudentnameLBl.text      = nil
+        NamefirstletterLbl.text  = nil
+        Meetinglocation.text     = nil
+        Meetingdate.text         = nil
+        meeting                  = nil
+        studentName              = ""
+        parentVC                 = nil
     }
 
     // MARK: - Verify Outlets (debug helper)
     private func verifyOutlets() {
         print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
         print("🔍 PTMhomeupcomingmeetingsTableViewCell — verifyOutlets()")
-        print("   StudentnameLBl :", StudentnameLBl  == nil ? "❌ NOT CONNECTED" : "✅ connected")
-        print("   Studentgrade   :", Studentgrade    == nil ? "❌ NOT CONNECTED" : "✅ connected")
-        print("   Meetinglocation:", Meetinglocation == nil ? "❌ NOT CONNECTED" : "✅ connected")
-        print("   Meetingdate    :", Meetingdate     == nil ? "❌ NOT CONNECTED" : "✅ connected")
-        print("   ViewdetailsButton:", ViewdetailsButton == nil ? "❌ NOT CONNECTED" : "✅ connected")
+        print("   StudentnameLBl     :", StudentnameLBl      == nil ? "❌ NOT CONNECTED" : "✅ connected")
+        print("   NamefirstletterLbl :", NamefirstletterLbl  == nil ? "❌ NOT CONNECTED" : "✅ connected")
+        print("   Studentgrade       :", Studentgrade        == nil ? "❌ NOT CONNECTED" : "✅ connected")
+        print("   Meetinglocation    :", Meetinglocation     == nil ? "❌ NOT CONNECTED" : "✅ connected")
+        print("   Meetingdate        :", Meetingdate         == nil ? "❌ NOT CONNECTED" : "✅ connected")
+        print("   ViewdetailsButton  :", ViewdetailsButton   == nil ? "❌ NOT CONNECTED" : "✅ connected")
         print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     }
 
@@ -58,34 +61,74 @@ class PTMhomeupcomingmeetingsTableViewCell: UITableViewCell {
         self.studentName = studentName
         self.parentVC    = parentVC
 
+        // ── DEBUG: verify what's being set ─────────────────────────────
+        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        print("📋 PTMhomeupcomingmeetingsTableViewCell configure()")
+        print("   studentName passed :", studentName)
+        print("   meeting title      :", meeting.title)
+        print("   meeting grade      :", meeting.grade.name)
+        print("   meeting section    :", meeting.section.name)
+        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+
         // ── Student name ─────────────────────────────────────────────────
-        StudentnameLBl.text          = studentName
-        StudentnameLBl.isHidden      = false
-        StudentnameLBl.alpha         = 1.0
-        StudentnameLBl.textColor     = .black        // ← force visible color
-        StudentnameLBl.numberOfLines = 1
-        StudentnameLBl.lineBreakMode = .byTruncatingTail
+        let displayName = studentName.isEmpty ? "Student" : studentName
+        StudentnameLBl.text            = displayName
+        StudentnameLBl.isHidden        = false
+        StudentnameLBl.alpha           = 1.0
+        StudentnameLBl.textColor       = .black
+        StudentnameLBl.numberOfLines   = 1
+        StudentnameLBl.lineBreakMode   = .byTruncatingTail
+        StudentnameLBl.backgroundColor = .clear
+
+        print("✅ StudentnameLBl.text set to:", StudentnameLBl.text ?? "nil")
+
+        // ── First Letter of Student Name (NEW) ───────────────────────────
+        let firstLetter = getFirstLetter(from: displayName)
+        NamefirstletterLbl.text          = firstLetter
+        NamefirstletterLbl.isHidden      = false
+        NamefirstletterLbl.alpha         = 1.0
+        NamefirstletterLbl.textAlignment = .center
+
+        print("✅ NamefirstletterLbl.text set to:", firstLetter)
 
         // ── Grade & Section ──────────────────────────────────────────────
-        Studentgrade.text     = "\(meeting.grade.name) - \(meeting.section.name)"
-        Studentgrade.isHidden = false
-        Studentgrade.alpha    = 1.0
+        Studentgrade.text            = "\(meeting.grade.name) - \(meeting.section.name)"
+        Studentgrade.isHidden        = false
+        Studentgrade.alpha           = 1.0
+        Studentgrade.textColor       = .darkGray
+        Studentgrade.backgroundColor = .clear
 
         // ── Location ─────────────────────────────────────────────────────
-        if meeting.meetingMode == "OFFLINE" {
-            Meetinglocation.text = meeting.location ?? "School"
+        if meeting.meetingMode.uppercased() == "OFFLINE" {
+            Meetinglocation.text = (meeting.location?.isEmpty == false) ? meeting.location : "School"
         } else {
-            Meetinglocation.text = meeting.meetingLink ?? "Online"
+            Meetinglocation.text = (meeting.meetingLink?.isEmpty == false) ? meeting.meetingLink : "Online"
         }
-        Meetinglocation.isHidden = false
+        Meetinglocation.isHidden        = false
+        Meetinglocation.textColor       = .black
+        Meetinglocation.backgroundColor = .clear
 
         // ── Date & Time ──────────────────────────────────────────────────
-        Meetingdate.text     = "\(meeting.formattedDate) | \(meeting.formattedTimeRange)"
-        Meetingdate.isHidden = false
+        Meetingdate.text            = "\(meeting.formattedDate) | \(meeting.formattedTimeRange)"
+        Meetingdate.isHidden        = false
+        Meetingdate.textColor       = .black
+        Meetingdate.backgroundColor = .clear
 
         // ── Force layout update ──────────────────────────────────────────
-        setNeedsLayout()
-        layoutIfNeeded()
+        contentView.setNeedsLayout()
+        contentView.layoutIfNeeded()
+
+        // ── DEBUG: verify frames ────────────────────────────────────────
+        print("🟢 StudentnameLBl frame :", StudentnameLBl.frame)
+        print("🟢 StudentnameLBl text  :", StudentnameLBl.text ?? "nil")
+        print("🟢 StudentnameLBl hidden:", StudentnameLBl.isHidden)
+    }
+
+    // MARK: - Helper: Get First Letter (uppercased)
+    private func getFirstLetter(from name: String) -> String {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let first = trimmed.first else { return "?" }
+        return String(first).uppercased()
     }
 
     // MARK: - Configure with parentVC only (skeleton/loading state)
@@ -101,13 +144,11 @@ class PTMhomeupcomingmeetingsTableViewCell: UITableViewCell {
         print("🔍 meeting   :", meeting?.title ?? "nil")
         print("🔍 meetingID :", meeting?.id    ?? "nil")
 
-        // ── Use PTMhomeVC navigate method if available ───────────────────
         if let ptmHomeVC = parentVC as? PTMhomeVC {
             ptmHomeVC.navigateToPTMDetails(meeting: self.meeting)
             return
         }
 
-        // ── Fallback: manual navigation ──────────────────────────────────
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
         guard let detailsVC = storyboard.instantiateViewController(

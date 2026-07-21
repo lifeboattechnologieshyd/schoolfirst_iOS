@@ -7,9 +7,11 @@ import UIKit
 
 class PTMhomeTableViewCell1: UITableViewCell {
 
+    @IBOutlet weak var UpcomingmeetingDateLbl: UILabel!
     // MARK: - Outlets
+    @IBOutlet weak var TotalmeetingattendedcountLbl: UILabel!
     @IBOutlet weak var ViewcalendarButton: UIButton!
-    @IBOutlet weak var StudentnameLBl: UILabel!        // "Hello, Parent Name"
+    @IBOutlet weak var StudentnameLBl: UILabel!
     @IBOutlet weak var CardsBackgroungView: UIView!
     @IBOutlet weak var upcomingCountLabel: UILabel!
 
@@ -30,10 +32,12 @@ class PTMhomeTableViewCell1: UITableViewCell {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        StudentnameLBl.text     = nil
-        upcomingCountLabel.text  = nil
-        onDetailsTapped          = nil
-        onCalendarTapped         = nil
+        StudentnameLBl.text                = nil
+        upcomingCountLabel.text            = nil
+        TotalmeetingattendedcountLbl.text  = nil
+        UpcomingmeetingDateLbl.text        = nil // Added for cleanup
+        onDetailsTapped                    = nil
+        onCalendarTapped                   = nil
     }
 
     // MARK: - Actions
