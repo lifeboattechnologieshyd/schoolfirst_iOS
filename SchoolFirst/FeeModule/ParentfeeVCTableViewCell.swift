@@ -9,78 +9,31 @@ import UIKit
 
 class ParentfeeVCTableViewCell: UITableViewCell {
 
-    @IBOutlet weak var ViewScheduleButton: UIButton!
-    @IBOutlet weak var ViewalltransactionButton: UIButton!
-    @IBOutlet weak var Switch: UISwitch!
-
-    // MARK: - Closures
-
-    var onSwitchOn: (() -> Void)?
-    var onSwitchOff: (() -> Void)?
-
-    var onViewScheduleTap: (() -> Void)?
-    var onViewAllTransactionTap: (() -> Void)?
+    @IBOutlet weak var TermtotalpayableamountLbl: UILabel!
 
     override func awakeFromNib() {
         super.awakeFromNib()
-
-        setupActions()
     }
 
-    override func setSelected(
-        _ selected: Bool,
-        animated: Bool
-    ) {
-        super.setSelected(
-            selected,
-            animated: animated
-        )
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        TermtotalpayableamountLbl.text = nil
     }
 
-    // MARK: Setup
-
-    private func setupActions() {
-
-        Switch.addTarget(
-            self,
-            action: #selector(switchChanged),
-            for: .valueChanged
-        )
-
-        ViewScheduleButton.addTarget(
-            self,
-            action: #selector(viewScheduleTapped),
-            for: .touchUpInside
-        )
-
-        ViewalltransactionButton.addTarget(
-            self,
-            action: #selector(viewAllTransactionTapped),
-            for: .touchUpInside
-        )
-    }
-
-    // MARK: Actions
-
-    @objc private func switchChanged() {
-
-        if Switch.isOn {
-
-            onSwitchOn?()
-
-        } else {
-
-            onSwitchOff?()
+    func configure(totalPayableAmount: Double?) {
+        guard let amount = totalPayableAmount else {
+            TermtotalpayableamountLbl.text = "₹0"
+            return
         }
+
+        TermtotalpayableamountLbl.text = "₹\(formatAmount(amount))"
     }
 
-    @objc private func viewScheduleTapped() {
-
-        onViewScheduleTap?()
-    }
-
-    @objc private func viewAllTransactionTapped() {
-
-        onViewAllTransactionTap?()
+    private func formatAmount(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2
+        return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
     }
 }

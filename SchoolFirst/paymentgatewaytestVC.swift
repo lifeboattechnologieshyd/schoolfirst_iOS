@@ -5,7 +5,7 @@
 //  Created by vamshi krishna on 16/06/26.
 //
 
-import UIKit
+/*import UIKit
 
 class paymentgatewaytestVC: UIViewController {
     
@@ -180,4 +180,4 @@ class paymentgatewaytestVC: UIViewController {
         
         present(alert, animated: true)
     }
-}
+}*/

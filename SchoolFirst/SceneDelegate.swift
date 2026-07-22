@@ -74,17 +74,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let url = URLContexts.first?.url else { return }
         
-        // Let PhonePe manager handle the callback URL
-        let handled = PhonePeManager.shared.handleOpenURL(url: url)
+        // ✅ Let PhonePe Payment Manager handle the callback URL
+        let handled = PhonePePaymentManager.shared.handleDeeplink(url)
         if handled {
-            print("PhonePe SDK handled the URL")
+            print("✅ PhonePe SDK handled the URL: \(url)")
             return
         }
         
         // Handle other URLs here
+        print("📱 Unhandled URL: \(url)")
     }
-
-
-
 }
-

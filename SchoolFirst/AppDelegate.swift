@@ -32,6 +32,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         Analytics.logEvent("app_launched", parameters: nil)
         Crashlytics.crashlytics().log("App launched successfully")
+        PhonePePaymentManager.shared.initializeSDK()
+
 
         return true
     }
@@ -178,6 +180,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             UINavigationBar.appearance().scrollEdgeAppearance = appearance
         }
     }
+    
 
    //import FirebaseMessaging
     func application(

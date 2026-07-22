@@ -364,6 +364,199 @@ struct User: Codable {
 
 }
 
+// MARK: - Fee Payment Creation Response
+
+struct FeePaymentCreationResponse: Decodable {
+    let transactionId: String
+    let transactionNumber: String
+    let amount: Double
+    let token: String
+    let orderId: String
+    let state: String
+    let expireAt: Int64
+
+    enum CodingKeys: String, CodingKey {
+        case transactionId = "transaction_id"
+        case transactionNumber = "transaction_number"
+        case amount
+        case token
+        case orderId = "order_id"
+        case state
+        case expireAt = "expire_at"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        transactionId = try container.decodeIfPresent(String.self, forKey: .transactionId) ?? ""
+        transactionNumber = try container.decodeIfPresent(String.self, forKey: .transactionNumber) ?? ""
+        amount = try container.decodeIfPresent(Double.self, forKey: .amount) ?? 0.0
+        token = try container.decodeIfPresent(String.self, forKey: .token) ?? ""
+        orderId = try container.decodeIfPresent(String.self, forKey: .orderId) ?? ""
+        state = try container.decodeIfPresent(String.self, forKey: .state) ?? ""
+        expireAt = try container.decodeIfPresent(Int64.self, forKey: .expireAt) ?? 0
+    }
+
+    // MARK: - Helpers
+
+    var formattedAmount: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2
+        return formatter.string(from: NSNumber(value: amount)) ?? "\(amount)"
+    }
+
+    var expiresAtDate: Date {
+        return Date(timeIntervalSince1970: TimeInterval(expireAt / 1000))
+    }
+
+    var isExpired: Bool {
+        return Date() > expiresAtDate
+    }
+}
+
+// MARK: - Parent Fee Models
+// Endpoint: /fee/student-fee/pending
+
+struct PendingFeeResponse: Decodable {
+    let student: PendingFeeStudent
+    let fees: [PendingFeeItem]
+    let totalPayableAmount: Double
+
+    enum CodingKeys: String, CodingKey {
+        case student
+        case fees
+        case totalPayableAmount = "total_payable_amount"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        student             = try container.decode(PendingFeeStudent.self, forKey: .student)
+        fees                = try container.decodeIfPresent([PendingFeeItem].self, forKey: .fees) ?? []
+        totalPayableAmount  = try container.decodeIfPresent(Double.self, forKey: .totalPayableAmount) ?? 0.0
+    }
+}
+
+struct PendingFeeStudent: Decodable {
+    let id: String
+    let name: String
+    let admissionNumber: String
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case admissionNumber = "admission_number"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container    = try decoder.container(keyedBy: CodingKeys.self)
+        id               = try container.decodeIfPresent(String.self, forKey: .id)              ?? ""
+        name             = try container.decodeIfPresent(String.self, forKey: .name)            ?? ""
+        admissionNumber  = try container.decodeIfPresent(String.self, forKey: .admissionNumber) ?? ""
+    }
+}
+
+struct PendingFeeItem: Decodable {
+    let studentFeeId: String
+    let academicYear: PendingFeeAcademicYear
+    let feeType: String
+    let installment: String
+    let amount: Double
+    let concession: Double
+    let lateFee: Double
+    let paidAmount: Double
+    let payableAmount: Double
+    let dueDate: String
+    let status: String
+
+    enum CodingKeys: String, CodingKey {
+        case studentFeeId   = "student_fee_id"
+        case academicYear   = "academic_year"
+        case feeType        = "fee_type"
+        case installment
+        case amount
+        case concession
+        case lateFee        = "late_fee"
+        case paidAmount     = "paid_amount"
+        case payableAmount  = "payable_amount"
+        case dueDate        = "due_date"
+        case status
+    }
+
+    init(from decoder: Decoder) throws {
+        let container   = try decoder.container(keyedBy: CodingKeys.self)
+        studentFeeId    = try container.decodeIfPresent(String.self, forKey: .studentFeeId)             ?? ""
+        academicYear    = try container.decode(PendingFeeAcademicYear.self, forKey: .academicYear)
+        feeType         = try container.decodeIfPresent(String.self, forKey: .feeType)                  ?? ""
+        installment     = try container.decodeIfPresent(String.self, forKey: .installment)              ?? ""
+        amount          = try container.decodeIfPresent(Double.self, forKey: .amount)                   ?? 0.0
+        concession      = try container.decodeIfPresent(Double.self, forKey: .concession)               ?? 0.0
+        lateFee         = try container.decodeIfPresent(Double.self, forKey: .lateFee)                  ?? 0.0
+        paidAmount      = try container.decodeIfPresent(Double.self, forKey: .paidAmount)               ?? 0.0
+        payableAmount   = try container.decodeIfPresent(Double.self, forKey: .payableAmount)            ?? 0.0
+        dueDate         = try container.decodeIfPresent(String.self, forKey: .dueDate)                  ?? ""
+        status          = try container.decodeIfPresent(String.self, forKey: .status)                   ?? ""
+    }
+
+    // MARK: - Helpers
+
+    /// Formatted due date: "10 Jun 2026"
+    var formattedDueDate: String {
+        let inputFormatter        = DateFormatter()
+        inputFormatter.dateFormat = "yyyy-MM-dd"
+        let outputFormatter       = DateFormatter()
+        outputFormatter.dateFormat = "dd MMM yyyy"
+        if let date = inputFormatter.date(from: dueDate) {
+            return outputFormatter.string(from: date)
+        }
+        return dueDate
+    }
+
+    /// ₹3,000
+    var formattedPayableAmount: String {
+        return "₹\(formatAmount(payableAmount))"
+    }
+
+    /// ₹10,000
+    var formattedAmount: String {
+        return "₹\(formatAmount(amount))"
+    }
+
+    /// ₹1,000
+    var formattedConcession: String {
+        return "₹\(formatAmount(concession))"
+    }
+
+    /// ₹7,000
+    var formattedPaidAmount: String {
+        return "₹\(formatAmount(paidAmount))"
+    }
+
+    private func formatAmount(_ value: Double) -> String {
+        let formatter                    = NumberFormatter()
+        formatter.numberStyle            = .decimal
+        formatter.minimumFractionDigits  = 0
+        formatter.maximumFractionDigits  = 2
+        return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
+    }
+}
+
+struct PendingFeeAcademicYear: Decodable {
+    let id: String
+    let name: String
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id   = try container.decodeIfPresent(String.self, forKey: .id)   ?? ""
+        name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id, name
+    }
+}
+
 
 // MARK: - PTM Completed Meetings API Models
 // Endpoint: /ptm/completed-meetings

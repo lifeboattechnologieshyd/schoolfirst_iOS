@@ -193,7 +193,10 @@ struct API {
     static let PTM_MEETINGS = BASE_URL + "ptm/parent-teacher-meetings"
     static let PTM_COMPLETED_MEETINGS = BASE_URL + "ptm/completed-meetings"
     // PhonePe payment endpoints
-    static let FEE_CREATE_PAYMENT_PHONEPE = BASE_URL_2 + "fees/payment/phonepe"
+    static let FEE_CREATE_PAYMENT_PHONEPE = BASE_URL + "fee/create/payment"
+    
+    static let STUDENT_PENDING_FEE = BASE_URL + "fee/student-fee/pending"
+    static let FEE_COMPLETED_PAYMENT = BASE_URL + "fee/completed/payment"
 }
 
     
