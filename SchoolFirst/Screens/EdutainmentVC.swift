@@ -216,12 +216,18 @@ extension EdutainmentVC: UITableViewDelegate, UITableViewDataSource {
         
         print("Cell Tapped")
         
+        // ✅ CRITICAL: Switch to selected student FIRST
+        UserManager.shared.switchKid(to: indexPath.row)
+        
+        // ✅ Debug: verify the switch worked
+        print("🔄 Switched to kid index: \(indexPath.row)")
+        print("   Name: \(UserManager.shared.selectedKid?.name ?? "unknown")")
+        print("   StudentID: \(UserManager.shared.resolvedStudentID)")
+        print("   SchoolID: \(UserManager.shared.resolvedSchoolID)")
+        
+        // Then navigate
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        
-        let vc = storyboard.instantiateViewController(
-            withIdentifier: "Homescreen"
-        )
-        
+        let vc = storyboard.instantiateViewController(withIdentifier: "Homescreen")
         navigationController?.pushViewController(vc, animated: true)
     }
 }

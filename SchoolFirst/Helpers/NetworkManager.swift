@@ -416,6 +416,222 @@ struct FeePaymentCreationResponse: Decodable {
     }
 }
 
+// MARK: - Completed Fee Payments Response
+// Endpoint: /fee/completed/payment
+
+struct CompletedFeeResponse: Decodable {
+    let student:         CompletedFeeStudent
+    let totalPaidAmount: Double
+    let payments:        [CompletedFeeTransaction]
+
+    enum CodingKeys: String, CodingKey {
+        case student
+        case totalPaidAmount = "total_paid_amount"
+        case payments
+    }
+
+    init(from decoder: Decoder) throws {
+        let container    = try decoder.container(keyedBy: CodingKeys.self)
+        student          = try container.decode(CompletedFeeStudent.self, forKey: .student)
+        totalPaidAmount  = try container.decodeIfPresent(Double.self, forKey: .totalPaidAmount) ?? 0.0
+        payments         = try container.decodeIfPresent([CompletedFeeTransaction].self, forKey: .payments) ?? []
+    }
+}
+
+// MARK: - Student
+
+struct CompletedFeeStudent: Decodable {
+    let id:              String
+    let name:            String
+    let admissionNumber: String
+    let academicYear:    CompletedFeeAcademicYear
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case admissionNumber = "admission_number"
+        case academicYear    = "academic_year"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container    = try decoder.container(keyedBy: CodingKeys.self)
+        id               = try container.decodeIfPresent(String.self, forKey: .id)              ?? ""
+        name             = try container.decodeIfPresent(String.self, forKey: .name)            ?? ""
+        admissionNumber  = try container.decodeIfPresent(String.self, forKey: .admissionNumber) ?? ""
+        academicYear     = try container.decode(CompletedFeeAcademicYear.self, forKey: .academicYear)
+    }
+}
+
+// MARK: - Academic Year
+
+struct CompletedFeeAcademicYear: Decodable {
+    let id:   String
+    let name: String
+
+    enum CodingKeys: String, CodingKey {
+        case id, name
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id   = try container.decodeIfPresent(String.self, forKey: .id)   ?? ""
+        name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
+    }
+}
+
+// MARK: - Transaction
+// Each item in `payments` array is ONE transaction
+// which can contain MULTIPLE fee items inside `fees`
+
+struct CompletedFeeTransaction: Decodable {
+    let transactionId:         String
+    let referenceNumber:       String
+    let gatewayOrderId:        String
+    let gatewayTransactionId:  String
+    let paymentGateway:        String
+    let paymentDate:           String
+    let totalAmount:           Double
+    let fees:                  [CompletedFeeItem]
+
+    enum CodingKeys: String, CodingKey {
+        case transactionId        = "transaction_id"
+        case referenceNumber      = "reference_number"
+        case gatewayOrderId       = "gateway_order_id"
+        case gatewayTransactionId = "gateway_transaction_id"
+        case paymentGateway       = "payment_gateway"
+        case paymentDate          = "payment_date"
+        case totalAmount          = "total_amount"
+        case fees
+    }
+
+    init(from decoder: Decoder) throws {
+        let container         = try decoder.container(keyedBy: CodingKeys.self)
+        transactionId         = try container.decodeIfPresent(String.self, forKey: .transactionId)        ?? ""
+        referenceNumber       = try container.decodeIfPresent(String.self, forKey: .referenceNumber)      ?? ""
+        gatewayOrderId        = try container.decodeIfPresent(String.self, forKey: .gatewayOrderId)       ?? ""
+        gatewayTransactionId  = try container.decodeIfPresent(String.self, forKey: .gatewayTransactionId) ?? ""
+        paymentGateway        = try container.decodeIfPresent(String.self, forKey: .paymentGateway)       ?? ""
+        paymentDate           = try container.decodeIfPresent(String.self, forKey: .paymentDate)          ?? ""
+        totalAmount           = try container.decodeIfPresent(Double.self, forKey: .totalAmount)          ?? 0.0
+        fees                  = try container.decodeIfPresent([CompletedFeeItem].self, forKey: .fees)     ?? []
+    }
+
+    // MARK: - Helpers
+
+    /// "2026-07-22T07:42:11.650446Z"  →  "22 Jul 2026"
+    var formattedPaymentDate: String {
+        let inputFormatter        = DateFormatter()
+        inputFormatter.locale     = Locale(identifier: "en_US_POSIX")
+        inputFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ"
+
+        let outputFormatter        = DateFormatter()
+        outputFormatter.dateFormat = "dd MMM yyyy"
+
+        if let date = inputFormatter.date(from: paymentDate) {
+            return outputFormatter.string(from: date)
+        }
+
+        // Fallback: try without microseconds
+        let fallbackFormatter        = DateFormatter()
+        fallbackFormatter.locale     = Locale(identifier: "en_US_POSIX")
+        fallbackFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+
+        if let date = fallbackFormatter.date(from: paymentDate) {
+            return outputFormatter.string(from: date)
+        }
+
+        return paymentDate
+    }
+
+    var formattedTotalAmount: String {
+        return "₹\(formatValue(totalAmount))"
+    }
+
+    private func formatValue(_ value: Double) -> String {
+        let formatter                   = NumberFormatter()
+        formatter.numberStyle           = .decimal
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2
+        return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
+    }
+}
+
+// MARK: - Fee Item inside a Transaction
+// Each transaction has a `fees` array
+
+struct CompletedFeeItem: Decodable {
+    let studentFeeId: String
+    let academicYear: CompletedFeeAcademicYear
+    let feeType:      String
+    let installment:  String
+    let amount:       Double
+    let concession:   Double
+    let lateFee:      Double
+    let paidAmount:   Double
+    let status:       String
+
+    enum CodingKeys: String, CodingKey {
+        case studentFeeId = "student_fee_id"
+        case academicYear = "academic_year"
+        case feeType      = "fee_type"
+        case installment
+        case amount
+        case concession
+        case lateFee      = "late_fee"
+        case paidAmount   = "paid_amount"
+        case status
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        studentFeeId  = try container.decodeIfPresent(String.self, forKey: .studentFeeId) ?? ""
+        academicYear  = try container.decode(CompletedFeeAcademicYear.self, forKey: .academicYear)
+        feeType       = try container.decodeIfPresent(String.self, forKey: .feeType)      ?? ""
+        installment   = try container.decodeIfPresent(String.self, forKey: .installment)  ?? ""
+        amount        = try container.decodeIfPresent(Double.self, forKey: .amount)       ?? 0.0
+        concession    = try container.decodeIfPresent(Double.self, forKey: .concession)   ?? 0.0
+        lateFee       = try container.decodeIfPresent(Double.self, forKey: .lateFee)      ?? 0.0
+        paidAmount    = try container.decodeIfPresent(Double.self, forKey: .paidAmount)   ?? 0.0
+        status        = try container.decodeIfPresent(String.self, forKey: .status)       ?? ""
+    }
+
+    // MARK: - Helpers
+
+    var formattedAmount: String {
+        return "₹\(formatValue(amount))"
+    }
+
+    var formattedPaidAmount: String {
+        return "₹\(formatValue(paidAmount))"
+    }
+
+    var formattedConcession: String {
+        return "₹\(formatValue(concession))"
+    }
+
+    var formattedLateFee: String {
+        return "₹\(formatValue(lateFee))"
+    }
+
+    /// PAID → "Paid"  |  PARTIAL → "Partial"
+    var displayStatus: String {
+        return status.capitalized
+    }
+
+    /// true if fully paid
+    var isPaid: Bool {
+        return status.uppercased() == "PAID"
+    }
+
+    private func formatValue(_ value: Double) -> String {
+        let formatter                   = NumberFormatter()
+        formatter.numberStyle           = .decimal
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2
+        return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
+    }
+}
+
 // MARK: - Parent Fee Models
 // Endpoint: /fee/student-fee/pending
 

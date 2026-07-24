@@ -21,21 +21,21 @@
                         <rect key="frame" x="16" y="8" width="379" height="134"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Transport &amp; Misc" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JzK-rf-IJF">
-                                <rect key="frame" x="16" y="20" width="150" height="28"/>
+                                <rect key="frame" x="16" y="20" width="200" height="28"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="150" id="MOL-3f-gkw"/>
+                                    <constraint firstAttribute="width" constant="200" id="MOL-3f-gkw"/>
                                     <constraint firstAttribute="height" constant="28" id="rbd-GU-Ged"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                 <color key="textColor" red="0.090209968390000006" green="0.2431640625" blue="0.4431152344" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="All dues cleared" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JNX-4C-eua">
-                                <rect key="frame" x="16" y="64" width="150" height="24"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" cleared" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JNX-4C-eua">
+                                <rect key="frame" x="16" y="64" width="200" height="24"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="24" id="wzI-94-Tl5"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="20"/>
                                 <color key="textColor" red="0.2626953125" green="0.2783203125" blue="0.3137207031" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -97,6 +97,10 @@
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="PaidfeetypeLbl" destination="JzK-rf-IJF" id="aMN-HY-jB6"/>
+                <outlet property="PaymentstatusLbl" destination="reR-iv-H2h" id="0S0-uE-2tY"/>
+            </connections>
             <point key="canvasLocation" x="31.297709923664122" y="105.63380281690141"/>
         </tableViewCell>
     </objects>

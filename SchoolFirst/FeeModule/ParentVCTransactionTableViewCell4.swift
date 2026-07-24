@@ -9,36 +9,29 @@ import UIKit
 
 class ParentVCTransactionTableViewCell4: UITableViewCell {
 
-    @IBOutlet weak var ViewfullscheduleButton: UIButton!
-    @IBOutlet weak var ViewalltransactionsButton: UIButton!
-
+    @IBOutlet weak var PaymentStatusLbl: UILabel!
+   
+    @IBOutlet weak var Paidamount: UILabel!
+    @IBOutlet weak var TransactionIDLbl: NSLayoutConstraint!
+   
+    
+    @IBOutlet weak var PaymentDatetimeLbl: UILabel!
+   
     // MARK: - Callbacks
 
-    var onViewAllTransactionsTapped: (() -> Void)?
-    var onViewFullScheduleTapped: (() -> Void)?
+   
 
     // MARK: - Lifecycle
 
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        ViewalltransactionsButton.addTarget(
-            self,
-            action: #selector(viewAllTransactionsTapped),
-            for: .touchUpInside
-        )
-
-        ViewfullscheduleButton.addTarget(
-            self,
-            action: #selector(viewFullScheduleTapped),
-            for: .touchUpInside
-        )
+       
     }
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        onViewAllTransactionsTapped = nil
-        onViewFullScheduleTapped = nil
+        
     }
 
     override func setSelected(
@@ -50,11 +43,7 @@ class ParentVCTransactionTableViewCell4: UITableViewCell {
 
     // MARK: - Button Actions
 
-    @objc private func viewAllTransactionsTapped() {
-        onViewAllTransactionsTapped?()
-    }
+   
 
-    @objc private func viewFullScheduleTapped() {
-        onViewFullScheduleTapped?()
-    }
+   
 }

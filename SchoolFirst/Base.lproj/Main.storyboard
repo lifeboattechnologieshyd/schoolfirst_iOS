@@ -8622,11 +8622,11 @@ method (Credit Card, UPI, or Net Banking).</string>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Academic Year 2025-26" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PPc-Mg-e2v">
-                                <rect key="frame" x="215" y="116" width="162" height="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2024-25" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PPc-Mg-e2v">
+                                <rect key="frame" x="297" y="116" width="80" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="Rns-QJ-TWg"/>
-                                    <constraint firstAttribute="width" constant="162" id="wIh-RX-C0e"/>
+                                    <constraint firstAttribute="width" constant="80" id="wIh-RX-C0e"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <color key="textColor" red="0.2626953125" green="0.2783203125" blue="0.3137207031" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -8636,6 +8636,16 @@ method (Credit Card, UPI, or Net Banking).</string>
                                 <rect key="frame" x="0.0" y="146" width="393" height="638"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Academic Year" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="325-Pc-m7A">
+                                <rect key="frame" x="182" y="116" width="120" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="120" id="S7S-4C-dnE"/>
+                                    <constraint firstAttribute="height" constant="20" id="ulZ-Mn-b7N"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" red="0.2626953125" green="0.2783203125" blue="0.3137207031" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="KTH-R3-tm7"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -8646,15 +8656,18 @@ method (Credit Card, UPI, or Net Banking).</string>
                             <constraint firstItem="tit-FS-kW1" firstAttribute="top" secondItem="Mh3-0n-xnw" secondAttribute="top" constant="110" id="BHp-Ed-at4"/>
                             <constraint firstItem="tqt-Dj-bVW" firstAttribute="top" secondItem="Mh3-0n-xnw" secondAttribute="top" id="Lst-bO-iAB"/>
                             <constraint firstItem="PPc-Mg-e2v" firstAttribute="centerY" secondItem="tit-FS-kW1" secondAttribute="centerY" id="O10-Gr-1F2"/>
+                            <constraint firstItem="325-Pc-m7A" firstAttribute="leading" secondItem="tit-FS-kW1" secondAttribute="trailing" constant="16" id="T8y-0V-xmb"/>
                             <constraint firstItem="KTH-R3-tm7" firstAttribute="trailing" secondItem="kyo-Xv-KUN" secondAttribute="trailing" id="UGV-4p-fvU"/>
                             <constraint firstItem="KTH-R3-tm7" firstAttribute="bottom" secondItem="kyo-Xv-KUN" secondAttribute="bottom" id="YED-4G-tmZ"/>
                             <constraint firstItem="tit-FS-kW1" firstAttribute="leading" secondItem="KTH-R3-tm7" secondAttribute="leading" constant="16" id="eQF-TX-DgH"/>
                             <constraint firstItem="tqt-Dj-bVW" firstAttribute="leading" secondItem="Mh3-0n-xnw" secondAttribute="leading" id="eT3-2B-aij"/>
+                            <constraint firstItem="325-Pc-m7A" firstAttribute="centerY" secondItem="tit-FS-kW1" secondAttribute="centerY" id="nys-XT-4uM"/>
                             <constraint firstItem="tit-FS-kW1" firstAttribute="leading" secondItem="V9o-AS-GYV" secondAttribute="leading" id="oiK-IT-0sq"/>
                             <constraint firstAttribute="trailing" secondItem="tqt-Dj-bVW" secondAttribute="trailing" id="xOg-WC-i3F"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="AcademicYearLbl" destination="PPc-Mg-e2v" id="ZhA-Eo-ji7"/>
                         <outlet property="BackButton" destination="V9o-AS-GYV" id="tYu-dy-EcS"/>
                         <outlet property="TopView" destination="tqt-Dj-bVW" id="eX9-C7-kXE"/>
                         <outlet property="tableview" destination="kyo-Xv-KUN" id="xt0-GA-9Eu"/>
