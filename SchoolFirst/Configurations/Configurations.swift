@@ -197,6 +197,8 @@ struct API {
     
     static let STUDENT_PENDING_FEE = BASE_URL + "fee/student-fee/pending"
     static let FEE_COMPLETED_PAYMENT = BASE_URL + "fee/completed/payment"
+    static let CALENDAR_EVENTS = BASE_URL + "calendar/event"
+
 }
 
     

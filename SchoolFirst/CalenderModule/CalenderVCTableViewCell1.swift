@@ -19,32 +19,66 @@ class CalenderVCTableViewCell1: UITableViewCell {
     private let monthYearLabel = UILabel()
     private let previousButton = UIButton(type: .system)
     private let nextButton = UIButton(type: .system)
-    
+
     // MARK: - Navigation Callbacks
-    
+
     var onFeeEventDateTapped: (() -> Void)?
     var onAnnualSportsDayTapped: (() -> Void)?
     var onExamEventTapped: (() -> Void)?
     var onPTMeetingTapped: (() -> Void)?
     var onMultipleEventsTapped: (() -> Void)?
+    var onHolidayTapped: (() -> Void)?
+    var onHomeworkTapped: (() -> Void)?
+    var onAssignmentTapped: (() -> Void)?
+    var onTransportTapped: (() -> Void)?
+    var onEventTapped: (() -> Void)?
+    var onDateSelected: ((_ date: Date, _ events: [CalendarEvent]) -> Void)?
 
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"
         return formatter
     }()
-    
-    // MARK: - Event Date Mapping (Day -> Color)
-    
-    private let eventDates: [Int: UIColor] = [
-        1  : .systemOrange,   // Orange → Fee Event
-        2  : .systemGreen,    // Green  → Annual Sports
-        7  : .systemRed,      // Red    → Exam Event
-        10 : .systemPurple,   // Purple → P-T Meeting (was Blue, now purple as per Figma)
-        16 : .systemBlue      // Blue   → P-T Meeting
-    ]
-    
-    private let multiColorDay: Int = 15  // Day 15 has multiple events
+
+    // MARK: - API Events Storage
+
+    /// All events from API — set via configure(with:)
+    private var apiEvents: [CalendarEvent] = []
+
+    /// Cached mapping: "yyyy-MM-dd" → [CalendarEvent]
+    private var eventsByDate: [String: [CalendarEvent]] = [:]
+
+    private let apiDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        return formatter
+    }()
+
+    // MARK: - Event Type → Color Mapping
+
+    private func color(for eventType: String) -> UIColor {
+        switch eventType.uppercased() {
+        case "PTM":
+            return UIColor.systemYellow
+        case "FEE":
+            return UIColor.systemYellow
+        case "EXAM":
+            return UIColor.systemRed
+        case "HOLIDAY":
+            return UIColor.systemOrange
+        case "EVENT":
+            return UIColor.systemGreen
+        case "HOMEWORK":
+            return UIColor.systemPurple
+        case "ASSIGNMENT":
+            return UIColor.systemTeal       // sky-blue
+        case "TRANSPORT":
+            return UIColor.systemBlue
+        default:
+            return UIColor.systemGray
+        }
+    }
 
     // MARK: - Lifecycle
 
@@ -55,6 +89,45 @@ class CalenderVCTableViewCell1: UITableViewCell {
         setupCustomHeader()
         updateMonthLabel()
         setupTodayFocusCards()
+    }
+
+    // MARK: - Configure with API Events
+
+    func configure(with events: [CalendarEvent]) {
+        self.apiEvents = events
+        buildEventsByDateCache()
+        calendarView.reloadData()
+        updateTodayFocusCards()
+    }
+
+    /// Build "yyyy-MM-dd" → [CalendarEvent] cache
+    private func buildEventsByDateCache() {
+        var map: [String: [CalendarEvent]] = [:]
+        for event in apiEvents {
+            let key = event.eventDate // "yyyy-MM-dd" from API
+            if map[key] != nil {
+                map[key]!.append(event)
+            } else {
+                map[key] = [event]
+            }
+        }
+        eventsByDate = map
+        print("📅 CalendarCell: built cache for \(map.count) unique dates from \(apiEvents.count) events")
+    }
+
+    /// Get events for a given Date
+    private func events(for date: Date) -> [CalendarEvent] {
+        let key = apiDateFormatter.string(from: date)
+        return eventsByDate[key] ?? []
+    }
+
+    /// Check if date is in current month page
+    private func isCurrentMonth(_ date: Date) -> Bool {
+        return Calendar.current.isDate(
+            date,
+            equalTo: calendarView.currentPage,
+            toGranularity: .month
+        )
     }
 
     // MARK: - Calendar Setup
@@ -96,13 +169,13 @@ class CalenderVCTableViewCell1: UITableViewCell {
 
         // Make event dates rounded rectangle (filled)
         calendarView.appearance.borderRadius = 0.4
-        
+
         // Register the multi-color cell
         calendarView.register(
             MultiColorCalendarCell.self,
             forCellReuseIdentifier: "MultiColorCalendarCell"
         )
-        
+
         // Adjust row height for better filled look
         calendarView.rowHeight = 48
     }
@@ -256,136 +329,71 @@ class CalenderVCTableViewCell1: UITableViewCell {
     private func updateMonthLabel() {
         monthYearLabel.text = dateFormatter.string(from: calendarView.currentPage)
     }
-}
 
-// MARK: - FSCalendar Delegate
-
-extension CalenderVCTableViewCell1: FSCalendarDelegate,
-                                    FSCalendarDataSource,
-                                    FSCalendarDelegateAppearance {
-
-    func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
-        updateMonthLabel()
-    }
-
-    func calendar(
-        _ calendar: FSCalendar,
-        appearance: FSCalendarAppearance,
-        titleDefaultColorFor date: Date
-    ) -> UIColor? {
-
-        let day = Calendar.current.component(.day, from: date)
-        let isCurrentMonth = Calendar.current.isDate(
-            date,
-            equalTo: calendar.currentPage,
-            toGranularity: .month
-        )
-        
-        if !isCurrentMonth {
-            return .lightGray
-        }
-        
-        // White text for filled dates
-        if eventDates[day] != nil || day == multiColorDay {
-            return .white
-        }
-        
-        return .black
-    }
-    
-    // MARK: - Fill Color for Event Dates
-    
-    func calendar(
-        _ calendar: FSCalendar,
-        appearance: FSCalendarAppearance,
-        fillDefaultColorFor date: Date
-    ) -> UIColor? {
-        
-        let day = Calendar.current.component(.day, from: date)
-        let isCurrentMonth = Calendar.current.isDate(
-            date,
-            equalTo: calendar.currentPage,
-            toGranularity: .month
-        )
-        
-        guard isCurrentMonth else { return nil }
-        
-        // Multi-color day → handled by custom cell, return clear here
-        if day == multiColorDay {
-            return .clear
-        }
-        
-        // Return mapped event color
-        return eventDates[day]
-    }
-    
-    // MARK: - Custom Cell for Multi-Color Date
-    
-    func calendar(
-        _ calendar: FSCalendar,
-        cellFor date: Date,
-        at position: FSCalendarMonthPosition
-    ) -> FSCalendarCell {
-        
-        let day = Calendar.current.component(.day, from: date)
-        let isCurrentMonth = Calendar.current.isDate(
-            date,
-            equalTo: calendar.currentPage,
-            toGranularity: .month
-        )
-        
-        let cell = calendar.dequeueReusableCell(
-            withIdentifier: "MultiColorCalendarCell",
-            for: date,
-            at: position
-        ) as! MultiColorCalendarCell
-        
-        // Show multi-color only for day 15 in current month
-        cell.showMultiColor(day == multiColorDay && isCurrentMonth)
-        
-        return cell
-    }
-    
-    // MARK: - Date Selection
-    
-    func calendar(
-        _ calendar: FSCalendar,
-        didSelect date: Date,
-        at monthPosition: FSCalendarMonthPosition
-    ) {
-        let day = Calendar.current.component(.day, from: date)
-        
-        // Multi-color date (day 15)
-        if day == multiColorDay {
-            onMultipleEventsTapped?()
-        } else {
-            switch eventDates[day] {
-                
-            case .some(let color) where color == .systemOrange:
-                onFeeEventDateTapped?()
-                
-            case .some(let color) where color == .systemGreen:
-                onAnnualSportsDayTapped?()
-                
-            case .some(let color) where color == .systemRed:
-                onExamEventTapped?()
-                
-            case .some(let color) where color == .systemBlue, .some(let color) where color == .systemPurple:
-                onPTMeetingTapped?()
-                
-            default:
-                break
-            }
-        }
-        
-        // Deselect after small delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            calendar.deselect(date)
-        }
-    }
-    
     // MARK: - Today Focus Cards
-    
+
+    /// References for dynamic update
+    private var todayCard1: UIView?
+    private var todayCard2: UIView?
+    private var todayTitle1: UILabel?
+    private var todaySubtitle1: UILabel?
+    private var todayIcon1: UIImageView?
+    private var todayIconCircle1: UIView?
+    private var todayTitle2: UILabel?
+    private var todaySubtitle2: UILabel?
+    private var todayIcon2: UIImageView?
+    private var todayIconCircle2: UIView?
+
+    /// Update today cards from API events
+    private func updateTodayFocusCards() {
+        let today = Date()
+        let todayEvents = events(for: today)
+
+        if todayEvents.count >= 1 {
+            let ev1 = todayEvents[0]
+            todayTitle1?.text    = ev1.title
+            todaySubtitle1?.text = ev1.formattedTimeRange ?? "All Day"
+            todayIcon1?.image    = icon(for: ev1.eventType)
+            todayIcon1?.tintColor = color(for: ev1.eventType)
+            todayIconCircle1?.backgroundColor = color(for: ev1.eventType).withAlphaComponent(0.15)
+            todayCard1?.isHidden = false
+        } else {
+            todayTitle1?.text    = "No events today"
+            todaySubtitle1?.text = "Enjoy your day!"
+            todayIcon1?.image    = UIImage(systemName: "checkmark.circle")
+            todayIcon1?.tintColor = .systemGreen
+            todayIconCircle1?.backgroundColor = UIColor.systemGreen.withAlphaComponent(0.15)
+            todayCard1?.isHidden = false
+        }
+
+        if todayEvents.count >= 2 {
+            let ev2 = todayEvents[1]
+            todayTitle2?.text    = ev2.title
+            todaySubtitle2?.text = ev2.formattedTimeRange ?? "All Day"
+            todayIcon2?.image    = icon(for: ev2.eventType)
+            todayIcon2?.tintColor = color(for: ev2.eventType)
+            todayIconCircle2?.backgroundColor = color(for: ev2.eventType).withAlphaComponent(0.15)
+            todayCard2?.isHidden = false
+        } else {
+            todayCard2?.isHidden = true
+        }
+    }
+
+    /// Event type → SF Symbol icon
+    private func icon(for eventType: String) -> UIImage? {
+        switch eventType.uppercased() {
+        case "PTM":        return UIImage(systemName: "person.2.fill")
+        case "FEE":        return UIImage(systemName: "indianrupeesign.circle.fill")
+        case "EXAM":       return UIImage(systemName: "doc.text.fill")
+        case "HOLIDAY":    return UIImage(systemName: "sun.max.fill")
+        case "EVENT":      return UIImage(systemName: "star.fill")
+        case "HOMEWORK":   return UIImage(systemName: "book.fill")
+        case "ASSIGNMENT": return UIImage(systemName: "pencil.and.list.clipboard")
+        case "TRANSPORT":  return UIImage(systemName: "bus.fill")
+        default:           return UIImage(systemName: "calendar")
+        }
+    }
+
     private func setupTodayFocusCards() {
 
         let cardBackgroundColor = UIColor(
@@ -399,6 +407,7 @@ extension CalenderVCTableViewCell1: FSCalendarDelegate,
         card1.translatesAutoresizingMaskIntoConstraints = false
         card1.backgroundColor = cardBackgroundColor
         card1.layer.cornerRadius = 18
+        self.todayCard1 = card1
 
         let iconCircle1 = UIView()
         iconCircle1.translatesAutoresizingMaskIntoConstraints = false
@@ -409,27 +418,33 @@ extension CalenderVCTableViewCell1: FSCalendarDelegate,
             alpha: 1.0
         )
         iconCircle1.layer.cornerRadius = 22
+        self.todayIconCircle1 = iconCircle1
 
         let icon1 = UIImageView()
         icon1.translatesAutoresizingMaskIntoConstraints = false
         icon1.image = UIImage(systemName: "doc.text")
         icon1.tintColor = UIColor.brown
+        self.todayIcon1 = icon1
 
         let title1 = UILabel()
         title1.translatesAutoresizingMaskIntoConstraints = false
-        title1.text = "Math Quiz: Leo"
+        title1.text = "No events today"
         title1.font = .systemFont(ofSize: 18, weight: .medium)
+        self.todayTitle1 = title1
 
         let subtitle1 = UILabel()
         subtitle1.translatesAutoresizingMaskIntoConstraints = false
-        subtitle1.text = "09:00 AM • Room 302"
+        subtitle1.text = "Enjoy your day!"
         subtitle1.textColor = .darkGray
         subtitle1.font = .systemFont(ofSize: 14)
+        self.todaySubtitle1 = subtitle1
 
         let card2 = UIView()
         card2.translatesAutoresizingMaskIntoConstraints = false
         card2.backgroundColor = cardBackgroundColor
         card2.layer.cornerRadius = 18
+        card2.isHidden = true
+        self.todayCard2 = card2
 
         let iconCircle2 = UIView()
         iconCircle2.translatesAutoresizingMaskIntoConstraints = false
@@ -440,22 +455,26 @@ extension CalenderVCTableViewCell1: FSCalendarDelegate,
             alpha: 1.0
         )
         iconCircle2.layer.cornerRadius = 22
+        self.todayIconCircle2 = iconCircle2
 
         let icon2 = UIImageView()
         icon2.translatesAutoresizingMaskIntoConstraints = false
         icon2.image = UIImage(systemName: "person.3.fill")
         icon2.tintColor = .systemTeal
+        self.todayIcon2 = icon2
 
         let title2 = UILabel()
         title2.translatesAutoresizingMaskIntoConstraints = false
         title2.text = "PTA Meeting"
         title2.font = .systemFont(ofSize: 18, weight: .medium)
+        self.todayTitle2 = title2
 
         let subtitle2 = UILabel()
         subtitle2.translatesAutoresizingMaskIntoConstraints = false
         subtitle2.text = "03:30 PM • Main Hall"
         subtitle2.textColor = .darkGray
         subtitle2.font = .systemFont(ofSize: 14)
+        self.todaySubtitle2 = subtitle2
 
         TodayeventsContainerview.addSubview(card1)
         TodayeventsContainerview.addSubview(card2)
@@ -510,5 +529,135 @@ extension CalenderVCTableViewCell1: FSCalendarDelegate,
             subtitle2.leadingAnchor.constraint(equalTo: title2.leadingAnchor),
             subtitle2.topAnchor.constraint(equalTo: title2.bottomAnchor, constant: 4)
         ])
+    }
+}
+
+// MARK: - FSCalendar Delegate
+
+extension CalenderVCTableViewCell1: FSCalendarDelegate,
+                                    FSCalendarDataSource,
+                                    FSCalendarDelegateAppearance {
+
+    func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
+        updateMonthLabel()
+    }
+
+    // MARK: - Title Color
+
+    func calendar(
+        _ calendar: FSCalendar,
+        appearance: FSCalendarAppearance,
+        titleDefaultColorFor date: Date
+    ) -> UIColor? {
+
+        guard isCurrentMonth(date) else {
+            return .lightGray
+        }
+
+        let dayEvents = events(for: date)
+
+        // White text for dates that have events (filled background)
+        if !dayEvents.isEmpty {
+            return .white
+        }
+
+        return .black
+    }
+
+    // MARK: - Fill Color for Event Dates
+
+    func calendar(
+        _ calendar: FSCalendar,
+        appearance: FSCalendarAppearance,
+        fillDefaultColorFor date: Date
+    ) -> UIColor? {
+
+        guard isCurrentMonth(date) else { return nil }
+
+        let dayEvents = events(for: date)
+
+        guard !dayEvents.isEmpty else { return nil }
+
+        // Multiple events on same date → handled by custom multi-color cell
+        if dayEvents.count > 1 {
+            return .clear
+        }
+
+        // Single event → fill with event type color
+        return color(for: dayEvents[0].eventType)
+    }
+
+    // MARK: - Custom Cell for Multi-Color Date
+
+    func calendar(
+        _ calendar: FSCalendar,
+        cellFor date: Date,
+        at position: FSCalendarMonthPosition
+    ) -> FSCalendarCell {
+
+        let cell = calendar.dequeueReusableCell(
+            withIdentifier: "MultiColorCalendarCell",
+            for: date,
+            at: position
+        ) as! MultiColorCalendarCell
+
+        let dayEvents = events(for: date)
+        let isInCurrentMonth = isCurrentMonth(date)
+
+        // Show multi-color only when 2+ events in current month
+        if dayEvents.count > 1 && isInCurrentMonth {
+            let colors = dayEvents.map { color(for: $0.eventType) }
+            cell.showMultiColorWithColors(colors)
+        } else {
+            cell.showMultiColor(false)
+        }
+
+        return cell
+    }
+
+    // MARK: - Date Selection
+
+    func calendar(
+        _ calendar: FSCalendar,
+        didSelect date: Date,
+        at monthPosition: FSCalendarMonthPosition
+    ) {
+
+        let dayEvents = events(for: date)
+
+        // Notify delegate with date & events
+        onDateSelected?(date, dayEvents)
+
+        // Multiple events
+        if dayEvents.count > 1 {
+            onMultipleEventsTapped?()
+        } else if let event = dayEvents.first {
+            // Single event — trigger specific callback
+            switch event.eventType.uppercased() {
+            case "FEE":
+                onFeeEventDateTapped?()
+            case "EVENT":
+                onEventTapped?()
+            case "EXAM":
+                onExamEventTapped?()
+            case "PTM":
+                onPTMeetingTapped?()
+            case "HOLIDAY":
+                onHolidayTapped?()
+            case "HOMEWORK":
+                onHomeworkTapped?()
+            case "ASSIGNMENT":
+                onAssignmentTapped?()
+            case "TRANSPORT":
+                onTransportTapped?()
+            default:
+                break
+            }
+        }
+
+        // Deselect after small delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            calendar.deselect(date)
+        }
     }
 }

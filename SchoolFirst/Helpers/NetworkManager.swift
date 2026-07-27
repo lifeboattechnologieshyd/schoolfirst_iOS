@@ -631,6 +631,128 @@ struct CompletedFeeItem: Decodable {
         return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
     }
 }
+// MARK: - Calendar API Response Model
+
+struct CalendarEventsResponse: Codable {
+    let success: Bool
+    let description: String
+    let data: [CalendarEvent]
+}
+
+// MARK: - Calendar Event
+struct CalendarEvent: Codable {
+    let id: String
+    let title: String
+    let description: String
+    let eventType: String
+    let eventDate: String
+    let startTime: String?
+    let endTime: String?
+    let isAllDay: Bool
+    let status: String
+    let referenceId: String?
+    let targets: [CalendarEventTarget]
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case title
+        case description
+        case eventType    = "event_type"
+        case eventDate    = "event_date"
+        case startTime    = "start_time"
+        case endTime      = "end_time"
+        case isAllDay     = "is_all_day"
+        case status
+        case referenceId  = "reference_id"
+        case targets
+    }
+
+    // MARK: - Formatted Date (e.g. "Jun 10, 2026")
+    var formattedDate: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        if let date = formatter.date(from: eventDate) {
+            formatter.dateFormat = "MMM dd, yyyy"
+            return formatter.string(from: date)
+        }
+        return eventDate
+    }
+
+    // MARK: - Formatted Time Range (e.g. "09:00 AM - 11:30 AM")
+    var formattedTimeRange: String? {
+        guard let start = startTime, let end = endTime else { return nil }
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "HH:mm:ss"
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "hh:mm a"
+        let startFormatted = inputFormatter.date(from: start).map { outputFormatter.string(from: $0) } ?? start
+        let endFormatted   = inputFormatter.date(from: end).map   { outputFormatter.string(from: $0) } ?? end
+        return "\(startFormatted) - \(endFormatted)"
+    }
+
+    // MARK: - Event Type Display
+    var eventTypeDisplay: String {
+        switch eventType.uppercased() {
+        case "FEE":   return "Fee"
+        case "EVENT": return "Event"
+        case "PTM":   return "PTM"
+        case "EXAM":  return "Exam"
+        default:      return eventType.capitalized
+        }
+    }
+
+    // MARK: - Is All School Event
+    var isSchoolWide: Bool {
+        return targets.contains { $0.targetType.uppercased() == "SCHOOL" }
+    }
+}
+
+// MARK: - Calendar Event Target
+struct CalendarEventTarget: Codable {
+    let id: String
+    let targetType: String
+    let academicYear: CalendarAcademicYear?
+    let branch: String?
+    let grade: CalendarGrade?
+    let section: CalendarSection?
+    let student: CalendarStudent?
+    let staff: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case targetType  = "target_type"
+        case academicYear = "academic_year"
+        case branch
+        case grade
+        case section
+        case student
+        case staff
+    }
+}
+
+// MARK: - Academic Year
+struct CalendarAcademicYear: Codable {
+    let id: String
+    let name: String
+}
+
+// MARK: - Grade
+struct CalendarGrade: Codable {
+    let id: String
+    let name: String
+}
+
+// MARK: - Section
+struct CalendarSection: Codable {
+    let id: String
+    let name: String
+}
+
+// MARK: - Student
+struct CalendarStudent: Codable {
+    let id: String
+    let name: String
+}
 
 // MARK: - Parent Fee Models
 // Endpoint: /fee/student-fee/pending

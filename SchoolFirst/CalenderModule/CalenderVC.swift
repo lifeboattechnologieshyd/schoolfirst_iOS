@@ -15,6 +15,12 @@ class CalenderVC: UIViewController {
     @IBOutlet weak var BackButton: UIButton!
     @IBOutlet weak var tableview: UITableView!
 
+    // MARK: - Data
+    private var allEvents: [CalendarEvent] = []
+    private var isLoading: Bool = true
+    private var loadedStudentId: String = ""
+
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         TopView.addBottomOnlyShadow(
@@ -24,8 +30,69 @@ class CalenderVC: UIViewController {
                 height: 6
             )
         setupTableView()
+        fetchCalendarEvents()
     }
-    
+
+    // MARK: - Reload on Student Switch
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        let currentStudentId = UserManager.shared.resolvedStudentID
+        if currentStudentId != loadedStudentId && !currentStudentId.isEmpty {
+            print("🔄 Calendar: Student changed to: \(currentStudentId)")
+            fetchCalendarEvents()
+        }
+    }
+
+    // MARK: - Fetch Calendar Events API
+    private func fetchCalendarEvents() {
+        isLoading = true
+
+        let studentId = UserManager.shared.resolvedStudentID
+        let schoolId   = UserManager.shared.resolvedSchoolID
+
+        print("📡 CalendarVC fetchEvents | schoolId: \(schoolId) | studentId: \(studentId)")
+
+        guard !schoolId.isEmpty else {
+            print("❌ CalendarVC: Missing schoolId")
+            isLoading = false
+            return
+        }
+
+        var parameters: [String: Any] = [:]
+        if !studentId.isEmpty {
+            parameters["student_id"] = studentId
+        }
+
+        NetworkManager.shared.request(
+            urlString: API.CALENDAR_EVENTS,
+            method: .GET,
+            requiresAuth: true,
+            parameters: parameters.isEmpty ? nil : parameters,
+            headers: ["X-School-Id": schoolId]
+        ) { [weak self] (result: Result<APIResponse<[CalendarEvent]>, NetworkError>) in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                self.isLoading = false
+                switch result {
+                case .success(let response):
+                    if response.success, let data = response.data {
+                        self.allEvents = data
+                        self.loadedStudentId = studentId
+                        print("✅ Calendar events loaded: \(data.count)")
+                        for event in data {
+                            print("   📌 \(event.eventDate) | \(event.eventType) | \(event.title)")
+                        }
+                    } else {
+                        self.allEvents = []
+                    }
+                case .failure(let error):
+                    print("❌ Calendar events API failed: \(error)")
+                    self.allEvents = []
+                }
+                self.tableview.reloadData()
+            }
+        }
+    }
     
     @IBAction func NotificationButtonTapped(_ sender: UIButton) {
         navigateToNotificationVC()
@@ -171,7 +238,10 @@ extension CalenderVC: UITableViewDelegate, UITableViewDataSource {
 
         cell.selectionStyle = .none
 
-        // 🟠 Orange → Fee Event
+        // ✅ Pass API events to calendar cell (colors + multi-color handled inside cell)
+        cell.configure(with: allEvents)
+
+        // 🟡 Yellow → Fee Event
         cell.onFeeEventDateTapped = { [weak self] in
             self?.navigateToFeeEventVC()
         }
@@ -186,14 +256,44 @@ extension CalenderVC: UITableViewDelegate, UITableViewDataSource {
             self?.navigateToExamEventVC()
         }
 
-        // 🔵 Blue → P-T Meeting
+        // 🟡 Yellow → P-T Meeting
         cell.onPTMeetingTapped = { [weak self] in
             self?.navigateToPTMeetingVC()
         }
         
-        // 🎨 Multi-Color (Day 15) → Multiple Events
+        // 🎨 Multi-Color → Multiple Events
         cell.onMultipleEventsTapped = { [weak self] in
             self?.navigateToMultipleEventsVC()
+        }
+
+        // 🟢 Green → General Event
+        cell.onEventTapped = { [weak self] in
+            self?.navigateToAnnualSportsDayVC()
+        }
+
+        // 🟠 Orange → Holiday
+        cell.onHolidayTapped = { [weak self] in
+            print("🟠 Holiday tapped")
+        }
+
+        // 🟣 Purple → Homework
+        cell.onHomeworkTapped = { [weak self] in
+            print("🟣 Homework tapped")
+        }
+
+        // 🩵 Sky-blue → Assignment
+        cell.onAssignmentTapped = { [weak self] in
+            print("🩵 Assignment tapped")
+        }
+
+        // 🔵 Blue → Transport
+        cell.onTransportTapped = { [weak self] in
+            print("🔵 Transport tapped")
+        }
+
+        // 📅 Any date selected (with its events)
+        cell.onDateSelected = { date, events in
+            print("📅 Selected \(date) → \(events.count) event(s)")
         }
 
         return cell
