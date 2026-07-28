@@ -83,6 +83,8 @@ class PTMhomeVC: UIViewController {
     }
 
     // MARK: - Navigate to PTMmeetingdetailsVC
+    // MARK: - In PTMhomeVC navigateToPTMDetails()
+    // MARK: - Navigate to PTMmeetingdetailsVC
     func navigateToPTMDetails(meeting: PTMMeeting? = nil) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let detailsVC = storyboard.instantiateViewController(
@@ -94,6 +96,13 @@ class PTMhomeVC: UIViewController {
         detailsVC.selectedMeeting   = meeting
         detailsVC.selectedMeetingID = meeting?.id
 
+        // ✅ Pass student name from already loaded ptmData
+        detailsVC.studentName       = ptmData?.student.name ?? ""
+
+        print("🚀 Navigating to PTMmeetingdetailsVC")
+        print("   meetingID  : \(meeting?.id   ?? "nil")")
+        print("   studentName: \(detailsVC.studentName)")
+
         if let nav = navigationController {
             nav.pushViewController(detailsVC, animated: true)
         } else {
@@ -101,7 +110,6 @@ class PTMhomeVC: UIViewController {
             present(detailsVC, animated: true)
         }
     }
-
     // MARK: - API: Upcoming Meetings
     private func fetchPTMMeetings() {
         isLoading = true
