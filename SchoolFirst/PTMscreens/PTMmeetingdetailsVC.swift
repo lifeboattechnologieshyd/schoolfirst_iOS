@@ -178,7 +178,49 @@ class PTMmeetingdetailsVC: UIViewController {
         tableview.showsVerticalScrollIndicator = false
     }
 
-    // MARK: - Meeting Response Handlers
+    // MARK: - Navigation to MeetingConfirmationVC (UPDATED)
+    private func navigateToMeetingConfirmation() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
+        // Try the most likely Storyboard ID first
+        if let vc = storyboard.instantiateViewController(
+            withIdentifier: "MeetingConfirmationVC"
+        ) as? MeetingConfirmationVC {
+            configureAndPresent(vc)
+            return
+        }
+        
+        // Fallback: Try common variations
+        let possibleIDs = ["MeetingConfirmation", "ConfirmationVC", "MeetingConfirmVC"]
+        for id in possibleIDs {
+            if let vc = storyboard.instantiateViewController(withIdentifier: id) as? MeetingConfirmationVC {
+                configureAndPresent(vc)
+                return
+            }
+        }
+        
+        // Last resort: Instantiate programmatically (if not in storyboard)
+        let vc = MeetingConfirmationVC()
+        configureAndPresent(vc)
+    }
+
+    private func configureAndPresent(_ vc: MeetingConfirmationVC) {
+        vc.meeting = meeting
+        vc.meetingID = meeting?.id ?? ""
+        vc.studentID = studentID.isEmpty ? UserManager.shared.resolvedStudentID : studentID
+        vc.schoolID = schoolID.isEmpty ? UserManager.shared.resolvedSchoolID : schoolID
+        vc.hidesBottomBarWhenPushed = true
+
+        if let nav = navigationController {
+            nav.setNavigationBarHidden(true, animated: false)
+            nav.pushViewController(vc, animated: true)
+        } else {
+            vc.modalPresentationStyle = .fullScreen
+            present(vc, animated: true)
+        }
+    }
+
+    // MARK: - Meeting Response Handlers (UNCHANGED)
     func handleConfirmMeeting() {
         guard let meetingID = meeting?.id else { return }
         print("✅ Confirm tapped | meetingID: \(meetingID)")
@@ -335,8 +377,10 @@ extension PTMmeetingdetailsVC: UITableViewDelegate, UITableViewDataSource {
             ) as! PTMpurposemeetTableViewCell4
             cell.selectionStyle = .none
             cell.configure(with: meeting)
+            // 🔹 UPDATED: Force-enable Confirm button for navigation (if needed)
+            cell.ConfirmButton.isEnabled = true
             cell.onConfirmTap = { [weak self] in
-                self?.handleConfirmMeeting()
+                self?.navigateToMeetingConfirmation()
             }
             cell.onDeclineTap = { [weak self] in
                 self?.handleDeclineMeeting()

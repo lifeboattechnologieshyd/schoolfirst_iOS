@@ -22,6 +22,7 @@ class PTMpurposemeetTableViewCell4: UITableViewCell {
         selectionStyle = .none
         setupDefaultUI()
     }
+    
 
     override func prepareForReuse() {
         super.prepareForReuse()
