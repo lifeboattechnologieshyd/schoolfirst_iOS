@@ -316,9 +316,12 @@ UICollectionViewDelegateFlowLayout {
         // ADD MORE CASES HERE LATER FOR OTHER MODULES
         case "Homework":
             navigateToHomework()
-            
+            navigateToTransport()
         case "Portofolio":
             navigateToPortofolio()
+            
+        case "Transport":
+            navigateToTransport()
             
         default:
             print("Tapped: \(title)")
@@ -404,6 +407,31 @@ UICollectionViewDelegateFlowLayout {
             }
         }
     }
+    // MARK: - NAVIGATE TO TRANSPORT
+    
+    private func navigateToTransport() {
+
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+        if let TRANSPORT = storyboard.instantiateViewController(
+            withIdentifier: "TranportParentDashbordVC"
+        ) as? TranportParentDashbordVC {
+
+            TRANSPORT.hidesBottomBarWhenPushed = true
+
+            if let nav = navigationController {
+
+                nav.setNavigationBarHidden(true, animated: false)
+                nav.pushViewController(TRANSPORT, animated: true)
+
+            } else {
+
+                TRANSPORT.modalPresentationStyle = .fullScreen
+                present(TRANSPORT, animated: true)
+            }
+        }
+    }
+
     
     private func navigateToCalendar() {
         

@@ -148,6 +148,9 @@
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="icon 33"/>
+                                        <connections>
+                                            <action selector="MessageButtonTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="Hmb-Pz-wT5"/>
+                                        </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Message" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zv3-yT-LVI">
                                         <rect key="frame" x="27" y="48" width="80" height="20"/>
@@ -493,6 +496,9 @@
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="MessageButton" destination="QkT-Be-hrh" id="rni-2g-Zom"/>
+            </connections>
             <point key="canvasLocation" x="192.36641221374046" y="437.32394366197184"/>
         </tableViewCell>
     </objects>

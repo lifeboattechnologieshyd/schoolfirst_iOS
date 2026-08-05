@@ -8,12 +8,21 @@
 import UIKit
 class TRSPTchatVC: UIViewController {
     
+    @IBOutlet weak var BackButton: UIButton!
     @IBOutlet weak var TopView: UIView!
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupTopViewShadow()
     }
+    
+    @IBAction func BackButtonTapped(_ sender: UIButton) {
+
+        // If Homescreen was pushed from EdutainmentVC
+        navigationController?.popViewController(animated: true)
+
+    }
+    
     private func setupTopViewShadow() {
 
         TopView.layer.shadowColor =

@@ -9,6 +9,11 @@ import UIKit
 
 class PaymentsuccessRecieptVCTableViewCell: UITableViewCell {
 
+    @IBOutlet weak var Paidamount: UILabel!
+    
+    @IBOutlet weak var StudentnameLbl: UILabel!
+    @IBOutlet weak var PaymentDatetimeLbl: UILabel!
+    @IBOutlet weak var TransactionIDLbl: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

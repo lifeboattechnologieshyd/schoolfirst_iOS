@@ -30,6 +30,7 @@ class TRSPRTfeepaymentVC: UIViewController {
 
     @IBOutlet weak var tableview: UITableView!
 
+    @IBOutlet weak var BackButton: UIButton!
     // MARK: - Sample Data (replace with API response later)
     private var currentMonthFees: [CurrentMonthFeeItem] = [
         CurrentMonthFeeItem(
@@ -73,7 +74,13 @@ class TRSPRTfeepaymentVC: UIViewController {
 
         setupTableView()
     }
+    @IBAction func BackButtonTapped(_ sender: UIButton) {
 
+        // If Homescreen was pushed from EdutainmentVC
+        navigationController?.popViewController(animated: true)
+
+    }
+    
     // MARK: - Setup TableView
     private func setupTableView() {
         tableview.delegate = self

@@ -8,10 +8,18 @@
 import UIKit
 class BuslivetrackingVC: UIViewController {
     
+    @IBOutlet weak var BackButton: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
         
         
     }
+    @IBAction func BackButtonTapped(_ sender: UIButton) {
+
+        // If Homescreen was pushed from EdutainmentVC
+        navigationController?.popViewController(animated: true)
+
+    }
+    
     
     }

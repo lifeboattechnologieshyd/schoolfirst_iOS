@@ -5,11 +5,22 @@
 
 import UIKit
 
+// MARK: - Delegate Protocol for Navigation
+protocol TRNSPTdashbordCell1Delegate: AnyObject {
+    func didTapLiveTracking()
+    func didTapDriverContact()
+    func didTapFeeModule()
+     func didTapPickupandDrop()
+}
+
 class TRNSPTdashbordUITableViewCell1: UITableViewCell {
 
     // MARK: - Outlets
     @IBOutlet weak var CollectionView2: UICollectionView!   // Today's Journey list
     @IBOutlet weak var CollectionView: UICollectionView!    // Top module cards
+
+    // MARK: - Delegate
+    weak var delegate: TRNSPTdashbordCell1Delegate?
 
     // MARK: - Transport Item Model (Top cards)
     private struct TransportItem {
@@ -24,28 +35,28 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
         TransportItem(
             title: "Live\nTracking",
             description: "Track bus live",
-            imageName: "mappin.and.ellipse",
+            imageName: "icon 42",
             backgroundColor: UIColor(red: 210/255, green: 232/255, blue: 220/255, alpha: 1.0),
             iconTintColor:   UIColor(red:  46/255, green: 139/255, blue:  87/255, alpha: 1.0)
         ),
         TransportItem(
             title: "Driver\nContact",
             description: "Call or message",
-            imageName: "headphones",
+            imageName: "icon 43",
             backgroundColor: UIColor(red: 230/255, green: 230/255, blue: 235/255, alpha: 1.0),
             iconTintColor:   UIColor(red: 230/255, green: 120/255, blue:  40/255, alpha: 1.0)
         ),
         TransportItem(
             title: "Fee\nModule",
             description: "Manage Payments",
-            imageName: "creditcard.fill",
+            imageName: "icon 44",
             backgroundColor: UIColor(red: 225/255, green: 220/255, blue: 245/255, alpha: 1.0),
             iconTintColor:   UIColor(red: 170/255, green: 110/255, blue: 200/255, alpha: 1.0)
         ),
         TransportItem(
             title: "Pickup&Drop\nDetails",
             description: "View timings",
-            imageName: "calendar",
+            imageName: "icon 45",
             backgroundColor: UIColor(red: 232/255, green: 225/255, blue: 245/255, alpha: 1.0),
             iconTintColor:   UIColor(red: 220/255, green:  80/255, blue: 150/255, alpha: 1.0)
         )
@@ -67,24 +78,24 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
             time: "07:30 AM",
             location: "Green Park Layout",
             imageName: "mappin.and.ellipse",
-            iconTintColor:       UIColor(red:  22/255, green: 163/255, blue:  74/255, alpha: 1.0), // #16A34A
-            iconBackgroundColor: UIColor(red: 220/255, green: 252/255, blue: 231/255, alpha: 1.0)  // light green
+            iconTintColor:       UIColor(red:  22/255, green: 163/255, blue:  74/255, alpha: 1.0),
+            iconBackgroundColor: UIColor(red: 220/255, green: 252/255, blue: 231/255, alpha: 1.0)
         ),
         JourneyItem(
             title: "On Route",
             time: "07:50 AM",
             location: "Towards Springdale School",
             imageName: "bus.fill",
-            iconTintColor:       UIColor(red:  22/255, green: 163/255, blue:  74/255, alpha: 1.0), // green
-            iconBackgroundColor: UIColor(red: 220/255, green: 252/255, blue: 231/255, alpha: 1.0)  // light green
+            iconTintColor:       UIColor(red:  22/255, green: 163/255, blue:  74/255, alpha: 1.0),
+            iconBackgroundColor: UIColor(red: 220/255, green: 252/255, blue: 231/255, alpha: 1.0)
         ),
         JourneyItem(
             title: "School",
             time: "08:20 AM",
             location: "Springdale International School",
             imageName: "graduationcap.fill",
-            iconTintColor:       UIColor(red:  37/255, green:  99/255, blue: 235/255, alpha: 1.0), // blue
-            iconBackgroundColor: UIColor(red: 219/255, green: 234/255, blue: 254/255, alpha: 1.0)  // light blue
+            iconTintColor:       UIColor(red:  37/255, green:  99/255, blue: 235/255, alpha: 1.0),
+            iconBackgroundColor: UIColor(red: 219/255, green: 234/255, blue: 254/255, alpha: 1.0)
         )
     ]
 
@@ -214,18 +225,44 @@ extension TRNSPTdashbordUITableViewCell1: UICollectionViewDataSource,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
 
         if collectionView.tag == 2 {
-            // Full width, fixed height for journey rows
             return CGSize(width: collectionView.frame.width, height: 48)
         }
         return CGSize(width: 82, height: 120)
     }
 
+    // MARK: - didSelectItemAt (Navigation via Delegate)
     func collectionView(_ collectionView: UICollectionView,
                         didSelectItemAt indexPath: IndexPath) {
+
+        // ── Journey CollectionView taps ───────────────────────────────────
         if collectionView.tag == 2 {
             print("🛣️ Journey selected: \(journeyItems[indexPath.item].title)")
-        } else {
-            print("🚌 Module selected: \(items[indexPath.item].title)")
+            return
+        }
+
+        // ── Top Module CollectionView taps ────────────────────────────────
+        let selectedTitle = items[indexPath.item].title
+        print("🚌 Module selected: \(selectedTitle)")
+
+       
+        
+            switch selectedTitle {
+            case "Live\nTracking":
+                print("📍 Navigating to BuslivetrackingVC")
+                delegate?.didTapLiveTracking()
+            case "Fee\nModule":
+                print("📍 Navigating to TRSPRTfeepaymentVC")
+                delegate?.didTapFeeModule()
+
+        case "Driver\nContact":
+            print("📞 Navigating to TRSPRTcantactdriverVC")
+            delegate?.didTapDriverContact()
+        case "Pickup&Drop\nDetails":
+                print("Navigating to TRSPRTpickupanddropVC")
+                delegate?.didTapPickupandDrop()
+
+        default:
+            break
         }
     }
 }

@@ -9,18 +9,25 @@ import UIKit
 
 class TRSPRTcantactdriverVC: UIViewController {
 
+    // MARK: - Outlets
+    @IBOutlet weak var BackButton: UIButton!
     @IBOutlet weak var tableview: UITableView!
 
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
         setupTableView()
+    }
+
+    // MARK: - Back Button Action
+    @IBAction func BackButtonTapped(_ sender: UIButton) {
+        // If screen was pushed navigate back
+        navigationController?.popViewController(animated: true)
     }
 
     // MARK: - Setup TableView
     private func setupTableView() {
-
-        tableview.delegate = self
+        tableview.delegate   = self
         tableview.dataSource = self
 
         tableview.register(
@@ -31,20 +38,30 @@ class TRSPRTcantactdriverVC: UIViewController {
             forCellReuseIdentifier: "TRSPRTcantactdriverVCUITableViewCell"
         )
 
-        tableview.separatorStyle = .none
+        tableview.separatorStyle               = .none
         tableview.showsVerticalScrollIndicator = false
+    }
+
+    // MARK: - Navigation Helper
+    private func navigateToChat() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(
+            withIdentifier: "TRSPTchatVC"
+        ) as? TRSPTchatVC else {
+            print("❌ TRSPTchatVC not found in storyboard. Check Storyboard ID.")
+            return
+        }
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
 
 // MARK: - UITableViewDelegate & UITableViewDataSource
-
 extension TRSPRTcantactdriverVC: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(
         _ tableView: UITableView,
         numberOfRowsInSection section: Int
     ) -> Int {
-
         return 1
     }
 
@@ -60,6 +77,9 @@ extension TRSPRTcantactdriverVC: UITableViewDelegate, UITableViewDataSource {
 
         cell.selectionStyle = .none
 
+        // ── Assign delegate so cell can trigger navigation ──────────────
+        cell.delegate = self
+
         return cell
     }
 
@@ -67,7 +87,14 @@ extension TRSPRTcantactdriverVC: UITableViewDelegate, UITableViewDataSource {
         _ tableView: UITableView,
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
+        return 1000
+    }
+}
 
-        return 800
+// MARK: - TRSPRTcantactdriverCellDelegate
+extension TRSPRTcantactdriverVC: TRSPRTcantactdriverCellDelegate {
+
+    func didTapMessageButton() {
+        navigateToChat()
     }
 }
