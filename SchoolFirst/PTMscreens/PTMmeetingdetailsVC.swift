@@ -21,7 +21,7 @@ class PTMmeetingdetailsVC: UIViewController {
 
     // MARK: - Private Data
     private var meeting: PTMMeeting?
-    private var isLoading: Bool     = true
+    private var isLoading: Bool       = true
     private var isOnlineMeeting: Bool = false
 
     // MARK: - Row Type Enum
@@ -48,9 +48,9 @@ class PTMmeetingdetailsVC: UIViewController {
         setupTableView()
 
         if let meeting = selectedMeeting {
-            self.meeting        = meeting
+            self.meeting         = meeting
             self.isOnlineMeeting = meeting.meetingMode.uppercased() == "ONLINE"
-            self.isLoading      = false
+            self.isLoading       = false
             tableview.reloadData()
             print("✅ PTMmeetingdetailsVC: Using passed meeting → \(meeting.title)")
             print("   meetingMode   : \(meeting.meetingMode)")
@@ -123,7 +123,6 @@ class PTMmeetingdetailsVC: UIViewController {
                         } else {
                             self.meeting = data.meetings.first
                         }
-                        // capture student name if not already passed
                         if self.studentName.isEmpty {
                             self.studentName = data.student.name
                         }
@@ -178,37 +177,35 @@ class PTMmeetingdetailsVC: UIViewController {
         tableview.showsVerticalScrollIndicator = false
     }
 
-    // MARK: - Navigation to MeetingConfirmationVC (UPDATED)
+    // MARK: - Navigate to MeetingConfirmationVC
+    // Called after ATTENDING API success
     private func navigateToMeetingConfirmation() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        
-        // Try the most likely Storyboard ID first
+
         if let vc = storyboard.instantiateViewController(
             withIdentifier: "MeetingConfirmationVC"
         ) as? MeetingConfirmationVC {
-            configureAndPresent(vc)
+            configureAndPresentConfirmation(vc)
             return
         }
-        
-        // Fallback: Try common variations
+
         let possibleIDs = ["MeetingConfirmation", "ConfirmationVC", "MeetingConfirmVC"]
         for id in possibleIDs {
             if let vc = storyboard.instantiateViewController(withIdentifier: id) as? MeetingConfirmationVC {
-                configureAndPresent(vc)
+                configureAndPresentConfirmation(vc)
                 return
             }
         }
-        
-        // Last resort: Instantiate programmatically (if not in storyboard)
+
         let vc = MeetingConfirmationVC()
-        configureAndPresent(vc)
+        configureAndPresentConfirmation(vc)
     }
 
-    private func configureAndPresent(_ vc: MeetingConfirmationVC) {
-        vc.meeting = meeting
+    private func configureAndPresentConfirmation(_ vc: MeetingConfirmationVC) {
+        vc.meeting   = meeting
         vc.meetingID = meeting?.id ?? ""
         vc.studentID = studentID.isEmpty ? UserManager.shared.resolvedStudentID : studentID
-        vc.schoolID = schoolID.isEmpty ? UserManager.shared.resolvedSchoolID : schoolID
+        vc.schoolID  = schoolID.isEmpty  ? UserManager.shared.resolvedSchoolID  : schoolID
         vc.hidesBottomBarWhenPushed = true
 
         if let nav = navigationController {
@@ -220,19 +217,168 @@ class PTMmeetingdetailsVC: UIViewController {
         }
     }
 
-    // MARK: - Meeting Response Handlers (UNCHANGED)
+    // MARK: - Navigate to MeetingdeclinepopupVC
+    // Called when user taps Decline button
+    private func navigateToDeclinePopup() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+        if let vc = storyboard.instantiateViewController(
+            withIdentifier: "MeetingdeclinepopupVC"
+        ) as? MeetingdeclinepopupVC {
+            configureAndPresentDecline(vc)
+            return
+        }
+
+        let possibleIDs = ["MeetingDeclinePopup", "DeclinePopupVC", "DeclineVC"]
+        for id in possibleIDs {
+            if let vc = storyboard.instantiateViewController(withIdentifier: id) as? MeetingdeclinepopupVC {
+                configureAndPresentDecline(vc)
+                return
+            }
+        }
+
+        let vc = MeetingdeclinepopupVC()
+        configureAndPresentDecline(vc)
+    }
+
+    private func configureAndPresentDecline(_ vc: MeetingdeclinepopupVC) {
+        vc.meeting   = meeting
+        vc.meetingID = meeting?.id ?? ""
+        vc.studentID = studentID.isEmpty ? UserManager.shared.resolvedStudentID : studentID
+        vc.schoolID  = schoolID.isEmpty  ? UserManager.shared.resolvedSchoolID  : schoolID
+        vc.hidesBottomBarWhenPushed = true
+
+        if let nav = navigationController {
+            nav.setNavigationBarHidden(true, animated: false)
+            nav.pushViewController(vc, animated: true)
+        } else {
+            vc.modalPresentationStyle = .fullScreen
+            present(vc, animated: true)
+        }
+    }
+
+    // MARK: - Confirm Meeting (POST ATTENDING → navigate)
     func handleConfirmMeeting() {
-        guard let meetingID = meeting?.id else { return }
+        guard let meetingID = meeting?.id else {
+            print("❌ handleConfirmMeeting: No meetingID")
+            return
+        }
         print("✅ Confirm tapped | meetingID: \(meetingID)")
-        postMeetingResponse(status: "ATTENDING")
+        postParentResponse(status: .attending, remarks: "") { [weak self] success in
+            guard let self = self else { return }
+            if success {
+                self.navigateToMeetingConfirmation()
+            }
+        }
     }
 
+    // MARK: - Decline Meeting (navigate to popup)
     func handleDeclineMeeting() {
-        guard let meetingID = meeting?.id else { return }
-        print("❌ Decline tapped | meetingID: \(meetingID)")
-        postMeetingResponse(status: "NOT_ATTENDING")
+        print("❌ Decline tapped — navigating to MeetingdeclinepopupVC")
+        navigateToDeclinePopup()
     }
 
+    // MARK: - POST Parent Response API
+    // URL: POST /ptm/parent-response/{meetingID}?student_id={studentID}
+    // MARK: - POST Parent Response API
+    // MARK: - POST Parent Response API
+    func postParentResponse(
+        status: PTMResponseStatus,
+        remarks: String,
+        completion: @escaping (_ success: Bool) -> Void
+    ) {
+        let schoolId  = schoolID.isEmpty  ? UserManager.shared.resolvedSchoolID  : schoolID
+        let studentId = studentID.isEmpty ? UserManager.shared.resolvedStudentID : studentID
+
+        guard let meetingID = meeting?.id,
+              !meetingID.isEmpty,
+              !studentId.isEmpty else {
+            print("❌ postParentResponse: Missing required data")
+            print("   meetingID : \(meeting?.id ?? "nil")")
+            print("   studentId : \(studentId)")
+            completion(false)
+            return
+        }
+
+        // ✅ FIX: student_id goes in JSON BODY (not query param)
+        // Strip trailing slash to avoid double slash
+        let baseURL   = API.BASE_URL.hasSuffix("/")
+                        ? String(API.BASE_URL.dropLast())
+                        : API.BASE_URL
+        let urlString = "\(baseURL)/ptm/parent-response/\(meetingID)"
+
+        print("📡 POST Parent Response")
+        print("   URL       : \(urlString)")
+        print("   studentId : \(studentId)")
+        print("   schoolId  : \(schoolId)")
+        print("   status    : \(status.rawValue)")
+        print("   remarks   : \(remarks)")
+
+        // Show loading
+        let loadingAlert = UIAlertController(
+            title: nil,
+            message: "Updating...",
+            preferredStyle: .alert
+        )
+        let spinner = UIActivityIndicatorView(
+            frame: CGRect(x: 10, y: 5, width: 50, height: 50)
+        )
+        spinner.hidesWhenStopped = true
+        spinner.style            = .medium
+        spinner.startAnimating()
+        loadingAlert.view.addSubview(spinner)
+        present(loadingAlert, animated: true)
+
+        // ✅ FIX: student_id IN body params
+        var bodyParams: [String: Any] = [
+            "student_id":      studentId,
+            "response_status": status.rawValue
+        ]
+        if !remarks.isEmpty {
+            bodyParams["remarks"] = remarks
+        }
+
+        print("   bodyParams: \(bodyParams)")
+
+        NetworkManager.shared.request(
+            urlString: urlString,
+            method: .POST,
+            requiresAuth: true,
+            parameters: bodyParams,           // ← student_id + response_status in body
+            headers: ["X-School-Id": schoolId]
+        ) { [weak self] (result: Result<APIResponse<PTMParentResponseData>, NetworkError>) in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                loadingAlert.dismiss(animated: true) {
+                    switch result {
+                    case .success(let response):
+                        print("✅ Parent Response API success")
+                        print("   responseStatus : \(response.data?.responseStatus      ?? "nil")")
+                        print("   respondedAt    : \(response.data?.formattedRespondedAt ?? "nil")")
+                        if response.success {
+                            completion(true)
+                        } else {
+                            self.showAlert(
+                                title: "Error",
+                                message: response.description.isEmpty
+                                    ? "Failed to update. Please try again."
+                                    : response.description
+                            )
+                            completion(false)
+                        }
+                    case .failure(let error):
+                        print("❌ Parent Response API failed: \(error)")
+                        self.showAlert(
+                            title: "Error",
+                            message: "Network error. Please try again."
+                        )
+                        completion(false)
+                    }
+                }
+            }
+        }
+    }
+    // MARK: - Legacy postMeetingResponse (kept for backward compat)
     private func postMeetingResponse(status: String) {
         let schoolId  = schoolID.isEmpty  ? UserManager.shared.resolvedSchoolID  : schoolID
         let studentId = studentID.isEmpty ? UserManager.shared.resolvedStudentID : studentID
@@ -251,7 +397,9 @@ class PTMmeetingdetailsVC: UIViewController {
             message: "Updating...",
             preferredStyle: .alert
         )
-        let spinner = UIActivityIndicatorView(frame: CGRect(x: 10, y: 5, width: 50, height: 50))
+        let spinner = UIActivityIndicatorView(
+            frame: CGRect(x: 10, y: 5, width: 50, height: 50)
+        )
         spinner.hidesWhenStopped = true
         spinner.style            = .medium
         spinner.startAnimating()
@@ -281,11 +429,17 @@ class PTMmeetingdetailsVC: UIViewController {
                                 self.navigationController?.popViewController(animated: true)
                             }
                         } else {
-                            self.showAlert(title: "Error", message: "Failed to update. Please try again.")
+                            self.showAlert(
+                                title: "Error",
+                                message: "Failed to update. Please try again."
+                            )
                         }
                     case .failure(let error):
                         print("❌ PTM response API failed: \(error)")
-                        self.showAlert(title: "Error", message: "Network error. Please try again.")
+                        self.showAlert(
+                            title: "Error",
+                            message: "Network error. Please try again."
+                        )
                     }
                 }
             }
@@ -297,7 +451,11 @@ class PTMmeetingdetailsVC: UIViewController {
         message: String,
         completion: (() -> Void)? = nil
     ) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        )
         alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
             completion?()
         })
@@ -377,11 +535,14 @@ extension PTMmeetingdetailsVC: UITableViewDelegate, UITableViewDataSource {
             ) as! PTMpurposemeetTableViewCell4
             cell.selectionStyle = .none
             cell.configure(with: meeting)
-            // 🔹 UPDATED: Force-enable Confirm button for navigation (if needed)
             cell.ConfirmButton.isEnabled = true
+
+            // Confirm: POST API then navigate to MeetingConfirmationVC
             cell.onConfirmTap = { [weak self] in
-                self?.navigateToMeetingConfirmation()
+                self?.handleConfirmMeeting()
             }
+
+            // Decline: Navigate to MeetingdeclinepopupVC
             cell.onDeclineTap = { [weak self] in
                 self?.handleDeclineMeeting()
             }

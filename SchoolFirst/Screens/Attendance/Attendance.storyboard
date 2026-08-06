@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
@@ -13,13 +13,13 @@
         <!--Attendance View Controller-->
         <scene sceneID="s0d-6b-0kx">
             <objects>
-                <viewController storyboardIdentifier="AttendanceViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Y6W-OH-hqX" customClass="AttendanceViewController" customModule="SF_Dev" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AttendanceViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Y6W-OH-hqX" customClass="AttendanceViewController" customModule="SchoolFirst" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="88P-e3-SqL">
-                                <rect key="frame" x="0.0" y="59" width="393" height="50"/>
+                                <rect key="frame" x="0.0" y="118" width="393" height="50"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Nw-vg-F9A">
                                         <rect key="frame" x="2" y="7.6666666666666714" width="49.333333333333336" height="35"/>
@@ -39,7 +39,7 @@
                                         <attributedString key="attributedText">
                                             <fragment content=" Attendance">
                                                 <attributes>
-                                                    <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                                    <font key="NSFont" metaFont="system" size="16"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
@@ -56,7 +56,7 @@
                                 </constraints>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="z4y-hH-tvv">
-                                <rect key="frame" x="0.0" y="185" width="393" height="667"/>
+                                <rect key="frame" x="0.0" y="244" width="393" height="608"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <color key="separatorColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <color key="sectionIndexColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -69,7 +69,7 @@
                                 </userDefinedRuntimeAttributes>
                             </tableView>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="zY8-TC-h6J">
-                                <rect key="frame" x="0.0" y="111" width="393" height="74"/>
+                                <rect key="frame" x="0.0" y="170" width="393" height="74"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="74" id="eje-w0-bb4"/>
@@ -112,13 +112,13 @@
         <!--Submit Leave View Controller-->
         <scene sceneID="tAV-NI-p0b">
             <objects>
-                <viewController storyboardIdentifier="SubmitLeaveViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="O71-3r-Nb2" customClass="SubmitLeaveViewController" customModule="SF_Dev" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SubmitLeaveViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="O71-3r-Nb2" customClass="SubmitLeaveViewController" customModule="SchoolFirst" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="lT2-0A-cpk">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2fi-7M-0Sn">
-                                <rect key="frame" x="0.0" y="59" width="393" height="50"/>
+                                <rect key="frame" x="0.0" y="118" width="393" height="50"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VlM-WS-JPb">
                                         <rect key="frame" x="2" y="7.6666666666666714" width="49.333333333333336" height="35"/>
@@ -138,7 +138,7 @@
                                         <attributedString key="attributedText">
                                             <fragment content=" Submit Leave Request">
                                                 <attributes>
-                                                    <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                                    <font key="NSFont" metaFont="system" size="16"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
@@ -155,24 +155,24 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6vG-tF-M2c">
-                                <rect key="frame" x="0.0" y="746" width="393" height="72"/>
+                                <rect key="frame" x="0.0" y="712" width="393" height="72"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VKk-Nb-yrn">
-                                        <rect key="frame" x="16" y="16" width="95" height="20"/>
+                                        <rect key="frame" x="16" y="16" width="89.666666666666671" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="X1A-r4-61d"/>
                                         </constraints>
                                         <attributedString key="attributedText">
                                             <fragment content=" Select Days">
                                                 <attributes>
-                                                    <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                                    <font key="NSFont" metaFont="system" size="16"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LVw-Te-exS">
-                                        <rect key="frame" x="15.999999999999993" y="44" width="104.33333333333331" height="15"/>
+                                        <rect key="frame" x="16.000000000000007" y="44" width="101.66666666666669" height="15"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="15" id="mfQ-7w-S3u"/>
                                         </constraints>
@@ -180,7 +180,7 @@
                                             <fragment content=" Single or Multiple">
                                                 <attributes>
                                                     <color key="NSColor" red="0.043137254899999998" green="0.33725490200000002" blue="0.60392156860000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                                    <font key="NSFont" metaFont="cellTitle"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
@@ -199,7 +199,7 @@
                                                 <fragment content="SUBMIT REQUEST">
                                                     <attributes>
                                                         <color key="NSColor" red="0.99516242740000005" green="0.94719189410000004" blue="0.01824968494" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                        <font key="NSFont" size="14" name="Lexend-Bold"/>
+                                                        <font key="NSFont" metaFont="system" size="14"/>
                                                         <font key="NSOriginalFont" size="12" name="Helvetica"/>
                                                         <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                                     </attributes>
@@ -223,7 +223,7 @@
                                 </constraints>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="si9-en-Tmv">
-                                <rect key="frame" x="0.0" y="111" width="393" height="633"/>
+                                <rect key="frame" x="0.0" y="170" width="393" height="540"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                         </subviews>
@@ -258,13 +258,13 @@
         <!--Leave History View Controller-->
         <scene sceneID="Mml-54-lIw">
             <objects>
-                <viewController storyboardIdentifier="LeaveHistoryViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="XHL-cn-umD" customClass="LeaveHistoryViewController" customModule="SF_Dev" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LeaveHistoryViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="XHL-cn-umD" customClass="LeaveHistoryViewController" customModule="SchoolFirst" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Pag-Ju-Y4P">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VRS-7g-39w">
-                                <rect key="frame" x="0.0" y="59" width="393" height="50"/>
+                                <rect key="frame" x="0.0" y="118" width="393" height="50"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SgT-bx-7dZ">
                                         <rect key="frame" x="2" y="7.6666666666666714" width="49.333333333333336" height="35"/>
@@ -276,14 +276,14 @@
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jW5-gU-UwK">
-                                        <rect key="frame" x="59.333333333333329" y="15" width="178.66666666666669" height="20"/>
+                                        <rect key="frame" x="59.333333333333329" y="15" width="165.66666666666669" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="Dwe-B7-DWI"/>
                                         </constraints>
                                         <attributedString key="attributedText">
                                             <fragment content=" Submit Leave Request">
                                                 <attributes>
-                                                    <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                                    <font key="NSFont" metaFont="system" size="16"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
@@ -300,7 +300,7 @@
                                 </constraints>
                             </view>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="ILW-Sr-3uL">
-                                <rect key="frame" x="0.0" y="111" width="393" height="74"/>
+                                <rect key="frame" x="0.0" y="170" width="393" height="74"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="74" id="2aL-s9-awa"/>
@@ -314,7 +314,7 @@
                                 <cells/>
                             </collectionView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="if6-bB-zaF">
-                                <rect key="frame" x="16" y="197" width="361" height="32"/>
+                                <rect key="frame" x="16" y="256" width="361" height="32"/>
                                 <subviews>
                                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="vqI-Yh-KOG">
                                         <rect key="frame" x="0.0" y="0.0" width="361" height="32"/>
@@ -348,7 +348,7 @@
                                 </constraints>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="uF8-f4-GoU">
-                                <rect key="frame" x="0.0" y="231" width="393" height="587"/>
+                                <rect key="frame" x="0.0" y="290" width="393" height="494"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                         </subviews>
@@ -385,13 +385,13 @@
         <!--Re Submit View Controller-->
         <scene sceneID="vQG-2U-Lb1">
             <objects>
-                <viewController storyboardIdentifier="ReSubmitViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="mtj-UZ-lC5" customClass="ReSubmitViewController" customModule="SF_Dev" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ReSubmitViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="mtj-UZ-lC5" customClass="ReSubmitViewController" customModule="SchoolFirst" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="iiG-FV-ThK">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2Hu-Gj-jOg">
-                                <rect key="frame" x="0.0" y="59" width="393" height="50"/>
+                                <rect key="frame" x="0.0" y="118" width="393" height="50"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="27b-1Y-RKM">
                                         <rect key="frame" x="2" y="7.6666666666666714" width="49.333333333333336" height="35"/>
@@ -409,7 +409,7 @@
                                         <attributedString key="attributedText">
                                             <fragment content=" Re-submit Request">
                                                 <attributes>
-                                                    <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                                    <font key="NSFont" metaFont="system" size="16"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
@@ -422,7 +422,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="E9c-iG-ENb">
-                                <rect key="frame" x="16" y="125" width="160" height="50"/>
+                                <rect key="frame" x="16" y="184" width="160" height="50"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image=" Profile" translatesAutoresizingMaskIntoConstraints="NO" id="Syh-Hi-mF0">
                                         <rect key="frame" x="8" y="7" width="36" height="36"/>
@@ -432,7 +432,7 @@
                                         </constraints>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qYU-sV-Gth">
-                                        <rect key="frame" x="47.999999999999993" y="7" width="86.333333333333314" height="18"/>
+                                        <rect key="frame" x="48.000000000000007" y="7" width="80.666666666666686" height="18"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="18" id="brg-Gc-QD2"/>
                                         </constraints>
@@ -440,21 +440,21 @@
                                             <fragment content=" For Abhinay">
                                                 <attributes>
                                                     <color key="NSColor" red="0.043137254899999998" green="0.33725490200000002" blue="0.60392156860000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <font key="NSFont" size="14" name="Lexend-Regular"/>
+                                                    <font key="NSFont" metaFont="system" size="14"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zvO-wg-pz3">
-                                        <rect key="frame" x="48.000000000000007" y="29" width="94.666666666666686" height="13"/>
+                                        <rect key="frame" x="47.999999999999993" y="29" width="96.333333333333314" height="13"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="13" id="TWs-Yy-HM5"/>
                                         </constraints>
                                         <attributedString key="attributedText">
                                             <fragment content=" Grade 3 | Section B">
                                                 <attributes>
-                                                    <font key="NSFont" size="10" name="Lexend-Regular"/>
+                                                    <font key="NSFont" metaFont="system" size="10"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
@@ -485,45 +485,45 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JP4-Oc-Gpg">
-                                <rect key="frame" x="16.000000000000007" y="191" width="111.66666666666669" height="20"/>
+                                <rect key="frame" x="16" y="250" width="101" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="yvT-Cc-h0P"/>
                                 </constraints>
                                 <attributedString key="attributedText">
                                     <fragment content="Leave Details">
                                         <attributes>
-                                            <font key="NSFont" size="17" name="Lexend-Regular"/>
+                                            <font key="NSFont" metaFont="system" size="17"/>
                                         </attributes>
                                     </fragment>
                                 </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rpd-fo-rNC">
-                                <rect key="frame" x="16" y="223" width="361" height="88"/>
+                                <rect key="frame" x="16" y="282" width="361" height="88"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3zN-om-cFF">
-                                        <rect key="frame" x="12" y="14" width="62" height="20"/>
+                                        <rect key="frame" x="11.999999999999996" y="14" width="57.666666666666657" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="a46-lI-e1x"/>
                                         </constraints>
                                         <attributedString key="attributedText">
                                             <fragment content="0.5 Day">
                                                 <attributes>
-                                                    <font key="NSFont" size="17" name="Lexend-Regular"/>
+                                                    <font key="NSFont" metaFont="system" size="17"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ho3-CA-9MW">
-                                        <rect key="frame" x="12" y="38" width="136.33333333333334" height="15"/>
+                                        <rect key="frame" x="12" y="38" width="135" height="15"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="15" id="zFA-fG-rMh"/>
                                         </constraints>
                                         <attributedString key="attributedText">
                                             <fragment content="10 Mar 2025 (First Half)">
                                                 <attributes>
-                                                    <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                                    <font key="NSFont" metaFont="cellTitle"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
@@ -542,11 +542,11 @@
                                         <rect key="frame" x="261" y="12" width="88" height="24"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XJK-g1-9sM">
-                                                <rect key="frame" x="18.666666666666686" y="4.6666666666666572" width="51" height="15"/>
+                                                <rect key="frame" x="19.333333333333311" y="4.6666666666666856" width="49.666666666666657" height="15"/>
                                                 <attributedString key="attributedText">
                                                     <fragment content="Rejected">
                                                         <attributes>
-                                                            <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                                            <font key="NSFont" metaFont="cellTitle"/>
                                                         </attributes>
                                                     </fragment>
                                                 </attributedString>
@@ -586,59 +586,59 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sOX-ng-7Gf">
-                                <rect key="frame" x="16" y="329" width="182.66666666666666" height="20"/>
+                                <rect key="frame" x="16" y="388" width="169.66666666666666" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="KPt-Yo-08a"/>
                                 </constraints>
                                 <attributedString key="attributedText">
                                     <fragment content="Select reason for Leave">
                                         <attributes>
-                                            <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                            <font key="NSFont" metaFont="system" size="16"/>
                                         </attributes>
                                     </fragment>
                                 </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="t7l-87-f3F">
-                                <rect key="frame" x="16" y="429" width="114" height="20"/>
+                                <rect key="frame" x="16.000000000000007" y="488" width="106.66666666666669" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="U0t-VR-UQd"/>
                                 </constraints>
                                 <attributedString key="attributedText">
                                     <fragment content="Tell us in detail">
                                         <attributes>
-                                            <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                            <font key="NSFont" metaFont="system" size="16"/>
                                         </attributes>
                                     </fragment>
                                 </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nYV-Yl-aH0">
-                                <rect key="frame" x="16" y="601" width="147.66666666666666" height="20"/>
+                                <rect key="frame" x="16" y="660" width="138.66666666666666" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="6EX-yR-OsM"/>
                                 </constraints>
                                 <attributedString key="attributedText">
                                     <fragment content="Submit Documents">
                                         <attributes>
-                                            <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                            <font key="NSFont" metaFont="system" size="16"/>
                                         </attributes>
                                     </fragment>
                                 </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HQU-Kx-fsd">
-                                <rect key="frame" x="16" y="631" width="361" height="96"/>
+                                <rect key="frame" x="16" y="690" width="361" height="96"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pLt-xJ-Wd8">
-                                        <rect key="frame" x="114.33333333333334" y="58" width="127.33333333333334" height="18"/>
+                                        <rect key="frame" x="118" y="58" width="120.33333333333331" height="18"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="18" id="mRe-jz-X3C"/>
                                         </constraints>
                                         <attributedString key="attributedText">
                                             <fragment content="Tap here to upload">
                                                 <attributes>
-                                                    <font key="NSFont" size="14" name="Lexend-Regular"/>
+                                                    <font key="NSFont" metaFont="menu" size="14"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
@@ -687,24 +687,24 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Uyd-GP-Hzm">
-                                <rect key="frame" x="0.0" y="738" width="393" height="80"/>
+                                <rect key="frame" x="0.0" y="704" width="393" height="80"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SOf-nh-AqO">
-                                        <rect key="frame" x="16.000000000000004" y="10" width="57.333333333333343" height="20"/>
+                                        <rect key="frame" x="16" y="10" width="55" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="2KC-xH-3WI"/>
                                         </constraints>
                                         <attributedString key="attributedText">
                                             <fragment content="2.5 Day">
                                                 <attributes>
-                                                    <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                                    <font key="NSFont" metaFont="system" size="16"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k4P-kj-aYB">
-                                        <rect key="frame" x="16" y="38" width="67.333333333333329" height="15"/>
+                                        <rect key="frame" x="16" y="38" width="71.666666666666671" height="15"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="15" id="a5X-HF-3sE"/>
                                         </constraints>
@@ -712,7 +712,7 @@
                                             <fragment content="23 Oct 2025">
                                                 <attributes>
                                                     <color key="NSColor" red="0.043137254899999998" green="0.33725490200000002" blue="0.60392156860000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                                    <font key="NSFont" metaFont="cellTitle"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
@@ -731,7 +731,7 @@
                                                 <fragment content="SUBMIT REQUEST">
                                                     <attributes>
                                                         <color key="NSColor" red="0.99516242740000005" green="0.94719189410000004" blue="0.01824968494" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                        <font key="NSFont" size="16" name="Lexend-Regular"/>
+                                                        <font key="NSFont" metaFont="system" size="16"/>
                                                         <font key="NSOriginalFont" size="12" name="Helvetica"/>
                                                         <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                                     </attributes>
@@ -760,7 +760,7 @@
                                 </constraints>
                             </view>
                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Health Issue" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="HYa-IQ-h72">
-                                <rect key="frame" x="16" y="357" width="361" height="48"/>
+                                <rect key="frame" x="16" y="416" width="361" height="48"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="ZGG-jh-onk"/>
                                 </constraints>
@@ -773,7 +773,7 @@
                                 </userDefinedRuntimeAttributes>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="64E-DF-8BP">
-                                <rect key="frame" x="348" y="376" width="16" height="9"/>
+                                <rect key="frame" x="348" y="435" width="16" height="9"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="16" id="FhI-ig-Pb3"/>
                                     <constraint firstAttribute="height" constant="9" id="RFR-u0-q1H"/>
@@ -787,7 +787,7 @@
                                 </connections>
                             </button>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Dh9-EG-p3b">
-                                <rect key="frame" x="16" y="465" width="361" height="120"/>
+                                <rect key="frame" x="16" y="524" width="361" height="120"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="120" id="1oO-fH-89m"/>
@@ -796,7 +796,7 @@
                                     <fragment content="Tap to start typing…">
                                         <attributes>
                                             <color key="NSColor" systemColor="labelColor"/>
-                                            <font key="NSFont" size="14" name="Lexend-Regular"/>
+                                            <font key="NSFont" metaFont="system" size="14"/>
                                         </attributes>
                                     </fragment>
                                 </attributedString>

@@ -127,7 +127,7 @@ class Homescreen: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        setupBackButton()
         setupContainer()
         setupCollectionView()
         
@@ -199,6 +199,39 @@ extension Homescreen {
         
         CollectionView.collectionViewLayout = layout
     }
+    private func setupBackButton() {
+
+        BackButton.addTarget(
+            self,
+            action: #selector(backButtonTapped),
+            for: .touchUpInside
+        )
+    }
+
+    // MARK: - Back Button Action
+
+    @objc private func backButtonTapped() {
+
+        if let nav = navigationController {
+            nav.popViewController(animated: true)
+        } else {
+
+            let storyboard = UIStoryboard(
+                name: "Main",
+                bundle: nil
+            )
+
+            if let homeVC = storyboard.instantiateViewController(
+                withIdentifier: "EdutainmentVC"
+            ) as? EdutainmentVC {
+
+                homeVC.modalPresentationStyle = .fullScreen
+                present(homeVC, animated: true)
+            }
+        }
+    }
+
+    // MARK: - Notif
 }
 
 // MARK: - COLLECTIONVIEW METHODS

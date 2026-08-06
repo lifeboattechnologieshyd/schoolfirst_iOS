@@ -631,6 +631,89 @@ struct CompletedFeeItem: Decodable {
         return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
     }
 }
+
+//
+//
+//  PTMParentResponseModel.swift
+//  SchoolFirst
+//
+
+// MARK: - Parent Meeting Response Model
+struct PTMParentResponseData: Decodable {
+    let id             : String
+    let meetingId      : String
+    let studentId      : String
+    let responseStatus : String
+    let respondedAt    : String
+    let remarks        : String
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case meetingId      = "meeting_id"
+        case studentId      = "student_id"
+        case responseStatus = "response_status"
+        case respondedAt    = "responded_at"
+        case remarks
+    }
+
+    init(from decoder: Decoder) throws {
+        let container  = try decoder.container(keyedBy: CodingKeys.self)
+        id             = try container.decodeIfPresent(String.self, forKey: .id)             ?? ""
+        meetingId      = try container.decodeIfPresent(String.self, forKey: .meetingId)      ?? ""
+        studentId      = try container.decodeIfPresent(String.self, forKey: .studentId)      ?? ""
+        responseStatus = try container.decodeIfPresent(String.self, forKey: .responseStatus) ?? ""
+        respondedAt    = try container.decodeIfPresent(String.self, forKey: .respondedAt)    ?? ""
+        remarks        = try container.decodeIfPresent(String.self, forKey: .remarks)        ?? ""
+    }
+
+    // MARK: - Helpers
+
+    /// "2026-08-06T04:37:29.686033Z" → "06 Aug 2026, 4:37 AM"
+    var formattedRespondedAt: String {
+        let inputFormatter        = DateFormatter()
+        inputFormatter.locale     = Locale(identifier: "en_US_POSIX")
+        inputFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ"
+
+        let outputFormatter        = DateFormatter()
+        outputFormatter.dateFormat = "dd MMM yyyy, h:mm a"
+
+        if let date = inputFormatter.date(from: respondedAt) {
+            return outputFormatter.string(from: date)
+        }
+
+        // Fallback: without microseconds
+        let fallbackFormatter        = DateFormatter()
+        fallbackFormatter.locale     = Locale(identifier: "en_US_POSIX")
+        fallbackFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+
+        if let date = fallbackFormatter.date(from: respondedAt) {
+            return outputFormatter.string(from: date)
+        }
+
+        return respondedAt
+    }
+
+    /// ATTENDING → "Attending"
+    var statusDisplayText: String {
+        switch responseStatus.uppercased() {
+        case "ATTENDING":     return "Attending"
+        case "NOT_ATTENDING": return "Not Attending"
+        case "MAYBE":         return "Maybe"
+        default:              return responseStatus.capitalized
+        }
+    }
+
+    var isAttending: Bool {
+        return responseStatus.uppercased() == "ATTENDING"
+    }
+}
+
+// MARK: - Response Status Enum
+enum PTMResponseStatus: String {
+    case attending    = "ATTENDING"
+    case notAttending = "NOT_ATTENDING"
+    case maybe        = "MAYBE"
+}
 // MARK: - Calendar API Response Model
 
 struct CalendarEventsResponse: Codable {

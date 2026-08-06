@@ -2,25 +2,118 @@
 //  DeclinedsuccessVC.swift
 //  SchoolFirst
 //
-//  Created by vamshi krishna on 27/07/26.
-//
 
 import UIKit
+
 class DeclinedsuccessVC: UIViewController {
-    
-    @IBOutlet weak var TopView: UIView!
+
+    // MARK: - Outlets (connect in Storyboard)
+    @IBOutlet weak var BacktohomeButton: UIButton!
+    @IBOutlet weak var MeetingtitleLbl: UILabel!
+    @IBOutlet weak var MeetingdateLbl: UILabel!
+    @IBOutlet weak var MeetingtimeLbl: UILabel!
+    @IBOutlet weak var RemarksLbl: UILabel!
+    @IBOutlet weak var StatusLbl: UILabel!
+    @IBOutlet weak var RespondedAtLbl: UILabel!
+
+    // MARK: - Public Properties (set from MeetingdeclinepopupVC)
+    var meeting         : PTMMeeting?
+    var meetingID       : String = ""
+    var studentID       : String = ""
+    var schoolID        : String = ""
+    var responseData    : PTMParentResponseData?
+    var selectedRemarks : String = ""
+
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupTopViewShadow()
-        
-    }
-    private func setupTopViewShadow() {
+        setupUI()
+        populateUI()
 
-        TopView.layer.shadowColor = UIColor.lightGray.cgColor
-        TopView.layer.shadowOpacity = 0.4
-        TopView.layer.shadowOffset = CGSize(width: 0, height: 4)
-        TopView.layer.shadowRadius = 2
-        TopView.layer.masksToBounds = false
+        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        print("📌 DeclinedsuccessVC — viewDidLoad")
+        print("   meetingID      : \(meetingID.isEmpty ? "⚠️ EMPTY" : meetingID)")
+        print("   studentID      : \(studentID.isEmpty ? "⚠️ EMPTY" : studentID)")
+        print("   selectedRemarks: \(selectedRemarks)")
+        print("   responseStatus : \(responseData?.responseStatus ?? "nil")")
+        print("   respondedAt    : \(responseData?.formattedRespondedAt ?? "nil")")
+        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    }
+
+    // MARK: - Setup UI
+    private func setupUI() {
+        BacktohomeButton?.layer.cornerRadius = 8
+        BacktohomeButton?.clipsToBounds      = true
+
+        BacktohomeButton?.addTarget(
+            self,
+            action: #selector(backToHomeTapped),
+            for: .touchUpInside
+        )
+    }
+
+    // MARK: - Populate UI
+    private func populateUI() {
+
+        // ── Meeting Info ──────────────────────────────────────────────────
+        if let meeting = meeting {
+            MeetingtitleLbl?.text = meeting.title.isEmpty
+                ? "Parent-Teacher Meeting"
+                : meeting.title
+            MeetingdateLbl?.text  = meeting.formattedDate
+            MeetingtimeLbl?.text  = meeting.formattedTimeRange
+        } else {
+            MeetingtitleLbl?.text = "Parent-Teacher Meeting"
+            MeetingdateLbl?.text  = "--"
+            MeetingtimeLbl?.text  = "--"
+        }
+
+        // ── Response Info ─────────────────────────────────────────────────
+        if let response = responseData {
+            StatusLbl?.text      = response.statusDisplayText  // "Not Attending"
+            RespondedAtLbl?.text = response.formattedRespondedAt
+        } else {
+            StatusLbl?.text      = "Not Attending"
+            RespondedAtLbl?.text = "--"
+        }
+
+        // ── Remarks ───────────────────────────────────────────────────────
+        RemarksLbl?.text = selectedRemarks.isEmpty
+            ? (responseData?.remarks.isEmpty == false ? responseData?.remarks : "No remarks provided")
+            : selectedRemarks
+
+        print("✅ DeclinedsuccessVC populated:")
+        print("   title       : \(MeetingtitleLbl?.text ?? "nil")")
+        print("   date        : \(MeetingdateLbl?.text  ?? "nil")")
+        print("   time        : \(MeetingtimeLbl?.text  ?? "nil")")
+        print("   status      : \(StatusLbl?.text       ?? "nil")")
+        print("   respondedAt : \(RespondedAtLbl?.text  ?? "nil")")
+        print("   remarks     : \(RemarksLbl?.text      ?? "nil")")
+    }
+
+    // MARK: - Back to Home
+    @objc private func backToHomeTapped() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+        if let homeVC = storyboard.instantiateViewController(
+            withIdentifier: "Homescreen"
+        ) as? Homescreen {
+            if let nav = navigationController {
+                nav.setNavigationBarHidden(true, animated: false)
+                // Pop to root or push to home
+                nav.pushViewController(homeVC, animated: true)
+            } else {
+                homeVC.modalPresentationStyle = .fullScreen
+                present(homeVC, animated: true)
+            }
+        } else {
+            // Fallback: pop to root
+            navigationController?.popToRootViewController(animated: true)
+        }
+    }
+
+    // MARK: - IBAction (if button connected via IBAction in storyboard)
+    @IBAction func BacktohomeButtonTapped(_ sender: UIButton) {
+        backToHomeTapped()
     }
 }
-    

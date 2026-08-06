@@ -8795,6 +8795,9 @@ new times.</string>
                                                     <real key="value" value="8"/>
                                                 </userDefinedRuntimeAttribute>
                                             </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="ConfirmdeclineButtonTapped:" destination="odp-H9-t4f" eventType="touchUpInside" id="gn3-iu-b3A"/>
+                                            </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gek-9y-ox2">
                                             <rect key="frame" x="23.666666666666657" y="550" width="298" height="48"/>
@@ -8811,6 +8814,9 @@ new times.</string>
                                                     <real key="value" value="8"/>
                                                 </userDefinedRuntimeAttribute>
                                             </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="GobackButtonTapped:" destination="odp-H9-t4f" eventType="touchUpInside" id="JF9-uc-VgO"/>
+                                            </connections>
                                         </button>
                                     </subviews>
                                     <constraints>
@@ -8843,7 +8849,7 @@ new times.</string>
                                         <constraint firstItem="Dn5-FZ-wQA" firstAttribute="leading" secondItem="JkK-n3-bDy" secondAttribute="leading" id="zYb-UK-Nrl"/>
                                     </constraints>
                                 </view>
-                                <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" red="0.8432617188" green="0.8901367188" blue="0.984375" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <blurEffect style="regular"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
@@ -8867,6 +8873,14 @@ new times.</string>
                             <constraint firstItem="6zs-AW-ca7" firstAttribute="trailing" secondItem="cTQ-PV-4Nd" secondAttribute="trailing" constant="24" id="hij-Mt-H2m"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="ConfirmdeclineButton" destination="WMK-Rh-RVP" id="Cw8-jN-3tO"/>
+                        <outlet property="GobackButton" destination="gek-9y-ox2" id="Vmv-pY-IQE"/>
+                        <outlet property="otherLbl" destination="RTb-BE-LLp" id="tCv-ic-Olj"/>
+                        <outlet property="outoftownLbl" destination="urG-qU-lqS" id="Ogw-C3-C0b"/>
+                        <outlet property="personalemergencyLbl" destination="e9c-fM-9s6" id="jqO-Kh-4yM"/>
+                        <outlet property="textfield" destination="aKn-gw-x0T" id="rjV-EA-ABh"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="RVR-qC-nxO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -8959,6 +8973,9 @@ soon.</string>
                                         <real key="value" value="8"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="BacktohomeButtonTapped:" destination="g14-sy-nGL" eventType="touchUpInside" id="iZ5-oB-vuU"/>
+                                </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="s4G-VC-rKA"/>
@@ -8979,9 +8996,6 @@ soon.</string>
                             <constraint firstItem="lsU-Px-pCY" firstAttribute="trailing" secondItem="yeH-wL-kyK" secondAttribute="trailing" id="xBc-R8-qLW"/>
                         </constraints>
                     </view>
-                    <connections>
-                        <outlet property="TopView" destination="sqk-zt-LyQ" id="4gR-Dd-LIU"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uOI-We-2iU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
