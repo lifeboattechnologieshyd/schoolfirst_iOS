@@ -5,7 +5,6 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -144,18 +143,28 @@ Discussion</string>
                                     <constraint firstAttribute="width" constant="12" id="y41-m1-VSh"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Leo Harrison • Grade 4-A" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S7c-2k-xii">
-                                <rect key="frame" x="106" y="104" width="200" height="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Leo Harrison " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S7c-2k-xii">
+                                <rect key="frame" x="106" y="104" width="120" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="A0s-Pg-B0m"/>
-                                    <constraint firstAttribute="width" constant="200" id="qzD-WZ-4ks"/>
+                                    <constraint firstAttribute="width" constant="120" id="qzD-WZ-4ks"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" red="0.23400880399999999" green="0.23400880399999999" blue="0.23400880399999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Grade" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k0p-N6-uiR">
+                                <rect key="frame" x="228" y="104" width="120" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="9wc-pN-eFE"/>
+                                    <constraint firstAttribute="width" constant="120" id="lq6-IT-w6X"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <color key="textColor" red="0.23400880399999999" green="0.23400880399999999" blue="0.23400880399999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="TIc-6U-otw" secondAttribute="trailing" constant="16" id="5Wa-If-Oyd"/>
                             <constraint firstItem="FQT-fW-t3t" firstAttribute="top" secondItem="qJZ-aB-Ml6" secondAttribute="top" constant="10" id="AZX-Kh-KO8"/>
@@ -165,6 +174,7 @@ Discussion</string>
                             <constraint firstItem="S7c-2k-xii" firstAttribute="centerY" secondItem="dAh-4o-Xde" secondAttribute="centerY" id="NuX-2P-jNu"/>
                             <constraint firstAttribute="height" constant="144" id="Rfq-L0-L3R"/>
                             <constraint firstItem="TIc-6U-otw" firstAttribute="top" secondItem="ZwC-Rm-Eqp" secondAttribute="top" id="T5C-BV-N7J"/>
+                            <constraint firstItem="k0p-N6-uiR" firstAttribute="centerY" secondItem="S7c-2k-xii" secondAttribute="centerY" id="V46-0y-t30"/>
                             <constraint firstItem="em3-Bx-muh" firstAttribute="leading" secondItem="x8c-oi-Src" secondAttribute="trailing" constant="6" id="W2c-Cm-cBv"/>
                             <constraint firstItem="MS1-pE-i25" firstAttribute="leading" secondItem="pdu-Bj-RhI" secondAttribute="trailing" constant="6" id="ZTd-rD-GV2"/>
                             <constraint firstItem="MS1-pE-i25" firstAttribute="centerY" secondItem="pdu-Bj-RhI" secondAttribute="centerY" id="cc8-hE-vri"/>
@@ -173,6 +183,7 @@ Discussion</string>
                             <constraint firstItem="S7c-2k-xii" firstAttribute="leading" secondItem="dAh-4o-Xde" secondAttribute="trailing" constant="6" id="nv8-wI-dyj"/>
                             <constraint firstItem="dAh-4o-Xde" firstAttribute="top" secondItem="x8c-oi-Src" secondAttribute="bottom" constant="18" id="oOc-EV-ex3"/>
                             <constraint firstItem="pdu-Bj-RhI" firstAttribute="leading" secondItem="em3-Bx-muh" secondAttribute="trailing" constant="26" id="s8P-zd-06c"/>
+                            <constraint firstItem="k0p-N6-uiR" firstAttribute="leading" secondItem="S7c-2k-xii" secondAttribute="trailing" constant="2" id="sVd-iw-LbC"/>
                             <constraint firstItem="ZwC-Rm-Eqp" firstAttribute="top" secondItem="FQT-fW-t3t" secondAttribute="top" id="txE-8m-BdC"/>
                             <constraint firstItem="em3-Bx-muh" firstAttribute="centerY" secondItem="x8c-oi-Src" secondAttribute="centerY" id="x1K-pr-YdS"/>
                             <constraint firstItem="x8c-oi-Src" firstAttribute="leading" secondItem="ZwC-Rm-Eqp" secondAttribute="leading" id="zlS-qi-KDI"/>
@@ -182,7 +193,7 @@ Discussion</string>
                                 <real key="value" value="12"/>
                             </userDefinedRuntimeAttribute>
                             <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                <real key="value" value="0.0"/>
+                                <real key="value" value="1"/>
                             </userDefinedRuntimeAttribute>
                             <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
                                 <color key="value" red="0.9145507812" green="0.9360351562" blue="0.9584960938" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -212,6 +223,14 @@ Discussion</string>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="MeetingmonthLbl" destination="eua-u3-XOX" id="le9-nz-PhU"/>
+                <outlet property="MeetingtimeLbl" destination="MS1-pE-i25" id="Esf-1r-PcC"/>
+                <outlet property="MeetingtitleLbl" destination="ZwC-Rm-Eqp" id="w1l-9p-cjq"/>
+                <outlet property="StaffnameLbl" destination="em3-Bx-muh" id="I1k-GM-DTv"/>
+                <outlet property="StudentgradeLbl" destination="k0p-N6-uiR" id="J8x-LT-B7O"/>
+                <outlet property="StudentnameLbl" destination="S7c-2k-xii" id="bcQ-lX-2Fm"/>
+            </connections>
             <point key="canvasLocation" x="80.916030534351137" y="113.02816901408451"/>
         </tableViewCell>
     </objects>
@@ -220,8 +239,5 @@ Discussion</string>
         <image name="clock" catalog="system" width="128" height="123"/>
         <image name="icon 22" width="12" height="12"/>
         <image name="icon 23" width="15" height="15"/>
-        <systemColor name="secondarySystemBackgroundColor">
-            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
     </resources>
 </document>

@@ -8,6 +8,8 @@ import UIKit
 class Homescreen: UIViewController {
     
     // MARK: - OUTLETS
+    @IBOutlet weak var StudentGadeLbl: UILabel!
+    @IBOutlet weak var StudentnameLbl: UILabel!
     
     @IBOutlet weak var ProfileEditButton: UIButton!
     @IBOutlet weak var ProfileImageView: UIImageView!
@@ -136,7 +138,11 @@ class Homescreen: UIViewController {
         CollectionView.alwaysBounceVertical = true
         CollectionView.showsVerticalScrollIndicator = false
         ProfileImageView.backgroundColor = .clear
+        
+        StudentnameLbl.text = UserManager.shared.resolvedStudentName
+        StudentGadeLbl.text   = UserManager.shared.resolvedGradeSection
     }
+    
     
     @IBAction func BackButtonTapped(_ sender: UIButton) {
 

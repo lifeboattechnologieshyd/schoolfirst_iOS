@@ -9,8 +9,10 @@ import UIKit
 
 class TRSPRdropUITableviewcell3: UITableViewCell {
 
+    @IBOutlet weak var MessageButton: UIButton!
     override func awakeFromNib() {
         super.awakeFromNib()
+        MessageButton.clipsToBounds = true
         // Initialization code
     }
 

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" restorationIdentifier="ATDNCattendanceCLVCLL" id="gTV-IL-0wX" customClass="ATDNCattendanceCLVCLL" customModule="SchoolFirst" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="426" height="54"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="426" height="54"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cTf-R9-KOE">
+                        <rect key="frame" x="0.0" y="0.0" width="426" height="54"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="20 May 2026" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fD7-7m-PEZ">
+                                <rect key="frame" x="8" y="15" width="120" height="24"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="120" id="LND-UX-pUo"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Present" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F9T-50-ezB">
+                                <rect key="frame" x="346" y="17" width="60" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="60" id="5xd-bb-a2A"/>
+                                    <constraint firstAttribute="height" constant="20" id="U3O-5P-EsN"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" red="0.369140625" green="0.7612304688" blue="0.4135742188" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="fD7-7m-PEZ" firstAttribute="leading" secondItem="cTf-R9-KOE" secondAttribute="leading" constant="8" id="AjV-ff-qBL"/>
+                            <constraint firstAttribute="trailing" secondItem="F9T-50-ezB" secondAttribute="trailing" constant="20" id="DuT-eC-aJW"/>
+                            <constraint firstItem="fD7-7m-PEZ" firstAttribute="top" secondItem="cTf-R9-KOE" secondAttribute="top" constant="15" id="Hmf-Yw-vJ9"/>
+                            <constraint firstItem="F9T-50-ezB" firstAttribute="centerY" secondItem="fD7-7m-PEZ" secondAttribute="centerY" id="Wwy-u6-K6f"/>
+                            <constraint firstAttribute="height" constant="54" id="eg6-eU-uDJ"/>
+                            <constraint firstAttribute="bottom" secondItem="fD7-7m-PEZ" secondAttribute="bottom" constant="15" id="sey-LU-qtg"/>
+                        </constraints>
+                    </view>
+                </subviews>
+            </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <constraints>
+                <constraint firstItem="cTf-R9-KOE" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="ILX-Bn-ZPU"/>
+                <constraint firstItem="cTf-R9-KOE" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="Lnn-C9-xh0"/>
+                <constraint firstAttribute="trailing" secondItem="cTf-R9-KOE" secondAttribute="trailing" id="SZm-iH-ql4"/>
+            </constraints>
+            <size key="customSize" width="426" height="54"/>
+            <connections>
+                <outlet property="AttendancestatusLbl" destination="F9T-50-ezB" id="W9Z-rR-XWn"/>
+                <outlet property="Backgroundview" destination="cTf-R9-KOE" id="3cc-8l-Sen"/>
+                <outlet property="DateLbl" destination="fD7-7m-PEZ" id="f2Z-9Z-CI0"/>
+            </connections>
+            <point key="canvasLocation" x="68.702290076335871" y="-88.732394366197184"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

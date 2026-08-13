@@ -10,17 +10,24 @@ protocol TRNSPTdashbordCell1Delegate: AnyObject {
     func didTapLiveTracking()
     func didTapDriverContact()
     func didTapFeeModule()
-     func didTapPickupandDrop()
+    func didTapPickupandDrop()
 }
 
 class TRNSPTdashbordUITableViewCell1: UITableViewCell {
 
     // MARK: - Outlets
+    @IBOutlet weak var StudentgradeLbl: UILabel!
+    @IBOutlet weak var StudentnameLbl: UILabel!
     @IBOutlet weak var CollectionView2: UICollectionView!   // Today's Journey list
     @IBOutlet weak var CollectionView: UICollectionView!    // Top module cards
 
     // MARK: - Delegate
     weak var delegate: TRNSPTdashbordCell1Delegate?
+
+    // MARK: - Layout Constants (Top cards)
+    private let cardSpacing: CGFloat   = 12   // gap between cards
+    private let sideInset: CGFloat     = 16   // leading & trailing — MUST be equal
+    private let cardHeight: CGFloat    = 120
 
     // MARK: - Transport Item Model (Top cards)
     private struct TransportItem {
@@ -77,7 +84,7 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
             title: "Pickup",
             time: "07:30 AM",
             location: "Green Park Layout",
-            imageName: "mappin.and.ellipse",
+            imageName: "icon 47",
             iconTintColor:       UIColor(red:  22/255, green: 163/255, blue:  74/255, alpha: 1.0),
             iconBackgroundColor: UIColor(red: 220/255, green: 252/255, blue: 231/255, alpha: 1.0)
         ),
@@ -85,7 +92,7 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
             title: "On Route",
             time: "07:50 AM",
             location: "Towards Springdale School",
-            imageName: "bus.fill",
+            imageName: "icon 48",
             iconTintColor:       UIColor(red:  22/255, green: 163/255, blue:  74/255, alpha: 1.0),
             iconBackgroundColor: UIColor(red: 220/255, green: 252/255, blue: 231/255, alpha: 1.0)
         ),
@@ -93,7 +100,7 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
             title: "School",
             time: "08:20 AM",
             location: "Springdale International School",
-            imageName: "graduationcap.fill",
+            imageName: "icon 49",
             iconTintColor:       UIColor(red:  37/255, green:  99/255, blue: 235/255, alpha: 1.0),
             iconBackgroundColor: UIColor(red: 219/255, green: 234/255, blue: 254/255, alpha: 1.0)
         )
@@ -102,6 +109,9 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
     // MARK: - Lifecycle
     override func awakeFromNib() {
         super.awakeFromNib()
+        StudentnameLbl.text = UserManager.shared.resolvedStudentName
+        StudentgradeLbl.text   = UserManager.shared.resolvedGradeSection
+        
         selectionStyle = .none
 
         // ── DEBUG ─────────────────────────────────────────────────────────
@@ -114,6 +124,9 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
 
     override func layoutSubviews() {
         super.layoutSubviews()
+        // ✅ Frame is final here — recalc card sizes so leading/trailing match
+        CollectionView?.collectionViewLayout.invalidateLayout()
+        CollectionView2?.collectionViewLayout.invalidateLayout()
     }
 
     // MARK: - Top CollectionView Setup
@@ -124,6 +137,8 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
         cv.dataSource = self
         cv.backgroundColor = .clear
         cv.showsHorizontalScrollIndicator = false
+        cv.isScrollEnabled = false   // ✅ no scroll — all 4 fit
+        cv.bounces         = false
         cv.tag = 1
 
         cv.register(
@@ -133,11 +148,11 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
 
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection         = .horizontal
-        layout.minimumLineSpacing      = 12
-        layout.minimumInteritemSpacing = 12
-        layout.itemSize                = CGSize(width: 82, height: 120)
-        layout.sectionInset            = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
-        cv.collectionViewLayout        = layout
+        layout.minimumLineSpacing      = cardSpacing
+        layout.minimumInteritemSpacing = cardSpacing
+        // ✅ Equal insets — itemSize handled in sizeForItemAt (dynamic)
+        layout.sectionInset = UIEdgeInsets(top: 8, left: sideInset, bottom: 8, right: sideInset)
+        cv.collectionViewLayout = layout
 
         cv.reloadData()
     }
@@ -150,6 +165,8 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
         cv.dataSource = self
         cv.backgroundColor = .clear
         cv.showsVerticalScrollIndicator = false
+        cv.isScrollEnabled = false
+        cv.bounces         = false
         cv.tag = 2
 
         cv.register(
@@ -220,14 +237,25 @@ extension TRNSPTdashbordUITableViewCell1: UICollectionViewDataSource,
         return cell
     }
 
+    // MARK: - ✅ Dynamic Size (fixes unequal leading/trailing)
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
 
         if collectionView.tag == 2 {
-            return CGSize(width: collectionView.frame.width, height: 48)
+            return CGSize(width: collectionView.bounds.width, height: 48)
         }
-        return CGSize(width: 82, height: 120)
+
+        // ✅ 4 cards exactly fill width:
+        // total = (cardWidth × 4) + (spacing × 3) + leftInset + rightInset
+        let cardCount: CGFloat    = CGFloat(items.count)          // 4
+        let totalSpacing: CGFloat = cardSpacing * (cardCount - 1) // 12 × 3 = 36
+        let totalInsets: CGFloat  = sideInset * 2                 // 16 + 16 = 32
+
+        let availableWidth = collectionView.bounds.width - totalSpacing - totalInsets
+        let cardWidth = floor(availableWidth / cardCount)
+
+        return CGSize(width: cardWidth, height: cardHeight)
     }
 
     // MARK: - didSelectItemAt (Navigation via Delegate)
@@ -244,22 +272,22 @@ extension TRNSPTdashbordUITableViewCell1: UICollectionViewDataSource,
         let selectedTitle = items[indexPath.item].title
         print("🚌 Module selected: \(selectedTitle)")
 
-       
-        
-            switch selectedTitle {
-            case "Live\nTracking":
-                print("📍 Navigating to BuslivetrackingVC")
-                delegate?.didTapLiveTracking()
-            case "Fee\nModule":
-                print("📍 Navigating to TRSPRTfeepaymentVC")
-                delegate?.didTapFeeModule()
+        switch selectedTitle {
+        case "Live\nTracking":
+            print("📍 Navigating to BuslivetrackingVC")
+            delegate?.didTapLiveTracking()
+
+        case "Fee\nModule":
+            print("📍 Navigating to TRSPRTfeepaymentVC")
+            delegate?.didTapFeeModule()
 
         case "Driver\nContact":
             print("📞 Navigating to TRSPRTcantactdriverVC")
             delegate?.didTapDriverContact()
+
         case "Pickup&Drop\nDetails":
-                print("Navigating to TRSPRTpickupanddropVC")
-                delegate?.didTapPickupandDrop()
+            print("Navigating to TRSPRTpickupanddropVC")
+            delegate?.didTapPickupandDrop()
 
         default:
             break

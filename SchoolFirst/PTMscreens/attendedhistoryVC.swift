@@ -9,6 +9,7 @@ import UIKit
 
 class attendedhistoryVC: UIViewController {
 
+    @IBOutlet weak var BackButton: UIButton!
     @IBOutlet weak var TopView: UIView!
     @IBOutlet weak var tableview: UITableView!
 
@@ -17,6 +18,14 @@ class attendedhistoryVC: UIViewController {
 
         setupTopViewShadow()
         setupTableView()
+    }
+    
+    @IBAction func BackButtonTapped(_ sender: UIButton) {
+        if let nav = navigationController {
+            nav.popViewController(animated: true)
+        } else {
+            dismiss(animated: true)
+        }
     }
 
     // MARK: - TableView Setup

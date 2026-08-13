@@ -83,8 +83,6 @@ class PTMhomeVC: UIViewController {
     }
 
     // MARK: - Navigate to PTMmeetingdetailsVC
-    // MARK: - In PTMhomeVC navigateToPTMDetails()
-    // MARK: - Navigate to PTMmeetingdetailsVC
     func navigateToPTMDetails(meeting: PTMMeeting? = nil) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let detailsVC = storyboard.instantiateViewController(
@@ -110,6 +108,28 @@ class PTMhomeVC: UIViewController {
             present(detailsVC, animated: true)
         }
     }
+
+    // MARK: - ✅ NEW: Navigate to attendedhistoryVC
+    private func navigateToAttendedHistory() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+        guard let vc = storyboard.instantiateViewController(
+            withIdentifier: "attendedhistoryVC"
+        ) as? attendedhistoryVC else {
+            print("❌ attendedhistoryVC not found. Check Storyboard ID.")
+            return
+        }
+
+        print("🚀 Navigating to attendedhistoryVC")
+
+        if let nav = navigationController {
+            nav.pushViewController(vc, animated: true)
+        } else {
+            vc.modalPresentationStyle = .fullScreen
+            present(vc, animated: true)
+        }
+    }
+
     // MARK: - API: Upcoming Meetings
     private func fetchPTMMeetings() {
         isLoading = true
@@ -279,6 +299,11 @@ extension PTMhomeVC: UITableViewDelegate, UITableViewDataSource {
 
             cell.onDetailsTapped = { [weak self] in
                 self?.navigateToPTMDetails(meeting: nil)
+            }
+
+            // ✅ NEW: Totalattendedview tap → attendedhistoryVC
+            cell.onAttendedHistoryTapped = { [weak self] in
+                self?.navigateToAttendedHistory()
             }
 
             return cell

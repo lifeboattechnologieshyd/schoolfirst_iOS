@@ -27,6 +27,11 @@
                                     <constraint firstAttribute="width" constant="26" id="DQ0-lJ-utn"/>
                                     <constraint firstAttribute="height" constant="26" id="XTr-KV-kvh"/>
                                 </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="13"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -122,6 +127,11 @@
                                     <constraint firstAttribute="height" constant="26" id="Nnm-LK-Y1d"/>
                                     <constraint firstAttribute="width" constant="26" id="QXh-dq-54m"/>
                                 </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="13"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -163,6 +173,11 @@
                                     <constraint firstAttribute="height" constant="26" id="Ac8-5q-1pz"/>
                                     <constraint firstAttribute="width" constant="26" id="hnu-Oi-nvU"/>
                                 </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="13"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -205,6 +220,11 @@
                                     <constraint firstAttribute="height" constant="26" id="N9j-fS-8S5"/>
                                     <constraint firstAttribute="width" constant="26" id="oLK-X7-qRH"/>
                                 </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="13"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -302,7 +322,7 @@ Track</string>
                                         <real key="value" value="24"/>
                                     </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                        <real key="value" value="2"/>
+                                        <real key="value" value="1"/>
                                     </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
                                         <color key="value" red="0.5922851562" green="0.6352539062" blue="0.7138671875" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -391,6 +411,9 @@ Track</string>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="MessageButton" destination="zz3-oi-bzH" id="jJh-30-MFe"/>
+            </connections>
             <point key="canvasLocation" x="77.862595419847324" y="267.95774647887328"/>
         </tableViewCell>
     </objects>

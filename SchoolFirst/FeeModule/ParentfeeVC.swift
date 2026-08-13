@@ -30,18 +30,26 @@ class ParentfeeVC: UIViewController {
         return (completedFeeData?.payments.count ?? 0) > 0
     }
 
+    /// Completed Payments Cell (Cell 3) — only shown when transactions exist
     private var completedPaymentsRow: Int? {
         guard hasCompletedPayments else { return nil }
         return feesCount + 1
     }
 
-    private var transactionRow: Int {
-        return feesCount + 1 + (hasCompletedPayments ? 1 : 0)
+    /// Transaction Cell 4 — ✅ HIDDEN when no transactions exist
+    private var transactionRow: Int? {
+        guard hasCompletedPayments else { return nil }
+        return feesCount + 2   // summary(1) + fees + completed cell(1)
     }
 
-    // MARK: - New Row 5 (always at the end after transactionRow)
+    /// Transaction Cell 5 — always shown at the end
     private var transaction5Row: Int {
-        return transactionRow + 1
+        // summary(1) + fees + [completed cell + transaction cell 4 if payments exist]
+        return feesCount + 1 + (hasCompletedPayments ? 2 : 0)
+    }
+
+    private var totalRows: Int {
+        return transaction5Row + 1
     }
 
     // MARK: - Lifecycle
@@ -91,6 +99,14 @@ class ParentfeeVC: UIViewController {
                     if response.success, let data = response.data {
                         self.completedFeeData = data
                         print("✅ Completed fees loaded | payments: \(data.payments.count)")
+
+                        // ✅ Debug: log last transaction for Cell4
+                        if let lastTxn = data.payments.first {
+                            print("💰 Last transaction for Cell4:")
+                            print("   ref    : \(lastTxn.referenceNumber)")
+                            print("   amount : \(lastTxn.formattedTotalAmount)")
+                            print("   date   : \(lastTxn.formattedPaymentDate)")
+                        }
                     } else {
                         self.completedFeeData = nil
                     }
@@ -199,7 +215,7 @@ class ParentfeeVC: UIViewController {
         }
     }
 
-    // MARK: - 5️⃣ Handle Payment Result  ✅ UPDATED
+    // MARK: - 5️⃣ Handle Payment Result
     private func handlePaymentResult(_ result: PaymentResultStatus,
                                      feeItem: PendingFeeItem) {
 
@@ -241,7 +257,7 @@ class ParentfeeVC: UIViewController {
         }
     }
 
-    // MARK: - 🎉 Navigate to Payment Success Screen  ✅ NEW
+    // MARK: - 🎉 Navigate to Payment Success Screen
     private func navigateToPaymentSuccess(transactionId: String,
                                           amount: Double,
                                           feeType: String) {
@@ -336,8 +352,8 @@ extension ParentfeeVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView,
                    numberOfRowsInSection section: Int) -> Int {
         if isLoading { return 4 }
-        // Summary (1) + Pending fees + Completed (if exists) + Transaction + Transaction5
-        return transaction5Row + 1
+        // Summary(1) + Pending fees + [Completed + Cell4 if transactions exist] + Cell5
+        return totalRows
     }
 
     func tableView(_ tableView: UITableView,
@@ -371,7 +387,7 @@ extension ParentfeeVC: UITableViewDelegate, UITableViewDataSource {
             return cell
         }
 
-        // ── Completed Payments Cell ──────────────────────────────
+        // ── Completed Payments Cell (Cell 3) ─────────────────────
         if let completedRow = completedPaymentsRow, row == completedRow {
             let cell = tableView.dequeueReusableCell(
                 withIdentifier: "ParentVCPaymentcompletedTableViewCell3",
@@ -389,12 +405,20 @@ extension ParentfeeVC: UITableViewDelegate, UITableViewDataSource {
             return cell
         }
 
-        // ── Transaction Cell 4 ───────────────────────────────────
-        if row == transactionRow {
+        // ── Transaction Cell 4 — Last Transaction ✅ ─────────────
+        // Only appears when hasCompletedPayments == true
+        if let txnRow = transactionRow, row == txnRow {
             let cell = tableView.dequeueReusableCell(
                 withIdentifier: "ParentVCTransactionTableViewCell4",
                 for: indexPath) as! ParentVCTransactionTableViewCell4
             cell.selectionStyle = .none
+
+            if isLoadingCompleted {
+                cell.configureLoading()
+            } else if let lastTransaction = completedFeeData?.payments.first {
+                // ✅ payments.first = most recent transaction
+                cell.configure(with: lastTransaction)
+            }
             return cell
         }
 
@@ -425,7 +449,7 @@ extension ParentfeeVC: UITableViewDelegate, UITableViewDataSource {
         if row == 0 { return 136 }
         if row >= 1 && row <= feesCount { return 306 }
         if let completedRow = completedPaymentsRow, row == completedRow { return 156 }
-        if row == transactionRow  { return 140 }
+        if let txnRow = transactionRow, row == txnRow { return 140 }
         if row == transaction5Row { return 140 }
         return UITableView.automaticDimension
     }

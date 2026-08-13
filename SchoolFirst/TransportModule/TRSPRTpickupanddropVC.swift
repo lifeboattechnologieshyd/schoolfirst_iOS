@@ -103,7 +103,7 @@ extension TRSPRTpickupanddropVC: UITableViewDelegate, UITableViewDataSource {
         if indexPath.row == 0 {
             return 280 // Height for segment control cell
         } else {
-            return 580// Height for Pickup/Drop cells
+            return 540// Height for Pickup/Drop cells
         }
     }
 }

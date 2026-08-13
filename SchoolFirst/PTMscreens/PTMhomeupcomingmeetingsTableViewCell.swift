@@ -8,6 +8,7 @@ import UIKit
 class PTMhomeupcomingmeetingsTableViewCell: UITableViewCell {
 
     // MARK: - Outlets
+    @IBOutlet weak var MeetingtitleLbl: UILabel!
     @IBOutlet weak var NamefirstletterLbl: UILabel!
     @IBOutlet weak var Studentgrade: UILabel!
     @IBOutlet weak var StudentnameLBl: UILabel!
@@ -32,11 +33,12 @@ class PTMhomeupcomingmeetingsTableViewCell: UITableViewCell {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        Studentgrade.text        = nil
-        StudentnameLBl.text      = nil
-        NamefirstletterLbl.text  = nil
-        Meetinglocation.text     = nil
-        Meetingdate.text         = nil
+        MeetingtitleLbl?.text    = nil
+        Studentgrade?.text       = nil
+        StudentnameLBl?.text     = nil
+        NamefirstletterLbl?.text = nil
+        Meetinglocation?.text    = nil
+        Meetingdate?.text        = nil
         meeting                  = nil
         studentName              = ""
         parentVC                 = nil
@@ -46,6 +48,7 @@ class PTMhomeupcomingmeetingsTableViewCell: UITableViewCell {
     private func verifyOutlets() {
         print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
         print("🔍 PTMhomeupcomingmeetingsTableViewCell — verifyOutlets()")
+        print("   MeetingtitleLbl    :", MeetingtitleLbl     == nil ? "❌ NOT CONNECTED" : "✅ connected")
         print("   StudentnameLBl     :", StudentnameLBl      == nil ? "❌ NOT CONNECTED" : "✅ connected")
         print("   NamefirstletterLbl :", NamefirstletterLbl  == nil ? "❌ NOT CONNECTED" : "✅ connected")
         print("   Studentgrade       :", Studentgrade        == nil ? "❌ NOT CONNECTED" : "✅ connected")
@@ -70,6 +73,18 @@ class PTMhomeupcomingmeetingsTableViewCell: UITableViewCell {
         print("   meeting section    :", meeting.section.name)
         print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
+        // ── Meeting Title ────────────────────────────────────────────────
+        let displayTitle = meeting.title.isEmpty ? "Parent Teacher Meeting" : meeting.title
+        MeetingtitleLbl.text            = displayTitle
+        MeetingtitleLbl.isHidden        = false
+        MeetingtitleLbl.alpha           = 1.0
+        MeetingtitleLbl.textColor       = .black
+        MeetingtitleLbl.numberOfLines   = 2
+        MeetingtitleLbl.lineBreakMode   = .byTruncatingTail
+        MeetingtitleLbl.backgroundColor = .clear
+
+        print("✅ MeetingtitleLbl.text set to:", displayTitle)
+
         // ── Student name ─────────────────────────────────────────────────
         let displayName = studentName.isEmpty ? "Student" : studentName
         StudentnameLBl.text            = displayName
@@ -82,7 +97,7 @@ class PTMhomeupcomingmeetingsTableViewCell: UITableViewCell {
 
         print("✅ StudentnameLBl.text set to:", StudentnameLBl.text ?? "nil")
 
-        // ── First Letter of Student Name (NEW) ───────────────────────────
+        // ── First Letter of Student Name ─────────────────────────────────
         let firstLetter = getFirstLetter(from: displayName)
         NamefirstletterLbl.text          = firstLetter
         NamefirstletterLbl.isHidden      = false
@@ -119,9 +134,10 @@ class PTMhomeupcomingmeetingsTableViewCell: UITableViewCell {
         contentView.layoutIfNeeded()
 
         // ── DEBUG: verify frames ────────────────────────────────────────
-        print("🟢 StudentnameLBl frame :", StudentnameLBl.frame)
-        print("🟢 StudentnameLBl text  :", StudentnameLBl.text ?? "nil")
-        print("🟢 StudentnameLBl hidden:", StudentnameLBl.isHidden)
+        print("🟢 MeetingtitleLbl frame :", MeetingtitleLbl.frame)
+        print("🟢 MeetingtitleLbl text  :", MeetingtitleLbl.text ?? "nil")
+        print("🟢 StudentnameLBl frame  :", StudentnameLBl.frame)
+        print("🟢 StudentnameLBl text   :", StudentnameLBl.text ?? "nil")
     }
 
     // MARK: - Helper: Get First Letter (uppercased)
