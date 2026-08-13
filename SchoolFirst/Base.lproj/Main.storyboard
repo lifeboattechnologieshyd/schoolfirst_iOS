@@ -1902,8 +1902,50 @@
                     <view key="view" contentMode="scaleToFill" id="r70-77-abp">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RAm-Zt-WgR">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="100"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VcT-Ow-rx3">
+                                        <rect key="frame" x="16" y="52" width="32" height="32"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="32" id="a3P-VN-ZaN"/>
+                                            <constraint firstAttribute="width" constant="32" id="rxl-GU-Fvj"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="arrowwithblack"/>
+                                        <connections>
+                                            <action selector="BackButtonTapped:" destination="AFr-3i-dXn" eventType="touchUpInside" id="7ZU-Qf-Aw0"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Fees &amp; Payments" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5X4-he-17x">
+                                        <rect key="frame" x="52" y="54" width="260" height="28"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="260" id="HIB-3m-fNy"/>
+                                            <constraint firstAttribute="height" constant="28" id="s3z-sd-olU"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                        <color key="textColor" red="0.1254882812" green="0.16076661649999999" blue="0.2274169922" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="5X4-he-17x" firstAttribute="leading" secondItem="VcT-Ow-rx3" secondAttribute="trailing" constant="4" id="6ci-vN-5ba"/>
+                                    <constraint firstItem="VcT-Ow-rx3" firstAttribute="top" secondItem="RAm-Zt-WgR" secondAttribute="top" constant="52" id="9Vc-aV-xQJ"/>
+                                    <constraint firstItem="5X4-he-17x" firstAttribute="centerY" secondItem="VcT-Ow-rx3" secondAttribute="centerY" id="Ckx-DH-7as"/>
+                                    <constraint firstAttribute="height" constant="100" id="Ehf-yI-yD7"/>
+                                    <constraint firstItem="VcT-Ow-rx3" firstAttribute="leading" secondItem="RAm-Zt-WgR" secondAttribute="leading" constant="16" id="Fnk-qp-cPr"/>
+                                </constraints>
+                            </view>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="NVw-Hl-Soa"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="RAm-Zt-WgR" firstAttribute="leading" secondItem="r70-77-abp" secondAttribute="leading" id="3wW-6Y-mjS"/>
+                            <constraint firstItem="RAm-Zt-WgR" firstAttribute="top" secondItem="r70-77-abp" secondAttribute="top" id="RsX-yD-oV5"/>
+                            <constraint firstAttribute="trailing" secondItem="RAm-Zt-WgR" secondAttribute="trailing" id="Xbl-8W-dCj"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VS3-dx-JqK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
