@@ -1,15 +1,14 @@
 //
-//  AttendanceReportVC.swift
-//  SchoolFirst
+//  AttendanceHistoryVC.swift
 //
-//  Created by vamshi krishna on 13/08/26.
+//  Created by vamshi krishna on 17/08/26.
 //
 
 import UIKit
 
-class AttendanceReportVC: UIViewController {
+class AttendanceHistoryVC: UIViewController {
     
-    @IBOutlet weak var Tableview: UITableView!
+    @IBOutlet weak var tableview: UITableView!
     @IBOutlet weak var Topview: UIView!
     
     override func viewDidLoad() {
@@ -19,52 +18,46 @@ class AttendanceReportVC: UIViewController {
         setupTableView()
     }
     
+    // MARK: - Top View Shadow
     private func setupTopViewShadow() {
-        
-        Topview.layer.shadowColor =
-        UIColor.lightGray.cgColor
-        
+        Topview.layer.shadowColor = UIColor.lightGray.cgColor
         Topview.layer.shadowOpacity = 0.4
-        
-        Topview.layer.shadowOffset =
-        CGSize(width: 0, height: 4)
-        
+        Topview.layer.shadowOffset = CGSize(width: 0, height: 4)
         Topview.layer.shadowRadius = 2
-        
         Topview.layer.masksToBounds = false
     }
     
     // MARK: - TableView Setup
     private func setupTableView() {
         
-        Tableview.delegate = self
-        Tableview.dataSource = self
+        tableview.delegate = self
+        tableview.dataSource = self
         
         // Register Cell 1
-        Tableview.register(
+        tableview.register(
             UINib(
-                nibName: "ATDNCreportTableViewCell1",
+                nibName: "ATNDShistoryTableViewCell1",
                 bundle: nil
             ),
-            forCellReuseIdentifier: "ATDNCreportTableViewCell1"
+            forCellReuseIdentifier: "ATNDShistoryTableViewCell1"
         )
         
         // Register Cell 2
-        Tableview.register(
+        tableview.register(
             UINib(
-                nibName: "ATDNCreportTableViewCell2",
+                nibName: "ATNDShistoryTableViewCell2",
                 bundle: nil
             ),
-            forCellReuseIdentifier: "ATDNCreportTableViewCell2"
+            forCellReuseIdentifier: "ATNDShistoryTableViewCell2"
         )
         
-        Tableview.separatorStyle = .none
-        Tableview.showsVerticalScrollIndicator = false
+        tableview.separatorStyle = .none
+        tableview.showsVerticalScrollIndicator = false
     }
 }
 
 // MARK: - UITableViewDelegate & UITableViewDataSource
-extension AttendanceReportVC: UITableViewDelegate, UITableViewDataSource {
+extension AttendanceHistoryVC: UITableViewDelegate, UITableViewDataSource {
     
     // MARK: - Number of Sections
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -85,26 +78,26 @@ extension AttendanceReportVC: UITableViewDelegate, UITableViewDataSource {
         cellForRowAt indexPath: IndexPath
     ) -> UITableViewCell {
         
-        // MARK: - Index 0
+        // MARK: Cell 1
         if indexPath.row == 0 {
             
             let cell = tableView.dequeueReusableCell(
-                withIdentifier: "ATDNCreportTableViewCell1",
+                withIdentifier: "ATNDShistoryTableViewCell1",
                 for: indexPath
-            ) as! ATDNCreportTableViewCell1
+            ) as! ATNDShistoryTableViewCell1
             
             cell.selectionStyle = .none
             
             return cell
         }
         
-        // MARK: - Index 1
+        // MARK: Cell 2
         else {
             
             let cell = tableView.dequeueReusableCell(
-                withIdentifier: "ATDNCreportTableViewCell2",
+                withIdentifier: "ATNDShistoryTableViewCell2",
                 for: indexPath
-            ) as! ATDNCreportTableViewCell2
+            ) as! ATNDShistoryTableViewCell2
             
             cell.selectionStyle = .none
             
@@ -118,16 +111,12 @@ extension AttendanceReportVC: UITableViewDelegate, UITableViewDataSource {
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
         
-        // Index 0 → Cell 1 → Height 1000
+        // Cell 1 Height
         if indexPath.row == 0 {
-            return 280
+            return 140
         }
         
-        // Index 1 → Cell 2 → Height 82
-        if indexPath.row == 1 {
-            return 82
-        }
-        
-        return UITableView.automaticDimension
+        // Cell 2 Height
+        return 100
     }
 }

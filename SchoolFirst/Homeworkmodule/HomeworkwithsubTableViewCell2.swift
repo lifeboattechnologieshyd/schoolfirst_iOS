@@ -130,7 +130,6 @@ class HomeworkwithsubTableViewCell2: UITableViewCell {
     @IBOutlet weak var ContainerView: UIView!
 
     // MARK: - Callback
-
     var onViewDetailsTapped: (() -> Void)?
 
     private lazy var viewDetailsButton: UIButton = {
@@ -189,6 +188,9 @@ class HomeworkwithsubTableViewCell2: UITableViewCell {
         DownloadButton.isHidden = false
         MarkCompletebutton.isHidden = false
         viewDetailsButton.isHidden = true
+
+        // MARK: Clear callback on reuse to avoid retain issues
+        onViewDetailsTapped = nil
     }
 
     private func setupContainerView() {

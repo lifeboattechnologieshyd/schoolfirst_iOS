@@ -1,5 +1,5 @@
 //
-//  AttendanceReportVC.swift
+//  LeavestatusVC.swift
 //  SchoolFirst
 //
 //  Created by vamshi krishna on 13/08/26.
@@ -7,127 +7,124 @@
 
 import UIKit
 
-class AttendanceReportVC: UIViewController {
-    
-    @IBOutlet weak var Tableview: UITableView!
+class LeavestatusVC: UIViewController {
+
+    @IBOutlet weak var tableview: UITableView!
     @IBOutlet weak var Topview: UIView!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         setupTopViewShadow()
         setupTableView()
     }
-    
+
     private func setupTopViewShadow() {
-        
-        Topview.layer.shadowColor =
-        UIColor.lightGray.cgColor
-        
+        Topview.layer.shadowColor = UIColor.lightGray.cgColor
         Topview.layer.shadowOpacity = 0.4
-        
-        Topview.layer.shadowOffset =
-        CGSize(width: 0, height: 4)
-        
+        Topview.layer.shadowOffset = CGSize(width: 0, height: 4)
         Topview.layer.shadowRadius = 2
-        
         Topview.layer.masksToBounds = false
     }
-    
+
     // MARK: - TableView Setup
     private func setupTableView() {
-        
-        Tableview.delegate = self
-        Tableview.dataSource = self
-        
-        // Register Cell 1
-        Tableview.register(
+
+        tableview.delegate = self
+        tableview.dataSource = self
+
+        tableview.register(
             UINib(
-                nibName: "ATDNCreportTableViewCell1",
+                nibName: "ATDNCLeavestatusUITableViewCell",
                 bundle: nil
             ),
-            forCellReuseIdentifier: "ATDNCreportTableViewCell1"
+            forCellReuseIdentifier: "ATDNCLeavestatusUITableViewCell"
         )
-        
-        // Register Cell 2
-        Tableview.register(
+
+        tableview.register(
             UINib(
-                nibName: "ATDNCreportTableViewCell2",
+                nibName: "ATDNCLeavestatusUITableViewCell2",
                 bundle: nil
             ),
-            forCellReuseIdentifier: "ATDNCreportTableViewCell2"
+            forCellReuseIdentifier: "ATDNCLeavestatusUITableViewCell2"
         )
-        
-        Tableview.separatorStyle = .none
-        Tableview.showsVerticalScrollIndicator = false
+
+        tableview.separatorStyle = .none
+        tableview.showsVerticalScrollIndicator = false
     }
 }
 
 // MARK: - UITableViewDelegate & UITableViewDataSource
-extension AttendanceReportVC: UITableViewDelegate, UITableViewDataSource {
-    
-    // MARK: - Number of Sections
+extension LeavestatusVC: UITableViewDelegate, UITableViewDataSource {
+
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
-    
-    // MARK: - Number of Rows
+
     func tableView(
         _ tableView: UITableView,
         numberOfRowsInSection section: Int
     ) -> Int {
-        return 2
+
+        // Index 0, 1, 2, 3
+        return 4
     }
-    
-    // MARK: - Cell For Row
+
     func tableView(
         _ tableView: UITableView,
         cellForRowAt indexPath: IndexPath
     ) -> UITableViewCell {
-        
+
         // MARK: - Index 0
         if indexPath.row == 0 {
-            
+
             let cell = tableView.dequeueReusableCell(
-                withIdentifier: "ATDNCreportTableViewCell1",
+                withIdentifier: "ATDNCLeavestatusUITableViewCell",
                 for: indexPath
-            ) as! ATDNCreportTableViewCell1
-            
+            ) as! ATDNCLeavestatusUITableViewCell
+
             cell.selectionStyle = .none
-            
+
             return cell
         }
-        
-        // MARK: - Index 1
-        else {
-            
+
+        // MARK: - Index 1, 2, 3
+        if indexPath.row == 1 ||
+           indexPath.row == 2 ||
+           indexPath.row == 3 {
+
             let cell = tableView.dequeueReusableCell(
-                withIdentifier: "ATDNCreportTableViewCell2",
+                withIdentifier: "ATDNCLeavestatusUITableViewCell2",
                 for: indexPath
-            ) as! ATDNCreportTableViewCell2
-            
+            ) as! ATDNCLeavestatusUITableViewCell2
+
             cell.selectionStyle = .none
-            
+
             return cell
         }
+
+        return UITableViewCell()
     }
-    
+
     // MARK: - Cell Height
     func tableView(
         _ tableView: UITableView,
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
-        
-        // Index 0 → Cell 1 → Height 1000
+
+        // Index 0
         if indexPath.row == 0 {
-            return 280
+            return 120
         }
-        
-        // Index 1 → Cell 2 → Height 82
-        if indexPath.row == 1 {
-            return 82
+
+        // Index 1, 2, 3
+        if indexPath.row == 1 ||
+           indexPath.row == 2 ||
+           indexPath.row == 3 {
+
+            return 160
         }
-        
+
         return UITableView.automaticDimension
     }
 }

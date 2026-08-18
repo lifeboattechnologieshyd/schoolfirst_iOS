@@ -355,7 +355,7 @@ UICollectionViewDelegateFlowLayout {
         // ADD MORE CASES HERE LATER FOR OTHER MODULES
         case "Homework":
             navigateToHomework()
-            navigateToTransport()
+            
         case "Portofolio":
             navigateToPortofolio()
             

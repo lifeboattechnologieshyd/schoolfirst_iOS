@@ -203,9 +203,7 @@ UITableViewDataSource {
             indexPath.row - 1
         ]
 
-        cell.configure(
-            with: homework
-        )
+    
 
         // MARK: View Details Navigation
         // FIXED: Changed 'onViewDetailsTap' to 'onViewDetailsTapped' to match the cell property

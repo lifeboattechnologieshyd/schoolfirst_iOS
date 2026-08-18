@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" restorationIdentifier="ATDNCLeavestatusUITableViewCell" selectionStyle="default" indentationWidth="10" rowHeight="147" id="KGk-i7-Jjw" customClass="ATDNCLeavestatusUITableViewCell" customModule="SchoolFirst" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="147"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="147"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="Wkh-PR-Deq">
+                        <rect key="frame" x="10" y="8" width="300" height="68"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="68" id="g2B-24-0Eb"/>
+                        </constraints>
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="wQL-6c-uIj">
+                            <size key="itemSize" width="128" height="128"/>
+                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        </collectionViewFlowLayout>
+                    </collectionView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Recent Requests" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y9x-yp-NBj">
+                        <rect key="frame" x="16" y="96" width="160" height="24"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="24" id="5Vb-o7-CkC"/>
+                            <constraint firstAttribute="width" constant="160" id="NIG-Vu-Mtl"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nIy-Tz-tVc">
+                        <rect key="frame" x="250" y="100" width="60" height="16"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="16" id="78h-U1-oHm"/>
+                            <constraint firstAttribute="width" constant="60" id="kOz-Pk-fhC"/>
+                        </constraints>
+                        <color key="tintColor" red="0.9111328125" green="0.4814453125" blue="0.2087402344" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <state key="normal" title="Button"/>
+                        <buttonConfiguration key="configuration" style="plain" title="Filter">
+                            <fontDescription key="titleFontDescription" type="system" pointSize="11"/>
+                        </buttonConfiguration>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="Wkh-PR-Deq" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="AsF-qk-82q"/>
+                    <constraint firstItem="Y9x-yp-NBj" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="Gh6-TI-AIi"/>
+                    <constraint firstItem="nIy-Tz-tVc" firstAttribute="centerY" secondItem="Y9x-yp-NBj" secondAttribute="centerY" id="WMV-ze-Dt0"/>
+                    <constraint firstAttribute="trailing" secondItem="Wkh-PR-Deq" secondAttribute="trailing" constant="10" id="Y1d-u9-r9n"/>
+                    <constraint firstAttribute="trailing" secondItem="nIy-Tz-tVc" secondAttribute="trailing" constant="10" id="eFr-Bg-35Z"/>
+                    <constraint firstItem="Wkh-PR-Deq" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="fGQ-j9-1tb"/>
+                    <constraint firstItem="Y9x-yp-NBj" firstAttribute="top" secondItem="Wkh-PR-Deq" secondAttribute="bottom" constant="20" id="pSY-B7-1Wb"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="Collectionview" destination="Wkh-PR-Deq" id="RjI-UR-ttG"/>
+            </connections>
+            <point key="canvasLocation" x="-6.1068702290076331" y="75.704225352112687"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
