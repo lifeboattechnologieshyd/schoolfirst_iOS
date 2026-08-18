@@ -4,21 +4,96 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" restorationIdentifier="ATNDmychiledattendanceTBLVCll" selectionStyle="default" indentationWidth="10" rowHeight="140" id="KGk-i7-Jjw" customClass="ATNDmychiledattendanceTBLVCll" customModule="SchoolFirst" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="140"/>
+        <tableViewCell contentMode="scaleToFill" restorationIdentifier="ATNDmychiledattendanceTBLVCll" selectionStyle="default" indentationWidth="10" rowHeight="168" id="KGk-i7-Jjw" customClass="ATNDmychiledattendanceTBLVCll" customModule="SchoolFirst" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="168"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="320" height="140"/>
+                <rect key="frame" x="0.0" y="0.0" width="320" height="168"/>
                 <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uPk-3v-zlA">
+                        <rect key="frame" x="16" y="14" width="28" height="34"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon 50" translatesAutoresizingMaskIntoConstraints="NO" id="KCs-9k-sYQ">
+                                <rect key="frame" x="4" y="7" width="20" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="SCM-p9-YTm"/>
+                                    <constraint firstAttribute="width" constant="20" id="ay0-1M-4EJ"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.98828125" green="0.9331054688" blue="0.8471679688" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <constraints>
+                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="28" id="NcZ-Sv-Ig3"/>
+                            <constraint firstAttribute="width" constant="28" id="WOY-B8-Sz8"/>
+                            <constraint firstAttribute="height" constant="34" id="c2V-of-BYv"/>
+                            <constraint firstItem="KCs-9k-sYQ" firstAttribute="centerY" secondItem="uPk-3v-zlA" secondAttribute="centerY" id="exV-ZJ-T2U"/>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="34" id="gyy-b8-Dqi"/>
+                            <constraint firstItem="KCs-9k-sYQ" firstAttribute="centerX" secondItem="uPk-3v-zlA" secondAttribute="centerX" id="sSB-zA-oIw"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="8"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </view>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Selected Student" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gZa-GW-4nX">
+                        <rect key="frame" x="52" y="14" width="114" height="16"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="114" id="A6Y-9c-Ejr"/>
+                            <constraint firstAttribute="height" constant="16" id="tEN-tS-0Ag"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                        <color key="textColor" name="3C3C43"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Rohan Kumar (Class 3 - A)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dF1-Ew-SsD">
+                        <rect key="frame" x="52" y="31" width="220" height="24"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="220" id="2xz-8u-zNd"/>
+                            <constraint firstAttribute="height" constant="24" id="3g8-QR-pHV"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
+                        <color key="textColor" red="0.9111328125" green="0.4814453125" blue="0.2087402344" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LpH-fd-mr7">
+                        <rect key="frame" x="292" y="25" width="12" height="12"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="12" id="c6h-6P-zhn"/>
+                            <constraint firstAttribute="height" constant="12" id="nZ1-yQ-Nn0"/>
+                        </constraints>
+                        <state key="normal" title="Button"/>
+                        <buttonConfiguration key="configuration" style="plain" image="IQButtonBarArrowDown"/>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="gZa-GW-4nX" firstAttribute="top" secondItem="uPk-3v-zlA" secondAttribute="top" id="9Qb-dB-P4d"/>
+                    <constraint firstItem="uPk-3v-zlA" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="14" id="I9t-xT-m76"/>
+                    <constraint firstItem="gZa-GW-4nX" firstAttribute="leading" secondItem="uPk-3v-zlA" secondAttribute="trailing" constant="8" id="Igr-Jo-fV0"/>
+                    <constraint firstItem="dF1-Ew-SsD" firstAttribute="top" secondItem="gZa-GW-4nX" secondAttribute="bottom" constant="1" id="lzY-mG-nu1"/>
+                    <constraint firstItem="LpH-fd-mr7" firstAttribute="centerY" secondItem="uPk-3v-zlA" secondAttribute="centerY" id="phz-bz-OTw"/>
+                    <constraint firstItem="uPk-3v-zlA" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="suf-Qs-gJS"/>
+                    <constraint firstAttribute="trailing" secondItem="LpH-fd-mr7" secondAttribute="trailing" constant="16" id="wxe-s5-iHR"/>
+                    <constraint firstItem="dF1-Ew-SsD" firstAttribute="leading" secondItem="gZa-GW-4nX" secondAttribute="leading" id="zL5-hf-tTG"/>
+                </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
-            <point key="canvasLocation" x="91.603053435114504" y="78.16901408450704"/>
+            <point key="canvasLocation" x="91.603053435114504" y="87.323943661971839"/>
         </tableViewCell>
     </objects>
+    <resources>
+        <image name="IQButtonBarArrowDown" width="21" height="12"/>
+        <image name="icon 50" width="20" height="20"/>
+        <namedColor name="3C3C43">
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
 </document>
