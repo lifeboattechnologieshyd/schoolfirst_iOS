@@ -11,11 +11,11 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" restorationIdentifier="ATNDmychiledattendanceTBLVCll" selectionStyle="default" indentationWidth="10" rowHeight="168" id="KGk-i7-Jjw" customClass="ATNDmychiledattendanceTBLVCll" customModule="SchoolFirst" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="168"/>
+        <tableViewCell contentMode="scaleToFill" restorationIdentifier="ATNDmychiledattendanceTBLVCll" selectionStyle="default" indentationWidth="10" rowHeight="829" id="KGk-i7-Jjw" customClass="ATNDmychiledattendanceTBLVCll" customModule="SchoolFirst" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="829"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="320" height="168"/>
+                <rect key="frame" x="0.0" y="0.0" width="320" height="829"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uPk-3v-zlA">
@@ -73,20 +73,70 @@
                         <state key="normal" title="Button"/>
                         <buttonConfiguration key="configuration" style="plain" image="IQButtonBarArrowDown"/>
                     </button>
+                    <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="Vf3-t9-SAm">
+                        <rect key="frame" x="16" y="69" width="288" height="76"/>
+                        <color key="backgroundColor" red="0.9018554688" green="0.94921875" blue="0.98828125" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="76" id="IsG-cH-27W"/>
+                        </constraints>
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="ojh-aK-wbr">
+                            <size key="itemSize" width="128" height="128"/>
+                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        </collectionViewFlowLayout>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                <color key="value" systemColor="systemGray3Color"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </collectionView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Recent Attendance" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="enU-La-D2X">
+                        <rect key="frame" x="16" y="561" width="168" height="24"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="168" id="G1x-FT-atK"/>
+                            <constraint firstAttribute="height" constant="24" id="q1s-mX-ryn"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yKD-gu-Tbl">
+                        <rect key="frame" x="260" y="565" width="60" height="16"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="60" id="H1P-UI-hMt"/>
+                            <constraint firstAttribute="height" constant="16" id="gWB-UX-9BJ"/>
+                        </constraints>
+                        <state key="normal" title="Button"/>
+                        <buttonConfiguration key="configuration" style="plain" title="View All">
+                            <fontDescription key="titleFontDescription" type="boldSystem" pointSize="7"/>
+                        </buttonConfiguration>
+                    </button>
                 </subviews>
+                <color key="tintColor" red="0.1058959961" green="0.2705078125" blue="0.4626464844" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                 <constraints>
+                    <constraint firstItem="yKD-gu-Tbl" firstAttribute="centerY" secondItem="enU-La-D2X" secondAttribute="centerY" id="6zh-65-qxZ"/>
                     <constraint firstItem="gZa-GW-4nX" firstAttribute="top" secondItem="uPk-3v-zlA" secondAttribute="top" id="9Qb-dB-P4d"/>
+                    <constraint firstAttribute="trailing" secondItem="Vf3-t9-SAm" secondAttribute="trailing" constant="16" id="Gj2-vn-sEO"/>
                     <constraint firstItem="uPk-3v-zlA" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="14" id="I9t-xT-m76"/>
                     <constraint firstItem="gZa-GW-4nX" firstAttribute="leading" secondItem="uPk-3v-zlA" secondAttribute="trailing" constant="8" id="Igr-Jo-fV0"/>
+                    <constraint firstItem="yKD-gu-Tbl" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" constant="16" id="WKT-Vz-KZq"/>
+                    <constraint firstItem="enU-La-D2X" firstAttribute="top" secondItem="Vf3-t9-SAm" secondAttribute="bottom" constant="416" id="X9O-jb-D0s"/>
+                    <constraint firstItem="enU-La-D2X" firstAttribute="leading" secondItem="Vf3-t9-SAm" secondAttribute="leading" id="hay-Kf-Vxs"/>
                     <constraint firstItem="dF1-Ew-SsD" firstAttribute="top" secondItem="gZa-GW-4nX" secondAttribute="bottom" constant="1" id="lzY-mG-nu1"/>
+                    <constraint firstItem="Vf3-t9-SAm" firstAttribute="leading" secondItem="uPk-3v-zlA" secondAttribute="leading" id="nrT-NH-7Fq"/>
                     <constraint firstItem="LpH-fd-mr7" firstAttribute="centerY" secondItem="uPk-3v-zlA" secondAttribute="centerY" id="phz-bz-OTw"/>
                     <constraint firstItem="uPk-3v-zlA" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="suf-Qs-gJS"/>
+                    <constraint firstItem="Vf3-t9-SAm" firstAttribute="top" secondItem="dF1-Ew-SsD" secondAttribute="bottom" constant="14" id="uHL-Mt-rjo"/>
                     <constraint firstAttribute="trailing" secondItem="LpH-fd-mr7" secondAttribute="trailing" constant="16" id="wxe-s5-iHR"/>
                     <constraint firstItem="dF1-Ew-SsD" firstAttribute="leading" secondItem="gZa-GW-4nX" secondAttribute="leading" id="zL5-hf-tTG"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
-            <point key="canvasLocation" x="91.603053435114504" y="87.323943661971839"/>
+            <connections>
+                <outlet property="CollectionView" destination="Vf3-t9-SAm" id="IM4-Zp-crl"/>
+            </connections>
+            <point key="canvasLocation" x="91.603053435114504" y="320.07042253521126"/>
         </tableViewCell>
     </objects>
     <resources>
@@ -95,5 +145,8 @@
         <namedColor name="3C3C43">
             <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
+        <systemColor name="systemGray3Color">
+            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
     </resources>
 </document>
