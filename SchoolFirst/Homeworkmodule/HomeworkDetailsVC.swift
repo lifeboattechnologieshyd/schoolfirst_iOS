@@ -573,13 +573,14 @@ class HomeworkDetailsVC: UIViewController {
 
     // MARK: - Navigate to MarkedcompletedVC
 
+    // MARK: - Navigate to MarkedcompletedVC
+
     private func navigateToMarkedCompletedVC() {
 
-        let storyboard =
-            UIStoryboard(
-                name: "Main",
-                bundle: nil
-            )
+        let storyboard = UIStoryboard(
+            name: "Main",
+            bundle: nil
+        )
 
         guard let markedCompletedVC =
                 storyboard.instantiateViewController(
@@ -592,6 +593,19 @@ class HomeworkDetailsVC: UIViewController {
 
             return
         }
+
+        let selectedHomework =
+            homeworkDetails ?? studentHomework
+
+        // Pass the selected homework ID so MarkedcompletedVC
+        // can find the correct homework from the latest API response.
+        markedCompletedVC.homeworkID =
+            selectedHomework?.id
+
+        // Pass the existing model to display immediately while
+        // MarkedcompletedVC refreshes from the API.
+        markedCompletedVC.submittedHomework =
+            selectedHomework
 
         markedCompletedVC.hidesBottomBarWhenPushed =
             true
@@ -615,7 +629,6 @@ class HomeworkDetailsVC: UIViewController {
             )
         }
     }
-
     // MARK: - Pull to Refresh
 
     @objc
