@@ -97,6 +97,6 @@ extension AttendancedashboardVC: UITableViewDelegate, UITableViewDataSource {
         // + 16 (calendar top space)
         // + 426 (calendar height)
         // + 16 bottom breathing space
-        return 1500 // keep your existing height — calendar sits within it
+        return 1000 // keep your existing height — calendar sits within it
     }
 }

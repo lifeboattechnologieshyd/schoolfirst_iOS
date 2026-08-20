@@ -7,12 +7,22 @@
 
 import UIKit
 class EmptyhomeworkVC: UIViewController {
+    @IBOutlet weak var BackButton: UIButton!
     @IBOutlet weak var TopView: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupTopViewShadow()
+    }
+    
+    @IBAction func BackButtonTapped(_ sender: UIButton) {
+
+        if let nav = navigationController {
+            nav.popViewController(animated: true)
+        } else {
+            dismiss(animated: true)
+        }
     }
     private func setupTopViewShadow() {
         TopView.layer.shadowColor = UIColor.lightGray.cgColor

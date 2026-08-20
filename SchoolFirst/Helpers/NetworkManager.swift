@@ -363,7 +363,118 @@ struct User: Codable {
     }
 
 }
+//***StudentHomeworkResponse
+struct StudentHomeworkData: Codable {
+    let student: HomeworkStudent
+    let homeworks: [StudentHomework]
+}
 
+// MARK: - Student
+
+struct HomeworkStudent: Codable {
+    let id: String
+    let name: String
+    let admissionNumber: String
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case admissionNumber = "admission_number"
+    }
+}
+
+// MARK: - Homework
+
+struct StudentHomework: Codable {
+    let id: String
+    let title: String
+    let description: String
+    let assignedDate: String
+    let dueDate: String
+    let status: String
+    let subject: HomeworkSubject
+    let teacher: HomeworkTeacher
+    let submission: HomeworkSubmission
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case title
+        case description
+        case assignedDate = "assigned_date"
+        case dueDate = "due_date"
+        case status
+        case subject
+        case teacher
+        case submission
+    }
+}
+
+// MARK: - Subject
+
+struct HomeworkSubject: Codable {
+    let id: String
+    let name: String
+}
+
+// MARK: - Teacher
+
+struct HomeworkTeacher: Codable {
+    let id: String
+    let name: String
+}
+
+// MARK: - Submission
+
+struct HomeworkSubmission: Codable {
+    let status: String
+    let submittedAt: String?
+    let teacherRemarks: String?
+
+    enum CodingKeys: String, CodingKey {
+        case status
+        case submittedAt = "submitted_at"
+        case teacherRemarks = "teacher_remarks"
+    }
+}
+
+//***homework submissions Response model
+struct HomeworkSubmissionRequest: Codable {
+    let studentId: String
+    let remarks: String
+    let attachments: [HomeworkSubmissionAttachment]
+
+    enum CodingKeys: String, CodingKey {
+        case studentId = "student_id"
+        case remarks
+        case attachments
+    }
+}
+
+// MARK: - Homework Submission Attachment
+
+struct HomeworkSubmissionAttachment: Codable {
+    let fileName: String
+    let fileURL: String
+
+    enum CodingKeys: String, CodingKey {
+        case fileName = "file_name"
+        case fileURL = "file_url"
+    }
+}
+
+// MARK: - Homework Submission Response Data
+
+struct HomeworkSubmissionResponseData: Codable {
+    let submissionId: String
+    let submittedAt: String
+    let status: String
+
+    enum CodingKeys: String, CodingKey {
+        case submissionId = "submission_id"
+        case submittedAt = "submitted_at"
+        case status
+    }
+}
 // MARK: - Fee Payment Creation Response
 
 struct FeePaymentCreationResponse: Decodable {

@@ -7,117 +7,10 @@
 
 import UIKit
 
-// MARK: - Homework Priority Type
-
-enum HomeworkPriorityType {
-    case highPriority
-    case medPriority
-    case done
-}
-
-// MARK: - Homework Subject Type
-
-enum HomeworkSubjectType: String {
-
-    case mathematics = "Mathematics"
-    case science = "Science"
-    case history = "History"
-    case english = "English"
-    case socialStudies = "Social Studies"
-    case computerScience = "Computer Science"
-    case physics = "Physics"
-    case chemistry = "Chemistry"
-    case biology = "Biology"
-    case geography = "Geography"
-
-    var iconName: String {
-
-        switch self {
-
-        case .mathematics:
-            return "function"
-
-        case .science:
-            return "atom"
-
-        case .history:
-            return "book.closed.fill"
-
-        case .english:
-            return "textformat"
-
-        case .socialStudies:
-            return "globe"
-
-        case .computerScience:
-            return "desktopcomputer"
-
-        case .physics:
-            return "bolt.fill"
-
-        case .chemistry:
-            return "flame.fill"
-
-        case .biology:
-            return "leaf.fill"
-
-        case .geography:
-            return "map.fill"
-        }
-    }
-
-    var assetImageName: String {
-
-        switch self {
-
-        case .mathematics:
-            return "Mathsicon"
-
-        case .science:
-            return "ic_science"
-
-        case .history:
-            return "ic_history"
-
-        case .english:
-            return "ic_english"
-
-        case .socialStudies:
-            return "ic_social"
-
-        case .computerScience:
-            return "ic_computer"
-
-        case .physics:
-            return "ic_physics"
-
-        case .chemistry:
-            return "ic_chemistry"
-
-        case .biology:
-            return "ic_biology"
-
-        case .geography:
-            return "ic_geography"
-        }
-    }
-}
-
-// MARK: - Model
-
-struct HomeworkModel {
-
-    let priorityType: HomeworkPriorityType
-    let subject: HomeworkSubjectType
-    let title: String
-    let description: String
-    let dueDate: String
-    let teacherName: String
-}
-
 class HomeworkwithsubTableViewCell2: UITableViewCell {
 
-    @IBOutlet weak var DownloadButton: UIButton!
+    // MARK: - Outlets
+
     @IBOutlet weak var MarkCompletebutton: UIButton!
     @IBOutlet weak var Teachername: UILabel!
     @IBOutlet weak var Duedate: UILabel!
@@ -130,39 +23,78 @@ class HomeworkwithsubTableViewCell2: UITableViewCell {
     @IBOutlet weak var ContainerView: UIView!
 
     // MARK: - Callback
+
     var onViewDetailsTapped: (() -> Void)?
+
+    // MARK: - View Details Button
 
     private lazy var viewDetailsButton: UIButton = {
 
-        let btn = UIButton(type: .system)
+        let button = UIButton(type: .system)
 
-        btn.translatesAutoresizingMaskIntoConstraints = false
+        button.translatesAutoresizingMaskIntoConstraints = false
 
-        btn.setTitle(
+        button.setTitle(
             "View Details",
             for: .normal
         )
 
-        btn.setTitleColor(
-            UIColor.systemBlue,
+        button.setTitleColor(
+            .systemBlue,
             for: .normal
         )
 
-        btn.titleLabel?.font =
-        UIFont.systemFont(
-            ofSize: 14,
-            weight: .semibold
-        )
+        button.titleLabel?.font =
+            UIFont.systemFont(
+                ofSize: 14,
+                weight: .semibold
+            )
 
-        btn.isHidden = true
+        button.isHidden = true
 
-        return btn
-
+        return button
     }()
 
-    override func awakeFromNib() {
+    // MARK: - Date Formatters
 
+    private lazy var apiDateFormatter: DateFormatter = {
+
+        let formatter = DateFormatter()
+
+        formatter.locale =
+            Locale(identifier: "en_US_POSIX")
+
+        formatter.calendar =
+            Calendar(identifier: .gregorian)
+
+        formatter.timeZone =
+            TimeZone(secondsFromGMT: 0)
+
+        formatter.dateFormat =
+            "yyyy-MM-dd"
+
+        return formatter
+    }()
+
+    private lazy var displayDateFormatter: DateFormatter = {
+
+        let formatter = DateFormatter()
+
+        formatter.locale =
+            Locale(identifier: "en_US_POSIX")
+
+        formatter.dateFormat =
+            "MMM dd, yyyy"
+
+        return formatter
+    }()
+
+    // MARK: - Lifecycle
+
+    override func awakeFromNib() {
         super.awakeFromNib()
+
+        selectionStyle = .none
 
         setupContainerView()
         setupBadgeLabel()
@@ -171,56 +103,71 @@ class HomeworkwithsubTableViewCell2: UITableViewCell {
     }
 
     override func layoutSubviews() {
-
         super.layoutSubviews()
 
         ContainerView.layer.shadowPath =
-        UIBezierPath(
-            roundedRect: ContainerView.bounds,
-            cornerRadius: 12
-        ).cgPath
+            UIBezierPath(
+                roundedRect: ContainerView.bounds,
+                cornerRadius: 12
+            ).cgPath
     }
 
     override func prepareForReuse() {
-
         super.prepareForReuse()
 
-        DownloadButton.isHidden = false
+        onViewDetailsTapped = nil
+
+        Homeworktitle.text = nil
+        Description.text = nil
+        Duedate.text = nil
+        Teachername.text = nil
+        Subject.text = nil
+        PrioritbadgeLabel.text = nil
+        SubjectImage.image = nil
+
         MarkCompletebutton.isHidden = false
         viewDetailsButton.isHidden = true
 
-        // MARK: Clear callback on reuse to avoid retain issues
-        onViewDetailsTapped = nil
+        PrioritbadgeLabel.backgroundColor = .clear
+        PrioritbadgeLabel.textColor = .label
+
+        Subject.textColor = .label
+        SubjectImage.tintColor = nil
+
+        ImageBackgroundview.backgroundColor = .clear
     }
+
+    // MARK: - UI Setup
 
     private func setupContainerView() {
 
         ContainerView.layer.cornerRadius = 12
 
         ContainerView.layer.shadowColor =
-        UIColor.lightGray.cgColor
+            UIColor.lightGray.cgColor
 
         ContainerView.layer.shadowOpacity = 0.2
 
         ContainerView.layer.shadowOffset =
-        CGSize(
-            width: 0,
-            height: 2
-        )
+            CGSize(
+                width: 0,
+                height: 2
+            )
 
         ContainerView.layer.shadowRadius = 4
+        ContainerView.layer.masksToBounds = false
     }
 
     private func setupBadgeLabel() {
 
         PrioritbadgeLabel.layer.cornerRadius = 10
-
         PrioritbadgeLabel.clipsToBounds = true
     }
 
     private func setupImageBackground() {
 
         ImageBackgroundview.layer.cornerRadius = 10
+        ImageBackgroundview.clipsToBounds = true
     }
 
     private func setupViewDetailsButton() {
@@ -252,95 +199,275 @@ class HomeworkwithsubTableViewCell2: UITableViewCell {
         ])
     }
 
+    // MARK: - Action
+
     @objc
     private func viewDetailsTapped() {
-
         onViewDetailsTapped?()
     }
 
+    // MARK: - Configure API Data
+
     func configure(
-        with model: HomeworkModel
+        with homework: StudentHomework
     ) {
 
+        // Reset reusable state.
+        MarkCompletebutton.isHidden = false
+        viewDetailsButton.isHidden = true
+
         Homeworktitle.text =
-        model.title
+            homework.title
 
         Description.text =
-        model.description
+            homework.description
 
         Duedate.text =
-        model.dueDate
+            formattedDueDate(
+                homework.dueDate
+            )
 
         Teachername.text =
-        model.teacherName
+            homework.teacher.name
 
         Subject.text =
-        model.subject.rawValue
+            homework.subject.name.capitalized
 
-        loadSubjectImage(
-            for: model.subject
+        configureSubjectImage(
+            subjectName: homework.subject.name
         )
 
-        switch model.priorityType {
+        configureSubmissionStatus(
+            homework.submission.status,
+            dueDate: homework.dueDate
+        )
+    }
 
-        case .highPriority:
+    // MARK: - Submission Status
 
-            applyStyle(
-                color: .systemRed,
-                text: "High Priority"
-            )
+    private func configureSubmissionStatus(
+        _ status: String,
+        dueDate: String
+    ) {
 
-        case .medPriority:
+        let normalizedStatus =
+            status
+                .trimmingCharacters(
+                    in: .whitespacesAndNewlines
+                )
+                .uppercased()
 
-            applyStyle(
-                color: .systemOrange,
-                text: "Med Priority"
-            )
+        switch normalizedStatus {
 
-        case .done:
+        case "COMPLETED",
+             "SUBMITTED",
+             "APPROVED":
 
             applyStyle(
                 color: .systemGreen,
-                text: "Done"
+                text: formattedStatus(normalizedStatus)
             )
 
-            DownloadButton.isHidden = true
             MarkCompletebutton.isHidden = true
             viewDetailsButton.isHidden = false
+
+        case "REJECTED":
+
+            applyStyle(
+                color: .systemRed,
+                text: "Rejected"
+            )
+
+            MarkCompletebutton.isHidden = false
+            viewDetailsButton.isHidden = true
+
+        case "PENDING":
+
+            if isOverdue(dueDate) {
+
+                applyStyle(
+                    color: .systemRed,
+                    text: "Overdue"
+                )
+
+            } else {
+
+                applyStyle(
+                    color: .systemOrange,
+                    text: "Pending"
+                )
+            }
+
+            MarkCompletebutton.isHidden = false
+            viewDetailsButton.isHidden = true
+
+        default:
+
+            applyStyle(
+                color: .systemOrange,
+                text: formattedStatus(normalizedStatus)
+            )
+
+            MarkCompletebutton.isHidden = false
+            viewDetailsButton.isHidden = true
         }
     }
 
-    private func loadSubjectImage(
-        for subject: HomeworkSubjectType
+    // MARK: - Subject Image
+
+    private func configureSubjectImage(
+        subjectName: String
     ) {
 
+        let normalizedSubject =
+            subjectName
+                .trimmingCharacters(
+                    in: .whitespacesAndNewlines
+                )
+                .lowercased()
+
+        let imageName: String
+
+        switch normalizedSubject {
+
+        case "math",
+             "maths",
+             "mathematics":
+
+            imageName = "Mathsicon"
+
+        case "science",
+             "general science":
+
+            imageName = "ic_science"
+
+        case "history":
+
+            imageName = "ic_history"
+
+        case "english":
+
+            imageName = "ic_english"
+
+        case "social",
+             "social studies",
+             "social science":
+
+            imageName = "ic_social"
+
+        case "computer",
+             "computers",
+             "computer science":
+
+            imageName = "ic_computer"
+
+        case "physics":
+
+            imageName = "ic_physics"
+
+        case "chemistry":
+
+            imageName = "ic_chemistry"
+
+        case "biology":
+
+            imageName = "ic_biology"
+
+        case "geography":
+
+            imageName = "ic_geography"
+
+        default:
+
+            SubjectImage.image =
+                UIImage(
+                    systemName: "book.closed.fill"
+                )
+
+            return
+        }
+
         SubjectImage.image =
-        UIImage(
-            named: subject.assetImageName
-        )
+            UIImage(named: imageName)
+            ?? UIImage(
+                systemName: "book.closed.fill"
+            )
     }
+
+    // MARK: - Style
 
     private func applyStyle(
         color: UIColor,
         text: String
     ) {
 
-        PrioritbadgeLabel.text =
-        text
+        PrioritbadgeLabel.text = text
 
         PrioritbadgeLabel.backgroundColor =
-        color.withAlphaComponent(0.15)
+            color.withAlphaComponent(0.15)
 
-        PrioritbadgeLabel.textColor =
-        color
-
-        Subject.textColor =
-        color
-
-        SubjectImage.tintColor =
-        color
+        PrioritbadgeLabel.textColor = color
+        Subject.textColor = color
+        SubjectImage.tintColor = color
 
         ImageBackgroundview.backgroundColor =
-        color.withAlphaComponent(0.15)
+            color.withAlphaComponent(0.15)
+    }
+
+    // MARK: - Date Helpers
+
+    private func formattedDueDate(
+        _ dateString: String
+    ) -> String {
+
+        guard let date =
+                apiDateFormatter.date(
+                    from: dateString
+                ) else {
+
+            return "Due: \(dateString)"
+        }
+
+        return "Due: \(displayDateFormatter.string(from: date))"
+    }
+
+    private func isOverdue(
+        _ dateString: String
+    ) -> Bool {
+
+        guard let dueDate =
+                apiDateFormatter.date(
+                    from: dateString
+                ) else {
+
+            return false
+        }
+
+        let calendar = Calendar.current
+
+        let today =
+            calendar.startOfDay(
+                for: Date()
+            )
+
+        let normalizedDueDate =
+            calendar.startOfDay(
+                for: dueDate
+            )
+
+        return normalizedDueDate < today
+    }
+
+    private func formattedStatus(
+        _ status: String
+    ) -> String {
+
+        return status
+            .lowercased()
+            .replacingOccurrences(
+                of: "_",
+                with: " "
+            )
+            .capitalized
     }
 }

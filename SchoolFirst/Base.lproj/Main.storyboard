@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="fgE-9f-Nrm">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="xQk-ro-l25">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -8932,6 +8932,7 @@ The school admin will review it soon.</string>
                                             <backgroundConfiguration key="background"/>
                                         </buttonConfiguration>
                                         <connections>
+                                            <action selector="BackButtonTapped:" destination="Xyl-k8-vE2" eventType="touchUpInside" id="PrQ-4Q-j6w"/>
                                             <action selector="BackButtonTapped:" destination="L1F-an-egZ" eventType="touchUpInside" id="m46-PY-sAZ"/>
                                         </connections>
                                     </button>
@@ -9015,6 +9016,7 @@ The school admin will review it soon.</string>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="BackButton" destination="wUF-ld-O5O" id="uWS-KR-5Pw"/>
                         <outlet property="TopView" destination="sfl-3U-Goy" id="bf3-oX-T0G"/>
                     </connections>
                 </viewController>
@@ -9223,16 +9225,51 @@ The school admin will review it soon.</string>
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
                                     </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Rjw-iw-hQo">
+                                        <rect key="frame" x="14" y="149" width="333" height="58"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="industrial_revolution_worksheet.pdf" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ttc-mE-Ahe">
+                                                <rect key="frame" x="30.666666666666657" y="20" width="272" height="18"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="272" id="URZ-GD-mr3"/>
+                                                    <constraint firstAttribute="height" constant="18" id="WEt-Jh-C6O"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstItem="Ttc-mE-Ahe" firstAttribute="centerX" secondItem="Rjw-iw-hQo" secondAttribute="centerX" id="BxA-xv-msm"/>
+                                            <constraint firstItem="Ttc-mE-Ahe" firstAttribute="centerY" secondItem="Rjw-iw-hQo" secondAttribute="centerY" id="aQt-3V-ZOl"/>
+                                            <constraint firstAttribute="height" constant="58" id="yUP-Fm-afu"/>
+                                        </constraints>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                                <real key="value" value="12"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                                <real key="value" value="1"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                                <color key="value" systemColor="systemGray5Color"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="228" id="9lb-MS-m2n"/>
                                     <constraint firstItem="1e2-ZG-PHg" firstAttribute="leading" secondItem="Exu-at-8JX" secondAttribute="leading" id="DYv-G1-nVW"/>
                                     <constraint firstItem="Bcv-V1-AHG" firstAttribute="leading" secondItem="1e2-ZG-PHg" secondAttribute="leading" id="EEh-oJ-k9U"/>
+                                    <constraint firstItem="Rjw-iw-hQo" firstAttribute="leading" secondItem="1e2-ZG-PHg" secondAttribute="leading" id="EkW-iK-T0h"/>
                                     <constraint firstItem="GLO-rF-Cmp" firstAttribute="leading" secondItem="c0l-vu-cC1" secondAttribute="leading" id="LtO-aO-q8q"/>
                                     <constraint firstItem="Bcv-V1-AHG" firstAttribute="trailing" secondItem="1e2-ZG-PHg" secondAttribute="trailing" id="SH3-Mp-kjf"/>
                                     <constraint firstAttribute="trailing" secondItem="Exu-at-8JX" secondAttribute="trailing" constant="14" id="ScE-Q6-mf2"/>
                                     <constraint firstItem="Exu-at-8JX" firstAttribute="top" secondItem="GLO-rF-Cmp" secondAttribute="bottom" constant="20" id="T0g-3B-sfd"/>
+                                    <constraint firstItem="Rjw-iw-hQo" firstAttribute="trailing" secondItem="1e2-ZG-PHg" secondAttribute="trailing" id="TPC-iO-eLV"/>
+                                    <constraint firstItem="Rjw-iw-hQo" firstAttribute="top" secondItem="1e2-ZG-PHg" secondAttribute="bottom" constant="16" id="Te9-DR-dvR"/>
                                     <constraint firstItem="c0l-vu-cC1" firstAttribute="top" secondItem="ddt-Rh-YXp" secondAttribute="top" id="Xa0-RB-0Zl"/>
                                     <constraint firstItem="c0l-vu-cC1" firstAttribute="leading" secondItem="ddt-Rh-YXp" secondAttribute="trailing" constant="10" id="Ykz-r7-Ear"/>
                                     <constraint firstItem="Exu-at-8JX" firstAttribute="leading" secondItem="ddt-Rh-YXp" secondAttribute="leading" id="a1d-VW-BuW"/>
@@ -9288,6 +9325,10 @@ The school admin will review it soon.</string>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="Description" destination="Exu-at-8JX" id="Ezv-zZ-9OR"/>
+                        <outlet property="Homeworktitle" destination="GLO-rF-Cmp" id="0gn-ZD-hR5"/>
+                        <outlet property="Homeworktitlewithpdf" destination="Ttc-mE-Ahe" id="wMW-R3-wbt"/>
+                        <outlet property="Subject" destination="c0l-vu-cC1" id="h1b-Ie-Gut"/>
                         <outlet property="TopView" destination="xV6-eQ-S7r" id="Squ-Ci-SzD"/>
                     </connections>
                 </viewController>
@@ -12179,28 +12220,28 @@ method (Credit Card, UPI, or Net Banking).</string>
             <color red="0.99607843137254903" green="0.94901960784313721" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="opaqueSeparatorColor">
-            <color red="0.77647058820000003" green="0.77647058820000003" blue="0.7843137255" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.77647058823529413" green="0.77647058823529413" blue="0.78431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray3Color">
-            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray5Color">
-            <color red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray6Color">
-            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGroupedBackgroundColor">
-            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="tableBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="tertiarySystemGroupedBackgroundColor">
-            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="viewFlipsideBackgroundColor">
             <color red="0.12156862745098039" green="0.12941176470588237" blue="0.14117647058823529" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

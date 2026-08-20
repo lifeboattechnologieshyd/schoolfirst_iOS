@@ -10,67 +10,146 @@ import FSCalendar
 
 class ATDNCdashboardUITableViewCell1: UITableViewCell {
 
+    // MARK: - Outlets
+
     @IBOutlet weak var Collectionview3: UICollectionView!
     @IBOutlet weak var Collectionview2: UICollectionView!
-    // MARK: - Outlets
     @IBOutlet weak var Collectionview: UICollectionView!
 
     // MARK: - Layout Constants
-    private let cardSpacing: CGFloat    = 8    // gap between cards
-    private let sideInset: CGFloat      = 16   // leading & trailing — equal
-    private let cardHeight: CGFloat     = 60
-    private let calendarHeight: CGFloat = 426  // ✅ Figma: 358 × 426
-    private let calendarTopSpace: CGFloat = 16 // ✅ top space from collectionview
 
-    // ✅ Quick Navigation constants
-    private let quickNavCellWidth: CGFloat  = 80
+    private let cardSpacing: CGFloat = 8
+    private let sideInset: CGFloat = 16
+    private let cardHeight: CGFloat = 60
+
+    private let calendarHeight: CGFloat = 426
+    private let calendarTopSpace: CGFloat = 16
+
+    // MARK: - Quick Navigation Constants
+
+    private let quickNavCellWidth: CGFloat = 80
     private let quickNavCellHeight: CGFloat = 92
-    private let quickNavSpacing: CGFloat    = 12
+    private let quickNavSpacing: CGFloat = 12
     private let quickNavSectionHeight: CGFloat = 92
-    private let quickNavTopSpace: CGFloat   = 16
+    private let quickNavTopSpace: CGFloat = 16
     private let quickNavTitleHeight: CGFloat = 24
     private let quickNavTitleTopSpace: CGFloat = 16
 
-    // ✅ Recent Attendance constants
-    private let recentAttendanceRowHeight: CGFloat = 52   // each row height inside container
+    // MARK: - Recent Attendance Constants
+
+    private let recentAttendanceRowHeight: CGFloat = 52
     private let recentAttendanceTitleTopSpace: CGFloat = 16
     private let recentAttendanceTitleHeight: CGFloat = 24
     private let recentAttendanceTopSpace: CGFloat = 12
 
     // MARK: - Attendance Status
+
     enum AttendanceStatus {
-        case present, absent, leave, late
+
+        case present
+        case absent
+        case leave
+        case late
 
         var fillColor: UIColor {
+
             switch self {
-            case .present: return UIColor(red: 220/255, green: 245/255, blue: 230/255, alpha: 1.0) // light green
-            case .absent:  return UIColor(red: 252/255, green: 226/255, blue: 228/255, alpha: 1.0) // light red
-            case .leave:   return UIColor(red: 222/255, green: 235/255, blue: 253/255, alpha: 1.0) // light blue
-            case .late:    return UIColor(red: 253/255, green: 235/255, blue: 214/255, alpha: 1.0) // light orange
+
+            case .present:
+                return UIColor(
+                    red: 220 / 255,
+                    green: 245 / 255,
+                    blue: 230 / 255,
+                    alpha: 1
+                )
+
+            case .absent:
+                return UIColor(
+                    red: 252 / 255,
+                    green: 226 / 255,
+                    blue: 228 / 255,
+                    alpha: 1
+                )
+
+            case .leave:
+                return UIColor(
+                    red: 222 / 255,
+                    green: 235 / 255,
+                    blue: 253 / 255,
+                    alpha: 1
+                )
+
+            case .late:
+                return UIColor(
+                    red: 253 / 255,
+                    green: 235 / 255,
+                    blue: 214 / 255,
+                    alpha: 1
+                )
             }
         }
 
         var dotColor: UIColor {
+
             switch self {
-            case .present: return UIColor(red:  34/255, green: 160/255, blue:  82/255, alpha: 1.0) // green
-            case .absent:  return UIColor(red: 225/255, green:  70/255, blue:  80/255, alpha: 1.0) // red
-            case .leave:   return UIColor(red:  50/255, green: 120/255, blue: 220/255, alpha: 1.0) // blue
-            case .late:    return UIColor(red: 235/255, green: 150/255, blue:  40/255, alpha: 1.0) // orange
+
+            case .present:
+                return UIColor(
+                    red: 34 / 255,
+                    green: 160 / 255,
+                    blue: 82 / 255,
+                    alpha: 1
+                )
+
+            case .absent:
+                return UIColor(
+                    red: 225 / 255,
+                    green: 70 / 255,
+                    blue: 80 / 255,
+                    alpha: 1
+                )
+
+            case .leave:
+                return UIColor(
+                    red: 50 / 255,
+                    green: 120 / 255,
+                    blue: 220 / 255,
+                    alpha: 1
+                )
+
+            case .late:
+                return UIColor(
+                    red: 235 / 255,
+                    green: 120 / 255,
+                    blue: 35 / 255,
+                    alpha: 1
+                )
             }
         }
 
         var displayText: String {
+
             switch self {
-            case .present: return "Present"
-            case .absent:  return "Absent"
-            case .leave:   return "Leave"
-            case .late:    return "Late"
+
+            case .present:
+                return "Present"
+
+            case .absent:
+                return "Absent"
+
+            case .leave:
+                return "Leave"
+
+            case .late:
+                return "Late"
             }
         }
     }
 
-    // ✅ Demo attendance data ("yyyy-MM-dd" → status) — replace with API later
+    // MARK: - Demo Attendance Data
+
     private var attendanceData: [String: AttendanceStatus] = [
+
         "2026-05-05": .present,
         "2026-05-07": .present,
         "2026-05-12": .present,
@@ -83,40 +162,94 @@ class ATDNCdashboardUITableViewCell1: UITableViewCell {
         "2026-05-27": .late
     ]
 
+    // MARK: - Date Formatters
+
     private let dateFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-MM-dd"
-        return f
+
+        let formatter = DateFormatter()
+
+        formatter.locale =
+            Locale(identifier: "en_US_POSIX")
+
+        formatter.calendar =
+            Calendar(identifier: .gregorian)
+
+        formatter.timeZone =
+            TimeZone(secondsFromGMT: 0)
+
+        formatter.dateFormat =
+            "yyyy-MM-dd"
+
+        return formatter
+    }()
+
+    private lazy var calendarMonthFormatter: DateFormatter = {
+
+        let formatter = DateFormatter()
+
+        formatter.locale =
+            Locale(identifier: "en_US_POSIX")
+
+        formatter.dateFormat =
+            "MMMM yyyy"
+
+        return formatter
     }()
 
     // MARK: - Recent Attendance Model
+
     struct RecentAttendance {
-        let dateText: String     // e.g. "20 May 2026"
+
+        let dateText: String
         let status: AttendanceStatus
     }
 
-    // ✅ Demo Recent Attendance data — replace with API later
+    // MARK: - Demo Recent Attendance Data
+
     private var recentAttendance: [RecentAttendance] = [
-        RecentAttendance(dateText: "20 May 2026", status: .present),
-        RecentAttendance(dateText: "19 May 2026", status: .present),
-        RecentAttendance(dateText: "18 May 2026", status: .absent)
+
+        RecentAttendance(
+            dateText: "20 May 2026",
+            status: .present
+        ),
+
+        RecentAttendance(
+            dateText: "19 May 2026",
+            status: .present
+        ),
+
+        RecentAttendance(
+            dateText: "18 May 2026",
+            status: .absent
+        )
     ]
 
-    // MARK: - Calendar Views (programmatic)
+    // MARK: - Calendar Views
+
     private var calendarContainer: UIView!
     private var calendar: FSCalendar!
 
-    // MARK: - Quick Navigation (programmatic)
+    private var calendarTitleLabel: UILabel!
+    private var calendarMonthLabel: UILabel!
+    private var previousMonthButton: UIButton!
+    private var nextMonthButton: UIButton!
+    private var calendarDividerView: UIView!
+    private var calendarLegendStackView: UIStackView!
+
+    // MARK: - Quick Navigation Views
+
     private var quickNavTitleLabel: UILabel!
 
-    // MARK: - Recent Attendance (programmatic)
+    // MARK: - Recent Attendance Views
+
     private var recentAttendanceTitleLabel: UILabel!
-    //private var viewAllButton: UIButton!
     private var recentAttendanceContainer: UIView!
     private var recentAttendanceHeightConstraint: NSLayoutConstraint!
 
     // MARK: - Attendance Stat Model
+
     private struct AttendanceStat {
+
         let title: String
         var value: String
         let backgroundColor: UIColor
@@ -124,73 +257,168 @@ class ATDNCdashboardUITableViewCell1: UITableViewCell {
         let textColor: UIColor
     }
 
-    // ✅ Quick Navigation Item Model
+    // MARK: - Quick Navigation Model
+
     private struct QuickNavItem {
+
         let title: String
         let imageName: String
         let backgroundColor: UIColor
     }
 
-    // ✅ Colors match Figma design: Present(green), Absent(red), Leave(blue), Att.%(orange)
+    // MARK: - Attendance Stats
+
     private var stats: [AttendanceStat] = [
+
         AttendanceStat(
             title: "Present",
             value: "18",
-            backgroundColor: UIColor(red: 232/255, green: 247/255, blue: 237/255, alpha: 1.0),
-            borderColor:     UIColor(red: 167/255, green: 220/255, blue: 184/255, alpha: 1.0),
-            textColor:       UIColor(red:  34/255, green: 160/255, blue:  82/255, alpha: 1.0)
+            backgroundColor: UIColor(
+                red: 232 / 255,
+                green: 247 / 255,
+                blue: 237 / 255,
+                alpha: 1
+            ),
+            borderColor: UIColor(
+                red: 167 / 255,
+                green: 220 / 255,
+                blue: 184 / 255,
+                alpha: 1
+            ),
+            textColor: UIColor(
+                red: 34 / 255,
+                green: 160 / 255,
+                blue: 82 / 255,
+                alpha: 1
+            )
         ),
+
         AttendanceStat(
             title: "Absent",
             value: "5",
-            backgroundColor: UIColor(red: 253/255, green: 235/255, blue: 236/255, alpha: 1.0),
-            borderColor:     UIColor(red: 244/255, green: 184/255, blue: 188/255, alpha: 1.0),
-            textColor:       UIColor(red: 225/255, green:  70/255, blue:  80/255, alpha: 1.0)
+            backgroundColor: UIColor(
+                red: 253 / 255,
+                green: 235 / 255,
+                blue: 236 / 255,
+                alpha: 1
+            ),
+            borderColor: UIColor(
+                red: 244 / 255,
+                green: 184 / 255,
+                blue: 188 / 255,
+                alpha: 1
+            ),
+            textColor: UIColor(
+                red: 225 / 255,
+                green: 70 / 255,
+                blue: 80 / 255,
+                alpha: 1
+            )
         ),
+
         AttendanceStat(
             title: "Leave",
             value: "2",
-            backgroundColor: UIColor(red: 232/255, green: 241/255, blue: 253/255, alpha: 1.0),
-            borderColor:     UIColor(red: 170/255, green: 205/255, blue: 245/255, alpha: 1.0),
-            textColor:       UIColor(red:  50/255, green: 120/255, blue: 220/255, alpha: 1.0)
+            backgroundColor: UIColor(
+                red: 232 / 255,
+                green: 241 / 255,
+                blue: 253 / 255,
+                alpha: 1
+            ),
+            borderColor: UIColor(
+                red: 170 / 255,
+                green: 205 / 255,
+                blue: 245 / 255,
+                alpha: 1
+            ),
+            textColor: UIColor(
+                red: 50 / 255,
+                green: 120 / 255,
+                blue: 220 / 255,
+                alpha: 1
+            )
         ),
+
         AttendanceStat(
             title: "Att. %",
             value: "72%",
-            backgroundColor: UIColor(red: 254/255, green: 242/255, blue: 230/255, alpha: 1.0),
-            borderColor:     UIColor(red: 248/255, green: 200/255, blue: 160/255, alpha: 1.0),
-            textColor:       UIColor(red: 235/255, green: 120/255, blue:  35/255, alpha: 1.0)
+            backgroundColor: UIColor(
+                red: 254 / 255,
+                green: 242 / 255,
+                blue: 230 / 255,
+                alpha: 1
+            ),
+            borderColor: UIColor(
+                red: 248 / 255,
+                green: 200 / 255,
+                blue: 160 / 255,
+                alpha: 1
+            ),
+            textColor: UIColor(
+                red: 235 / 255,
+                green: 120 / 255,
+                blue: 35 / 255,
+                alpha: 1
+            )
         )
     ]
 
-    // ✅ Quick Navigation Items (matches Figma design)
+    // MARK: - Quick Navigation Items
+
     private var quickNavItems: [QuickNavItem] = [
+
         QuickNavItem(
             title: "My Child\nAttendance",
             imageName: "Icon 51",
-            backgroundColor: UIColor(red: 254/255, green: 236/255, blue: 220/255, alpha: 1.0)
+            backgroundColor: UIColor(
+                red: 254 / 255,
+                green: 236 / 255,
+                blue: 220 / 255,
+                alpha: 1
+            )
         ),
+
         QuickNavItem(
             title: "Attendance\nReport",
             imageName: "reporticon",
-            backgroundColor: UIColor(red: 226/255, green: 236/255, blue: 253/255, alpha: 1.0)
+            backgroundColor: UIColor(
+                red: 226 / 255,
+                green: 236 / 255,
+                blue: 253 / 255,
+                alpha: 1
+            )
         ),
+
         QuickNavItem(
             title: "Leave\nStatus",
             imageName: "icon 52",
-            backgroundColor: UIColor(red: 226/255, green: 236/255, blue: 253/255, alpha: 1.0)
+            backgroundColor: UIColor(
+                red: 226 / 255,
+                green: 236 / 255,
+                blue: 253 / 255,
+                alpha: 1
+            )
         ),
+
         QuickNavItem(
             title: "Request\nCorrection",
             imageName: "editicon",
-            backgroundColor: UIColor(red: 220/255, green: 245/255, blue: 230/255, alpha: 1.0)
+            backgroundColor: UIColor(
+                red: 220 / 255,
+                green: 245 / 255,
+                blue: 230 / 255,
+                alpha: 1
+            )
         )
     ]
 
     // MARK: - Lifecycle
+
     override func awakeFromNib() {
         super.awakeFromNib()
+
         selectionStyle = .none
+
         setupCollectionView()
         setupCalendar()
         setupQuickNavigation()
@@ -199,459 +427,1553 @@ class ATDNCdashboardUITableViewCell1: UITableViewCell {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        // ✅ Frame is final here — recalc card widths so leading/trailing match
+
         Collectionview?.collectionViewLayout.invalidateLayout()
         Collectionview2?.collectionViewLayout.invalidateLayout()
         Collectionview3?.collectionViewLayout.invalidateLayout()
+
+        calendarContainer?.layer.shadowPath =
+            UIBezierPath(
+                roundedRect: calendarContainer.bounds,
+                cornerRadius: 12
+            ).cgPath
     }
 
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
+    override func setSelected(
+        _ selected: Bool,
+        animated: Bool
+    ) {
+
+        super.setSelected(
+            selected,
+            animated: animated
+        )
     }
 
-    // MARK: - CollectionView Setup (Top Stats)
+    // MARK: - Top Collection View Setup
+
     private func setupCollectionView() {
-        guard let cv = Collectionview else { return }
 
-        cv.delegate   = self
-        cv.dataSource = self
-        cv.backgroundColor = .clear
-        cv.showsHorizontalScrollIndicator = false
-        cv.isScrollEnabled = false
-        cv.bounces         = false
+        guard let collectionView =
+                Collectionview else {
+            return
+        }
 
-        cv.register(
-            UINib(nibName: "ATDNCattendanceCollectionViewCell", bundle: nil),
-            forCellWithReuseIdentifier: "ATDNCattendanceCollectionViewCell"
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.backgroundColor = .clear
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.isScrollEnabled = false
+        collectionView.bounces = false
+
+        collectionView.register(
+            UINib(
+                nibName: "ATDNCattendanceCollectionViewCell",
+                bundle: nil
+            ),
+            forCellWithReuseIdentifier:
+                "ATDNCattendanceCollectionViewCell"
         )
 
         let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection         = .horizontal
-        layout.minimumLineSpacing      = cardSpacing
-        layout.minimumInteritemSpacing = cardSpacing
-        layout.sectionInset = UIEdgeInsets(top: 0, left: sideInset, bottom: 0, right: sideInset)
-        cv.collectionViewLayout = layout
 
-        cv.reloadData()
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = cardSpacing
+        layout.minimumInteritemSpacing = cardSpacing
+
+        layout.sectionInset =
+            UIEdgeInsets(
+                top: 0,
+                left: sideInset,
+                bottom: 0,
+                right: sideInset
+            )
+
+        collectionView.collectionViewLayout = layout
+        collectionView.reloadData()
     }
 
-    // MARK: - ✅ FSCalendar Setup (programmatic)
+    // MARK: - Calendar Setup
+
     private func setupCalendar() {
+
+        setupCalendarContainer()
+        setupCalendarHeader()
+        setupFSCalendar()
+        setupCalendarDivider()
+        setupCalendarLegend()
+        activateCalendarConstraints()
+        showInitialCalendarMonth()
+    }
+
+    private func setupCalendarContainer() {
 
         calendarContainer = UIView()
         calendarContainer.translatesAutoresizingMaskIntoConstraints = false
-        calendarContainer.backgroundColor    = .white
+        calendarContainer.backgroundColor = .white
         calendarContainer.layer.cornerRadius = 12
-        calendarContainer.layer.borderWidth  = 1
-        calendarContainer.layer.borderColor  = UIColor(red: 229/255, green: 231/255, blue: 235/255, alpha: 1.0).cgColor
-        calendarContainer.layer.masksToBounds = true
-        contentView.addSubview(calendarContainer)
+        calendarContainer.layer.borderWidth = 1
+
+        calendarContainer.layer.borderColor =
+            UIColor(
+                red: 229 / 255,
+                green: 231 / 255,
+                blue: 235 / 255,
+                alpha: 1
+            ).cgColor
+
+        calendarContainer.layer.shadowColor =
+            UIColor.black.cgColor
+
+        calendarContainer.layer.shadowOpacity = 0.06
+
+        calendarContainer.layer.shadowOffset =
+            CGSize(
+                width: 0,
+                height: 2
+            )
+
+        calendarContainer.layer.shadowRadius = 4
+        calendarContainer.layer.masksToBounds = false
+
+        contentView.addSubview(
+            calendarContainer
+        )
+    }
+
+    private func setupCalendarHeader() {
+
+        calendarTitleLabel = UILabel()
+        calendarTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        calendarTitleLabel.text = "Attendance Summary"
+        calendarTitleLabel.numberOfLines = 1
+
+        calendarTitleLabel.font =
+            UIFont.systemFont(
+                ofSize: 15,
+                weight: .semibold
+            )
+
+        calendarTitleLabel.textColor =
+            UIColor(
+                red: 31 / 255,
+                green: 41 / 255,
+                blue: 55 / 255,
+                alpha: 1
+            )
+
+        calendarTitleLabel.adjustsFontSizeToFitWidth = true
+        calendarTitleLabel.minimumScaleFactor = 0.75
+
+        calendarTitleLabel.setContentCompressionResistancePriority(
+            .defaultLow,
+            for: .horizontal
+        )
+
+        calendarContainer.addSubview(
+            calendarTitleLabel
+        )
+
+        previousMonthButton = UIButton(type: .system)
+
+        previousMonthButton.translatesAutoresizingMaskIntoConstraints =
+            false
+
+        previousMonthButton.tintColor =
+            UIColor(
+                red: 75 / 255,
+                green: 85 / 255,
+                blue: 99 / 255,
+                alpha: 1
+            )
+
+        previousMonthButton.setImage(
+            UIImage(
+                systemName: "chevron.left"
+            ),
+            for: .normal
+        )
+
+        previousMonthButton.addTarget(
+            self,
+            action: #selector(previousMonthTapped),
+            for: .touchUpInside
+        )
+
+        previousMonthButton.accessibilityLabel =
+            "Previous month"
+
+        calendarContainer.addSubview(
+            previousMonthButton
+        )
+
+        calendarMonthLabel = UILabel()
+
+        calendarMonthLabel.translatesAutoresizingMaskIntoConstraints =
+            false
+
+        calendarMonthLabel.font =
+            UIFont.systemFont(
+                ofSize: 15,
+                weight: .semibold
+            )
+
+        calendarMonthLabel.textColor =
+            UIColor(
+                red: 31 / 255,
+                green: 41 / 255,
+                blue: 55 / 255,
+                alpha: 1
+            )
+
+        calendarMonthLabel.textAlignment = .center
+        calendarMonthLabel.adjustsFontSizeToFitWidth = true
+        calendarMonthLabel.minimumScaleFactor = 0.75
+
+        calendarContainer.addSubview(
+            calendarMonthLabel
+        )
+
+        nextMonthButton = UIButton(type: .system)
+
+        nextMonthButton.translatesAutoresizingMaskIntoConstraints =
+            false
+
+        nextMonthButton.tintColor =
+            UIColor(
+                red: 75 / 255,
+                green: 85 / 255,
+                blue: 99 / 255,
+                alpha: 1
+            )
+
+        nextMonthButton.setImage(
+            UIImage(
+                systemName: "chevron.right"
+            ),
+            for: .normal
+        )
+
+        nextMonthButton.addTarget(
+            self,
+            action: #selector(nextMonthTapped),
+            for: .touchUpInside
+        )
+
+        nextMonthButton.accessibilityLabel =
+            "Next month"
+
+        calendarContainer.addSubview(
+            nextMonthButton
+        )
+    }
+
+    private func setupFSCalendar() {
 
         calendar = FSCalendar()
         calendar.translatesAutoresizingMaskIntoConstraints = false
-        calendar.delegate   = self
+
+        calendar.delegate = self
         calendar.dataSource = self
+
         calendar.backgroundColor = .white
         calendar.scrollDirection = .horizontal
-        calendar.scope           = .month
-
-        calendar.appearance.headerTitleColor        = .black
-        calendar.appearance.headerTitleFont         = UIFont.systemFont(ofSize: 17, weight: .semibold)
-        calendar.appearance.headerDateFormat        = "MMMM yyyy"
-        calendar.appearance.headerMinimumDissolvedAlpha = 0
-
-        calendar.appearance.weekdayTextColor = UIColor(red: 107/255, green: 114/255, blue: 128/255, alpha: 1.0)
-        calendar.appearance.weekdayFont      = UIFont.systemFont(ofSize: 14, weight: .medium)
-
-        calendar.appearance.titleDefaultColor = .black
-        calendar.appearance.titleFont         = UIFont.systemFont(ofSize: 16, weight: .medium)
-        calendar.appearance.todayColor        = .clear
-        calendar.appearance.titleTodayColor   = .black
-        calendar.appearance.selectionColor    = .clear
-        calendar.appearance.titleSelectionColor = .black
-        calendar.appearance.borderRadius      = 1.0
-
-        calendar.appearance.eventOffset = CGPoint(x: 0, y: 3)
-
+        calendar.scope = .month
         calendar.placeholderType = .none
 
-        calendarContainer.addSubview(calendar)
+        // Custom header is used.
+        calendar.headerHeight = 0
+        calendar.weekdayHeight = 34
+
+        calendar.firstWeekday = 1
+
+        calendar.appearance.caseOptions = [
+            .weekdayUsesSingleUpperCase
+        ]
+
+        calendar.appearance.weekdayTextColor =
+            UIColor(
+                red: 142 / 255,
+                green: 142 / 255,
+                blue: 147 / 255,
+                alpha: 1
+            )
+
+        calendar.appearance.weekdayFont =
+            UIFont.systemFont(
+                ofSize: 13,
+                weight: .semibold
+            )
+
+        calendar.appearance.titleDefaultColor =
+            UIColor(
+                red: 17 / 255,
+                green: 24 / 255,
+                blue: 39 / 255,
+                alpha: 1
+            )
+
+        calendar.appearance.titleFont =
+            UIFont.systemFont(
+                ofSize: 14,
+                weight: .medium
+            )
+
+        calendar.appearance.todayColor = .clear
+
+        calendar.appearance.titleTodayColor =
+            UIColor(
+                red: 17 / 255,
+                green: 24 / 255,
+                blue: 39 / 255,
+                alpha: 1
+            )
+
+        calendar.appearance.selectionColor = .clear
+
+        calendar.appearance.titleSelectionColor =
+            UIColor(
+                red: 17 / 255,
+                green: 24 / 255,
+                blue: 39 / 255,
+                alpha: 1
+            )
+
+        // Fully circular attendance backgrounds.
+        calendar.appearance.borderRadius = 1.0
+
+        calendar.appearance.eventOffset =
+            CGPoint(
+                x: 0,
+                y: 2
+            )
+
+        calendar.appearance.eventDefaultColor =
+            .clear
+
+        calendar.appearance.eventSelectionColor =
+            .clear
+
+        calendarContainer.addSubview(
+            calendar
+        )
+    }
+
+    private func setupCalendarDivider() {
+
+        calendarDividerView = UIView()
+
+        calendarDividerView.translatesAutoresizingMaskIntoConstraints =
+            false
+
+        calendarDividerView.backgroundColor =
+            UIColor(
+                red: 229 / 255,
+                green: 231 / 255,
+                blue: 235 / 255,
+                alpha: 1
+            )
+
+        calendarContainer.addSubview(
+            calendarDividerView
+        )
+    }
+
+    private func setupCalendarLegend() {
+
+        let presentItem =
+            makeCalendarLegendItem(
+                title: "Present",
+                color: AttendanceStatus.present.dotColor
+            )
+
+        let absentItem =
+            makeCalendarLegendItem(
+                title: "Absent",
+                color: AttendanceStatus.absent.dotColor
+            )
+
+        let leaveItem =
+            makeCalendarLegendItem(
+                title: "Leave",
+                color: AttendanceStatus.leave.dotColor
+            )
+
+        let lateItem =
+            makeCalendarLegendItem(
+                title: "Late",
+                color: AttendanceStatus.late.dotColor
+            )
+
+        calendarLegendStackView =
+            UIStackView(
+                arrangedSubviews: [
+                    presentItem,
+                    absentItem,
+                    leaveItem,
+                    lateItem
+                ]
+            )
+
+        calendarLegendStackView.translatesAutoresizingMaskIntoConstraints =
+            false
+
+        calendarLegendStackView.axis = .horizontal
+        calendarLegendStackView.alignment = .center
+        calendarLegendStackView.distribution = .equalSpacing
+        calendarLegendStackView.spacing = 6
+
+        calendarContainer.addSubview(
+            calendarLegendStackView
+        )
+    }
+
+    private func makeCalendarLegendItem(
+        title: String,
+        color: UIColor
+    ) -> UIView {
+
+        let dotView = UIView()
+
+        dotView.translatesAutoresizingMaskIntoConstraints =
+            false
+
+        dotView.backgroundColor = color
+        dotView.layer.cornerRadius = 5
+        dotView.clipsToBounds = true
 
         NSLayoutConstraint.activate([
-            calendarContainer.topAnchor.constraint(equalTo: Collectionview.bottomAnchor, constant: calendarTopSpace),
-            calendarContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: sideInset),
-            calendarContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -sideInset),
-            calendarContainer.heightAnchor.constraint(equalToConstant: calendarHeight),
 
-            calendar.topAnchor.constraint(equalTo: calendarContainer.topAnchor, constant: 8),
-            calendar.leadingAnchor.constraint(equalTo: calendarContainer.leadingAnchor, constant: 8),
-            calendar.trailingAnchor.constraint(equalTo: calendarContainer.trailingAnchor, constant: -8),
-            calendar.bottomAnchor.constraint(equalTo: calendarContainer.bottomAnchor, constant: -8)
+            dotView.widthAnchor.constraint(
+                equalToConstant: 10
+            ),
+
+            dotView.heightAnchor.constraint(
+                equalToConstant: 10
+            )
+        ])
+
+        let titleLabel = UILabel()
+
+        titleLabel.text = title
+        titleLabel.numberOfLines = 1
+
+        titleLabel.font =
+            UIFont.systemFont(
+                ofSize: 12,
+                weight: .regular
+            )
+
+        titleLabel.textColor =
+            UIColor(
+                red: 75 / 255,
+                green: 85 / 255,
+                blue: 99 / 255,
+                alpha: 1
+            )
+
+        let stackView =
+            UIStackView(
+                arrangedSubviews: [
+                    dotView,
+                    titleLabel
+                ]
+            )
+
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.spacing = 5
+
+        return stackView
+    }
+
+    private func activateCalendarConstraints() {
+
+        NSLayoutConstraint.activate([
+
+            // Calendar container
+            calendarContainer.topAnchor.constraint(
+                equalTo: Collectionview.bottomAnchor,
+                constant: calendarTopSpace
+            ),
+
+            calendarContainer.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor,
+                constant: sideInset
+            ),
+
+            calendarContainer.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor,
+                constant: -sideInset
+            ),
+
+            calendarContainer.heightAnchor.constraint(
+                equalToConstant: calendarHeight
+            ),
+
+            // Header title
+            calendarTitleLabel.topAnchor.constraint(
+                equalTo: calendarContainer.topAnchor,
+                constant: 18
+            ),
+
+            calendarTitleLabel.leadingAnchor.constraint(
+                equalTo: calendarContainer.leadingAnchor,
+                constant: 16
+            ),
+
+            calendarTitleLabel.heightAnchor.constraint(
+                equalToConstant: 24
+            ),
+
+            calendarTitleLabel.trailingAnchor.constraint(
+                lessThanOrEqualTo:
+                    previousMonthButton.leadingAnchor,
+                constant: -4
+            ),
+
+            // Previous month button
+            previousMonthButton.centerYAnchor.constraint(
+                equalTo:
+                    calendarTitleLabel.centerYAnchor
+            ),
+
+            previousMonthButton.widthAnchor.constraint(
+                equalToConstant: 26
+            ),
+
+            previousMonthButton.heightAnchor.constraint(
+                equalToConstant: 32
+            ),
+
+            // Month label
+            calendarMonthLabel.centerYAnchor.constraint(
+                equalTo:
+                    calendarTitleLabel.centerYAnchor
+            ),
+
+            calendarMonthLabel.leadingAnchor.constraint(
+                equalTo:
+                    previousMonthButton.trailingAnchor,
+                constant: 0
+            ),
+
+            calendarMonthLabel.widthAnchor.constraint(
+                equalToConstant: 75
+            ),
+
+            // Next button
+            nextMonthButton.centerYAnchor.constraint(
+                equalTo:
+                    calendarTitleLabel.centerYAnchor
+            ),
+
+            nextMonthButton.leadingAnchor.constraint(
+                equalTo:
+                    calendarMonthLabel.trailingAnchor,
+                constant: 0
+            ),
+
+            nextMonthButton.trailingAnchor.constraint(
+                equalTo:
+                    calendarContainer.trailingAnchor,
+                constant: -10
+            ),
+
+            nextMonthButton.widthAnchor.constraint(
+                equalToConstant: 26
+            ),
+
+            nextMonthButton.heightAnchor.constraint(
+                equalToConstant: 32
+            ),
+
+            // FSCalendar
+            calendar.topAnchor.constraint(
+                equalTo:
+                    calendarTitleLabel.bottomAnchor,
+                constant: 12
+            ),
+
+            calendar.leadingAnchor.constraint(
+                equalTo:
+                    calendarContainer.leadingAnchor,
+                constant: 12
+            ),
+
+            calendar.trailingAnchor.constraint(
+                equalTo:
+                    calendarContainer.trailingAnchor,
+                constant: -12
+            ),
+
+            calendar.bottomAnchor.constraint(
+                equalTo:
+                    calendarDividerView.topAnchor,
+                constant: -8
+            ),
+
+            // Divider
+            calendarDividerView.leadingAnchor.constraint(
+                equalTo:
+                    calendarContainer.leadingAnchor,
+                constant: 16
+            ),
+
+            calendarDividerView.trailingAnchor.constraint(
+                equalTo:
+                    calendarContainer.trailingAnchor,
+                constant: -16
+            ),
+
+            calendarDividerView.bottomAnchor.constraint(
+                equalTo:
+                    calendarContainer.bottomAnchor,
+                constant: -56
+            ),
+
+            calendarDividerView.heightAnchor.constraint(
+                equalToConstant: 1
+            ),
+
+            // Legend
+            calendarLegendStackView.topAnchor.constraint(
+                equalTo:
+                    calendarDividerView.bottomAnchor,
+                constant: 10
+            ),
+
+            calendarLegendStackView.leadingAnchor.constraint(
+                equalTo:
+                    calendarContainer.leadingAnchor,
+                constant: 20
+            ),
+
+            calendarLegendStackView.trailingAnchor.constraint(
+                equalTo:
+                    calendarContainer.trailingAnchor,
+                constant: -20
+            ),
+
+            calendarLegendStackView.bottomAnchor.constraint(
+                equalTo:
+                    calendarContainer.bottomAnchor,
+                constant: -10
+            )
         ])
     }
 
-    // MARK: - ✅ Quick Navigation Setup
+    private func showInitialCalendarMonth() {
+
+        guard let initialDate =
+                dateFormatter.date(
+                    from: "2026-05-01"
+                ) else {
+
+            updateCalendarHeader()
+            return
+        }
+
+        calendar.setCurrentPage(
+            initialDate,
+            animated: false
+        )
+
+        updateCalendarHeader()
+    }
+
+    // MARK: - Calendar Navigation
+
+    @objc
+    private func previousMonthTapped() {
+
+        guard let previousMonth =
+                Calendar.current.date(
+                    byAdding: .month,
+                    value: -1,
+                    to: calendar.currentPage
+                ) else {
+            return
+        }
+
+        calendar.setCurrentPage(
+            previousMonth,
+            animated: true
+        )
+    }
+
+    @objc
+    private func nextMonthTapped() {
+
+        guard let nextMonth =
+                Calendar.current.date(
+                    byAdding: .month,
+                    value: 1,
+                    to: calendar.currentPage
+                ) else {
+            return
+        }
+
+        calendar.setCurrentPage(
+            nextMonth,
+            animated: true
+        )
+    }
+
+    private func updateCalendarHeader() {
+
+        guard calendar != nil else {
+            return
+        }
+
+        let monthText =
+            calendarMonthFormatter.string(
+                from: calendar.currentPage
+            )
+
+        calendarTitleLabel.text =
+            "Attendance Summary (\(monthText))"
+
+        calendarMonthLabel.text =
+            monthText
+    }
+
+    // MARK: - Quick Navigation Setup
+
     private func setupQuickNavigation() {
-        guard let cv2 = Collectionview2 else { return }
+
+        guard let collectionView =
+                Collectionview2 else {
+            return
+        }
 
         quickNavTitleLabel = UILabel()
-        quickNavTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        quickNavTitleLabel.text = "Quick Navigation"
-        quickNavTitleLabel.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
-        quickNavTitleLabel.textColor = .black
-        contentView.addSubview(quickNavTitleLabel)
 
-        cv2.delegate   = self
-        cv2.dataSource = self
-        cv2.backgroundColor = .clear
-        cv2.showsHorizontalScrollIndicator = false
-        cv2.isScrollEnabled = false
-        cv2.bounces         = false
-        cv2.translatesAutoresizingMaskIntoConstraints = false
+        quickNavTitleLabel.translatesAutoresizingMaskIntoConstraints =
+            false
 
-        cv2.register(
-            UINib(nibName: "ATDNCmultitypeattendanceCLVCLL", bundle: nil),
-            forCellWithReuseIdentifier: "ATDNCmultitypeattendanceCLVCLL"
+        quickNavTitleLabel.text =
+            "Quick Navigation"
+
+        quickNavTitleLabel.font =
+            UIFont.systemFont(
+                ofSize: 18,
+                weight: .semibold
+            )
+
+        quickNavTitleLabel.textColor =
+            .black
+
+        contentView.addSubview(
+            quickNavTitleLabel
+        )
+
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.backgroundColor = .clear
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.isScrollEnabled = false
+        collectionView.bounces = false
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+
+        collectionView.register(
+            UINib(
+                nibName: "ATDNCmultitypeattendanceCLVCLL",
+                bundle: nil
+            ),
+            forCellWithReuseIdentifier:
+                "ATDNCmultitypeattendanceCLVCLL"
         )
 
         let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection         = .horizontal
-        layout.minimumLineSpacing      = quickNavSpacing
-        layout.minimumInteritemSpacing = quickNavSpacing
-        layout.sectionInset = UIEdgeInsets(top: 0, left: sideInset, bottom: 0, right: sideInset)
-        cv2.collectionViewLayout = layout
 
-        if cv2.superview == nil {
-            contentView.addSubview(cv2)
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = quickNavSpacing
+        layout.minimumInteritemSpacing = quickNavSpacing
+
+        layout.sectionInset =
+            UIEdgeInsets(
+                top: 0,
+                left: sideInset,
+                bottom: 0,
+                right: sideInset
+            )
+
+        collectionView.collectionViewLayout =
+            layout
+
+        if collectionView.superview == nil {
+            contentView.addSubview(
+                collectionView
+            )
         }
 
         NSLayoutConstraint.activate([
-            quickNavTitleLabel.topAnchor.constraint(equalTo: calendarContainer.bottomAnchor, constant: quickNavTitleTopSpace),
-            quickNavTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: sideInset),
-            quickNavTitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -sideInset),
-            quickNavTitleLabel.heightAnchor.constraint(equalToConstant: quickNavTitleHeight),
 
-            cv2.topAnchor.constraint(equalTo: quickNavTitleLabel.bottomAnchor, constant: quickNavTopSpace),
-            cv2.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            cv2.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            cv2.heightAnchor.constraint(equalToConstant: quickNavSectionHeight)
+            quickNavTitleLabel.topAnchor.constraint(
+                equalTo:
+                    calendarContainer.bottomAnchor,
+                constant: quickNavTitleTopSpace
+            ),
+
+            quickNavTitleLabel.leadingAnchor.constraint(
+                equalTo:
+                    contentView.leadingAnchor,
+                constant: sideInset
+            ),
+
+            quickNavTitleLabel.trailingAnchor.constraint(
+                equalTo:
+                    contentView.trailingAnchor,
+                constant: -sideInset
+            ),
+
+            quickNavTitleLabel.heightAnchor.constraint(
+                equalToConstant: quickNavTitleHeight
+            ),
+
+            collectionView.topAnchor.constraint(
+                equalTo:
+                    quickNavTitleLabel.bottomAnchor,
+                constant: quickNavTopSpace
+            ),
+
+            collectionView.leadingAnchor.constraint(
+                equalTo:
+                    contentView.leadingAnchor
+            ),
+
+            collectionView.trailingAnchor.constraint(
+                equalTo:
+                    contentView.trailingAnchor
+            ),
+
+            collectionView.heightAnchor.constraint(
+                equalToConstant:
+                    quickNavSectionHeight
+            )
         ])
 
-        cv2.reloadData()
+        collectionView.reloadData()
     }
 
-    // MARK: - ✅ NEW: Recent Attendance Setup
+    // MARK: - Recent Attendance Setup
+
     private func setupRecentAttendance() {
-        guard let cv3 = Collectionview3 else { return }
 
-        // ── Title "Recent Attendance" ─────────────────────────────────────
+        guard let collectionView =
+                Collectionview3 else {
+            return
+        }
+
         recentAttendanceTitleLabel = UILabel()
-        recentAttendanceTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        recentAttendanceTitleLabel.text = "Recent Attendance"
-        recentAttendanceTitleLabel.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
-        recentAttendanceTitleLabel.textColor = .black
-        contentView.addSubview(recentAttendanceTitleLabel)
 
-      
-        // ── Container (rounded, bordered card) ────────────────────────────
+        recentAttendanceTitleLabel.translatesAutoresizingMaskIntoConstraints =
+            false
+
+        recentAttendanceTitleLabel.text =
+            "Recent Attendance"
+
+        recentAttendanceTitleLabel.font =
+            UIFont.systemFont(
+                ofSize: 18,
+                weight: .semibold
+            )
+
+        recentAttendanceTitleLabel.textColor =
+            .black
+
+        contentView.addSubview(
+            recentAttendanceTitleLabel
+        )
+
         recentAttendanceContainer = UIView()
-        recentAttendanceContainer.translatesAutoresizingMaskIntoConstraints = false
-        recentAttendanceContainer.backgroundColor = .white
-        recentAttendanceContainer.layer.cornerRadius = 12
-        recentAttendanceContainer.layer.borderWidth = 1
-        recentAttendanceContainer.layer.borderColor = UIColor(red: 229/255, green: 231/255, blue: 235/255, alpha: 1.0).cgColor
-        recentAttendanceContainer.layer.masksToBounds = true
-        contentView.addSubview(recentAttendanceContainer)
 
-        // ── CollectionView3 Setup ─────────────────────────────────────────
-        cv3.delegate   = self
-        cv3.dataSource = self
-        cv3.backgroundColor = .clear
-        cv3.showsVerticalScrollIndicator = false
-        cv3.isScrollEnabled = false
-        cv3.bounces        = false
-        cv3.translatesAutoresizingMaskIntoConstraints = false
+        recentAttendanceContainer.translatesAutoresizingMaskIntoConstraints =
+            false
 
-        // ✅ Register the Recent Attendance cell
-        cv3.register(
-            UINib(nibName: "ATDNCattendanceCLVCLL", bundle: nil),
-            forCellWithReuseIdentifier: "ATDNCattendanceCLVCLL"
+        recentAttendanceContainer.backgroundColor =
+            .white
+
+        recentAttendanceContainer.layer.cornerRadius =
+            12
+
+        recentAttendanceContainer.layer.borderWidth =
+            1
+
+        recentAttendanceContainer.layer.borderColor =
+            UIColor(
+                red: 229 / 255,
+                green: 231 / 255,
+                blue: 235 / 255,
+                alpha: 1
+            ).cgColor
+
+        recentAttendanceContainer.layer.masksToBounds =
+            true
+
+        contentView.addSubview(
+            recentAttendanceContainer
         )
 
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection         = .vertical
-        layout.minimumLineSpacing      = 0
-        layout.minimumInteritemSpacing = 0
-        layout.sectionInset            = .zero
-        cv3.collectionViewLayout       = layout
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.backgroundColor = .clear
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.isScrollEnabled = false
+        collectionView.bounces = false
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
 
-        // Add cv3 into container
-        recentAttendanceContainer.addSubview(cv3)
-
-        // ── Constraints ────────────────────────────────────────────────────
-        recentAttendanceHeightConstraint = recentAttendanceContainer.heightAnchor.constraint(
-            equalToConstant: CGFloat(recentAttendance.count) * recentAttendanceRowHeight
+        collectionView.register(
+            UINib(
+                nibName: "ATDNCattendanceCLVCLL",
+                bundle: nil
+            ),
+            forCellWithReuseIdentifier:
+                "ATDNCattendanceCLVCLL"
         )
+
+        let layout =
+            UICollectionViewFlowLayout()
+
+        layout.scrollDirection =
+            .vertical
+
+        layout.minimumLineSpacing =
+            0
+
+        layout.minimumInteritemSpacing =
+            0
+
+        layout.sectionInset =
+            .zero
+
+        collectionView.collectionViewLayout =
+            layout
+
+        recentAttendanceContainer.addSubview(
+            collectionView
+        )
+
+        recentAttendanceHeightConstraint =
+            recentAttendanceContainer.heightAnchor.constraint(
+                equalToConstant:
+                    CGFloat(recentAttendance.count)
+                    * recentAttendanceRowHeight
+            )
 
         NSLayoutConstraint.activate([
-            // Title
-            recentAttendanceTitleLabel.topAnchor.constraint(equalTo: Collectionview2.bottomAnchor, constant: recentAttendanceTitleTopSpace),
-            recentAttendanceTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: sideInset),
-            recentAttendanceTitleLabel.heightAnchor.constraint(equalToConstant: recentAttendanceTitleHeight),
 
-         
-            // Container (rounded card)
-            recentAttendanceContainer.topAnchor.constraint(equalTo: recentAttendanceTitleLabel.bottomAnchor, constant: recentAttendanceTopSpace),
-            recentAttendanceContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: sideInset),
-            recentAttendanceContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -sideInset),
+            recentAttendanceTitleLabel.topAnchor.constraint(
+                equalTo:
+                    Collectionview2.bottomAnchor,
+                constant:
+                    recentAttendanceTitleTopSpace
+            ),
+
+            recentAttendanceTitleLabel.leadingAnchor.constraint(
+                equalTo:
+                    contentView.leadingAnchor,
+                constant: sideInset
+            ),
+
+            recentAttendanceTitleLabel.trailingAnchor.constraint(
+                equalTo:
+                    contentView.trailingAnchor,
+                constant: -sideInset
+            ),
+
+            recentAttendanceTitleLabel.heightAnchor.constraint(
+                equalToConstant:
+                    recentAttendanceTitleHeight
+            ),
+
+            recentAttendanceContainer.topAnchor.constraint(
+                equalTo:
+                    recentAttendanceTitleLabel.bottomAnchor,
+                constant:
+                    recentAttendanceTopSpace
+            ),
+
+            recentAttendanceContainer.leadingAnchor.constraint(
+                equalTo:
+                    contentView.leadingAnchor,
+                constant: sideInset
+            ),
+
+            recentAttendanceContainer.trailingAnchor.constraint(
+                equalTo:
+                    contentView.trailingAnchor,
+                constant: -sideInset
+            ),
+
             recentAttendanceHeightConstraint,
 
-            // CollectionView3 fills container
-            cv3.topAnchor.constraint(equalTo: recentAttendanceContainer.topAnchor),
-            cv3.leadingAnchor.constraint(equalTo: recentAttendanceContainer.leadingAnchor),
-            cv3.trailingAnchor.constraint(equalTo: recentAttendanceContainer.trailingAnchor),
-            cv3.bottomAnchor.constraint(equalTo: recentAttendanceContainer.bottomAnchor)
+            collectionView.topAnchor.constraint(
+                equalTo:
+                    recentAttendanceContainer.topAnchor
+            ),
+
+            collectionView.leadingAnchor.constraint(
+                equalTo:
+                    recentAttendanceContainer.leadingAnchor
+            ),
+
+            collectionView.trailingAnchor.constraint(
+                equalTo:
+                    recentAttendanceContainer.trailingAnchor
+            ),
+
+            collectionView.bottomAnchor.constraint(
+                equalTo:
+                    recentAttendanceContainer.bottomAnchor
+            )
         ])
 
-        cv3.reloadData()
+        collectionView.reloadData()
     }
 
-    // MARK: - ✅ Dynamic height update for Recent Attendance
+    // MARK: - Recent Attendance Height
+
     private func updateRecentAttendanceHeight() {
-        let height = CGFloat(recentAttendance.count) * recentAttendanceRowHeight
-        recentAttendanceHeightConstraint.constant = height
+
+        let height =
+            CGFloat(recentAttendance.count)
+            * recentAttendanceRowHeight
+
+        recentAttendanceHeightConstraint.constant =
+            height
+
         contentView.layoutIfNeeded()
     }
 
-    // MARK: - Helper: status for a date
-    private func status(for date: Date) -> AttendanceStatus? {
-        let key = dateFormatter.string(from: date)
+    // MARK: - Attendance Date Helper
+
+    private func status(
+        for date: Date
+    ) -> AttendanceStatus? {
+
+        let key =
+            dateFormatter.string(
+                from: date
+            )
+
         return attendanceData[key]
     }
 
-    // MARK: - Update with API data (call from VC later)
-    func configure(present: Int, absent: Int, leave: Int, attendancePercent: Int) {
-        stats[0].value = "\(present)"
-        stats[1].value = "\(absent)"
-        stats[2].value = "\(leave)"
-        stats[3].value = "\(attendancePercent)%"
+    // MARK: - Configure Attendance Stats
+
+    func configure(
+        present: Int,
+        absent: Int,
+        leave: Int,
+        attendancePercent: Int
+    ) {
+
+        stats[0].value =
+            "\(present)"
+
+        stats[1].value =
+            "\(absent)"
+
+        stats[2].value =
+            "\(leave)"
+
+        stats[3].value =
+            "\(attendancePercent)%"
+
         Collectionview?.reloadData()
     }
 
-    // MARK: - ✅ Update calendar with API attendance data (call from VC later)
-    func configureCalendar(with data: [String: AttendanceStatus]) {
+    // MARK: - Configure Calendar
+
+    func configureCalendar(
+        with data: [String: AttendanceStatus]
+    ) {
+
         attendanceData = data
         calendar?.reloadData()
     }
 
-    // MARK: - ✅ NEW: Update Recent Attendance from API (call from VC later)
-    /// Call this to refresh recent attendance rows with API data
-    func configureRecentAttendance(with items: [RecentAttendance]) {
+    // MARK: - Configure Recent Attendance
+
+    func configureRecentAttendance(
+        with items: [RecentAttendance]
+    ) {
+
         recentAttendance = items
+
         Collectionview3?.reloadData()
+
         updateRecentAttendanceHeight()
 
-        // ✅ Notify tableview so it can recalculate row height
-        if let tv = self.superview as? UITableView {
-            tv.beginUpdates()
-            tv.endUpdates()
+        if let tableView =
+            findParentTableView() {
+
+            tableView.beginUpdates()
+            tableView.endUpdates()
         }
     }
 
-    // MARK: - ✅ Total content height (helps parent VC set row height dynamically)
+    private func findParentTableView() -> UITableView? {
+
+        var parentView: UIView? =
+            superview
+
+        while let currentView =
+                parentView {
+
+            if let tableView =
+                currentView as? UITableView {
+
+                return tableView
+            }
+
+            parentView =
+                currentView.superview
+        }
+
+        return nil
+    }
+
+    // MARK: - Total Content Height
+
     func totalContentHeight() -> CGFloat {
-        // top collectionview area (60) + calendarTopSpace(16) + calendar(426)
-        // + quickNav title top(16) + title(24) + quickNav top(16) + quickNav section(92)
-        // + recentAtt title top(16) + recentAtt title(24) + recentAtt top(12)
-        // + recentAtt container(dynamic) + bottom breathing (16)
-        let recentHeight = CGFloat(recentAttendance.count) * recentAttendanceRowHeight
-        let total: CGFloat = 60 + calendarTopSpace + calendarHeight
-                             + quickNavTitleTopSpace + quickNavTitleHeight + quickNavTopSpace + quickNavSectionHeight
-                             + recentAttendanceTitleTopSpace + recentAttendanceTitleHeight + recentAttendanceTopSpace
-                             + recentHeight + 16
+
+        let recentHeight =
+            CGFloat(recentAttendance.count)
+            * recentAttendanceRowHeight
+
+        let total: CGFloat =
+            cardHeight
+            + calendarTopSpace
+            + calendarHeight
+            + quickNavTitleTopSpace
+            + quickNavTitleHeight
+            + quickNavTopSpace
+            + quickNavSectionHeight
+            + recentAttendanceTitleTopSpace
+            + recentAttendanceTitleHeight
+            + recentAttendanceTopSpace
+            + recentHeight
+            + 16
+
         return total
     }
 }
 
-// MARK: - UICollectionView DataSource & Delegate
-extension ATDNCdashboardUITableViewCell1: UICollectionViewDataSource,
-                                          UICollectionViewDelegate,
-                                          UICollectionViewDelegateFlowLayout {
+// MARK: - UICollectionViewDataSource
 
-    func collectionView(_ collectionView: UICollectionView,
-                        numberOfItemsInSection section: Int) -> Int {
+extension ATDNCdashboardUITableViewCell1:
+    UICollectionViewDataSource,
+    UICollectionViewDelegate,
+    UICollectionViewDelegateFlowLayout {
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        numberOfItemsInSection section: Int
+    ) -> Int {
+
         if collectionView == Collectionview2 {
             return quickNavItems.count
         }
+
         if collectionView == Collectionview3 {
             return recentAttendance.count
         }
+
         return stats.count
     }
 
-    func collectionView(_ collectionView: UICollectionView,
-                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
 
-        // ✅ Quick Navigation cell
+        // MARK: Quick Navigation Cell
+
         if collectionView == Collectionview2 {
-            let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: "ATDNCmultitypeattendanceCLVCLL",
-                for: indexPath
-            ) as! ATDNCmultitypeattendanceCLVCLL
 
-            let item = quickNavItems[indexPath.item]
+            let cell =
+                collectionView.dequeueReusableCell(
+                    withReuseIdentifier:
+                        "ATDNCmultitypeattendanceCLVCLL",
+                    for: indexPath
+                ) as! ATDNCmultitypeattendanceCLVCLL
 
-            cell.Backgroundview.backgroundColor = item.backgroundColor
-            cell.Backgroundview.layer.cornerRadius = 16
-            cell.Backgroundview.layer.masksToBounds = true
+            let item =
+                quickNavItems[indexPath.item]
 
-            cell.Imageview.image = UIImage(named: item.imageName)
-            cell.Imageview.contentMode = .scaleAspectFit
+            cell.Backgroundview.backgroundColor =
+                item.backgroundColor
 
-            cell.TitleLbl.text = item.title
-            cell.TitleLbl.numberOfLines = 2
-            cell.TitleLbl.textAlignment = .center
-            cell.TitleLbl.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-            cell.TitleLbl.textColor = .black
+            cell.Backgroundview.layer.cornerRadius =
+                16
 
-            return cell
-        }
+            cell.Backgroundview.layer.masksToBounds =
+                true
 
-        // ✅ Recent Attendance cell (Collectionview3)
-        if collectionView == Collectionview3 {
-            let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: "ATDNCattendanceCLVCLL",
-                for: indexPath
-            ) as! ATDNCattendanceCLVCLL
-
-            let item = recentAttendance[indexPath.item]
-
-            // Date label
-            cell.DateLbl.text = item.dateText
-            cell.DateLbl.font = UIFont.systemFont(ofSize: 15, weight: .medium)
-            cell.DateLbl.textColor = .black
-
-            // Status label with colored dot (using attributed text)
-            let statusColor = item.status.dotColor
-            let statusText  = item.status.displayText
-
-            let attrText = NSMutableAttributedString(
-                string: "\(statusText)  ",
-                attributes: [
-                    .foregroundColor: statusColor,
-                    .font: UIFont.systemFont(ofSize: 15, weight: .medium)
-                ]
-            )
-            // colored dot
-            let dotAttachment = NSTextAttachment()
-            let dotSize: CGFloat = 8
-            let dotImage = UIGraphicsImageRenderer(size: CGSize(width: dotSize, height: dotSize)).image { ctx in
-                statusColor.setFill()
-                UIBezierPath(ovalIn: CGRect(x: 0, y: 0, width: dotSize, height: dotSize)).fill()
-            }
-            dotAttachment.image = dotImage
-            dotAttachment.bounds = CGRect(x: 0, y: -1, width: dotSize, height: dotSize)
-            attrText.append(NSAttributedString(attachment: dotAttachment))
-            cell.AttendancestatusLbl.attributedText = attrText
-            cell.AttendancestatusLbl.textAlignment = .right
-
-            // Backgroundview (row bottom separator except last row)
-            cell.Backgroundview.backgroundColor = .white
-            // Remove existing sublayers to avoid stacking on reuse
-            cell.Backgroundview.layer.sublayers?.removeAll(where: { $0.name == "bottomSeparator" })
-
-            if indexPath.item < recentAttendance.count - 1 {
-                let separator = CALayer()
-                separator.name = "bottomSeparator"
-                separator.backgroundColor = UIColor(red: 229/255, green: 231/255, blue: 235/255, alpha: 1.0).cgColor
-                separator.frame = CGRect(
-                    x: 16,
-                    y: recentAttendanceRowHeight - 1,
-                    width: collectionView.bounds.width - 32,
-                    height: 1
+            cell.Imageview.image =
+                UIImage(
+                    named: item.imageName
                 )
-                cell.Backgroundview.layer.addSublayer(separator)
+
+            cell.Imageview.contentMode =
+                .scaleAspectFit
+
+            cell.TitleLbl.text =
+                item.title
+
+            cell.TitleLbl.numberOfLines =
+                2
+
+            cell.TitleLbl.textAlignment =
+                .center
+
+            cell.TitleLbl.font =
+                UIFont.systemFont(
+                    ofSize: 12,
+                    weight: .medium
+                )
+
+            cell.TitleLbl.textColor =
+                .black
+
+            return cell
+        }
+
+        // MARK: Recent Attendance Cell
+
+        if collectionView == Collectionview3 {
+
+            let cell =
+                collectionView.dequeueReusableCell(
+                    withReuseIdentifier:
+                        "ATDNCattendanceCLVCLL",
+                    for: indexPath
+                ) as! ATDNCattendanceCLVCLL
+
+            let item =
+                recentAttendance[indexPath.item]
+
+            cell.DateLbl.text =
+                item.dateText
+
+            cell.DateLbl.font =
+                UIFont.systemFont(
+                    ofSize: 15,
+                    weight: .medium
+                )
+
+            cell.DateLbl.textColor =
+                .black
+
+            let statusColor =
+                item.status.dotColor
+
+            let statusText =
+                item.status.displayText
+
+            let attributedText =
+                NSMutableAttributedString()
+
+            let dotAttachment =
+                NSTextAttachment()
+
+            let dotSize: CGFloat =
+                8
+
+            let dotImage =
+                UIGraphicsImageRenderer(
+                    size: CGSize(
+                        width: dotSize,
+                        height: dotSize
+                    )
+                ).image { _ in
+
+                    statusColor.setFill()
+
+                    UIBezierPath(
+                        ovalIn: CGRect(
+                            x: 0,
+                            y: 0,
+                            width: dotSize,
+                            height: dotSize
+                        )
+                    ).fill()
+                }
+
+            dotAttachment.image =
+                dotImage
+
+            dotAttachment.bounds =
+                CGRect(
+                    x: 0,
+                    y: -1,
+                    width: dotSize,
+                    height: dotSize
+                )
+
+            attributedText.append(
+                NSAttributedString(
+                    attachment: dotAttachment
+                )
+            )
+
+            attributedText.append(
+                NSAttributedString(
+                    string: "  \(statusText)",
+                    attributes: [
+                        .foregroundColor: statusColor,
+                        .font: UIFont.systemFont(
+                            ofSize: 15,
+                            weight: .medium
+                        )
+                    ]
+                )
+            )
+
+            cell.AttendancestatusLbl.attributedText =
+                attributedText
+
+            cell.AttendancestatusLbl.textAlignment =
+                .right
+
+            cell.Backgroundview.backgroundColor =
+                .white
+
+            cell.Backgroundview.layer.sublayers?
+                .removeAll(
+                    where: {
+                        $0.name == "bottomSeparator"
+                    }
+                )
+
+            if indexPath.item <
+                recentAttendance.count - 1 {
+
+                let separator =
+                    CALayer()
+
+                separator.name =
+                    "bottomSeparator"
+
+                separator.backgroundColor =
+                    UIColor(
+                        red: 229 / 255,
+                        green: 231 / 255,
+                        blue: 235 / 255,
+                        alpha: 1
+                    ).cgColor
+
+                separator.frame =
+                    CGRect(
+                        x: 16,
+                        y:
+                            recentAttendanceRowHeight
+                            - 1,
+                        width:
+                            collectionView.bounds.width
+                            - 32,
+                        height: 1
+                    )
+
+                cell.Backgroundview.layer.addSublayer(
+                    separator
+                )
             }
 
             return cell
         }
 
-        // ✅ Top stat cards
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: "ATDNCattendanceCollectionViewCell",
-            for: indexPath
-        ) as! ATDNCattendanceCollectionViewCell
+        // MARK: Attendance Stat Cell
 
-        let stat = stats[indexPath.item]
+        let cell =
+            collectionView.dequeueReusableCell(
+                withReuseIdentifier:
+                    "ATDNCattendanceCollectionViewCell",
+                for: indexPath
+            ) as! ATDNCattendanceCollectionViewCell
+
+        let stat =
+            stats[indexPath.item]
+
         cell.configure(
-            title:           stat.title,
-            value:           stat.value,
-            backgroundColor: stat.backgroundColor,
-            borderColor:     stat.borderColor,
-            textColor:       stat.textColor
+            title: stat.title,
+            value: stat.value,
+            backgroundColor:
+                stat.backgroundColor,
+            borderColor:
+                stat.borderColor,
+            textColor:
+                stat.textColor
         )
+
         return cell
     }
 
-    // MARK: - Dynamic width per collection view
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+    // MARK: - Cell Size
 
-        // ✅ Quick Navigation: fixed 80 × 92
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
+
         if collectionView == Collectionview2 {
-            return CGSize(width: quickNavCellWidth, height: quickNavCellHeight)
+
+            return CGSize(
+                width: quickNavCellWidth,
+                height: quickNavCellHeight
+            )
         }
 
-        // ✅ Recent Attendance: full width × 52
         if collectionView == Collectionview3 {
-            return CGSize(width: collectionView.bounds.width, height: recentAttendanceRowHeight)
+
+            return CGSize(
+                width: collectionView.bounds.width,
+                height: recentAttendanceRowHeight
+            )
         }
 
-        // ✅ Top stat cards: dynamic width fills row
-        let cardCount: CGFloat    = CGFloat(stats.count)
-        let totalSpacing: CGFloat = cardSpacing * (cardCount - 1)
-        let totalInsets: CGFloat  = sideInset * 2
+        let cardCount =
+            CGFloat(stats.count)
 
-        let availableWidth = collectionView.bounds.width - totalSpacing - totalInsets
-        let cardWidth = floor(availableWidth / cardCount)
+        let totalSpacing =
+            cardSpacing
+            * (cardCount - 1)
 
-        return CGSize(width: cardWidth, height: cardHeight)
+        let totalInsets =
+            sideInset * 2
+
+        let availableWidth =
+            collectionView.bounds.width
+            - totalSpacing
+            - totalInsets
+
+        let cardWidth =
+            floor(
+                availableWidth
+                / cardCount
+            )
+
+        return CGSize(
+            width: cardWidth,
+            height: cardHeight
+        )
     }
 }
 
-// MARK: - ✅ FSCalendar Delegate, DataSource & Appearance
-extension ATDNCdashboardUITableViewCell1: FSCalendarDelegate,
-                                          FSCalendarDataSource,
-                                          FSCalendarDelegateAppearance {
+// MARK: - FSCalendar Delegate, DataSource and Appearance
 
-    func calendar(_ calendar: FSCalendar,
-                  appearance: FSCalendarAppearance,
-                  fillDefaultColorFor date: Date) -> UIColor? {
-        return status(for: date)?.fillColor
+extension ATDNCdashboardUITableViewCell1:
+    FSCalendarDelegate,
+    FSCalendarDataSource,
+    FSCalendarDelegateAppearance {
+
+    func calendarCurrentPageDidChange(
+        _ calendar: FSCalendar
+    ) {
+
+        updateCalendarHeader()
     }
 
-    func calendar(_ calendar: FSCalendar,
-                  appearance: FSCalendarAppearance,
-                  titleDefaultColorFor date: Date) -> UIColor? {
-        return status(for: date)?.dotColor ?? .black
+    func calendar(
+        _ calendar: FSCalendar,
+        appearance: FSCalendarAppearance,
+        fillDefaultColorFor date: Date
+    ) -> UIColor? {
+
+        return status(
+            for: date
+        )?.fillColor
     }
 
-    func calendar(_ calendar: FSCalendar,
-                  numberOfEventsFor date: Date) -> Int {
-        return status(for: date) != nil ? 1 : 0
+    func calendar(
+        _ calendar: FSCalendar,
+        appearance: FSCalendarAppearance,
+        titleDefaultColorFor date: Date
+    ) -> UIColor? {
+
+        guard let attendanceStatus =
+                status(
+                    for: date
+                ) else {
+
+            return UIColor(
+                red: 17 / 255,
+                green: 24 / 255,
+                blue: 39 / 255,
+                alpha: 1
+            )
+        }
+
+        return attendanceStatus.dotColor
     }
 
-    func calendar(_ calendar: FSCalendar,
-                  appearance: FSCalendarAppearance,
-                  eventDefaultColorsFor date: Date) -> [UIColor]? {
-        guard let s = status(for: date) else { return nil }
-        return [s.dotColor]
+    func calendar(
+        _ calendar: FSCalendar,
+        numberOfEventsFor date: Date
+    ) -> Int {
+
+        return status(for: date) == nil
+            ? 0
+            : 1
     }
 
-    func calendar(_ calendar: FSCalendar,
-                  shouldSelect date: Date,
-                  at monthPosition: FSCalendarMonthPosition) -> Bool {
+    func calendar(
+        _ calendar: FSCalendar,
+        appearance: FSCalendarAppearance,
+        eventDefaultColorsFor date: Date
+    ) -> [UIColor]? {
+
+        guard let attendanceStatus =
+                status(
+                    for: date
+                ) else {
+
+            return nil
+        }
+
+        return [
+            attendanceStatus.dotColor
+        ]
+    }
+
+    func calendar(
+        _ calendar: FSCalendar,
+        appearance: FSCalendarAppearance,
+        eventSelectionColorsFor date: Date
+    ) -> [UIColor]? {
+
+        guard let attendanceStatus =
+                status(
+                    for: date
+                ) else {
+
+            return nil
+        }
+
+        return [
+            attendanceStatus.dotColor
+        ]
+    }
+
+    func calendar(
+        _ calendar: FSCalendar,
+        appearance: FSCalendarAppearance,
+        borderRadiusFor date: Date
+    ) -> CGFloat {
+
+        return 1
+    }
+
+    func calendar(
+        _ calendar: FSCalendar,
+        shouldSelect date: Date,
+        at monthPosition: FSCalendarMonthPosition
+    ) -> Bool {
+
         return false
     }
 }

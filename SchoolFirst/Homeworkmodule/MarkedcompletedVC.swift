@@ -8,6 +8,11 @@
 import UIKit
 class MarkedcompletedVC: UIViewController {
     
+    @IBOutlet weak var Homeworktitlewithpdf: UILabel!
+    @IBOutlet weak var Homeworktitle: UILabel!
+    @IBOutlet weak var Subject: UILabel!
+    
+    @IBOutlet weak var Description: UILabel!
     @IBOutlet weak var TopView: UIView!
     override func viewDidLoad() {
         super.viewDidLoad()

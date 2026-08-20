@@ -9,11 +9,14 @@ import UIKit
 
 class HomeworkStudentTableViewCell1: UITableViewCell {
 
+    @IBOutlet weak var StudentgradeandSectionLbl: UILabel!
+    @IBOutlet weak var StudentNameLbl: UILabel!
     @IBOutlet weak var Backgroungview: UIView!
 
     override func awakeFromNib() {
         super.awakeFromNib()
-
+        StudentNameLbl.text = UserManager.shared.resolvedStudentName
+        StudentgradeandSectionLbl.text   = UserManager.shared.resolvedGradeSection
         // Light Gray Shadow
         Backgroungview.layer.shadowColor = UIColor.lightGray.cgColor
         Backgroungview.layer.shadowOpacity = 0.4

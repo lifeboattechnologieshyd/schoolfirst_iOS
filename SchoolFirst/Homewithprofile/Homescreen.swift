@@ -362,6 +362,9 @@ UICollectionViewDelegateFlowLayout {
         case "Transport":
             navigateToTransport()
             
+        case "Attendance":
+            navigateToAttendance()
+            
         default:
             print("Tapped: \(title)")
         }
@@ -446,6 +449,30 @@ UICollectionViewDelegateFlowLayout {
             }
         }
     }
+    private func navigateToHomework() {
+
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+        if let homeworkVC = storyboard.instantiateViewController(
+            withIdentifier: "HomeworkVC"
+        ) as? HomeworkVC {
+
+            homeworkVC.hidesBottomBarWhenPushed = true
+
+            if let nav = navigationController {
+
+                nav.setNavigationBarHidden(true, animated: false)
+                nav.pushViewController(homeworkVC, animated: true)
+
+            } else {
+
+                homeworkVC.modalPresentationStyle = .fullScreen
+                present(homeworkVC, animated: true)
+            }
+        }
+    }
+    
+    
     // MARK: - NAVIGATE TO TRANSPORT
     
     private func navigateToTransport() {
@@ -492,22 +519,22 @@ UICollectionViewDelegateFlowLayout {
         }
     }
     
-    private func navigateToHomework() {
+    private func navigateToAttendance() {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
-        if let HomeworkVC = storyboard.instantiateViewController(
-            withIdentifier: "HomeworkVC"
-        ) as? HomeworkVC {
+        if let AttendancedashboardVC = storyboard.instantiateViewController(
+            withIdentifier: "AttendancedashboardVC"
+        ) as? AttendancedashboardVC {
             
-            HomeworkVC.hidesBottomBarWhenPushed = true
+            AttendancedashboardVC.hidesBottomBarWhenPushed = true
             
             if let nav = navigationController {
                 nav.setNavigationBarHidden(true, animated: false)
-                nav.pushViewController(HomeworkVC, animated: true)
+                nav.pushViewController(AttendancedashboardVC, animated: true)
             } else {
-                HomeworkVC.modalPresentationStyle = .fullScreen
-                present(HomeworkVC, animated: true)
+                AttendancedashboardVC.modalPresentationStyle = .fullScreen
+                present(AttendancedashboardVC, animated: true)
             }
         }
     }
