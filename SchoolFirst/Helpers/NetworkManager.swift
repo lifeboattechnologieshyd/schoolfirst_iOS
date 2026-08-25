@@ -320,7 +320,14 @@ struct Course: Codable {
     }
 }
 //***ticketdetails API response model
-// MARK: - TicketItem (API 1: List Response Model)
+//
+//  Models.swift
+//  SchoolFirst
+//
+
+import Foundation
+
+// MARK: - API 1: Ticket List Response Model
 struct TicketItem: Codable {
     let id: String?
     let title: String?
@@ -332,9 +339,44 @@ struct TicketItem: Codable {
         case id, title, status, description
         case createdAt = "created_at"
     }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        // 1. Decode ID (handles string, integer, or UUID from backend)
+        if let stringId = try? container.decodeIfPresent(String.self, forKey: .id) {
+            self.id = stringId
+        } else if let intId = try? container.decodeIfPresent(Int.self, forKey: .id) {
+            self.id = String(intId)
+        } else {
+            self.id = nil
+        }
+        
+        self.title = try container.decodeIfPresent(String.self, forKey: .title)
+        self.status = try container.decodeIfPresent(String.self, forKey: .status)
+        self.createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt)
+        
+        // 2. Decode Description with fallback keys (desc, message, query, details)
+        if let desc = try? container.decodeIfPresent(String.self, forKey: .description), !desc.isEmpty {
+            self.description = desc
+        } else {
+            let dynamicContainer = try decoder.container(keyedBy: DynamicCodingKeys.self)
+            let fallbackKeys = ["desc", "message", "query", "ticket_description", "details", "query_description", "body"]
+            var foundDesc: String? = nil
+            for key in fallbackKeys {
+                if let dynamicKey = DynamicCodingKeys(stringValue: key),
+                   let val = try? dynamicContainer.decodeIfPresent(String.self, forKey: dynamicKey),
+                   !val.isEmpty {
+                    foundDesc = val
+                    break
+                }
+            }
+            self.description = foundDesc
+        }
+    }
 }
 
-// MARK: - TicketData (API 2: Detail Response Model)
+// MARK: - API 2: Ticket Detail Response Model
 struct TicketData: Codable {
     let id: String?
     let title: String?
@@ -347,6 +389,40 @@ struct TicketData: Codable {
         case id, title, description, status
         case createdAt = "created_at"
         case messages
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        if let stringId = try? container.decodeIfPresent(String.self, forKey: .id) {
+            self.id = stringId
+        } else if let intId = try? container.decodeIfPresent(Int.self, forKey: .id) {
+            self.id = String(intId)
+        } else {
+            self.id = nil
+        }
+        
+        self.title = try container.decodeIfPresent(String.self, forKey: .title)
+        self.status = try container.decodeIfPresent(String.self, forKey: .status)
+        self.createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt)
+        self.messages = try container.decodeIfPresent([TicketMessage].self, forKey: .messages)
+        
+        if let desc = try? container.decodeIfPresent(String.self, forKey: .description), !desc.isEmpty {
+            self.description = desc
+        } else {
+            let dynamicContainer = try decoder.container(keyedBy: DynamicCodingKeys.self)
+            let fallbackKeys = ["desc", "message", "query", "ticket_description", "details", "query_description"]
+            var foundDesc: String? = nil
+            for key in fallbackKeys {
+                if let dynamicKey = DynamicCodingKeys(stringValue: key),
+                   let val = try? dynamicContainer.decodeIfPresent(String.self, forKey: dynamicKey),
+                   !val.isEmpty {
+                    foundDesc = val
+                    break
+                }
+            }
+            self.description = foundDesc
+        }
     }
 }
 
@@ -363,6 +439,14 @@ struct TicketMessage: Codable {
         case senderType = "sender_type"
         case createdAt = "created_at"
     }
+}
+
+// Helper Dynamic Keys
+private struct DynamicCodingKeys: CodingKey {
+    var stringValue: String
+    init?(stringValue: String) { self.stringValue = stringValue }
+    var intValue: Int?
+    init?(intValue: Int) { return nil }
 }
 // MARK: - EmptyTicketData
 // Used for the POST API where "data" returns {}
