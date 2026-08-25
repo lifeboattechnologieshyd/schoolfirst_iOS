@@ -510,7 +510,7 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
             navigationController?.pushViewController(vc, animated: true)
         case 8:
             print("Ask Us")
-            let vc = storyboard?.instantiateViewController(identifier: "ComingSoonVC") as! ComingSoonVC
+            let vc = storyboard?.instantiateViewController(identifier: "QuerieshistoryVC") as! QuerieshistoryVC
             navigationController?.pushViewController(vc, animated: true)
         default:
             print("Courses")

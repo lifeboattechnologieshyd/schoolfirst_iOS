@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="xnG-DO-e7U">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="xQk-ro-l25">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -3427,7 +3427,41 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="XZv-HY-TsY">
                                 <rect key="frame" x="0.0" y="195" width="393" height="589"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <view key="tableFooterView" contentMode="scaleToFill" id="XRV-dB-I1P">
+                                    <rect key="frame" x="0.0" y="0.0" width="393" height="44"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                </view>
                             </tableView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q9g-JS-QT9">
+                                <rect key="frame" x="317" y="696" width="56" height="56"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DNl-Tc-Mdk">
+                                        <rect key="frame" x="18" y="18" width="20" height="20"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="20" id="ak6-9Y-jrY"/>
+                                            <constraint firstAttribute="height" constant="20" id="oWi-jP-ZSj"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="plusicon"/>
+                                        <connections>
+                                            <action selector="addQueryButtonTapped:" destination="nB3-XU-822" eventType="touchUpInside" id="z3c-TC-tlk"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" red="0.1274414062" green="0.2053222656" blue="0.3903808594" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="56" id="RZN-J4-bRv"/>
+                                    <constraint firstItem="DNl-Tc-Mdk" firstAttribute="centerX" secondItem="q9g-JS-QT9" secondAttribute="centerX" id="XXX-z1-K1p"/>
+                                    <constraint firstItem="DNl-Tc-Mdk" firstAttribute="centerY" secondItem="q9g-JS-QT9" secondAttribute="centerY" id="YAm-D9-BgH"/>
+                                    <constraint firstAttribute="height" constant="56" id="mjD-S7-Qld"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="28"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="LqI-10-gYP"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -3439,13 +3473,16 @@
                             <constraint firstItem="c8Q-9p-jfZ" firstAttribute="leading" secondItem="VCJ-2J-u0o" secondAttribute="leading" id="Ofd-Bf-q6N"/>
                             <constraint firstItem="LqI-10-gYP" firstAttribute="trailing" secondItem="XZv-HY-TsY" secondAttribute="trailing" id="Vuy-9d-0Lq"/>
                             <constraint firstItem="c8Q-9p-jfZ" firstAttribute="top" secondItem="LqI-10-gYP" secondAttribute="top" constant="50" id="X8F-LI-Kzl"/>
+                            <constraint firstItem="LqI-10-gYP" firstAttribute="trailing" secondItem="q9g-JS-QT9" secondAttribute="trailing" constant="20" id="bYR-t3-hIe"/>
                             <constraint firstItem="7ee-oK-5sW" firstAttribute="leading" secondItem="NC2-0T-Wf6" secondAttribute="leading" id="fjc-4f-sk8"/>
                             <constraint firstItem="XZv-HY-TsY" firstAttribute="top" secondItem="c8Q-9p-jfZ" secondAttribute="bottom" constant="10" id="nbM-MM-RV0"/>
+                            <constraint firstAttribute="bottom" secondItem="q9g-JS-QT9" secondAttribute="bottom" constant="100" id="xjU-VK-86C"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="backButton" destination="VCJ-2J-u0o" id="ccH-hz-eHY"/>
-                        <outlet property="tableview" destination="XZv-HY-TsY" id="46J-Em-Uk3"/>
+                        <outlet property="Addquerybutton" destination="DNl-Tc-Mdk" id="zkj-yc-QxF"/>
+                        <outlet property="backButton" destination="VCJ-2J-u0o" id="XYe-Ph-uDw"/>
+                        <outlet property="tableview" destination="XZv-HY-TsY" id="vX6-6A-NW5"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lzg-QG-B90" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -4099,8 +4136,10 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="Descriptiontextfield" destination="Evf-XX-kMH" id="u9e-4C-CNM"/>
                         <outlet property="SumitqueryButton" destination="Nyz-yi-kcd" id="uUY-E6-rVd"/>
                         <outlet property="backButton" destination="aTM-dK-Rkz" id="bGe-6f-bfB"/>
+                        <outlet property="titletextfield" destination="ifj-ze-AQr" id="DQq-5d-CHK"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2BS-bc-9ez" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -7126,6 +7165,7 @@
         <image name="logo" width="40" height="40"/>
         <image name="magnifyingglass" catalog="system" width="128" height="117"/>
         <image name="messageicon" width="60" height="60"/>
+        <image name="plusicon" width="13.666666984558105" height="13.666666984558105"/>
         <image name="profile_tab" width="20" height="20"/>
         <image name="search" width="20" height="20"/>
         <image name="shareicon" width="17" height="17"/>

@@ -319,7 +319,55 @@ struct Course: Codable {
         case demoVideo = "demo_video"           // Maps correctly
     }
 }
+//***ticketdetails API response model
+// MARK: - TicketItem (API 1: List Response Model)
+struct TicketItem: Codable {
+    let id: String?
+    let title: String?
+    let status: String?
+    let createdAt: String?
+    let description: String?
 
+    enum CodingKeys: String, CodingKey {
+        case id, title, status, description
+        case createdAt = "created_at"
+    }
+}
+
+// MARK: - TicketData (API 2: Detail Response Model)
+struct TicketData: Codable {
+    let id: String?
+    let title: String?
+    let description: String?
+    let status: String?
+    let createdAt: String?
+    let messages: [TicketMessage]?
+
+    enum CodingKeys: String, CodingKey {
+        case id, title, description, status
+        case createdAt = "created_at"
+        case messages
+    }
+}
+
+// MARK: - TicketMessage
+struct TicketMessage: Codable {
+    let id: String?
+    let senderType: String?
+    let message: String?
+    let attachments: [String]?
+    let createdAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, message, attachments
+        case senderType = "sender_type"
+        case createdAt = "created_at"
+    }
+}
+// MARK: - EmptyTicketData
+// Used for the POST API where "data" returns {}
+struct EmptyTicketData: Codable {
+}
 import Foundation
 
 // MARK: - Feed

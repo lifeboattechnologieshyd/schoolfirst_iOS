@@ -178,6 +178,13 @@ struct API {
 
     static let WEBINARS = BASE_URL + "courses/get/webinar"
     static let OFFLINE_COURSES = BASE_URL + "courses/get/course"   // This is your working offline API
+    
+    static let GET_TICKETS_LIST = BASE_URL + "user/support/tickets"
+
+       // 👉 API 2: Ticket Details Base URL
+       static let GET_TICKET_DETAIL = BASE_URL + "user/support/tickets/"
+    
+    static let CREATE_TICKET     = BASE_URL + "user/support/tickets"
 }
 
     

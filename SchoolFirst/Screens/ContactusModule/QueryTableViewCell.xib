@@ -82,9 +82,9 @@
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2 hours ago" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nqd-A6-alt">
-                                <rect key="frame" x="30" y="108.66666666666667" width="100" height="15"/>
+                                <rect key="frame" x="30" y="108.66666666666667" width="160" height="15"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="100" id="BzT-iX-E4v"/>
+                                    <constraint firstAttribute="width" constant="160" id="BzT-iX-E4v"/>
                                     <constraint firstAttribute="height" constant="15" id="fFx-g5-nHC"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
@@ -143,6 +143,12 @@
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="CreatedtimeLbl" destination="Nqd-A6-alt" id="h45-m0-Ope"/>
+                <outlet property="StatusLbl" destination="gvN-Sv-IDl" id="jNq-WG-DeW"/>
+                <outlet property="descriptionLabel" destination="JSw-gP-Ni9" id="zsY-Rh-tIa"/>
+                <outlet property="titleLabel" destination="Z58-ou-cji" id="Uf5-Gw-Qcn"/>
+            </connections>
             <point key="canvasLocation" x="91.603053435114504" y="98.591549295774655"/>
         </tableViewCell>
     </objects>
