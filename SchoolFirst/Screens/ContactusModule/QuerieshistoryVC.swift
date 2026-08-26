@@ -18,35 +18,53 @@ class QuerieshistoryVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         setupTableView()
     }
-    
+
+    // MARK: - View Will Appear
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        // Refresh the ticket list whenever we come back
+        // from ChatVC.
         fetchTicketList()
     }
-    
+
     // MARK: - Button Actions
-    
+
     @IBAction func backButtonTapped(_ sender: UIButton) {
-        self.navigationController?.popViewController(animated: true)
+
+        navigationController?.popViewController(animated: true)
     }
 
     @IBAction func addQueryButtonTapped(_ sender: UIButton) {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        
-        if let raiseQueryVC = storyboard.instantiateViewController(withIdentifier: "RaiseaQueryVC") as? RaiseaQueryVC {
-            self.navigationController?.pushViewController(raiseQueryVC, animated: true)
+
+        let storyboard = UIStoryboard(
+            name: "Main",
+            bundle: nil
+        )
+
+        if let raiseQueryVC =
+            storyboard.instantiateViewController(
+                withIdentifier: "RaiseaQueryVC"
+            ) as? RaiseaQueryVC {
+
+            navigationController?.pushViewController(
+                raiseQueryVC,
+                animated: true
+            )
         }
     }
 
     // MARK: - TableView Setup
 
     private func setupTableView() {
+
         tableview.delegate = self
         tableview.dataSource = self
 
-        // Register Query Cell
         tableview.register(
             UINib(
                 nibName: "QueryTableViewCell",
@@ -58,134 +76,304 @@ class QuerieshistoryVC: UIViewController {
         tableview.separatorStyle = .none
         tableview.showsVerticalScrollIndicator = false
     }
-    
+
     // MARK: - API 1: Fetch Tickets List
-    
+
     private func fetchTicketList() {
-        guard !isLoading else { return }
+
+        // Prevent duplicate requests while one request
+        // is already running.
+        guard !isLoading else {
+            return
+        }
+
         isLoading = true
-        showLoader()
-        
+
         let url = API.GET_TICKETS_LIST
-        
-        NetworkManager.shared.request(urlString: url, method: .GET) { [weak self] (result: Result<APIResponse<[TicketItem]>, NetworkError>) in
-            guard let self = self else { return }
-            self.isLoading = false
-            self.hideLoader()
-            
-            switch result {
-            case .success(let info):
-                if info.success {
-                    self.tickets = info.data ?? []
-                    DispatchQueue.main.async {
+
+        NetworkManager.shared.request(
+            urlString: url,
+            method: .GET
+        ) { [weak self] (
+            result: Result<APIResponse<[TicketItem]>, NetworkError>
+        ) in
+
+            guard let self = self else {
+                return
+            }
+
+            DispatchQueue.main.async {
+
+                self.isLoading = false
+
+                switch result {
+
+                case .success(let info):
+
+                    if info.success {
+
+                        self.tickets = info.data ?? []
+
+                        // Reload the table every time we return
+                        // from ChatVC.
+                        self.tableview.reloadData()
+
+                        // Optional empty state
                         if self.tickets.isEmpty {
                             self.navigateToComingSoon()
-                        } else {
-                            self.tableview.reloadData()
                         }
+
+                    } else {
+
+                        self.showAlert(
+                            msg: info.description
+                        )
                     }
-                } else {
-                    DispatchQueue.main.async {
-                        self.showAlert(msg: info.description)
-                    }
-                }
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    self.showAlert(msg: error.localizedDescription)
+
+                case .failure(let error):
+
+                    self.showAlert(
+                        msg: error.localizedDescription
+                    )
                 }
             }
         }
     }
-    
-    // MARK: - Empty State Navigation
-    
+
+    // MARK: - Empty State
+
     private func navigateToComingSoon() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let comingSoonVC = storyboard.instantiateViewController(withIdentifier: "ComingSoonVC")
-        
-        if var viewControllers = self.navigationController?.viewControllers {
-            viewControllers.removeLast()
+
+        let storyboard = UIStoryboard(
+            name: "Main",
+            bundle: nil
+        )
+
+        let comingSoonVC =
+            storyboard.instantiateViewController(
+                withIdentifier: "ComingSoonVC"
+            )
+
+        if var viewControllers =
+            navigationController?.viewControllers {
+
+            if !viewControllers.isEmpty {
+                viewControllers.removeLast()
+            }
+
             viewControllers.append(comingSoonVC)
-            self.navigationController?.setViewControllers(viewControllers, animated: true)
+
+            navigationController?.setViewControllers(
+                viewControllers,
+                animated: true
+            )
+
         } else {
-            self.present(comingSoonVC, animated: true, completion: nil)
+
+            present(
+                comingSoonVC,
+                animated: true
+            )
         }
     }
-    
-    // MARK: - API 2: Fetch Ticket Details on Item Selection
-    
-    private func fetchTicketDetailsAndNavigate(ticketId: String) {
+
+    // MARK: - API 2: Ticket Details
+
+    private func fetchTicketDetailsAndNavigate(
+        ticket: TicketItem
+    ) {
+
+        guard let ticketId = ticket.id,
+              !ticketId.isEmpty else {
+
+            showAlert(
+                msg: "Invalid ticket id"
+            )
+
+            return
+        }
+
         showLoader()
-        
-        let url = API.GET_TICKET_DETAIL + ticketId
-        
-        NetworkManager.shared.request(urlString: url, method: .GET) { [weak self] (result: Result<APIResponse<TicketData>, NetworkError>) in
-            guard let self = self else { return }
-            self.hideLoader()
-            
-            switch result {
-            case .success(let info):
-                if info.success, let ticketData = info.data {
-                    DispatchQueue.main.async {
-                        self.navigateToChatVC(with: ticketData)
+
+        var base = API.GET_TICKET_DETAIL
+
+        if !base.hasSuffix("/") {
+            base += "/"
+        }
+
+        let url = base + ticketId
+
+        NetworkManager.shared.request(
+            urlString: url,
+            method: .GET
+        ) { [weak self] (
+            result: Result<APIResponse<TicketData>, NetworkError>
+        ) in
+
+            guard let self = self else {
+                return
+            }
+
+            DispatchQueue.main.async {
+
+                self.hideLoader()
+
+                switch result {
+
+                case .success(let info):
+
+                    if info.success,
+                       let ticketData = info.data {
+
+                        self.navigateToChatVC(
+                            ticketId: ticketId,
+                            listItem: ticket,
+                            detail: ticketData
+                        )
+
+                    } else {
+
+                        // Even if details API fails,
+                        // allow user to open the chat.
+                        self.navigateToChatVC(
+                            ticketId: ticketId,
+                            listItem: ticket,
+                            detail: nil
+                        )
                     }
-                } else {
-                    DispatchQueue.main.async {
-                        self.showAlert(msg: info.description)
-                    }
-                }
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    self.showAlert(msg: error.localizedDescription)
+
+                case .failure:
+
+                    // Allow navigation even if detail API
+                    // fails.
+                    self.navigateToChatVC(
+                        ticketId: ticketId,
+                        listItem: ticket,
+                        detail: nil
+                    )
                 }
             }
         }
     }
-    
-    private func navigateToChatVC(with ticketDetails: TicketData) {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        if let chatVC = storyboard.instantiateViewController(withIdentifier: "ChatVC") as? ChatVC {
-            self.navigationController?.pushViewController(chatVC, animated: true)
+
+    // MARK: - Navigate To Chat
+
+    private func navigateToChatVC(
+        ticketId: String,
+        listItem: TicketItem,
+        detail: TicketData?
+    ) {
+
+        let storyboard = UIStoryboard(
+            name: "Main",
+            bundle: nil
+        )
+
+        guard let chatVC =
+            storyboard.instantiateViewController(
+                withIdentifier: "ChatVC"
+            ) as? ChatVC else {
+
+            return
         }
+
+        chatVC.ticketId = ticketId
+        chatVC.ticketItem = listItem
+        chatVC.ticketDetail = detail
+
+        navigationController?.pushViewController(
+            chatVC,
+            animated: true
+        )
     }
 }
 
 // MARK: - UITableViewDelegate & UITableViewDataSource
 
-extension QuerieshistoryVC: UITableViewDelegate, UITableViewDataSource {
+extension QuerieshistoryVC:
+    UITableViewDelegate,
+    UITableViewDataSource {
 
-    func numberOfSections(in tableView: UITableView) -> Int {
+    // MARK: - Number Of Sections
+
+    func numberOfSections(
+        in tableView: UITableView
+    ) -> Int {
+
         return 1
     }
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    // MARK: - Number Of Rows
+
+    func tableView(
+        _ tableView: UITableView,
+        numberOfRowsInSection section: Int
+    ) -> Int {
+
         return tickets.count
     }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(
-            withIdentifier: "QueryTableViewCell",
-            for: indexPath
-        ) as! QueryTableViewCell
+    // MARK: - Cell For Row
+
+    func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath
+    ) -> UITableViewCell {
+
+        let cell =
+            tableView.dequeueReusableCell(
+                withIdentifier: "QueryTableViewCell",
+                for: indexPath
+            ) as! QueryTableViewCell
 
         cell.selectionStyle = .none
+
         let ticket = tickets[indexPath.row]
-        cell.configure(with: ticket)
+
+        cell.configure(
+            with: ticket
+        )
 
         return cell
     }
 
-    // Cell height remains unchanged at exactly 150 points
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    // MARK: - Cell Height
+
+    func tableView(
+        _ tableView: UITableView,
+        heightForRowAt indexPath: IndexPath
+    ) -> CGFloat {
+
         return 150
     }
 
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        
+    // MARK: - Did Select Row
+
+    func tableView(
+        _ tableView: UITableView,
+        didSelectRowAt indexPath: IndexPath
+    ) {
+
+        tableView.deselectRow(
+            at: indexPath,
+            animated: true
+        )
+
         let selectedTicket = tickets[indexPath.row]
-        if let ticketId = selectedTicket.id, !ticketId.isEmpty {
-            fetchTicketDetailsAndNavigate(ticketId: ticketId)
+
+        guard let ticketId = selectedTicket.id,
+              !ticketId.isEmpty else {
+
+            showAlert(
+                msg: "Invalid ticket"
+            )
+
+            return
         }
+
+        // Fetch latest details before opening ChatVC.
+        fetchTicketDetailsAndNavigate(
+            ticket: selectedTicket
+        )
     }
 }

@@ -319,6 +319,156 @@ struct Course: Codable {
         case demoVideo = "demo_video"           // Maps correctly
     }
 }
+
+//***send API respoanse and payload model
+struct SendTicketMessageRequest: Encodable {
+    let ticketId: String
+    let message: String
+
+    enum CodingKeys: String, CodingKey {
+        case ticketId = "ticket_id"
+        case message
+    }
+}
+
+struct SendTicketMessageData: Codable {
+    // Your API returns {}, so all fields are optional
+    let id: String? = nil
+    let ticketId: String? = nil
+    let message: String? = nil
+    let senderId: String? = nil
+    let senderName: String? = nil
+    let senderType: String? = nil
+    let createdAt: String? = nil
+    let updatedAt: String? = nil
+
+    enum CodingKeys: String, CodingKey {
+        case id, message
+        case ticketId = "ticket_id"
+        case senderId = "sender_id"
+        case senderName = "sender_name"
+        case senderType = "sender_type"
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+    }
+}
+
+enum TicketMessageService {
+
+    static func sendMessage(
+        ticketId: String,
+        message: String,
+        completion: @escaping (Result<String, Error>) -> Void
+    ) {
+        guard let url = URL(string: API.SEND_TICKET_MESSAGE) else {
+            completion(.failure(
+                NSError(
+                    domain: "TicketMessageService",
+                    code: -1,
+                    userInfo: [NSLocalizedDescriptionKey: "Invalid API URL."]
+                )
+            ))
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.timeoutInterval = 60
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        // Same token key used elsewhere in the app
+        if let token = UserDefaults.standard.string(forKey: "ACCESSTOKEN"),
+           !token.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+
+            let clean = token.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            let value = clean.lowercased().hasPrefix("bearer ")
+                ? clean
+                : "Bearer \(clean)"
+
+            request.setValue(value, forHTTPHeaderField: "Authorization")
+        }
+
+        let payload = SendTicketMessageRequest(
+            ticketId: ticketId,
+            message: message
+        )
+
+        do {
+            request.httpBody = try JSONEncoder().encode(payload)
+        } catch {
+            completion(.failure(error))
+            return
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+
+            if let error = error {
+                DispatchQueue.main.async { completion(.failure(error)) }
+                return
+            }
+
+            guard let http = response as? HTTPURLResponse,
+                  let data = data else {
+                DispatchQueue.main.async {
+                    completion(.failure(
+                        NSError(
+                            domain: "TicketMessageService",
+                            code: -2,
+                            userInfo: [NSLocalizedDescriptionKey: "Invalid response from server."]
+                        )
+                    ))
+                }
+                return
+            }
+
+            let raw = String(data: data, encoding: .utf8) ?? ""
+            print("SEND MESSAGE RESPONSE (\(http.statusCode)):\n\(raw)")
+
+            guard (200...299).contains(http.statusCode) else {
+                DispatchQueue.main.async {
+                    completion(.failure(
+                        NSError(
+                            domain: "TicketMessageService",
+                            code: http.statusCode,
+                            userInfo: [NSLocalizedDescriptionKey: raw.isEmpty ? "Server error." : raw]
+                        )
+                    ))
+                }
+                return
+            }
+
+            do {
+                let result = try JSONDecoder().decode(
+                    APIResponse<SendTicketMessageData>.self,
+                    from: data
+                )
+
+                DispatchQueue.main.async {
+                    if result.success {
+                        completion(.success(result.description))
+                    } else {
+                        completion(.failure(
+                            NSError(
+                                domain: "TicketMessageService",
+                                code: result.errorCode,
+                                userInfo: [NSLocalizedDescriptionKey: result.description]
+                            )
+                        ))
+                    }
+                }
+
+            } catch {
+                DispatchQueue.main.async { completion(.failure(error)) }
+            }
+
+        }.resume()
+    }
+}
+
+
+
 //***ticketdetails API response model
 //
 //  Models.swift

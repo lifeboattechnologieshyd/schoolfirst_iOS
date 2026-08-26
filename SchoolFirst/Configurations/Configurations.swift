@@ -185,6 +185,8 @@ struct API {
        static let GET_TICKET_DETAIL = BASE_URL + "user/support/tickets/"
     
     static let CREATE_TICKET     = BASE_URL + "user/support/tickets"
+    
+    static let SEND_TICKET_MESSAGE = BASE_URL + "user/support/tickets/message"
 }
 
     

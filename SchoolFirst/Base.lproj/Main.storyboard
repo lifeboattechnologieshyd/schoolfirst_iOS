@@ -3342,6 +3342,8 @@
                     <connections>
                         <outlet property="RaiseQueryButton" destination="xBl-2D-egL" id="4mN-bt-UWG"/>
                         <outlet property="RaisequeryButton" destination="xBl-2D-egL" id="wBm-p9-NdY"/>
+                        <outlet property="backButton" destination="1zq-3a-gPH" id="Xr3-qd-vFu"/>
+                        <outlet property="topVw" destination="sXx-by-dup" id="pvO-8L-FKr"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="i01-ae-myy" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -3767,7 +3769,7 @@
                                 </constraints>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="c6d-B7-FcI">
-                                <rect key="frame" x="0.0" y="102" width="393" height="592"/>
+                                <rect key="frame" x="0.0" y="126" width="393" height="568"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <color key="sectionIndexBackgroundColor" systemColor="underPageBackgroundColor"/>
                             </tableView>
@@ -3845,7 +3847,7 @@
                             <constraint firstItem="04I-Bu-f75" firstAttribute="centerY" secondItem="Faz-iH-PD9" secondAttribute="centerY" id="9Hl-Lm-3aE"/>
                             <constraint firstItem="y8H-Yj-yTs" firstAttribute="top" secondItem="x98-17-VO6" secondAttribute="top" id="Ada-TJ-KFI"/>
                             <constraint firstAttribute="trailing" secondItem="xEO-f7-lsg" secondAttribute="trailing" constant="16" id="Beg-kl-F9h"/>
-                            <constraint firstItem="c6d-B7-FcI" firstAttribute="top" secondItem="y8H-Yj-yTs" secondAttribute="bottom" constant="2" id="ETi-Cp-YQG"/>
+                            <constraint firstItem="c6d-B7-FcI" firstAttribute="top" secondItem="y8H-Yj-yTs" secondAttribute="bottom" constant="26" id="ETi-Cp-YQG"/>
                             <constraint firstItem="Faz-iH-PD9" firstAttribute="leading" secondItem="soJ-Dp-OC3" secondAttribute="leading" constant="16" id="Jps-eh-Gz1"/>
                             <constraint firstAttribute="trailing" secondItem="y8H-Yj-yTs" secondAttribute="trailing" id="ZjK-VS-j5H"/>
                             <constraint firstItem="xEO-f7-lsg" firstAttribute="centerY" secondItem="04I-Bu-f75" secondAttribute="centerY" id="hB2-s1-Trk"/>
@@ -3861,7 +3863,8 @@
                         <outlet property="MessagesendButton" destination="fV2-Cv-9eU" id="Igo-qK-3rF"/>
                         <outlet property="backButton" destination="QF6-lC-tjW" id="hX9-PG-rYL"/>
                         <outlet property="tableview" destination="c6d-B7-FcI" id="y9Z-2L-kMi"/>
-                        <outlet property="textfield" destination="04I-Bu-f75" id="NzN-CC-Waw"/>
+                        <outlet property="textfield" destination="04I-Bu-f75" id="jTd-kf-rlq"/>
+                        <outlet property="titleLabel" destination="jWf-Lh-Hvb" id="oII-99-HXW"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="f5B-qe-mQi" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -3970,7 +3973,7 @@
                                                 <real key="value" value="8"/>
                                             </userDefinedRuntimeAttribute>
                                             <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                                <real key="value" value="1"/>
+                                                <real key="value" value="0.5"/>
                                             </userDefinedRuntimeAttribute>
                                             <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
                                                 <color key="value" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -4058,7 +4061,7 @@
                                                 <real key="value" value="8"/>
                                             </userDefinedRuntimeAttribute>
                                             <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                                <real key="value" value="1"/>
+                                                <real key="value" value="0.5"/>
                                             </userDefinedRuntimeAttribute>
                                             <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
                                                 <color key="value" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -4088,7 +4091,7 @@
                                         <real key="value" value="16"/>
                                     </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                        <real key="value" value="1"/>
+                                        <real key="value" value="0.5"/>
                                     </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
                                         <color key="value" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -4115,6 +4118,7 @@
                     </view>
                     <connections>
                         <outlet property="AttachmentButton" destination="AWJ-5L-uSK" id="sLx-tZ-PC0"/>
+                        <outlet property="Attechmentsbackgoundview" destination="Cmc-bU-n2w" id="ctC-vw-Y1u"/>
                         <outlet property="Descriptiontextfield" destination="Evf-XX-kMH" id="u9e-4C-CNM"/>
                         <outlet property="SumitqueryButton" destination="Nyz-yi-kcd" id="uUY-E6-rVd"/>
                         <outlet property="backButton" destination="aTM-dK-Rkz" id="bGe-6f-bfB"/>

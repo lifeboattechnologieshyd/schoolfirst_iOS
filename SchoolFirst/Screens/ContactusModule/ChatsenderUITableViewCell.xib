@@ -10,18 +10,18 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="98" id="KGk-i7-Jjw" customClass="ChatsenderUITableViewCell" customModule="SF_Dev" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="98"/>
+        <tableViewCell contentMode="scaleToFill" restorationIdentifier="ChatsenderUITableViewCell" selectionStyle="default" indentationWidth="10" rowHeight="165" id="KGk-i7-Jjw" customClass="ChatsenderUITableViewCell" customModule="SF_Dev" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="456" height="165"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="320" height="98"/>
+                <rect key="frame" x="0.0" y="0.0" width="456" height="165"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="I paid the Term 2 fees online yesterday but it still shows as 'Unpaid' inside the portal. Please confirm receipt." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ppE-mb-PaJ">
-                        <rect key="frame" x="80" y="2" width="230" height="94"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="I paid the Term 2 fees online yesterday but it still shows as 'Unpaid' inside the portal. Please confirm receipt." lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ppE-mb-PaJ">
+                        <rect key="frame" x="146" y="10" width="300" height="145"/>
                         <color key="backgroundColor" red="0.1292724609" green="0.2071532905" blue="0.3911132812" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="230" id="OPJ-hC-Rwg"/>
+                            <constraint firstAttribute="width" constant="300" id="T3n-mP-9uJ"/>
                         </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -34,13 +34,16 @@
                     </label>
                 </subviews>
                 <constraints>
-                    <constraint firstAttribute="trailing" secondItem="ppE-mb-PaJ" secondAttribute="trailing" constant="10" id="LV0-b4-x4E"/>
-                    <constraint firstItem="ppE-mb-PaJ" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="2" id="PxZ-an-yqY"/>
-                    <constraint firstAttribute="bottom" secondItem="ppE-mb-PaJ" secondAttribute="bottom" constant="2" id="W5b-3U-mVd"/>
+                    <constraint firstAttribute="bottom" secondItem="ppE-mb-PaJ" secondAttribute="bottom" constant="10" id="BHR-NI-rph"/>
+                    <constraint firstItem="ppE-mb-PaJ" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="Yqf-v2-W8F"/>
+                    <constraint firstAttribute="trailing" secondItem="ppE-mb-PaJ" secondAttribute="trailing" constant="10" id="txQ-TD-QgB"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
-            <point key="canvasLocation" x="-6.1068702290076331" y="86.619718309859152"/>
+            <connections>
+                <outlet property="UsermessageLbl" destination="ppE-mb-PaJ" id="SaC-6q-GUh"/>
+            </connections>
+            <point key="canvasLocation" x="97.70992366412213" y="109.50704225352113"/>
         </tableViewCell>
     </objects>
 </document>

@@ -54,6 +54,7 @@ class RaiseaQueryVC: UIViewController {
     @IBOutlet weak var AttachmentButton: UIButton!
     @IBOutlet weak var Descriptiontextfield: UITextField!
     @IBOutlet weak var titletextfield: UITextField!
+    @IBOutlet weak var Attechmentsbackgoundview: UIView!
     @IBOutlet weak var SumitqueryButton: UIButton!
     @IBOutlet weak var backButton: UIButton!
 
@@ -86,11 +87,70 @@ class RaiseaQueryVC: UIViewController {
         return label
     }()
 
+    /*
+     A UITextField can NEVER wrap text, it is single line by design.
+
+     So the storyboard Descriptiontextfield is hidden and this
+     multi line UITextView is placed exactly on top of it,
+     using the same constraints.
+
+     No storyboard change is required.
+     */
+    private func setupAttachmentBorder() {
+
+        let borderLayer = CAShapeLayer()
+
+        borderLayer.strokeColor = UIColor.lightGray.cgColor
+        borderLayer.fillColor = UIColor.clear.cgColor
+
+        // Dotted border
+        borderLayer.lineDashPattern = [2, 4]
+
+        borderLayer.lineWidth = 1
+
+        borderLayer.path = UIBezierPath(
+            roundedRect: Attechmentsbackgoundview.bounds,
+            cornerRadius: 8
+        ).cgPath
+
+        Attechmentsbackgoundview.layer.addSublayer(borderLayer)
+    }
+    private let descriptionTextView: UITextView = {
+        let textView = UITextView()
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.font = UIFont.systemFont(ofSize: 15)
+        textView.textColor = .black
+        textView.backgroundColor = .clear
+        textView.isScrollEnabled = true
+        textView.textContainer.lineBreakMode = .byWordWrapping
+        textView.textContainerInset = UIEdgeInsets(top: 10, left: 8, bottom: 10, right: 8)
+        textView.autocorrectionType = .default
+        textView.returnKeyType = .default
+        return textView
+    }()
+
+    private let descriptionPlaceholderLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Describe your query in detail..."
+        label.font = UIFont.systemFont(ofSize: 15)
+        label.textColor = UIColor.lightGray
+        label.numberOfLines = 0
+        return label
+    }()
+
+    /// Convenience accessor for the typed description
+    private var descriptionText: String {
+        descriptionTextView.text
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupDescriptionTextView()
         setupAttachmentContainer()
         updateAttachmentUI()
 
@@ -101,6 +161,105 @@ class RaiseaQueryVC: UIViewController {
 
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
+    }
+
+    // MARK: - Description Text View Setup
+
+    private func setupDescriptionTextView() {
+
+        guard let parentView = Descriptiontextfield.superview else {
+            print("⚠️ Descriptiontextfield has no superview.")
+            return
+        }
+
+        // Copy visual style from the storyboard text field
+        descriptionTextView.backgroundColor = Descriptiontextfield.backgroundColor
+        descriptionTextView.layer.cornerRadius = Descriptiontextfield.layer.cornerRadius
+        descriptionTextView.layer.borderWidth = Descriptiontextfield.layer.borderWidth
+        descriptionTextView.layer.borderColor = Descriptiontextfield.layer.borderColor
+        descriptionTextView.clipsToBounds = true
+
+        if let existingFont = Descriptiontextfield.font {
+            descriptionTextView.font = existingFont
+            descriptionPlaceholderLabel.font = existingFont
+        }
+
+        if let existingPlaceholder = Descriptiontextfield.placeholder,
+           !existingPlaceholder.isEmpty {
+            descriptionPlaceholderLabel.text = existingPlaceholder
+        }
+
+        // Hide the single line field, keep it for layout reference only
+        Descriptiontextfield.isHidden = true
+        Descriptiontextfield.isUserInteractionEnabled = false
+
+        parentView.addSubview(descriptionTextView)
+
+        NSLayoutConstraint.activate([
+            descriptionTextView.leadingAnchor.constraint(
+                equalTo: Descriptiontextfield.leadingAnchor
+            ),
+            descriptionTextView.trailingAnchor.constraint(
+                equalTo: Descriptiontextfield.trailingAnchor
+            ),
+            descriptionTextView.topAnchor.constraint(
+                equalTo: Descriptiontextfield.topAnchor
+            ),
+            descriptionTextView.bottomAnchor.constraint(
+                equalTo: Descriptiontextfield.bottomAnchor
+            )
+        ])
+
+        // Placeholder inside the text view
+        descriptionTextView.addSubview(descriptionPlaceholderLabel)
+
+        NSLayoutConstraint.activate([
+            descriptionPlaceholderLabel.leadingAnchor.constraint(
+                equalTo: descriptionTextView.leadingAnchor,
+                constant: 12
+            ),
+            descriptionPlaceholderLabel.trailingAnchor.constraint(
+                equalTo: descriptionTextView.trailingAnchor,
+                constant: -12
+            ),
+            descriptionPlaceholderLabel.topAnchor.constraint(
+                equalTo: descriptionTextView.topAnchor,
+                constant: 10
+            )
+        ])
+
+        descriptionTextView.delegate = self
+
+        addDoneToolbar()
+    }
+
+    /// A multi line text view has no Return key to dismiss with,
+    /// so a Done button is added above the keyboard.
+    private func addDoneToolbar() {
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+
+        let flexibleSpace = UIBarButtonItem(
+            barButtonSystemItem: .flexibleSpace,
+            target: nil,
+            action: nil
+        )
+
+        let doneButton = UIBarButtonItem(
+            title: "Done",
+            style: .done,
+            target: self,
+            action: #selector(dismissKeyboard)
+        )
+
+        toolbar.items = [flexibleSpace, doneButton]
+
+        descriptionTextView.inputAccessoryView = toolbar
+        titletextfield.inputAccessoryView = toolbar
+    }
+
+    private func updateDescriptionPlaceholderVisibility() {
+        descriptionPlaceholderLabel.isHidden = !descriptionTextView.text.isEmpty
     }
 
     // MARK: - UI Setup
@@ -289,9 +448,9 @@ class RaiseaQueryVC: UIViewController {
             return
         }
 
-        guard let description = Descriptiontextfield.text?
-            .trimmingCharacters(in: .whitespacesAndNewlines),
-              !description.isEmpty else {
+        let description = descriptionText
+
+        guard !description.isEmpty else {
             showAlert(msg: "Please enter a description.")
             return
         }
@@ -647,6 +806,9 @@ class RaiseaQueryVC: UIViewController {
 
         titletextfield.text = ""
         Descriptiontextfield.text = ""
+        descriptionTextView.text = ""
+        updateDescriptionPlaceholderVisibility()
+
         selectedAttachments.removeAll()
         updateAttachmentUI()
 
@@ -710,6 +872,23 @@ class RaiseaQueryVC: UIViewController {
         default:
             return "application/octet-stream"
         }
+    }
+}
+
+// MARK: - UITextViewDelegate
+
+extension RaiseaQueryVC: UITextViewDelegate {
+
+    func textViewDidChange(_ textView: UITextView) {
+        updateDescriptionPlaceholderVisibility()
+    }
+
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        updateDescriptionPlaceholderVisibility()
+    }
+
+    func textViewDidEndEditing(_ textView: UITextView) {
+        updateDescriptionPlaceholderVisibility()
     }
 }
 

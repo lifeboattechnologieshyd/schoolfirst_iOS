@@ -2,98 +2,164 @@
 //  ChatsenderUITableViewCell.swift
 //  SchoolFirst
 //
-//  Created by vamshi krishna on 21/08/26.
-//
 
 import UIKit
 
 class ChatsenderUITableViewCell: UITableViewCell {
 
-    // MARK: - UI Elements
+    static let reuseId = "ChatsenderUITableViewCell"
 
-    private let messageBubbleView: UIView = {
+    private let bubbleView = UIView()
+    private let messageLabel = UILabel()
+    private let timeLabel = UILabel()
 
-        let view = UIView()
-
-        view.translatesAutoresizingMaskIntoConstraints = false
-
-        view.backgroundColor = UIColor(
-            red: 31 / 255,
-            green: 71 / 255,
-            blue: 127 / 255,
-            alpha: 1
+    override init(
+        style: UITableViewCell.CellStyle,
+        reuseIdentifier: String?
+    ) {
+        super.init(
+            style: style,
+            reuseIdentifier: reuseIdentifier
         )
 
-        view.layer.cornerRadius = 14
-        view.layer.masksToBounds = true
+        setupUI()
+    }
 
-        return view
-    }()
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
 
-    private let messageLabel: UILabel = {
+        setupUI()
+    }
 
-        let label = UILabel()
+    private func setupUI() {
 
-        label.translatesAutoresizingMaskIntoConstraints = false
-
-        label.textColor = .white
-
-        label.font = UIFont.systemFont(
-            ofSize: 15,
-            weight: .regular
-        )
-
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
-
-        return label
-    }()
-
-    private let timeLabel: UILabel = {
-
-        let label = UILabel()
-
-        label.translatesAutoresizingMaskIntoConstraints = false
-
-        label.textColor = .systemGray
-
-        label.font = UIFont.systemFont(
-            ofSize: 11,
-            weight: .regular
-        )
-
-        label.textAlignment = .right
-        label.numberOfLines = 1
-
-        return label
-    }()
-
-    private let deliveryImageView: UIImageView = {
-
-        let imageView = UIImageView()
-
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-
-        imageView.image = UIImage(
-            systemName: "checkmark"
-        )
-
-        imageView.tintColor = .systemBlue
-        imageView.contentMode = .scaleAspectFit
-
-        return imageView
-    }()
-
-    // MARK: - Lifecycle
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
+        // MARK: Cell
 
         selectionStyle = .none
         backgroundColor = .clear
         contentView.backgroundColor = .clear
 
-        setupMessageBubble()
+        // MARK: Bubble
+
+        bubbleView.translatesAutoresizingMaskIntoConstraints = false
+
+        bubbleView.backgroundColor = UIColor(
+            red: 0.93,
+            green: 0.93,
+            blue: 0.93,
+            alpha: 1.0
+        )
+
+        bubbleView.layer.cornerRadius = 16
+        bubbleView.clipsToBounds = true
+
+        // MARK: Message
+
+        messageLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        messageLabel.numberOfLines = 0
+        messageLabel.lineBreakMode = .byWordWrapping
+
+        messageLabel.font = UIFont.systemFont(
+            ofSize: 13,
+            weight: .regular
+        )
+
+        messageLabel.textColor = .black
+
+        // MARK: Time
+
+        timeLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        timeLabel.font = UIFont.systemFont(
+            ofSize: 10,
+            weight: .medium
+        )
+
+        timeLabel.textColor = .gray
+
+        timeLabel.textAlignment = .left
+
+        timeLabel.numberOfLines = 1
+
+        // MARK: Add Views
+
+        contentView.addSubview(bubbleView)
+
+        bubbleView.addSubview(messageLabel)
+        bubbleView.addSubview(timeLabel)
+
+        // MARK: Constraints
+
+        NSLayoutConstraint.activate([
+
+            // ==========================================
+            // SENDER BUBBLE → LEFT SIDE
+            // ==========================================
+
+            bubbleView.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor,
+                constant: 12
+            ),
+
+            bubbleView.trailingAnchor.constraint(
+                lessThanOrEqualTo: contentView.trailingAnchor,
+                constant: -60
+            ),
+
+            bubbleView.topAnchor.constraint(
+                equalTo: contentView.topAnchor,
+                constant: 5
+            ),
+
+            bubbleView.bottomAnchor.constraint(
+                equalTo: contentView.bottomAnchor,
+                constant: -5
+            ),
+
+            // ==========================================
+            // MESSAGE
+            // ==========================================
+
+            messageLabel.topAnchor.constraint(
+                equalTo: bubbleView.topAnchor,
+                constant: 10
+            ),
+
+            messageLabel.leadingAnchor.constraint(
+                equalTo: bubbleView.leadingAnchor,
+                constant: 12
+            ),
+
+            messageLabel.trailingAnchor.constraint(
+                equalTo: bubbleView.trailingAnchor,
+                constant: -12
+            ),
+
+            // ==========================================
+            // TIME
+            // ==========================================
+
+            timeLabel.topAnchor.constraint(
+                equalTo: messageLabel.bottomAnchor,
+                constant: 5
+            ),
+
+            timeLabel.leadingAnchor.constraint(
+                equalTo: bubbleView.leadingAnchor,
+                constant: 12
+            ),
+
+            timeLabel.trailingAnchor.constraint(
+                equalTo: bubbleView.trailingAnchor,
+                constant: -12
+            ),
+
+            timeLabel.bottomAnchor.constraint(
+                equalTo: bubbleView.bottomAnchor,
+                constant: -9
+            )
+        ])
     }
 
     override func prepareForReuse() {
@@ -103,121 +169,6 @@ class ChatsenderUITableViewCell: UITableViewCell {
         timeLabel.text = nil
     }
 
-    // MARK: - Setup
-
-    private func setupMessageBubble() {
-
-        contentView.addSubview(
-            messageBubbleView
-        )
-
-        messageBubbleView.addSubview(
-            messageLabel
-        )
-
-        contentView.addSubview(
-            timeLabel
-        )
-
-        contentView.addSubview(
-            deliveryImageView
-        )
-
-        NSLayoutConstraint.activate([
-
-            // MARK: Message Bubble
-
-            messageBubbleView.topAnchor.constraint(
-                equalTo: contentView.topAnchor,
-                constant: 8
-            ),
-
-            messageBubbleView.trailingAnchor.constraint(
-                equalTo: contentView.trailingAnchor,
-                constant: -16
-            ),
-
-            messageBubbleView.leadingAnchor.constraint(
-                greaterThanOrEqualTo:
-                    contentView.leadingAnchor,
-                constant: 60
-            ),
-
-            messageBubbleView.widthAnchor.constraint(
-                lessThanOrEqualTo:
-                    contentView.widthAnchor,
-                multiplier: 0.75
-            ),
-
-            // MARK: Message Label
-
-            messageLabel.topAnchor.constraint(
-                equalTo: messageBubbleView.topAnchor,
-                constant: 10
-            ),
-
-            messageLabel.leadingAnchor.constraint(
-                equalTo: messageBubbleView.leadingAnchor,
-                constant: 12
-            ),
-
-            messageLabel.trailingAnchor.constraint(
-                equalTo: messageBubbleView.trailingAnchor,
-                constant: -12
-            ),
-
-            messageLabel.bottomAnchor.constraint(
-                equalTo: messageBubbleView.bottomAnchor,
-                constant: -10
-            ),
-
-            // MARK: Delivery Image
-
-            deliveryImageView.topAnchor.constraint(
-                equalTo: messageBubbleView.bottomAnchor,
-                constant: 4
-            ),
-
-            deliveryImageView.trailingAnchor.constraint(
-                equalTo: contentView.trailingAnchor,
-                constant: -16
-            ),
-
-            deliveryImageView.widthAnchor.constraint(
-                equalToConstant: 14
-            ),
-
-            deliveryImageView.heightAnchor.constraint(
-                equalToConstant: 14
-            ),
-
-            // MARK: Time Label
-
-            timeLabel.centerYAnchor.constraint(
-                equalTo: deliveryImageView.centerYAnchor
-            ),
-
-            timeLabel.trailingAnchor.constraint(
-                equalTo: deliveryImageView.leadingAnchor,
-                constant: -4
-            ),
-
-            timeLabel.leadingAnchor.constraint(
-                greaterThanOrEqualTo:
-                    contentView.leadingAnchor,
-                constant: 16
-            ),
-
-            // This bottom constraint completes the dynamic-height chain.
-            timeLabel.bottomAnchor.constraint(
-                equalTo: contentView.bottomAnchor,
-                constant: -8
-            )
-        ])
-    }
-
-    // MARK: - Configure
-
     func configure(
         message: String,
         time: String
@@ -225,5 +176,7 @@ class ChatsenderUITableViewCell: UITableViewCell {
 
         messageLabel.text = message
         timeLabel.text = time
+
+        setNeedsLayout()
     }
 }
