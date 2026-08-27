@@ -21,14 +21,28 @@ class QueryTableViewCell: UITableViewCell {
     }
 
     private func setupUI() {
-        StatusLbl.layer.cornerRadius = 4
+
+        // ==========================================
+        // STATUS PILL (Figma Style)
+        // ==========================================
+
+        StatusLbl.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+        StatusLbl.textAlignment = .center
+        StatusLbl.layer.cornerRadius = 8
         StatusLbl.clipsToBounds = true
 
-        // Explicitly set text behavior to prevent overlapping layouts in a 150px cell
+        // Make width dynamic — hug the text, never stretch
+        StatusLbl.setContentHuggingPriority(.required, for: .horizontal)
+        StatusLbl.setContentCompressionResistancePriority(.required, for: .horizontal)
+
+        // ==========================================
+        // TITLE & DESCRIPTION
+        // ==========================================
+
         titleLabel.numberOfLines = 1
         titleLabel.lineBreakMode = .byTruncatingTail
 
-        descriptionLabel.numberOfLines = 3 // Allows descriptions to wrap gracefully up to 3 lines
+        descriptionLabel.numberOfLines = 3
         descriptionLabel.lineBreakMode = .byTruncatingTail
         descriptionLabel.textColor = .darkGray
     }
@@ -61,20 +75,8 @@ class QueryTableViewCell: UITableViewCell {
             descriptionLabel.text = "No Description Provided"
         }
 
-        // Configure Status Badge Label
-        let status = (ticket.status ?? "OPEN").uppercased()
-        StatusLbl.text = "  \(status)  "
-
-        if status == "OPEN" {
-            StatusLbl.textColor = .systemBlue
-            StatusLbl.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.12)
-        } else if status == "IN PROGRESS" || status == "PENDING" {
-            StatusLbl.textColor = .systemOrange
-            StatusLbl.backgroundColor = UIColor.systemOrange.withAlphaComponent(0.12)
-        } else {
-            StatusLbl.textColor = .systemGray
-            StatusLbl.backgroundColor = UIColor.systemGray.withAlphaComponent(0.15)
-        }
+        // Configure Status Pill (Figma colors)
+        configureStatusBadge(ticket.status)
 
         // Configure Date Label
         if let rawDate = ticket.createdAt, !rawDate.isEmpty {
@@ -84,25 +86,66 @@ class QueryTableViewCell: UITableViewCell {
         }
     }
 
+    // MARK: - Status Badge (Figma Colors + Dynamic Width)
+
+    private func configureStatusBadge(_ rawStatus: String?) {
+
+        // Normalize: "REPLY_SENT" -> "REPLY SENT"
+        let status = (rawStatus ?? "OPEN")
+            .replacingOccurrences(of: "_", with: " ")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .uppercased()
+
+        // Display text like Figma: "Open", "Reply Sent", "Resolved"
+        StatusLbl.text = status.capitalized
+
+        switch status {
+
+        case "OPEN":
+            // Blue pill (Figma "Open")
+            StatusLbl.textColor = UIColor(red: 45/255, green: 107/255, blue: 216/255, alpha: 1)
+            StatusLbl.backgroundColor = UIColor(red: 220/255, green: 233/255, blue: 251/255, alpha: 1)
+
+        case "REPLY SENT":
+            // Amber pill (Figma "Reply Sent")
+            StatusLbl.textColor = UIColor(red: 197/255, green: 130/255, blue: 20/255, alpha: 1)
+            StatusLbl.backgroundColor = UIColor(red: 255/255, green: 243/255, blue: 214/255, alpha: 1)
+
+        case "RESOLVED":
+            // Green pill (Figma "Resolved")
+            StatusLbl.textColor = UIColor(red: 30/255, green: 158/255, blue: 80/255, alpha: 1)
+            StatusLbl.backgroundColor = UIColor(red: 223/255, green: 244/255, blue: 229/255, alpha: 1)
+
+        case "IN PROGRESS", "PENDING":
+            // Amber pill (same tone as Reply Sent)
+            StatusLbl.textColor = UIColor(red: 197/255, green: 130/255, blue: 20/255, alpha: 1)
+            StatusLbl.backgroundColor = UIColor(red: 255/255, green: 243/255, blue: 214/255, alpha: 1)
+
+        case "CLOSED":
+            // Gray pill
+            StatusLbl.textColor = UIColor.systemGray
+            StatusLbl.backgroundColor = UIColor.systemGray.withAlphaComponent(0.15)
+
+        default:
+            // Fallback gray pill
+            StatusLbl.textColor = UIColor.systemGray
+            StatusLbl.backgroundColor = UIColor.systemGray.withAlphaComponent(0.15)
+        }
+
+        // Remove old manual space-padding (pill handles padding now)
+        StatusLbl.sizeToFit()
+    }
+
     // MARK: - Ticket ID Helper
 
-    /// Returns only the last 3 characters of the ticket id.
-    ///
-    /// Example:
-    /// "38d2ba22-9bff-4561-9b4e-c58b3ffc3b33"  ->  "B33"
-    /// "#1024"                                 ->  "024"
-    /// "7"                                     ->  "7"
     private func shortTicketId(from id: String) -> String {
 
-        // Remove spaces, leading "#" and hyphens so we never show a dash
         let cleaned = id
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .replacingOccurrences(of: "#", with: "")
             .replacingOccurrences(of: "-", with: "")
 
         guard !cleaned.isEmpty else { return "" }
-
-        // If shorter than 3 characters, show whatever is available
         guard cleaned.count > 3 else { return cleaned.uppercased() }
 
         return String(cleaned.suffix(3)).uppercased()
@@ -146,5 +189,32 @@ class QueryTableViewCell: UITableViewCell {
         let displayFormatter = DateFormatter()
         displayFormatter.dateFormat = "dd MMM yyyy, hh:mm a"
         return displayFormatter.string(from: date)
+    }
+}
+
+class StatusPillLabel: UILabel {
+
+    var textInsets = UIEdgeInsets(top: 4, left: 12, bottom: 4, right: 12) {
+        didSet { invalidateIntrinsicContentSize() }
+    }
+
+    override func drawText(in rect: CGRect) {
+        super.drawText(in: rect.inset(by: textInsets))
+    }
+
+    override var intrinsicContentSize: CGSize {
+        let size = super.intrinsicContentSize
+        return CGSize(
+            width: size.width + textInsets.left + textInsets.right,
+            height: size.height + textInsets.top + textInsets.bottom
+        )
+    }
+
+    override func sizeThatFits(_ size: CGSize) -> CGSize {
+        let fit = super.sizeThatFits(size)
+        return CGSize(
+            width: fit.width + textInsets.left + textInsets.right,
+            height: fit.height + textInsets.top + textInsets.bottom
+        )
     }
 }

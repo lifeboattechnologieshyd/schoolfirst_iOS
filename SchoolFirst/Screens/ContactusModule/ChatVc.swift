@@ -8,10 +8,72 @@ import UIKit
 // MARK: - Chat Message Model
 
 struct ChatMessage: Codable {
+
     let text: String
     let isMe: Bool
     let timeString: String
     let senderName: String?
+
+    var tickStatusRaw: String?   // "sent" | "delivered" | "read"
+
+    var tickStatus: MessageTickStatus {
+
+        get {
+
+            switch tickStatusRaw {
+
+            case "sent":
+                return .sent
+
+            case "read":
+                return .read
+
+            default:
+                return .delivered
+            }
+        }
+
+        set {
+
+            switch newValue {
+
+            case .sent:
+                tickStatusRaw = "sent"
+
+            case .delivered:
+                tickStatusRaw = "delivered"
+
+            case .read:
+                tickStatusRaw = "read"
+            }
+        }
+    }
+
+    init(
+        text: String,
+        isMe: Bool,
+        timeString: String,
+        senderName: String?,
+        tickStatus: MessageTickStatus = .delivered
+    ) {
+
+        self.text = text
+        self.isMe = isMe
+        self.timeString = timeString
+        self.senderName = senderName
+
+        switch tickStatus {
+
+        case .sent:
+            self.tickStatusRaw = "sent"
+
+        case .delivered:
+            self.tickStatusRaw = "delivered"
+
+        case .read:
+            self.tickStatusRaw = "read"
+        }
+    }
 }
 
 // MARK: - ChatVC
@@ -34,24 +96,29 @@ class ChatVC: UIViewController {
 
     private var chatMessages: [ChatMessage] = []
 
-    // MARK: - Auth Headers (Token from DBManager)
-    
+    // MARK: - Auth Headers
+
     private var authHeaders: [String: String] {
+
         var headers: [String: String] = [
             "Content-Type": "application/json",
             "Accept": "application/json"
         ]
-        
-        if let token = UserDefaults.standard.string(forKey: "ACCESSTOKEN") {
+
+        if let token = UserDefaults.standard.string(
+            forKey: "ACCESSTOKEN"
+        ) {
+
             headers["Authorization"] = "Bearer \(token)"
         }
-        
+
         return headers
     }
 
     // MARK: - Life Cycle
 
     override func viewDidLoad() {
+
         super.viewDidLoad()
 
         setupTableView()
@@ -77,6 +144,7 @@ class ChatVC: UIViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
+
         super.viewDidAppear(animated)
 
         scrollToLatestMessage(animated: false)
@@ -87,16 +155,28 @@ class ChatVC: UIViewController {
     private func loadInitialData() {
 
         if let detail = ticketDetail {
+
             applyTicketData(detail)
+
             return
         }
 
         if let id = ticketId,
-           let data = UserDefaults.standard.data(forKey: "chat_msgs_\(id)") {
+           let data = UserDefaults.standard.data(
+                forKey: "chat_msgs_\(id)"
+           ) {
 
             do {
-                chatMessages = try JSONDecoder().decode([ChatMessage].self, from: data)
-                titleLabel?.text = ticketItem?.title ?? "Chat"
+
+                chatMessages = try JSONDecoder().decode(
+                    [ChatMessage].self,
+                    from: data
+                )
+
+                titleLabel?.text =
+                    ticketItem?.title ??
+                    "Chat"
+
                 tableview.reloadData()
 
                 if !chatMessages.isEmpty {
@@ -104,6 +184,7 @@ class ChatVC: UIViewController {
                 }
 
             } catch {
+
                 chatMessages = []
             }
         }
@@ -111,28 +192,47 @@ class ChatVC: UIViewController {
 
     // MARK: - Apply Ticket Data
 
-    private func applyTicketData(_ data: TicketData) {
+    private func applyTicketData(
+        _ data: TicketData
+    ) {
 
-        titleLabel?.text = data.title ?? ticketItem?.title ?? "Chat"
+        titleLabel?.text =
+            data.title ??
+            ticketItem?.title ??
+            "Chat"
 
-        if let msgs = data.messages, !msgs.isEmpty {
+        if let msgs = data.messages,
+           !msgs.isEmpty {
 
-            chatMessages = msgs.compactMap { msg -> ChatMessage? in
+            chatMessages = msgs.compactMap {
+                msg -> ChatMessage? in
 
-                guard let txt = msg.message?.trimmingCharacters(in: .whitespacesAndNewlines),
-                      !txt.isEmpty else {
+                guard let txt =
+                        msg.message?.trimmingCharacters(
+                            in: .whitespacesAndNewlines
+                        ),
+                      !txt.isEmpty
+                else {
                     return nil
                 }
 
-                let senderLower = msg.senderType?.lowercased() ?? ""
+                let senderLower =
+                    msg.senderType?.lowercased() ?? ""
 
-                let isMe = senderLower == "user" || senderLower == "student"
+                let isMe =
+                    senderLower == "user" ||
+                    senderLower == "student"
 
                 return ChatMessage(
                     text: txt,
                     isMe: isMe,
-                    timeString: formatServerTime(msg.createdAt ?? ""),
-                    senderName: isMe ? nil : "School Accounts Office"
+                    timeString: formatServerTime(
+                        msg.createdAt ?? ""
+                    ),
+                    senderName: isMe
+                        ? nil
+                        : "School Accounts Office",
+                    tickStatus: .delivered
                 )
             }
 
@@ -150,38 +250,72 @@ class ChatVC: UIViewController {
 
     private func saveToUserDefaults() {
 
-        guard let id = ticketId else { return }
+        guard let id = ticketId else {
+            return
+        }
 
         do {
-            let data = try JSONEncoder().encode(chatMessages)
-            UserDefaults.standard.set(data, forKey: "chat_msgs_\(id)")
+
+            let data = try JSONEncoder().encode(
+                chatMessages
+            )
+
+            UserDefaults.standard.set(
+                data,
+                forKey: "chat_msgs_\(id)"
+            )
+
         } catch {
-            print("Failed to save chat messages: \(error)")
+
+            print(
+                "Failed to save chat messages: \(error)"
+            )
         }
     }
 
     // MARK: - Format Server Time
 
-    private func formatServerTime(_ raw: String) -> String {
+    private func formatServerTime(
+        _ raw: String
+    ) -> String {
 
-        if raw.isEmpty { return "" }
+        if raw.isEmpty {
+            return ""
+        }
 
         let iso = ISO8601DateFormatter()
 
-        iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        iso.formatOptions = [
+            .withInternetDateTime,
+            .withFractionalSeconds
+        ]
 
         if let date = iso.date(from: raw) {
+
             let formatter = DateFormatter()
-            formatter.dateFormat = "dd MMM yyyy, hh:mm a"
-            return formatter.string(from: date)
+
+            formatter.dateFormat =
+                "dd MMM yyyy, hh:mm a"
+
+            return formatter.string(
+                from: date
+            )
         }
 
-        iso.formatOptions = [.withInternetDateTime]
+        iso.formatOptions = [
+            .withInternetDateTime
+        ]
 
         if let date = iso.date(from: raw) {
+
             let formatter = DateFormatter()
-            formatter.dateFormat = "dd MMM yyyy, hh:mm a"
-            return formatter.string(from: date)
+
+            formatter.dateFormat =
+                "dd MMM yyyy, hh:mm a"
+
+            return formatter.string(
+                from: date
+            )
         }
 
         return raw
@@ -191,27 +325,38 @@ class ChatVC: UIViewController {
 
     private func fetchTicketDetails() {
 
-        guard let ticketId = ticketId, !ticketId.isEmpty else {
+        guard let ticketId = ticketId,
+              !ticketId.isEmpty
+        else {
             return
         }
 
         var base = API.GET_TICKET_DETAIL
+
         if !base.hasSuffix("/") {
             base += "/"
         }
 
         var url = base + ticketId
+
         if !url.hasSuffix("/") {
-            url += "/" // Detail GET requires trailing slash
+            url += "/"
         }
 
         NetworkManager.shared.request(
             urlString: url,
             method: .GET,
             headers: authHeaders
-        ) { [weak self] (result: Result<APIResponse<TicketData>, NetworkError>) in
+        ) {
+            [weak self]
+            (result: Result<
+                APIResponse<TicketData>,
+                NetworkError
+            >) in
 
-            guard let self = self else { return }
+            guard let self = self else {
+                return
+            }
 
             DispatchQueue.main.async {
 
@@ -219,15 +364,23 @@ class ChatVC: UIViewController {
 
                 case .success(let info):
 
-                    if info.success, let data = info.data {
+                    if info.success,
+                       let data = info.data {
+
                         self.applyTicketData(data)
+
                     } else {
-                        self.titleLabel?.text = self.ticketItem?.title ?? "Chat"
+
+                        self.titleLabel?.text =
+                            self.ticketItem?.title ??
+                            "Chat"
                     }
 
                 case .failure:
 
-                    self.titleLabel?.text = self.ticketItem?.title ?? "Chat"
+                    self.titleLabel?.text =
+                        self.ticketItem?.title ??
+                        "Chat"
                 }
             }
         }
@@ -239,20 +392,27 @@ class ChatVC: UIViewController {
 
         tableview.delegate = self
         tableview.dataSource = self
+
         tableview.separatorStyle = .none
         tableview.showsVerticalScrollIndicator = false
+
         tableview.keyboardDismissMode = .interactive
-        tableview.rowHeight = UITableView.automaticDimension
+
+        tableview.rowHeight =
+            UITableView.automaticDimension
+
         tableview.estimatedRowHeight = 100
 
         tableview.register(
             ChatsenderUITableViewCell.self,
-            forCellReuseIdentifier: ChatsenderUITableViewCell.reuseId
+            forCellReuseIdentifier:
+                ChatsenderUITableViewCell.reuseId
         )
 
         tableview.register(
             ChatUserTableViewCell.self,
-            forCellReuseIdentifier: ChatUserTableViewCell.reuseId
+            forCellReuseIdentifier:
+                ChatUserTableViewCell.reuseId
         )
     }
 
@@ -261,15 +421,27 @@ class ChatVC: UIViewController {
     private func setupTextField() {
 
         textfield.delegate = self
+
         textfield.placeholder = "Type a message..."
+
         textfield.returnKeyType = .send
+
         textfield.clearButtonMode = .whileEditing
-        textfield.font = UIFont.systemFont(ofSize: 15)
+
+        textfield.font =
+            UIFont.systemFont(ofSize: 15)
+
         textfield.textColor = .black
-        textfield.backgroundColor = .systemBackground
+
+        textfield.backgroundColor =
+            .systemBackground
+
         textfield.layer.cornerRadius = 12
+
         textfield.layer.borderWidth = 0.5
-        textfield.layer.borderColor = UIColor.systemGray4.cgColor
+
+        textfield.layer.borderColor =
+            UIColor.systemGray4.cgColor
 
         textfield.addTarget(
             self,
@@ -288,7 +460,9 @@ class ChatVC: UIViewController {
             for: .touchUpInside
         )
 
-        MessagesendButton.layer.cornerRadius = MessagesendButton.bounds.height / 2
+        MessagesendButton.layer.cornerRadius =
+            MessagesendButton.bounds.height / 2
+
         MessagesendButton.clipsToBounds = true
 
         updateSendButtonState()
@@ -299,31 +473,96 @@ class ChatVC: UIViewController {
     @objc
     private func sendButtonTapped() {
 
-        let message = textfield.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let message =
+            textfield.text?.trimmingCharacters(
+                in: .whitespacesAndNewlines
+            ) ?? ""
 
-        guard !message.isEmpty else { return }
-
-        guard let ticketId = ticketId, !ticketId.isEmpty else {
-            showAlert(msg: "Ticket ID is missing.")
+        guard !message.isEmpty else {
             return
         }
+
+        guard let ticketId = ticketId,
+              !ticketId.isEmpty
+        else {
+
+            showAlert(
+                msg: "Ticket ID is missing."
+            )
+
+            return
+        }
+
+        // ------------------------------------------------
+        // 1. Immediately show message
+        // SINGLE TICK
+        // ------------------------------------------------
+
+        let item = ChatMessage(
+            text: message,
+            isMe: true,
+            timeString: currentTimeString(),
+            senderName: nil,
+            tickStatus: .sent
+        )
+
+        chatMessages.append(item)
+
+        let insertedIndex =
+            chatMessages.count - 1
+
+        let indexPath = IndexPath(
+            row: insertedIndex,
+            section: 0
+        )
+
+        textfield.text = ""
+
+        updateSendButtonState()
+
+        tableview.performBatchUpdates({
+
+            tableview.insertRows(
+                at: [indexPath],
+                with: .automatic
+            )
+
+        }, completion: { [weak self] _ in
+
+            self?.scrollToLatestMessage(
+                animated: true
+            )
+        })
+
+        // ------------------------------------------------
+        // 2. POST API
+        // ------------------------------------------------
 
         let parameters: [String: Any] = [
             "ticket_id": ticketId,
             "message": message
         ]
 
-        // Keep API.SEND_TICKET_MESSAGE exact without modifying slashes
-        let sendURL = API.SEND_TICKET_MESSAGE
+        let sendURL =
+            API.SEND_TICKET_MESSAGE
 
         NetworkManager.shared.request(
             urlString: sendURL,
             method: .POST,
             parameters: parameters,
             headers: authHeaders
-        ) { [weak self] (result: Result<APIResponse<SendTicketMessageData>, NetworkError>) in
+        ) {
+            [weak self]
+            (
+                result: Result<
+                    APIResponse<SendTicketMessageData>,
+                    NetworkError
+                >
+            ) in
 
-            guard let self = self else { return }
+            guard let self = self else {
+                return
+            }
 
             DispatchQueue.main.async {
 
@@ -333,40 +572,59 @@ class ChatVC: UIViewController {
 
                     if info.success {
 
-                        let item = ChatMessage(
-                            text: message,
-                            isMe: true,
-                            timeString: self.currentTimeString(),
-                            senderName: nil
-                        )
+                        // ------------------------------------------------
+                        // 3. API success
+                        // DOUBLE TICK
+                        // ------------------------------------------------
 
-                        self.chatMessages.append(item)
-                        self.saveToUserDefaults()
+                        if insertedIndex <
+                            self.chatMessages.count {
 
-                        let indexPath = IndexPath(row: self.chatMessages.count - 1, section: 0)
+                            self.chatMessages[
+                                insertedIndex
+                            ].tickStatus = .delivered
 
-                        self.tableview.performBatchUpdates({
-                            self.tableview.insertRows(at: [indexPath], with: .automatic)
-                        }, completion: { _ in
-                            self.scrollToLatestMessage(animated: true)
-                        })
+                            self.saveToUserDefaults()
 
-                        self.textfield.text = ""
-                        self.updateSendButtonState()
+                            self.tableview.reloadRows(
+                                at: [indexPath],
+                                with: .none
+                            )
+                        }
 
                     } else {
-                        self.showAlert(msg: info.description.isEmpty ? "Send failed." : info.description)
+
+                        self.showAlert(
+                            msg: info.description.isEmpty
+                                ? "Send failed."
+                                : info.description
+                        )
                     }
 
                 case .failure(let error):
+
                     let errorMsg: String
+
                     switch error {
-                    case .serverError(let msg): errorMsg = msg
-                    case .decodingError(let msg): errorMsg = msg
-                    case .noaccess: errorMsg = "Session expired. Please re-login."
-                    default: errorMsg = "Unable to send message. Please try again."
+
+                    case .serverError(let msg):
+                        errorMsg = msg
+
+                    case .decodingError(let msg):
+                        errorMsg = msg
+
+                    case .noaccess:
+                        errorMsg =
+                            "Session expired. Please re-login."
+
+                    default:
+                        errorMsg =
+                            "Unable to send message. Please try again."
                     }
-                    self.showAlert(msg: errorMsg)
+
+                    self.showAlert(
+                        msg: errorMsg
+                    )
                 }
             }
         }
@@ -375,95 +633,182 @@ class ChatVC: UIViewController {
     // MARK: - Current Time
 
     private func currentTimeString() -> String {
+
         let formatter = DateFormatter()
+
         formatter.dateFormat = "hh:mm a"
-        return formatter.string(from: Date())
+
+        return formatter.string(
+            from: Date()
+        )
     }
 
     // MARK: - TextField Change
 
     @objc
     private func textFieldDidChange() {
+
         updateSendButtonState()
     }
 
     private func updateSendButtonState() {
-        let text = textfield.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+
+        let text =
+            textfield.text?.trimmingCharacters(
+                in: .whitespacesAndNewlines
+            ) ?? ""
+
         let hasText = !text.isEmpty
 
         MessagesendButton.isEnabled = hasText
-        MessagesendButton.alpha = hasText ? 1.0 : 0.5
+
+        MessagesendButton.alpha =
+            hasText ? 1.0 : 0.5
     }
 
     // MARK: - Scroll
 
-    private func scrollToLatestMessage(animated: Bool) {
-        guard !chatMessages.isEmpty else { return }
+    private func scrollToLatestMessage(
+        animated: Bool
+    ) {
 
-        let indexPath = IndexPath(row: chatMessages.count - 1, section: 0)
+        guard !chatMessages.isEmpty else {
+            return
+        }
 
-        tableview.scrollToRow(at: indexPath, at: .bottom, animated: animated)
+        let indexPath = IndexPath(
+            row: chatMessages.count - 1,
+            section: 0
+        )
+
+        tableview.scrollToRow(
+            at: indexPath,
+            at: .bottom,
+            animated: animated
+        )
     }
 
     // MARK: - Alert Helper
 
-    
+  
 
     // MARK: - Back Button
 
     @IBAction
-    func backButtonTapped(_ sender: UIButton) {
-        if let navigationController = navigationController {
-            navigationController.popViewController(animated: true)
+    func backButtonTapped(
+        _ sender: UIButton
+    ) {
+
+        if let navigationController =
+            navigationController {
+
+            navigationController.popViewController(
+                animated: true
+            )
+
         } else {
-            dismiss(animated: true)
+
+            dismiss(
+                animated: true
+            )
         }
     }
 }
 
 // MARK: - UITableViewDataSource & UITableViewDelegate
 
-extension ChatVC: UITableViewDataSource, UITableViewDelegate {
+extension ChatVC:
+    UITableViewDataSource,
+    UITableViewDelegate {
 
-    func numberOfSections(in tableView: UITableView) -> Int { 1 }
+    func numberOfSections(
+        in tableView: UITableView
+    ) -> Int {
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 1
+    }
+
+    func tableView(
+        _ tableView: UITableView,
+        numberOfRowsInSection section: Int
+    ) -> Int {
+
         return chatMessages.count
     }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath
+    ) -> UITableViewCell {
 
         let msg = chatMessages[indexPath.row]
 
+        // ------------------------------------------------
+        // USER MESSAGE - RIGHT SIDE
+        // ------------------------------------------------
+
         if msg.isMe {
-            guard let cell = tableView.dequeueReusableCell(
-                withIdentifier: ChatUserTableViewCell.reuseId,
-                for: indexPath
-            ) as? ChatUserTableViewCell else {
+
+            guard let cell =
+                tableView.dequeueReusableCell(
+                    withIdentifier:
+                        ChatUserTableViewCell.reuseId,
+                    for: indexPath
+                ) as? ChatUserTableViewCell
+            else {
+
                 return UITableViewCell()
             }
 
-            cell.configure(text: msg.text, time: msg.timeString)
+            cell.configure(
+                text: msg.text,
+                time: msg.timeString,
+                tickStatus: msg.tickStatus
+            )
+
             return cell
 
-        } else {
-            guard let cell = tableView.dequeueReusableCell(
-                withIdentifier: ChatsenderUITableViewCell.reuseId,
-                for: indexPath
-            ) as? ChatsenderUITableViewCell else {
+        }
+
+        // ------------------------------------------------
+        // SENDER MESSAGE - LEFT SIDE
+        // ------------------------------------------------
+
+        else {
+
+            guard let cell =
+                tableView.dequeueReusableCell(
+                    withIdentifier:
+                        ChatsenderUITableViewCell.reuseId,
+                    for: indexPath
+                ) as? ChatsenderUITableViewCell
+            else {
+
                 return UITableViewCell()
             }
 
-            cell.configure(message: msg.text, time: msg.timeString)
+            cell.configure(
+                message: msg.text,
+                time: msg.timeString
+            )
+
             return cell
         }
     }
 
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    func tableView(
+        _ tableView: UITableView,
+        heightForRowAt indexPath: IndexPath
+    ) -> CGFloat {
+
         return UITableView.automaticDimension
     }
 
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+    func tableView(
+        _ tableView: UITableView,
+        estimatedHeightForRowAt indexPath: IndexPath
+    ) -> CGFloat {
+
         return 100
     }
 }
@@ -472,11 +817,21 @@ extension ChatVC: UITableViewDataSource, UITableViewDelegate {
 
 extension ChatVC: UITextFieldDelegate {
 
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        let message = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        guard !message.isEmpty else { return false }
+    func textFieldShouldReturn(
+        _ textField: UITextField
+    ) -> Bool {
+
+        let message =
+            textField.text?.trimmingCharacters(
+                in: .whitespacesAndNewlines
+            ) ?? ""
+
+        guard !message.isEmpty else {
+            return false
+        }
 
         sendButtonTapped()
+
         return true
     }
 }

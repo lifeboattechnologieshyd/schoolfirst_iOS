@@ -5,6 +5,16 @@
 
 import UIKit
 
+// MARK: - WhatsApp Tick Status Enum
+
+enum MessageTickStatus {
+    case sent       // Single check ✓
+    case delivered  // Double check ✓✓ White
+    case read       // Double check ✓✓ Light Blue
+}
+
+// MARK: - Chat User Cell
+
 class ChatUserTableViewCell: UITableViewCell {
 
     static let reuseId = "ChatUserTableViewCell"
@@ -18,29 +28,19 @@ class ChatUserTableViewCell: UITableViewCell {
 
     // MARK: - Init
 
-    override init(
-        style: UITableViewCell.CellStyle,
-        reuseIdentifier: String?
-    ) {
-        super.init(
-            style: style,
-            reuseIdentifier: reuseIdentifier
-        )
-
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-
         setupUI()
     }
 
     // MARK: - Setup UI
 
     private func setupUI() {
-
-        // MARK: Cell
 
         selectionStyle = .none
         backgroundColor = .clear
@@ -60,10 +60,9 @@ class ChatUserTableViewCell: UITableViewCell {
         bubbleView.layer.cornerRadius = 16
         bubbleView.clipsToBounds = true
 
-        // MARK: Message
+        // MARK: Message Label
 
         messageLabel.translatesAutoresizingMaskIntoConstraints = false
-
         messageLabel.numberOfLines = 0
         messageLabel.lineBreakMode = .byWordWrapping
 
@@ -74,7 +73,12 @@ class ChatUserTableViewCell: UITableViewCell {
 
         messageLabel.textColor = .white
 
-        // MARK: Time
+        messageLabel.setContentCompressionResistancePriority(
+            .defaultLow,
+            for: .horizontal
+        )
+
+        // MARK: Time Label
 
         timeLabel.translatesAutoresizingMaskIntoConstraints = false
 
@@ -84,22 +88,40 @@ class ChatUserTableViewCell: UITableViewCell {
         )
 
         timeLabel.textColor = UIColor.white.withAlphaComponent(0.85)
+
         timeLabel.textAlignment = .right
         timeLabel.numberOfLines = 1
 
-        // MARK: Double Check
+        timeLabel.setContentCompressionResistancePriority(
+            .required,
+            for: .horizontal
+        )
+
+        timeLabel.setContentHuggingPriority(
+            .required,
+            for: .horizontal
+        )
+
+        // MARK: Checkmark ImageView
 
         checkImageView.translatesAutoresizingMaskIntoConstraints = false
 
-        checkImageView.image = UIImage(
-            systemName: "checkmark.double"
-        )
-
-        checkImageView.tintColor = .white
         checkImageView.contentMode = .scaleAspectFit
+        checkImageView.clipsToBounds = false
+
         checkImageView.isHidden = false
 
-        // MARK: Add Views
+        checkImageView.setContentCompressionResistancePriority(
+            .required,
+            for: .horizontal
+        )
+
+        checkImageView.setContentHuggingPriority(
+            .required,
+            for: .horizontal
+        )
+
+        // MARK: Add Subviews
 
         contentView.addSubview(bubbleView)
 
@@ -111,9 +133,9 @@ class ChatUserTableViewCell: UITableViewCell {
 
         NSLayoutConstraint.activate([
 
-            // ==========================================
-            // USER → RIGHT SIDE
-            // ==========================================
+            // ------------------------------------------------
+            // Bubble - Right Side
+            // ------------------------------------------------
 
             bubbleView.trailingAnchor.constraint(
                 equalTo: contentView.trailingAnchor,
@@ -127,17 +149,17 @@ class ChatUserTableViewCell: UITableViewCell {
 
             bubbleView.topAnchor.constraint(
                 equalTo: contentView.topAnchor,
-                constant: 5
+                constant: 4
             ),
 
             bubbleView.bottomAnchor.constraint(
                 equalTo: contentView.bottomAnchor,
-                constant: -5
+                constant: -4
             ),
 
-            // ==========================================
-            // MESSAGE
-            // ==========================================
+            // ------------------------------------------------
+            // Message Label
+            // ------------------------------------------------
 
             messageLabel.topAnchor.constraint(
                 equalTo: bubbleView.topAnchor,
@@ -154,9 +176,14 @@ class ChatUserTableViewCell: UITableViewCell {
                 constant: -12
             ),
 
-            // ==========================================
-            // TIME
-            // ==========================================
+            // ------------------------------------------------
+            // Time
+            // ------------------------------------------------
+
+            timeLabel.trailingAnchor.constraint(
+                equalTo: checkImageView.leadingAnchor,
+                constant: -4
+            ),
 
             timeLabel.topAnchor.constraint(
                 equalTo: messageLabel.bottomAnchor,
@@ -164,52 +191,183 @@ class ChatUserTableViewCell: UITableViewCell {
             ),
 
             timeLabel.leadingAnchor.constraint(
-                equalTo: bubbleView.leadingAnchor,
+                greaterThanOrEqualTo: bubbleView.leadingAnchor,
                 constant: 12
-            ),
-
-            timeLabel.trailingAnchor.constraint(
-                equalTo: checkImageView.leadingAnchor,
-                constant: -5
             ),
 
             timeLabel.bottomAnchor.constraint(
                 equalTo: bubbleView.bottomAnchor,
-                constant: -9
+                constant: -8
             ),
 
-            // ==========================================
-            // DOUBLE CHECK
-            // ==========================================
+            // ------------------------------------------------
+            // Tick
+            // ------------------------------------------------
 
             checkImageView.trailingAnchor.constraint(
                 equalTo: bubbleView.trailingAnchor,
                 constant: -10
             ),
 
-            checkImageView.bottomAnchor.constraint(
-                equalTo: bubbleView.bottomAnchor,
-                constant: -8
+            checkImageView.centerYAnchor.constraint(
+                equalTo: timeLabel.centerYAnchor
             ),
 
             checkImageView.widthAnchor.constraint(
-                equalToConstant: 16
+                equalToConstant: 20
             ),
 
             checkImageView.heightAnchor.constraint(
                 equalToConstant: 14
             )
         ])
+
+        // Default status
+        applyTickStatus(.delivered)
+    }
+
+    // MARK: - Tick Icon
+
+    private func applyTickStatus(_ status: MessageTickStatus) {
+
+        checkImageView.isHidden = false
+
+        switch status {
+
+        case .sent:
+
+            checkImageView.image = createTickImage(
+                doubleTick: false,
+                color: UIColor.white.withAlphaComponent(0.85)
+            )
+
+        case .delivered:
+
+            checkImageView.image = createTickImage(
+                doubleTick: true,
+                color: .white
+            )
+
+        case .read:
+
+            checkImageView.image = createTickImage(
+                doubleTick: true,
+                color: UIColor(
+                    red: 0.41,
+                    green: 0.82,
+                    blue: 1.0,
+                    alpha: 1.0
+                )
+            )
+        }
+
+        checkImageView.setNeedsDisplay()
+        checkImageView.setNeedsLayout()
+    }
+
+    // MARK: - Create WhatsApp Style Tick Image
+
+    private func createTickImage(
+        doubleTick: Bool,
+        color: UIColor
+    ) -> UIImage {
+
+        let width: CGFloat = doubleTick ? 20 : 12
+        let height: CGFloat = 12
+
+        let renderer = UIGraphicsImageRenderer(
+            size: CGSize(
+                width: width,
+                height: height
+            )
+        )
+
+        return renderer.image { context in
+
+            let cgContext = context.cgContext
+
+            cgContext.setStrokeColor(color.cgColor)
+            cgContext.setLineWidth(1.8)
+            cgContext.setLineCap(.round)
+            cgContext.setLineJoin(.round)
+
+            if doubleTick {
+
+                // First tick
+
+                let firstPath = UIBezierPath()
+
+                firstPath.move(
+                    to: CGPoint(x: 1.0, y: 6.0)
+                )
+
+                firstPath.addLine(
+                    to: CGPoint(x: 4.0, y: 9.0)
+                )
+
+                firstPath.addLine(
+                    to: CGPoint(x: 10.0, y: 2.5)
+                )
+
+                cgContext.addPath(firstPath.cgPath)
+                cgContext.strokePath()
+
+                // Second tick
+
+                let secondPath = UIBezierPath()
+
+                secondPath.move(
+                    to: CGPoint(x: 7.0, y: 6.0)
+                )
+
+                secondPath.addLine(
+                    to: CGPoint(x: 10.0, y: 9.0)
+                )
+
+                secondPath.addLine(
+                    to: CGPoint(x: 16.5, y: 2.5)
+                )
+
+                cgContext.addPath(secondPath.cgPath)
+                cgContext.strokePath()
+
+            } else {
+
+                // Single tick
+
+                let path = UIBezierPath()
+
+                path.move(
+                    to: CGPoint(x: 1.5, y: 6.0)
+                )
+
+                path.addLine(
+                    to: CGPoint(x: 4.5, y: 9.0)
+                )
+
+                path.addLine(
+                    to: CGPoint(x: 10.5, y: 2.5)
+                )
+
+                cgContext.addPath(path.cgPath)
+                cgContext.strokePath()
+            }
+        }
     }
 
     // MARK: - Reuse
 
     override func prepareForReuse() {
+
         super.prepareForReuse()
 
         messageLabel.text = nil
         timeLabel.text = nil
+
+        checkImageView.image = nil
         checkImageView.isHidden = false
+
+        applyTickStatus(.delivered)
     }
 
     // MARK: - Configure
@@ -219,8 +377,23 @@ class ChatUserTableViewCell: UITableViewCell {
         time: String
     ) {
 
+        configure(
+            text: text,
+            time: time,
+            tickStatus: .delivered
+        )
+    }
+
+    func configure(
+        text: String,
+        time: String,
+        tickStatus: MessageTickStatus
+    ) {
+
         messageLabel.text = text
         timeLabel.text = time
+
+        applyTickStatus(tickStatus)
 
         checkImageView.isHidden = false
 
