@@ -9,9 +9,13 @@ class ChatsenderUITableViewCell: UITableViewCell {
 
     static let reuseId = "ChatsenderUITableViewCell"
 
+    // MARK: - UI Elements
+
     private let bubbleView = UIView()
     private let messageLabel = UILabel()
     private let timeLabel = UILabel()
+
+    // MARK: - Init
 
     override init(
         style: UITableViewCell.CellStyle,
@@ -31,10 +35,11 @@ class ChatsenderUITableViewCell: UITableViewCell {
         setupUI()
     }
 
+    // MARK: - Setup UI
+
     private func setupUI() {
 
-        // MARK: Cell
-
+        // Cell
         selectionStyle = .none
         backgroundColor = .clear
         contentView.backgroundColor = .clear
@@ -56,7 +61,6 @@ class ChatsenderUITableViewCell: UITableViewCell {
         // MARK: Message
 
         messageLabel.translatesAutoresizingMaskIntoConstraints = false
-
         messageLabel.numberOfLines = 0
         messageLabel.lineBreakMode = .byWordWrapping
 
@@ -77,9 +81,7 @@ class ChatsenderUITableViewCell: UITableViewCell {
         )
 
         timeLabel.textColor = .gray
-
         timeLabel.textAlignment = .left
-
         timeLabel.numberOfLines = 1
 
         // MARK: Add Views
@@ -94,7 +96,7 @@ class ChatsenderUITableViewCell: UITableViewCell {
         NSLayoutConstraint.activate([
 
             // ==========================================
-            // SENDER BUBBLE → LEFT SIDE
+            // SENDER → LEFT SIDE
             // ==========================================
 
             bubbleView.leadingAnchor.constraint(
@@ -162,12 +164,16 @@ class ChatsenderUITableViewCell: UITableViewCell {
         ])
     }
 
+    // MARK: - Reuse
+
     override func prepareForReuse() {
         super.prepareForReuse()
 
         messageLabel.text = nil
         timeLabel.text = nil
     }
+
+    // MARK: - Configure
 
     func configure(
         message: String,

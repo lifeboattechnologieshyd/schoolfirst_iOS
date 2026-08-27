@@ -46,7 +46,6 @@ class ChatUserTableViewCell: UITableViewCell {
         backgroundColor = .clear
         contentView.backgroundColor = .clear
 
-
         // MARK: Blue Bubble
 
         bubbleView.translatesAutoresizingMaskIntoConstraints = false
@@ -61,8 +60,7 @@ class ChatUserTableViewCell: UITableViewCell {
         bubbleView.layer.cornerRadius = 16
         bubbleView.clipsToBounds = true
 
-
-        // MARK: Message Label
+        // MARK: Message
 
         messageLabel.translatesAutoresizingMaskIntoConstraints = false
 
@@ -76,8 +74,7 @@ class ChatUserTableViewCell: UITableViewCell {
 
         messageLabel.textColor = .white
 
-
-        // MARK: Time Label
+        // MARK: Time
 
         timeLabel.translatesAutoresizingMaskIntoConstraints = false
 
@@ -87,27 +84,20 @@ class ChatUserTableViewCell: UITableViewCell {
         )
 
         timeLabel.textColor = UIColor.white.withAlphaComponent(0.85)
-
         timeLabel.textAlignment = .right
-
         timeLabel.numberOfLines = 1
 
-
-        // MARK: Double Checkmark
+        // MARK: Double Check
 
         checkImageView.translatesAutoresizingMaskIntoConstraints = false
 
-        // WhatsApp-style double check
         checkImageView.image = UIImage(
             systemName: "checkmark.double"
         )
 
         checkImageView.tintColor = .white
-
         checkImageView.contentMode = .scaleAspectFit
-
         checkImageView.isHidden = false
-
 
         // MARK: Add Views
 
@@ -117,13 +107,12 @@ class ChatUserTableViewCell: UITableViewCell {
         bubbleView.addSubview(timeLabel)
         bubbleView.addSubview(checkImageView)
 
-
         // MARK: Constraints
 
         NSLayoutConstraint.activate([
 
             // ==========================================
-            // USER BUBBLE - RIGHT SIDE
+            // USER → RIGHT SIDE
             // ==========================================
 
             bubbleView.trailingAnchor.constraint(
@@ -146,7 +135,6 @@ class ChatUserTableViewCell: UITableViewCell {
                 constant: -5
             ),
 
-
             // ==========================================
             // MESSAGE
             // ==========================================
@@ -165,7 +153,6 @@ class ChatUserTableViewCell: UITableViewCell {
                 equalTo: bubbleView.trailingAnchor,
                 constant: -12
             ),
-
 
             // ==========================================
             // TIME
@@ -191,9 +178,8 @@ class ChatUserTableViewCell: UITableViewCell {
                 constant: -9
             ),
 
-
             // ==========================================
-            // DOUBLE CHECKMARK
+            // DOUBLE CHECK
             // ==========================================
 
             checkImageView.trailingAnchor.constraint(
@@ -216,7 +202,6 @@ class ChatUserTableViewCell: UITableViewCell {
         ])
     }
 
-
     // MARK: - Reuse
 
     override func prepareForReuse() {
@@ -224,11 +209,8 @@ class ChatUserTableViewCell: UITableViewCell {
 
         messageLabel.text = nil
         timeLabel.text = nil
-
-        // Always show checkmark for user messages
         checkImageView.isHidden = false
     }
-
 
     // MARK: - Configure
 
@@ -240,7 +222,6 @@ class ChatUserTableViewCell: UITableViewCell {
         messageLabel.text = text
         timeLabel.text = time
 
-        // Show double check
         checkImageView.isHidden = false
 
         setNeedsLayout()
