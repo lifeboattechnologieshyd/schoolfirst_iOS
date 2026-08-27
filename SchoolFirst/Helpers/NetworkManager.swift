@@ -2,8 +2,6 @@
 //  NetworkManager.swift
 //  SchoolFirst
 //
-//  Created by Ranjith Padidala on 26/06/25.
-//
 
 import Foundation
 
@@ -22,15 +20,36 @@ enum NetworkError: Error {
     case serverError(String)
 }
 
-class NetworkManager {
+class NetworkManager: NSObject, URLSessionTaskDelegate {
     static let shared = NetworkManager()
     
-    private init() {}
+    private var session: URLSession!
+    
+    private override init() {
+        super.init()
+        let config = URLSessionConfiguration.default
+        self.session = URLSession(configuration: config, delegate: self, delegateQueue: nil)
+    }
+
+    // MARK: - Preserve Authorization on Redirects
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        willPerformHTTPRedirection response: HTTPURLResponse,
+        newRequest request: URLRequest,
+        completionHandler: @escaping (URLRequest?) -> Void
+    ) {
+        var redirectedRequest = request
+        if let originalAuth = task.originalRequest?.value(forHTTPHeaderField: "Authorization") {
+            redirectedRequest.setValue(originalAuth, forHTTPHeaderField: "Authorization")
+        }
+        completionHandler(redirectedRequest)
+    }
 
     func request<T: Decodable>(
         urlString: String,
         method: HTTPMethod = .GET,
-        is_testing : Bool = false,
+        is_testing: Bool = false,
         parameters: [String: Any]? = nil,
         headers: [String: String]? = nil,
         completion: @escaping (Result<APIResponse<T>, NetworkError>) -> Void
@@ -51,14 +70,18 @@ class NetworkManager {
             completion(.failure(.invalidURL))
             return
         }
-        print(url)
+        
+        print("🔗 Request URL: \(url)")
+        
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
+        
         if let headers = headers {
             for (key, value) in headers {
                 request.setValue(value, forHTTPHeaderField: key)
             }
         }
+        
         if let parameters = parameters, method == .POST || method == .PUT {
             do {
                 request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
@@ -68,11 +91,17 @@ class NetworkManager {
                 return
             }
         }
-        if let at = UserDefaults.standard.string(forKey: "ACCESSTOKEN") {
+        
+        if request.value(forHTTPHeaderField: "Authorization") == nil,
+           let at = UserDefaults.standard.string(forKey: "ACCESSTOKEN") {
             request.setValue("Bearer \(at)", forHTTPHeaderField: "Authorization")
         }
 
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        if let authHeader = request.value(forHTTPHeaderField: "Authorization") {
+            print("🔑 Authorization attached (\(authHeader.prefix(20))...)")
+        }
+
+        session.dataTask(with: request) { data, response, error in
             if let error = error {
                 completion(.failure(.serverError(error.localizedDescription)))
                 return
@@ -81,67 +110,41 @@ class NetworkManager {
                 completion(.failure(.noData))
                 return
             }
-            do {
-                print(String.init(data: data, encoding: .utf8) ?? "-----")
-                if let httpResponse = response as? HTTPURLResponse {
-                    if (200...399).contains(httpResponse.statusCode)  {
-                        print("✅ Success: Status code is \(httpResponse.statusCode)")
+            
+            let rawString = String(data: data, encoding: .utf8) ?? "-----"
+            print(rawString)
+            
+            if let httpResponse = response as? HTTPURLResponse {
+                if (200...399).contains(httpResponse.statusCode) {
+                    print("✅ Success: Status code is \(httpResponse.statusCode)")
+                    
+                    do {
                         if is_testing {
                             let decodedData = try JSONDecoder().decode(TestResponsere.self, from: data)
                             print(decodedData)
                         }
+                        
                         let decodedData = try JSONDecoder().decode(APIResponse<T>.self, from: data)
-                        print(decodedData)
                         completion(.success(decodedData))
-                    }else {
-                        if httpResponse.statusCode == 401 {
-                            completion(.failure(.noaccess))
-                        }else{
-                            print("❌ Error: Status code is \(httpResponse.statusCode)")
-                            completion(.failure(.noData))
-                        }
+                    } catch {
+                        print("❌ Decoding Error: \(error.localizedDescription)")
+                        completion(.failure(.decodingError("Unable to process response from server.")))
+                    }
+                } else {
+                    if httpResponse.statusCode == 401 {
+                        print("❌ 401 Unauthorized Response")
+                        completion(.failure(.noaccess))
+                    } else if httpResponse.statusCode == 404 {
+                        print("❌ 404 Not Found")
+                        completion(.failure(.serverError("Requested service endpoint was not found (404).")))
+                    } else {
+                        print("❌ Error: Status code is \(httpResponse.statusCode)")
+                        completion(.failure(.serverError("Server returned status \(httpResponse.statusCode).")))
                     }
                 }
-            } catch {
-                print(error.localizedDescription)
-                completion(.failure(.decodingError(error.localizedDescription)))
             }
         }.resume()
     }
-    
-    func logDecodingError(_ error: Error?) {
-        guard let decodingError = error as? DecodingError else {
-            print("❌ Non-decoding error:", error)
-            return
-        }
-
-        switch decodingError {
-
-        case .typeMismatch(let type, let context):
-            print("❌ Type mismatch for type:", type)
-            print("📍 CodingPath:", context.codingPath.map { $0.stringValue }.joined(separator: " → "))
-            print("ℹ️ Debug:", context.debugDescription)
-
-        case .valueNotFound(let type, let context):
-            print("❌ Value not found for type:", type)
-            print("📍 CodingPath:", context.codingPath.map { $0.stringValue }.joined(separator: " → "))
-            print("ℹ️ Debug:", context.debugDescription)
-
-        case .keyNotFound(let key, let context):
-            print("❌ Key not found:", key.stringValue)
-            print("📍 CodingPath:", context.codingPath.map { $0.stringValue }.joined(separator: " → "))
-            print("ℹ️ Debug:", context.debugDescription)
-
-        case .dataCorrupted(let context):
-            print("❌ Data corrupted")
-            print("📍 CodingPath:", context.codingPath.map { $0.stringValue }.joined(separator: " → "))
-            print("ℹ️ Debug:", context.debugDescription)
-
-        @unknown default:
-            print("❌ Unknown decoding error")
-        }
-    }
-
 }
 
 struct TestResponsere: Decodable {
