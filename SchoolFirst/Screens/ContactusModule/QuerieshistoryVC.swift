@@ -1,3 +1,4 @@
+
 //
 //  QuerieshistoryVC.swift
 //  SchoolFirst
@@ -20,6 +21,13 @@ class QuerieshistoryVC: UIViewController {
         super.viewDidLoad()
 
         setupTableView()
+
+        // Hide the history UI initially.
+        // This prevents QuerieshistoryVC from being visibly shown
+        // before we know whether tickets are available.
+        tableview.isHidden = true
+        Addquerybutton.isHidden = true
+        backButton.isHidden = true
     }
 
     // MARK: - View Will Appear
@@ -34,12 +42,33 @@ class QuerieshistoryVC: UIViewController {
 
     // MARK: - Button Actions
 
-    @IBAction func backButtonTapped(_ sender: UIButton) {
+    @IBAction func backButtonTapped(
+        _ sender: UIButton
+    ) {
 
-        navigationController?.popViewController(animated: true)
+        let storyboard =
+            UIStoryboard(
+                name: "Main",
+                bundle: nil
+            )
+
+        guard let homeController =
+                storyboard.instantiateViewController(
+                    withIdentifier: "HomeController"
+                ) as? HomeController
+        else {
+            return
+        }
+
+        navigationController?.pushViewController(
+            homeController,
+            animated: true
+        )
     }
 
-    @IBAction func addQueryButtonTapped(_ sender: UIButton) {
+    @IBAction func addQueryButtonTapped(
+        _ sender: UIButton
+    ) {
 
         let storyboard = UIStoryboard(
             name: "Main",
@@ -114,14 +143,44 @@ class QuerieshistoryVC: UIViewController {
 
                         self.tickets = info.data ?? []
 
-                        // Reload the table every time we return
-                        // from ChatVC.
-                        self.tableview.reloadData()
+                        // ==========================================
+                        // CHECK IF TICKETS ARE AVAILABLE
+                        // ==========================================
 
-                        // Optional empty state
                         if self.tickets.isEmpty {
+
+                            // No queries available.
+                            // Navigate directly to ComingSoonVC.
                             self.navigateToComingSoon()
+
+                            return
                         }
+
+                        // ==========================================
+                        // TICKETS AVAILABLE
+                        // ==========================================
+
+                        // Show history UI only when tickets exist.
+                        self.tableview.isHidden = false
+                        self.Addquerybutton.isHidden = false
+                        self.backButton.isHidden = false
+
+                        // ==========================================
+                        // SORT TICKETS BY STATUS
+                        // ==========================================
+                        //
+                        // OPEN        -> TOP
+                        // REPLY SENT  -> AFTER OPEN
+                        // RESOLVED    -> BOTTOM
+                        //
+                        // Other statuses stay between Reply Sent
+                        // and Resolved.
+                        // ==========================================
+
+                        self.sortTicketsByStatus()
+
+                        // Reload table
+                        self.tableview.reloadData()
 
                     } else {
 
@@ -137,6 +196,67 @@ class QuerieshistoryVC: UIViewController {
                     )
                 }
             }
+        }
+    }
+
+    // MARK: - Sort Tickets By Status
+
+    private func sortTicketsByStatus() {
+
+        tickets.sort { firstTicket, secondTicket in
+
+            let firstPriority = statusPriority(
+                firstTicket.status
+            )
+
+            let secondPriority = statusPriority(
+                secondTicket.status
+            )
+
+            return firstPriority < secondPriority
+        }
+    }
+
+    // MARK: - Status Priority
+
+    private func statusPriority(
+        _ rawStatus: String?
+    ) -> Int {
+
+        let status = (rawStatus ?? "")
+            .replacingOccurrences(
+                of: "_",
+                with: " "
+            )
+            .trimmingCharacters(
+                in: .whitespacesAndNewlines
+            )
+            .uppercased()
+
+        switch status {
+
+        case "OPEN":
+
+            // Highest priority
+            // Shows at the TOP
+            return 0
+
+        case "REPLY SENT":
+
+            // Shows after OPEN
+            return 1
+
+        case "RESOLVED":
+
+            // Lowest priority
+            // Shows at the BOTTOM
+            return 3
+
+        default:
+
+            // Other statuses
+            // Stay between REPLY SENT and RESOLVED
+            return 2
         }
     }
 
@@ -157,22 +277,26 @@ class QuerieshistoryVC: UIViewController {
         if var viewControllers =
             navigationController?.viewControllers {
 
+            // Remove QuerieshistoryVC from the navigation stack
+            // before adding ComingSoonVC.
             if !viewControllers.isEmpty {
                 viewControllers.removeLast()
             }
 
-            viewControllers.append(comingSoonVC)
+            viewControllers.append(
+                comingSoonVC
+            )
 
             navigationController?.setViewControllers(
                 viewControllers,
-                animated: true
+                animated: false
             )
 
         } else {
 
             present(
                 comingSoonVC,
-                animated: true
+                animated: false
             )
         }
     }
@@ -184,7 +308,8 @@ class QuerieshistoryVC: UIViewController {
     ) {
 
         guard let ticketId = ticket.id,
-              !ticketId.isEmpty else {
+              !ticketId.isEmpty
+        else {
 
             showAlert(
                 msg: "Invalid ticket id"
@@ -235,6 +360,7 @@ class QuerieshistoryVC: UIViewController {
 
                         // Even if details API fails,
                         // allow user to open the chat.
+
                         self.navigateToChatVC(
                             ticketId: ticketId,
                             listItem: ticket,
@@ -246,6 +372,7 @@ class QuerieshistoryVC: UIViewController {
 
                     // Allow navigation even if detail API
                     // fails.
+
                     self.navigateToChatVC(
                         ticketId: ticketId,
                         listItem: ticket,
@@ -272,8 +399,8 @@ class QuerieshistoryVC: UIViewController {
         guard let chatVC =
             storyboard.instantiateViewController(
                 withIdentifier: "ChatVC"
-            ) as? ChatVC else {
-
+            ) as? ChatVC
+        else {
             return
         }
 
@@ -359,10 +486,12 @@ extension QuerieshistoryVC:
             animated: true
         )
 
-        let selectedTicket = tickets[indexPath.row]
+        let selectedTicket =
+            tickets[indexPath.row]
 
         guard let ticketId = selectedTicket.id,
-              !ticketId.isEmpty else {
+              !ticketId.isEmpty
+        else {
 
             showAlert(
                 msg: "Invalid ticket"
