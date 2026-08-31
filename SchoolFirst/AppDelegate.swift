@@ -61,25 +61,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func showUpdateAlert(appID: String) {
+
+        #if PRODUCTION
+
         let alert = UIAlertController(
             title: "Update Available",
             message: "A new version of the app is available. Please update for the best experience.",
             preferredStyle: .alert
         )
 
-        alert.addAction(UIAlertAction(title: "Update Now", style: .default, handler: { _ in
-            if let url = URL(string: "https://apps.apple.com/app/id\(appID)") {
-                UIApplication.shared.open(url)
-            }
-        }))
+        alert.addAction(
+            UIAlertAction(title: "Update Now", style: .default) { _ in
 
-        alert.addAction(UIAlertAction(title: "Later", style: .cancel))
+                if let url = URL(string: "https://apps.apple.com/app/id\(appID)") {
+                    UIApplication.shared.open(url)
+                }
+            }
+        )
+
+        alert.addAction(
+            UIAlertAction(title: "Later", style: .cancel)
+        )
 
         DispatchQueue.main.async {
-            UIApplication.shared.windows.first?.rootViewController?.present(alert, animated: true)
+            UIApplication.shared.windows.first?
+                .rootViewController?
+                .present(alert, animated: true)
         }
-    }
 
+        #endif
+    }
     private func configureFirebase() {
         if let filePath = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
            let options = FirebaseOptions(contentsOfFile: filePath) {

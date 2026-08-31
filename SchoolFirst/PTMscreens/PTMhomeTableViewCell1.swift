@@ -10,6 +10,7 @@ class PTMhomeTableViewCell1: UITableViewCell {
     @IBOutlet weak var Totalattendedview: UIView!
     @IBOutlet weak var UpcomingmeetingDateLbl: UILabel!
     // MARK: - Outlets
+    @IBOutlet weak var UpcomingmeetingsLbl: UILabel!
     @IBOutlet weak var TotalmeetingattendedcountLbl: UILabel!
     @IBOutlet weak var ViewcalendarButton: UIButton!
     @IBOutlet weak var StudentnameLBl: UILabel!
@@ -19,7 +20,7 @@ class PTMhomeTableViewCell1: UITableViewCell {
     // MARK: - Callbacks
     var onDetailsTapped: (() -> Void)?
     var onCalendarTapped: (() -> Void)?
-    var onAttendedHistoryTapped: (() -> Void)?   // ✅ NEW: Totalattendedview tap
+    var onAttendedHistoryTapped: (() -> Void)?   // ✅ Totalattendedview tap
 
     // MARK: - Lifecycle
     override func awakeFromNib() {
@@ -31,7 +32,7 @@ class PTMhomeTableViewCell1: UITableViewCell {
             for: .touchUpInside
         )
 
-        // ── ✅ NEW: Tap gesture on Totalattendedview ─────────────────────
+        // ── Tap gesture on Totalattendedview ─────────────────────
         let attendedTap = UITapGestureRecognizer(
             target: self,
             action: #selector(didTapAttendedView)
@@ -45,10 +46,11 @@ class PTMhomeTableViewCell1: UITableViewCell {
         StudentnameLBl.text                = nil
         upcomingCountLabel.text            = nil
         TotalmeetingattendedcountLbl.text  = nil
-        UpcomingmeetingDateLbl.text        = nil // Added for cleanup
+        UpcomingmeetingDateLbl.text        = nil
+        UpcomingmeetingsLbl.text           = nil // Added for cleanup
         onDetailsTapped                    = nil
         onCalendarTapped                   = nil
-        onAttendedHistoryTapped            = nil // ✅ NEW: cleanup
+        onAttendedHistoryTapped            = nil
     }
 
     // MARK: - Actions
@@ -60,7 +62,7 @@ class PTMhomeTableViewCell1: UITableViewCell {
         onCalendarTapped?()
     }
 
-    // ✅ NEW: Totalattendedview tapped
+    // Totalattendedview tapped
     @objc func didTapAttendedView() {
         print("👆 Totalattendedview tapped")
         onAttendedHistoryTapped?()

@@ -11,6 +11,7 @@ import QuartzCore
 class AttendancedashboardVC: UIViewController {
 
     // MARK: - Outlets
+    @IBOutlet weak var BackButton: UIButton!
     @IBOutlet weak var TopView: UIView!
     @IBOutlet weak var tableview: UITableView!
 
@@ -21,7 +22,14 @@ class AttendancedashboardVC: UIViewController {
         setupBottomCornerRadius()
         setupTableView()
     }
+    @IBAction func BackButtonTapped(_ sender: UIButton) {
 
+        if let nav = navigationController {
+            nav.popViewController(animated: true)
+        } else {
+            dismiss(animated: true)
+        }
+    }
     // MARK: - Bottom Corner Radius
     private func setupBottomCornerRadius() {
         TopView.layer.cornerRadius = 32

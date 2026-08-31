@@ -109,7 +109,7 @@ class PTMhomeVC: UIViewController {
         }
     }
 
-    // MARK: - ✅ NEW: Navigate to attendedhistoryVC
+    // MARK: - Navigate to attendedhistoryVC
     private func navigateToAttendedHistory() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
@@ -268,12 +268,16 @@ extension PTMhomeVC: UITableViewDelegate, UITableViewDataSource {
                 cell.StudentnameLBl.text = "Hello!"
             }
 
+            // Configure labels dynamically depending on the presence of upcoming meetings
             if isLoading {
                 cell.upcomingCountLabel.text = "Loading..."
+                cell.UpcomingmeetingsLbl.text = "Upcoming Meetings"
             } else if meetingCount == 0 {
                 cell.upcomingCountLabel.text = "No upcoming PTM meetings."
+                cell.UpcomingmeetingsLbl.text = "No Upcoming Meetings" // ✅ Updated to show custom empty state
             } else {
                 cell.upcomingCountLabel.text = "You have \(meetingCount) upcoming PTM\(meetingCount > 1 ? "s" : "") this week."
+                cell.UpcomingmeetingsLbl.text = "Upcoming Meetings" // ✅ Restored original name
             }
 
             if let nextMeeting = ptmData?.meetings.first {
@@ -301,7 +305,7 @@ extension PTMhomeVC: UITableViewDelegate, UITableViewDataSource {
                 self?.navigateToPTMDetails(meeting: nil)
             }
 
-            // ✅ NEW: Totalattendedview tap → attendedhistoryVC
+            // Totalattendedview tap → attendedhistoryVC
             cell.onAttendedHistoryTapped = { [weak self] in
                 self?.navigateToAttendedHistory()
             }
@@ -358,8 +362,18 @@ extension PTMhomeVC: UITableViewDelegate, UITableViewDataSource {
 
         // Footer → dynamic height based on completed meetings count
         if row == footerRow {
-            let completedCount = max(completedData?.meetings.count ?? 0, 1)
-            let itemHeight: CGFloat     = 100
+            if isLoadingCompleted {
+                return 120
+            }
+            
+            let completedCount = completedData?.meetings.count ?? 0
+            if completedCount == 0 {
+                // Dynamic empty height set to 100 to let the placeholder sit beautifully
+                print("📐 Footer row height → empty state: 100")
+                return 100
+            }
+
+            let itemHeight: CGFloat     = 81
             let spacing: CGFloat        = 1
             let verticalPadding: CGFloat = 40
 

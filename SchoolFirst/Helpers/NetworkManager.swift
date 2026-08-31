@@ -1285,7 +1285,7 @@ struct PTMStaff: Decodable {
     }
 }
 
-// MARK: - PTM Meeting
+// MARK: - Get PTM Meeting
 struct PTMMeeting: Decodable {
     let id: String
     let title: String

@@ -893,6 +893,6 @@ extension HomeworkDetailsVC:
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
 
-        return 1200
+        return 1100
     }
 }
