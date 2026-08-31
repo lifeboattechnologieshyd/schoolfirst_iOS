@@ -367,7 +367,14 @@ extension ParentfeeVC: UITableViewDelegate, UITableViewDataSource {
                 withIdentifier: "ParentfeeVCTableViewCell",
                 for: indexPath) as! ParentfeeVCTableViewCell
             cell.selectionStyle = .none
-            cell.configure(totalPayableAmount: pendingFeeData?.totalPayableAmount)
+            
+            // Sum all raw base amounts from our pending list to populate Total Amount
+            let calculatedTotalAmount = pendingFeeData?.fees.reduce(0.0) { $0 + $1.amount }
+            
+            cell.configure(
+                totalPayableAmount: pendingFeeData?.totalPayableAmount,
+                totalAmount: calculatedTotalAmount
+            )
             return cell
         }
 

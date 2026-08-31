@@ -15,7 +15,8 @@ class DeclinedsuccessVC: UIViewController {
     @IBOutlet weak var RemarksLbl: UILabel!
     @IBOutlet weak var StatusLbl: UILabel!
     @IBOutlet weak var RespondedAtLbl: UILabel!
-
+    @IBOutlet weak var BackButton: UIButton!
+    
     // MARK: - Public Properties (set from MeetingdeclinepopupVC)
     var meeting         : PTMMeeting?
     var meetingID       : String = ""
@@ -48,6 +49,13 @@ class DeclinedsuccessVC: UIViewController {
         BacktohomeButton?.addTarget(
             self,
             action: #selector(backToHomeTapped),
+            for: .touchUpInside
+        )
+
+        // ── Programmatically register action for BackButton to ensure it works instantly ──
+        BackButton?.addTarget(
+            self,
+            action: #selector(backButtonTappedAction),
             for: .touchUpInside
         )
     }
@@ -91,7 +99,25 @@ class DeclinedsuccessVC: UIViewController {
         print("   remarks     : \(RemarksLbl?.text      ?? "nil")")
     }
 
-    // MARK: - Back to Home
+    // MARK: - Navigation Actions
+
+    @objc private func backButtonTappedAction() {
+        if let nav = navigationController {
+            // Find the existing PTMhomeVC in the navigation controller's stack and pop directly to it
+            for vc in nav.viewControllers {
+                if vc is PTMhomeVC {
+                    print("🔄 Popping back to existing PTMhomeVC")
+                    nav.popToViewController(vc, animated: true)
+                    return
+                }
+            }
+            // Fallback: If PTMhomeVC is not found in the stack, pop one step back
+            nav.popViewController(animated: true)
+        } else {
+            dismiss(animated: true)
+        }
+    }
+
     @objc private func backToHomeTapped() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
@@ -112,7 +138,12 @@ class DeclinedsuccessVC: UIViewController {
         }
     }
 
-    // MARK: - IBAction (if button connected via IBAction in storyboard)
+    // MARK: - IBActions (connected via Storyboard)
+
+    @IBAction func BackButtonTapped(_ sender: UIButton) {
+        backButtonTappedAction()
+    }
+
     @IBAction func BacktohomeButtonTapped(_ sender: UIButton) {
         backToHomeTapped()
     }

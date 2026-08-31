@@ -9,7 +9,7 @@ class PTMhomeTableViewCell1TableViewCell2: UITableViewCell {
 
     @IBOutlet weak var collectionview: UICollectionView!
 
-    // ── NEW: Height constraint outlet (connect from Storyboard/XIB) ──
+    // ── Height constraint outlet (connected from Storyboard/XIB) ──
     @IBOutlet weak var collectionViewHeightConstraint: NSLayoutConstraint!
 
     // ── Holds real completed meetings ──
@@ -18,11 +18,23 @@ class PTMhomeTableViewCell1TableViewCell2: UITableViewCell {
     // ── Constants for height calculation ──
     private let itemHeight: CGFloat = 81       // must match sizeForItemAt
     private let itemSpacing: CGFloat = 1       // must match minimumLineSpacing
-    private let emptyStateHeight: CGFloat = 81 // when no data → show 1 empty cell
+
+    // ── Programmatic Placeholder Label for Empty State ──
+    private let noMeetingsLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "No completed meetings"
+        label.textColor = .systemGray
+        label.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        label.textAlignment = .center
+        label.isHidden = true
+        return label
+    }()
 
     override func awakeFromNib() {
         super.awakeFromNib()
         setupCollectionView()
+        setupPlaceholderLabel()
         applyFigmaStyling()
     }
 
@@ -54,6 +66,17 @@ class PTMhomeTableViewCell1TableViewCell2: UITableViewCell {
         collectionview.isScrollEnabled = false
     }
 
+    private func setupPlaceholderLabel() {
+        contentView.addSubview(noMeetingsLabel)
+        NSLayoutConstraint.activate([
+            noMeetingsLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            // Pushes the label down by 55 points so it sits beautifully below the "Completed Meetings" title
+            noMeetingsLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 55),
+            noMeetingsLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            noMeetingsLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
+        ])
+    }
+
     private func applyFigmaStyling() {
         collectionview.layer.cornerRadius = 12
         collectionview.layer.borderWidth = 1.0
@@ -73,33 +96,61 @@ class PTMhomeTableViewCell1TableViewCell2: UITableViewCell {
     // ── Configure ──
     func configure(with data: [PTMCompletedMeeting]) {
         meetingsData = data
-        collectionview.reloadData()
 
-        // ── Update dynamic height ──
-        updateCollectionViewHeight()
+        if data.isEmpty {
+            collectionview.isHidden = true
+            noMeetingsLabel.isHidden = false
+            
+            // Disable background card borders & shadows when empty for a clean layout
+            collectionview.layer.borderWidth = 0
+            self.layer.shadowOpacity = 0
+            
+            collectionViewHeightConstraint?.constant = 40
+        } else {
+            collectionview.isHidden = false
+            noMeetingsLabel.isHidden = true
+            
+            // Restore original borders & shadows
+            collectionview.layer.borderWidth = 1.0
+            self.layer.shadowOpacity = 0.2
+            
+            collectionview.reloadData()
+            updateCollectionViewHeight()
+        }
+
+        contentView.setNeedsLayout()
+        contentView.layoutIfNeeded()
 
         print("📋 PTMhomeTableViewCell1TableViewCell2 configure() → \(data.count) completed meetings")
-        print("   → New CV height:", collectionViewHeightConstraint?.constant ?? 0)
+        print("   → New CV height: \(collectionViewHeightConstraint?.constant ?? 0)")
     }
 
     // MARK: - Dynamic Height Calculation
     private func updateCollectionViewHeight() {
-
-        let itemCount   = max(meetingsData.count, 1) // at least 1 empty cell
+        let itemCount = meetingsData.count
+        guard itemCount > 0 else {
+            collectionViewHeightConstraint?.constant = 0
+            return
+        }
+        
         let totalHeight = (CGFloat(itemCount) * itemHeight) + (CGFloat(itemCount - 1) * itemSpacing)
 
-        // Update constraint (if connected)
+        // Update constraint
         collectionViewHeightConstraint?.constant = totalHeight
 
-        // Also invalidate layout so cells re-render properly
+        // Invalidate layout so cells re-render correctly
         collectionview.collectionViewLayout.invalidateLayout()
         contentView.setNeedsLayout()
         contentView.layoutIfNeeded()
     }
 
-    /// Public helper — call from parent VC to know total cell height
+    /// Public helper — call from parent VC to determine total cell height
     func requiredHeight() -> CGFloat {
-        let itemCount   = max(meetingsData.count, 1)
+        let itemCount = meetingsData.count
+        if itemCount == 0 {
+            return 100 // Increased from 80 to 100 to make room for the offset label
+        }
+        
         let totalHeight = (CGFloat(itemCount) * itemHeight) + (CGFloat(itemCount - 1) * itemSpacing)
 
         // Add padding for top/bottom breathing space in the tableview cell
@@ -117,7 +168,7 @@ class PTMhomeTableViewCell1TableViewCell2: UITableViewCell {
 extension PTMhomeTableViewCell1TableViewCell2: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return max(meetingsData.count, 1)
+        return meetingsData.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -128,9 +179,7 @@ extension PTMhomeTableViewCell1TableViewCell2: UICollectionViewDelegate, UIColle
 
         cell.backgroundColor = .white
 
-        if meetingsData.isEmpty {
-            cell.configureEmpty()
-        } else if indexPath.item < meetingsData.count {
+        if indexPath.item < meetingsData.count {
             let meeting = meetingsData[indexPath.item]
             cell.configure(with: meeting)
         }

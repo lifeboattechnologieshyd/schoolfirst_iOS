@@ -8,6 +8,7 @@ import UIKit
 class PTMhomeupcomingmeetingsTableViewCell: UITableViewCell {
 
     // MARK: - Outlets
+    @IBOutlet weak var MeetingstatusLbl: UILabel!
     @IBOutlet weak var MeetingtitleLbl: UILabel!
     @IBOutlet weak var NamefirstletterLbl: UILabel!
     @IBOutlet weak var Studentgrade: UILabel!
@@ -25,6 +26,7 @@ class PTMhomeupcomingmeetingsTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         verifyOutlets()
+        setupStatusLabelStyle()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -39,15 +41,26 @@ class PTMhomeupcomingmeetingsTableViewCell: UITableViewCell {
         NamefirstletterLbl?.text = nil
         Meetinglocation?.text    = nil
         Meetingdate?.text        = nil
+        MeetingstatusLbl?.text   = nil
+        MeetingstatusLbl?.isHidden = true
         meeting                  = nil
         studentName              = ""
         parentVC                 = nil
+    }
+
+    // MARK: - Setup Label Style
+    private func setupStatusLabelStyle() {
+        MeetingstatusLbl?.layer.cornerRadius = 6
+        MeetingstatusLbl?.clipsToBounds = true
+        MeetingstatusLbl?.textAlignment = .center
+        MeetingstatusLbl?.font = UIFont.systemFont(ofSize: 11, weight: .semibold)
     }
 
     // MARK: - Verify Outlets (debug helper)
     private func verifyOutlets() {
         print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
         print("🔍 PTMhomeupcomingmeetingsTableViewCell — verifyOutlets()")
+        print("   MeetingstatusLbl   :", MeetingstatusLbl    == nil ? "❌ NOT CONNECTED" : "✅ connected")
         print("   MeetingtitleLbl    :", MeetingtitleLbl     == nil ? "❌ NOT CONNECTED" : "✅ connected")
         print("   StudentnameLBl     :", StudentnameLBl      == nil ? "❌ NOT CONNECTED" : "✅ connected")
         print("   NamefirstletterLbl :", NamefirstletterLbl  == nil ? "❌ NOT CONNECTED" : "✅ connected")
@@ -71,6 +84,7 @@ class PTMhomeupcomingmeetingsTableViewCell: UITableViewCell {
         print("   meeting title      :", meeting.title)
         print("   meeting grade      :", meeting.grade.name)
         print("   meeting section    :", meeting.section.name)
+        print("   meeting status     :", meeting.status)
         print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
         // ── Meeting Title ────────────────────────────────────────────────
@@ -129,15 +143,58 @@ class PTMhomeupcomingmeetingsTableViewCell: UITableViewCell {
         Meetingdate.textColor       = .black
         Meetingdate.backgroundColor = .clear
 
+        // ── Configure Status Badge (MeetingstatusLbl) ───────────────────
+        configureStatusBadge(meeting: meeting)
+
         // ── Force layout update ──────────────────────────────────────────
         contentView.setNeedsLayout()
         contentView.layoutIfNeeded()
+    }
 
-        // ── DEBUG: verify frames ────────────────────────────────────────
-        print("🟢 MeetingtitleLbl frame :", MeetingtitleLbl.frame)
-        print("🟢 MeetingtitleLbl text  :", MeetingtitleLbl.text ?? "nil")
-        print("🟢 StudentnameLBl frame  :", StudentnameLBl.frame)
-        print("🟢 StudentnameLBl text   :", StudentnameLBl.text ?? "nil")
+    // MARK: - Configure Status Badge
+    private func configureStatusBadge(meeting: PTMMeeting) {
+        guard MeetingstatusLbl != nil else { return }
+        
+        MeetingstatusLbl.isHidden = false
+        
+        // 1) First check Parent RSVP response inside the meeting
+        if let parentResponse = meeting.response {
+            let rStatus = parentResponse.responseStatus.lowercased()
+            
+            if rStatus.contains("attending") || rStatus.contains("accepted") || rStatus == "attending" {
+                MeetingstatusLbl.text = "  Attending  "
+                MeetingstatusLbl.textColor = UIColor(red: 46/255, green: 117/255, blue: 89/255, alpha: 1.0) // Green
+                MeetingstatusLbl.backgroundColor = UIColor(red: 235/255, green: 247/255, blue: 242/255, alpha: 1.0)
+            } else if rStatus.contains("declined") || rStatus.contains("not") || rStatus == "not_attending" {
+                MeetingstatusLbl.text = "  Declined  "
+                MeetingstatusLbl.textColor = UIColor(red: 186/255, green: 45/255, blue: 37/255, alpha: 1.0) // Red
+                MeetingstatusLbl.backgroundColor = UIColor(red: 254/255, green: 242/255, blue: 242/255, alpha: 1.0)
+            } else {
+                MeetingstatusLbl.text = "  \(parentResponse.statusDisplayText)  "
+                MeetingstatusLbl.textColor = .systemOrange
+                MeetingstatusLbl.backgroundColor = UIColor.systemOrange.withAlphaComponent(0.12)
+            }
+        } else {
+            // 2) Fallback to Meeting Status (Scheduled, Cancelled, Completed, etc.)
+            let mStatus = meeting.status.uppercased()
+            if mStatus == "SCHEDULED" || mStatus == "ACTIVE" {
+                MeetingstatusLbl.text = "  Pending RSVP  "
+                MeetingstatusLbl.textColor = UIColor(red: 31/255, green: 71/255, blue: 127/255, alpha: 1.0) // Theme Blue
+                MeetingstatusLbl.backgroundColor = UIColor(red: 31/255, green: 71/255, blue: 127/255, alpha: 0.1)
+            } else if mStatus == "CANCELLED" {
+                MeetingstatusLbl.text = "  Cancelled  "
+                MeetingstatusLbl.textColor = .systemGray
+                MeetingstatusLbl.backgroundColor = UIColor.systemGray.withAlphaComponent(0.15)
+            } else if mStatus == "COMPLETED" {
+                MeetingstatusLbl.text = "  Completed  "
+                MeetingstatusLbl.textColor = .systemGreen
+                MeetingstatusLbl.backgroundColor = UIColor.systemGreen.withAlphaComponent(0.15)
+            } else {
+                MeetingstatusLbl.text = "  \(mStatus.capitalized)  "
+                MeetingstatusLbl.textColor = .darkGray
+                MeetingstatusLbl.backgroundColor = UIColor.lightGray.withAlphaComponent(0.2)
+            }
+        }
     }
 
     // MARK: - Helper: Get First Letter (uppercased)
