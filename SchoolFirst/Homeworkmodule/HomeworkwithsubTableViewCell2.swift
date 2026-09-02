@@ -25,6 +25,7 @@ class HomeworkwithsubTableViewCell2: UITableViewCell {
     // MARK: - Callback
 
     var onViewDetailsTapped: (() -> Void)?
+    var onMarkCompleteTapped: (() -> Void)?
 
     // MARK: - View Details Button
 
@@ -100,6 +101,7 @@ class HomeworkwithsubTableViewCell2: UITableViewCell {
         setupBadgeLabel()
         setupImageBackground()
         setupViewDetailsButton()
+        setupMarkCompleteButton()
     }
 
     override func layoutSubviews() {
@@ -116,6 +118,7 @@ class HomeworkwithsubTableViewCell2: UITableViewCell {
         super.prepareForReuse()
 
         onViewDetailsTapped = nil
+        onMarkCompleteTapped = nil
 
         Homeworktitle.text = nil
         Description.text = nil
@@ -199,11 +202,24 @@ class HomeworkwithsubTableViewCell2: UITableViewCell {
         ])
     }
 
+    private func setupMarkCompleteButton() {
+        MarkCompletebutton.addTarget(
+            self,
+            action: #selector(markCompleteButtonTapped),
+            for: .touchUpInside
+        )
+    }
+
     // MARK: - Action
 
     @objc
     private func viewDetailsTapped() {
         onViewDetailsTapped?()
+    }
+
+    @objc
+    private func markCompleteButtonTapped() {
+        onMarkCompleteTapped?()
     }
 
     // MARK: - Configure API Data

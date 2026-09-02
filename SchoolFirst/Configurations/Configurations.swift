@@ -208,6 +208,8 @@ struct API {
     static func PTM_PARENT_RESPONSE(meetingID: String, studentID: String) -> String {
           return BASE_URL + "ptm/parent-response/\(meetingID)?student_id=\(studentID)"
       }
+    // Append profile path URL structure
+    static let STUDENT_PROFILE = BASE_URL + "user/profile/"
   
 }
 
