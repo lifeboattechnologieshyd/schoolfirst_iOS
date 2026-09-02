@@ -363,6 +363,267 @@ struct User: Codable {
     }
 
 }
+//*** - Student Profile API Response Struct
+struct StudentProfileResponse: Decodable {
+    let success: Bool
+    let description: String
+    let data: StudentProfileData?
+
+    enum CodingKeys: String, CodingKey {
+        case success
+        case description
+        case data
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        success = try container.decodeIfPresent(Bool.self, forKey: .success) ?? false
+        description = try container.decodeIfPresent(String.self, forKey: .description) ?? ""
+        data = try container.decodeIfPresent(StudentProfileData.self, forKey: .data)
+    }
+}
+struct StudentProfileData: Decodable {
+    let id: String
+    let name: String
+    let photoUrl: String?
+    let admissionNumber: String
+    let rollNumber: Int
+    let gender: String
+    let dateOfBirth: String
+    let bloodGroup: String
+    let nationality: String
+    let motherTongue: String
+    let email: String
+    let address: String
+    let admissionDate: String
+    let enrollmentType: String
+    let status: String
+    let board: String
+    let studentCategory: String
+    let religion: String
+    let caste: String
+    let subCaste: String
+    let identificationMarks: String
+    let school: ProfileIdName?
+    let branch: ProfileBranch?
+    let academicYear: ProfileIdName?
+    let grade: ProfileIdName?
+    let section: ProfileIdName?
+    let parent: ProfileParent?
+    let emergencyContact: ProfileEmergencyContact?
+    let previousSchool: ProfilePreviousSchool?
+    let transport: ProfileTransport?
+    let hostelType: String
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, gender, email, address, status, board, religion, caste
+        case photoUrl = "photo_url"
+        case admissionNumber = "admission_number"
+        case rollNumber = "roll_number"
+        case dateOfBirth = "date_of_birth"
+        case bloodGroup = "blood_group"
+        case nationality, school, branch, grade, section, parent, transport
+        case motherTongue = "mother_tongue"
+        case admissionDate = "admission_date"
+        case enrollmentType = "enrollment_type"
+        case studentCategory = "student_category"
+        case subCaste = "sub_caste"
+        case identificationMarks = "identification_marks"
+        case academicYear = "academic_year"
+        case emergencyContact = "emergency_contact"
+        case previousSchool = "previous_school"
+        case hostelType = "hostel_type"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(String.self, forKey: .id) ?? ""
+        name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
+        photoUrl = try container.decodeIfPresent(String.self, forKey: .photoUrl)
+        admissionNumber = try container.decodeIfPresent(String.self, forKey: .admissionNumber) ?? ""
+        rollNumber = try container.decodeIfPresent(Int.self, forKey: .rollNumber) ?? 0
+        gender = try container.decodeIfPresent(String.self, forKey: .gender) ?? ""
+        dateOfBirth = try container.decodeIfPresent(String.self, forKey: .dateOfBirth) ?? ""
+        bloodGroup = try container.decodeIfPresent(String.self, forKey: .bloodGroup) ?? ""
+        nationality = try container.decodeIfPresent(String.self, forKey: .nationality) ?? ""
+        motherTongue = try container.decodeIfPresent(String.self, forKey: .motherTongue) ?? ""
+        email = try container.decodeIfPresent(String.self, forKey: .email) ?? ""
+        address = try container.decodeIfPresent(String.self, forKey: .address) ?? ""
+        admissionDate = try container.decodeIfPresent(String.self, forKey: .admissionDate) ?? ""
+        enrollmentType = try container.decodeIfPresent(String.self, forKey: .enrollmentType) ?? ""
+        status = try container.decodeIfPresent(String.self, forKey: .status) ?? ""
+        board = try container.decodeIfPresent(String.self, forKey: .board) ?? ""
+        studentCategory = try container.decodeIfPresent(String.self, forKey: .studentCategory) ?? ""
+        religion = try container.decodeIfPresent(String.self, forKey: .religion) ?? ""
+        caste = try container.decodeIfPresent(String.self, forKey: .caste) ?? ""
+        subCaste = try container.decodeIfPresent(String.self, forKey: .subCaste) ?? ""
+        identificationMarks = try container.decodeIfPresent(String.self, forKey: .identificationMarks) ?? ""
+        school = try container.decodeIfPresent(ProfileIdName.self, forKey: .school)
+        branch = try container.decodeIfPresent(ProfileBranch.self, forKey: .branch)
+        academicYear = try container.decodeIfPresent(ProfileIdName.self, forKey: .academicYear)
+        grade = try container.decodeIfPresent(ProfileIdName.self, forKey: .grade)
+        section = try container.decodeIfPresent(ProfileIdName.self, forKey: .section)
+        parent = try container.decodeIfPresent(ProfileParent.self, forKey: .parent)
+        emergencyContact = try container.decodeIfPresent(ProfileEmergencyContact.self, forKey: .emergencyContact)
+        previousSchool = try container.decodeIfPresent(ProfilePreviousSchool.self, forKey: .previousSchool)
+        transport = try container.decodeIfPresent(ProfileTransport.self, forKey: .transport)
+        hostelType = try container.decodeIfPresent(String.self, forKey: .hostelType) ?? ""
+    }
+
+    // MARK: - Formatted Date Helpers
+    
+    /// Formats birth date, e.g., "10 May 2018"
+    var formattedDateOfBirth: String {
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "yyyy-MM-dd"
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "dd MMM yyyy"
+        if let date = inputFormatter.date(from: dateOfBirth) {
+            return outputFormatter.string(from: date)
+        }
+        return dateOfBirth
+    }
+
+    /// Formats admission date, e.g., "01 Jun 2025"
+    var formattedAdmissionDate: String {
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "yyyy-MM-dd"
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "dd MMM yyyy"
+        if let date = inputFormatter.date(from: admissionDate) {
+            return outputFormatter.string(from: date)
+        }
+        return admissionDate
+    }
+}
+
+// MARK: - Helper Struct: ID and Name
+struct ProfileIdName: Decodable {
+    let id: String
+    let name: String
+
+    enum CodingKeys: String, CodingKey {
+        case id, name
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(String.self, forKey: .id) ?? ""
+        name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
+    }
+}
+
+// MARK: - Helper Struct: Branch Profile
+struct ProfileBranch: Decodable {
+    let id: String
+    let name: String
+    let code: String
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, code
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(String.self, forKey: .id) ?? ""
+        name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
+        code = try container.decodeIfPresent(String.self, forKey: .code) ?? ""
+    }
+}
+
+// MARK: - Helper Struct: Parent Information
+struct ProfileParent: Decodable {
+    let relationship: String
+    let fatherName: String
+    let fatherMobile: String
+    let fatherOccupation: String
+    let motherName: String
+    let motherMobile: String
+    let motherOccupation: String
+    let guardianName: String?
+    let guardianMobile: String
+    let guardianOccupation: String?
+
+    enum CodingKeys: String, CodingKey {
+        case relationship
+        case fatherName = "father_name"
+        case fatherMobile = "father_mobile"
+        case fatherOccupation = "father_occupation"
+        case motherName = "mother_name"
+        case motherMobile = "mother_mobile"
+        case motherOccupation = "mother_occupation"
+        case guardianName = "guardian_name"
+        case guardianMobile = "guardian_mobile"
+        case guardianOccupation = "guardian_occupation"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        relationship = try container.decodeIfPresent(String.self, forKey: .relationship) ?? ""
+        fatherName = try container.decodeIfPresent(String.self, forKey: .fatherName) ?? ""
+        fatherMobile = try container.decodeIfPresent(String.self, forKey: .fatherMobile) ?? ""
+        fatherOccupation = try container.decodeIfPresent(String.self, forKey: .fatherOccupation) ?? ""
+        motherName = try container.decodeIfPresent(String.self, forKey: .motherName) ?? ""
+        motherMobile = try container.decodeIfPresent(String.self, forKey: .motherMobile) ?? ""
+        motherOccupation = try container.decodeIfPresent(String.self, forKey: .motherOccupation) ?? ""
+        guardianName = try container.decodeIfPresent(String.self, forKey: .guardianName)
+        guardianMobile = try container.decodeIfPresent(String.self, forKey: .guardianMobile) ?? ""
+        guardianOccupation = try container.decodeIfPresent(String.self, forKey: .guardianOccupation)
+    }
+}
+
+// MARK: - Helper Struct: Emergency Contact
+struct ProfileEmergencyContact: Decodable {
+    let name: String
+    let mobile: String
+
+    enum CodingKeys: String, CodingKey {
+        case name, mobile
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
+        mobile = try container.decodeIfPresent(String.self, forKey: .mobile) ?? ""
+    }
+}
+
+// MARK: - Helper Struct: Previous School
+struct ProfilePreviousSchool: Decodable {
+    let name: String
+    let tcNumber: String
+    let examPercentage: Double
+
+    enum CodingKeys: String, CodingKey {
+        case name
+        case tcNumber = "tc_number"
+        case examPercentage = "exam_percentage"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
+        tcNumber = try container.decodeIfPresent(String.self, forKey: .tcNumber) ?? ""
+        examPercentage = try container.decodeIfPresent(Double.self, forKey: .examPercentage) ?? 0.0
+    }
+}
+
+// MARK: - Helper Struct: Transport
+struct ProfileTransport: Decodable {
+    let required: Bool
+    let pickupPoint: String
+
+    enum CodingKeys: String, CodingKey {
+        case required
+        case pickupPoint = "pickup_point"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        required = try container.decodeIfPresent(Bool.self, forKey: .required) ?? false
+        pickupPoint = try container.decodeIfPresent(String.self, forKey: .pickupPoint) ?? ""
+    }
+}
 //***StudentHomeworkResponse
 struct StudentHomeworkData: Codable {
     let student: HomeworkStudent

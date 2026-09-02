@@ -537,6 +537,13 @@ extension HomeworkVC:
                 with: homework
             )
         }
+        
+        cell.onMarkCompleteTapped = { [weak self] in
+            
+            self?.navigateToHomeworkDetails(
+                with: homework
+            )
+        }
 
         return cell
     }
