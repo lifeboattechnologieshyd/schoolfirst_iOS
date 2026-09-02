@@ -1,4 +1,3 @@
-
 //
 //  QuerysubmittedVC.swift
 //  SchoolFirst
@@ -12,7 +11,7 @@ class QuerysubmittedVC: UIViewController {
 
     @IBOutlet weak var TicketidLbl: UILabel!
     @IBOutlet weak var Raiseanotherquery: UIButton!
-    @IBOutlet weak var backButton: UIButton!
+    
     @IBOutlet weak var ViewthisqueryButton: UIButton!
 
     /// Passed from RaiseaQueryVC after ticket creation.
@@ -21,6 +20,9 @@ class QuerysubmittedVC: UIViewController {
 
     /// Full ticket data from the detail API
     private var ticketDetails: TicketData?
+
+    /// The ticket item (from list) - used when navigating to ChatVC
+    private var ticketListItem: TicketItem?
 
     /// Number of characters shown in the ticket id label
     /// Changed from 4 to 6
@@ -94,14 +96,6 @@ class QuerysubmittedVC: UIViewController {
     }
 
     /// Returns only the last 6 characters of the ticket id.
-    ///
-    /// Same cleaning logic used in QueryTableViewCell.
-    ///
-    /// Example:
-    /// "38d2ba22-9bff-4561-9b4e-c58b3ffc3b33" -> "3B3C33"
-    /// "#1024"                              -> "1024"
-    /// "7"                                  -> "7"
-
     private func shortTicketId(from id: String) -> String {
 
         let cleaned = id
@@ -121,10 +115,6 @@ class QuerysubmittedVC: UIViewController {
             return ""
         }
 
-        // ==========================================
-        // Show LAST 6 characters
-        // ==========================================
-
         guard cleaned.count > ticketIdDisplayLength else {
             return cleaned.uppercased()
         }
@@ -135,12 +125,6 @@ class QuerysubmittedVC: UIViewController {
     }
 
     // MARK: - API: Latest Ticket From List (fallback)
-
-    /*
-     Used when the create API did not return an id.
-
-     The newest ticket in the list is the one just created.
-     */
 
     private func fetchLatestTicketFromList() {
 
@@ -196,6 +180,7 @@ class QuerysubmittedVC: UIViewController {
                     }
 
                     self.ticketId = newestId
+                    self.ticketListItem = newest
 
                     self.configureTicketIdLabel(
                         newestId
@@ -211,6 +196,9 @@ class QuerysubmittedVC: UIViewController {
                         self.TicketidLbl.text ?? ""
                     )
 
+                    // Also fetch full details for this newest ticket
+                    self.fetchTicketDetails(for: newestId)
+
                 case .failure(let error):
 
                     print(
@@ -225,8 +213,6 @@ class QuerysubmittedVC: UIViewController {
     }
 
     /// Picks the ticket with the latest createdAt.
-    /// Falls back to the first item if dates cannot be parsed.
-
     private func newestTicket(
         from tickets: [TicketItem]
     ) -> TicketItem? {
@@ -333,11 +319,13 @@ class QuerysubmittedVC: UIViewController {
 
         showLoader()
 
-        // API.GET_TICKET_DETAIL =
-        // "https://dev-api.schoolfirst.ai/user/support/tickets/"
+        var base = API.GET_TICKET_DETAIL
 
-        let url =
-            API.GET_TICKET_DETAIL + id
+        if !base.hasSuffix("/") {
+            base += "/"
+        }
+
+        let url = base + id
 
         NetworkManager.shared.request(
             urlString: url,
@@ -393,8 +381,6 @@ class QuerysubmittedVC: UIViewController {
 
                     } else {
 
-                        // Keep the already displayed id, only log
-
                         print(
                             "⚠️ Ticket detail API error:",
                             info.description
@@ -403,8 +389,6 @@ class QuerysubmittedVC: UIViewController {
 
                 case .failure(let error):
 
-                    // Keep the already displayed id visible
-
                     print(
                         "❌ Ticket detail API failed:",
                         error.localizedDescription
@@ -412,32 +396,6 @@ class QuerysubmittedVC: UIViewController {
                 }
             }
         }
-    }
-
-    // MARK: - Back Button
-
-    @IBAction func backButtonTapped(
-        _ sender: UIButton
-    ) {
-
-        let storyboard =
-            UIStoryboard(
-                name: "Main",
-                bundle: nil
-            )
-
-        guard let queriesHistoryVC =
-                storyboard.instantiateViewController(
-                    withIdentifier: "QuerieshistoryVC"
-                ) as? QuerieshistoryVC
-        else {
-            return
-        }
-
-        navigationController?.pushViewController(
-            queriesHistoryVC,
-            animated: true
-        )
     }
 
     // MARK: - Raise Another Query
@@ -472,22 +430,203 @@ class QuerysubmittedVC: UIViewController {
         _ sender: UIButton
     ) {
 
+        // Validate ticket ID first
+        guard let ticketId = ticketId,
+              !ticketId.trimmingCharacters(
+                in: .whitespacesAndNewlines
+              ).isEmpty
+        else {
+
+            // If ticket ID is still not available, try to fetch it first
+            showAlert(
+                msg: "Ticket ID is not available yet. Please wait..."
+            )
+
+            // Try fetching from list as a fallback
+            fetchLatestTicketAndNavigate()
+
+            return
+        }
+
+        // If we already have ticket details, navigate directly
+        if ticketDetails != nil {
+
+            navigateToChatVC(
+                ticketId: ticketId,
+                listItem: ticketListItem,
+                detail: ticketDetails
+            )
+
+        } else {
+
+            // Fetch ticket details before navigating
+            fetchTicketDetailsAndNavigate(ticketId: ticketId)
+        }
+    }
+
+    // MARK: - Fetch Latest Ticket And Navigate (Fallback)
+
+    private func fetchLatestTicketAndNavigate() {
+
+        showLoader()
+
+        NetworkManager.shared.request(
+            urlString: API.GET_TICKETS_LIST,
+            method: .GET
+        ) { [weak self] (
+            result: Result<APIResponse<[TicketItem]>, NetworkError>
+        ) in
+
+            DispatchQueue.main.async {
+
+                guard let self = self else {
+                    return
+                }
+
+                self.hideLoader()
+
+                switch result {
+
+                case .success(let info):
+
+                    guard info.success,
+                          let tickets = info.data,
+                          !tickets.isEmpty,
+                          let newest = self.newestTicket(from: tickets),
+                          let newestId = newest.id,
+                          !newestId.isEmpty
+                    else {
+
+                        self.showAlert(
+                            msg: "Unable to fetch ticket details."
+                        )
+
+                        return
+                    }
+
+                    self.ticketId = newestId
+                    self.ticketListItem = newest
+
+                    self.fetchTicketDetailsAndNavigate(
+                        ticketId: newestId
+                    )
+
+                case .failure(let error):
+
+                    self.showAlert(
+                        msg: error.localizedDescription
+                    )
+                }
+            }
+        }
+    }
+
+    // MARK: - Fetch Ticket Details And Navigate
+
+    private func fetchTicketDetailsAndNavigate(
+        ticketId: String
+    ) {
+
+        showLoader()
+
+        var base = API.GET_TICKET_DETAIL
+
+        if !base.hasSuffix("/") {
+            base += "/"
+        }
+
+        let url = base + ticketId
+
+        NetworkManager.shared.request(
+            urlString: url,
+            method: .GET
+        ) { [weak self] (
+            result: Result<APIResponse<TicketData>, NetworkError>
+        ) in
+
+            DispatchQueue.main.async {
+
+                guard let self = self else {
+                    return
+                }
+
+                self.hideLoader()
+
+                switch result {
+
+                case .success(let info):
+
+                    if info.success,
+                       let ticketData = info.data {
+
+                        self.ticketDetails = ticketData
+
+                        self.navigateToChatVC(
+                            ticketId: ticketId,
+                            listItem: self.ticketListItem,
+                            detail: ticketData
+                        )
+
+                    } else {
+
+                        // Even if details API fails,
+                        // allow user to open the chat.
+                        self.navigateToChatVC(
+                            ticketId: ticketId,
+                            listItem: self.ticketListItem,
+                            detail: nil
+                        )
+                    }
+
+                case .failure:
+
+                    // Allow navigation even if detail API fails.
+                    self.navigateToChatVC(
+                        ticketId: ticketId,
+                        listItem: self.ticketListItem,
+                        detail: nil
+                    )
+                }
+            }
+        }
+    }
+
+    // MARK: - Navigate To ChatVC
+
+    private func navigateToChatVC(
+        ticketId: String,
+        listItem: TicketItem?,
+        detail: TicketData?
+    ) {
+
         let storyboard =
             UIStoryboard(
                 name: "Main",
                 bundle: nil
             )
 
-        guard let queriesHistoryVC =
+        guard let chatVC =
                 storyboard.instantiateViewController(
-                    withIdentifier: "QuerieshistoryVC"
-                ) as? QuerieshistoryVC
+                    withIdentifier: "ChatVC"
+                ) as? ChatVC
         else {
             return
         }
 
+        // Pass all required data to ChatVC
+        chatVC.ticketId = ticketId
+        chatVC.ticketItem = listItem
+        chatVC.ticketDetail = detail
+
+        print("====================================")
+        print("🚀 Navigating to ChatVC")
+        print("Ticket ID:", ticketId)
+        print("Has List Item:", listItem != nil)
+        print("Has Detail:", detail != nil)
+        print("====================================")
+
         navigationController?.pushViewController(
-            queriesHistoryVC,
+            chatVC,
             animated: true
         )
     }

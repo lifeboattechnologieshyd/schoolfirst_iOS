@@ -1,4 +1,3 @@
-
 //
 //  QuerieshistoryVC.swift
 //  SchoolFirst
@@ -46,22 +45,37 @@ class QuerieshistoryVC: UIViewController {
         _ sender: UIButton
     ) {
 
-        let storyboard =
-            UIStoryboard(
-                name: "Main",
-                bundle: nil
-            )
+        // Always pop back to HomeViewController
+        popToHomeViewController()
+    }
 
-        guard let homeController =
-                storyboard.instantiateViewController(
-                    withIdentifier: "HomeController"
-                ) as? HomeController
-        else {
+    // MARK: - Pop To Home ViewController
+
+    private func popToHomeViewController() {
+
+        guard let navigationController = navigationController else {
             return
         }
 
-        navigationController?.pushViewController(
-            homeController,
+        // Search for HomeViewController in the navigation stack
+        for viewController in navigationController.viewControllers {
+
+            if let homeVC = viewController as? HomeController {
+
+                // Found HomeViewController — pop to it
+                navigationController.popToViewController(
+                    homeVC,
+                    animated: true
+                )
+
+                return
+            }
+        }
+
+        // Fallback:
+        // If HomeViewController is not in the stack,
+        // pop to root view controller
+        navigationController.popToRootViewController(
             animated: true
         )
     }
