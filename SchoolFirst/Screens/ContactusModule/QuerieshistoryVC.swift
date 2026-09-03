@@ -60,7 +60,7 @@ class QuerieshistoryVC: UIViewController {
         // Search for HomeViewController in the navigation stack
         for viewController in navigationController.viewControllers {
 
-            if let homeVC = viewController as? HomeController {
+            if let homeVC = viewController as? HomeController    {
 
                 // Found HomeViewController — pop to it
                 navigationController.popToViewController(
