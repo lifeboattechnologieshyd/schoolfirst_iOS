@@ -622,7 +622,6 @@ extension ParentfeeVC: UITableViewDelegate, UITableViewDataSource {
             ) as! ParentfeeVCTableViewCell
 
             cell.selectionStyle = .none
-<<<<<<< HEAD
 
             // Sum all raw base amounts from pending list
             // to populate Total Amount
@@ -631,20 +630,11 @@ extension ParentfeeVC: UITableViewDelegate, UITableViewDataSource {
                     $0 + $1.amount
                 }
 
-=======
-            
-            // Sum all raw base amounts from our pending list to populate Total Amount
-            let calculatedTotalAmount = pendingFeeData?.fees.reduce(0.0) { $0 + $1.amount }
-            
->>>>>>> origin/schoolzone
             cell.configure(
                 totalPayableAmount: pendingFeeData?.totalPayableAmount,
                 totalAmount: calculatedTotalAmount
             )
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/schoolzone
             return cell
         }
 
@@ -850,3 +840,5 @@ extension ParentfeeVC: UITableViewDelegate, UITableViewDataSource {
         return UITableView.automaticDimension
     }
 }
+
+
