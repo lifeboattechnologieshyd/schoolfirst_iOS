@@ -23,6 +23,9 @@ class MeetingConfirmationVC: UIViewController {
     var meeting   : PTMMeeting?
     var student   : PTMStudent?
 
+    // ✅ NEW: Callback to inform parent about API result
+    var onResponsePosted: ((_ status: String) -> Void)?
+
     // Track if API was already posted (avoid double-posting)
     private var hasPostedResponse: Bool = false
 
@@ -38,7 +41,6 @@ class MeetingConfirmationVC: UIViewController {
         print("   studentID :", studentID.isEmpty ? "⚠️ EMPTY" : studentID)
         print("   schoolID  :", schoolID.isEmpty  ? "⚠️ EMPTY" : schoolID)
         print("   meeting   :", meeting?.title    ?? "nil")
-        print("   student   :", student?.name     ?? "nil")
         print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
         BacktohomeButton.addTarget(
@@ -53,175 +55,144 @@ class MeetingConfirmationVC: UIViewController {
             for: .touchUpInside
         )
 
-        // Populate UI immediately with passed meeting object
         if let meeting = meeting {
             populateUI(with: meeting)
         }
 
-        // POST ATTENDING response to API
         postAttendingResponse()
-
-        // Fetch latest meeting details from PTM API
-        fetchPTMMeetings()
     }
 
     // MARK: - Resolve IDs (Fallback Chain)
     private func resolveIDs() {
 
-        // ── studentID resolution ─────────────────────────────
         if studentID.isEmpty {
             if let sid = UserManager.shared.selectedKid?.studentID, !sid.isEmpty {
                 studentID = sid
-                print("🔄 studentID from UserManager.selectedKid:", studentID)
             } else if let sid = UserDefaults.standard.string(forKey: "STUDENT_ID"), !sid.isEmpty {
                 studentID = sid
-                print("🔄 studentID from UserDefaults[STUDENT_ID]:", studentID)
             } else {
                 studentID = UserManager.shared.resolvedStudentID
-                print("🔄 studentID from resolvedStudentID:", studentID)
             }
         }
 
-        // ── schoolID resolution ──────────────────────────────
         if schoolID.isEmpty {
             if let scid = UserManager.shared.selectedKid?.school?.schoolID, !scid.isEmpty {
                 schoolID = scid
-                print("🔄 schoolID from selectedKid.school:", schoolID)
             } else if let scid = UserManager.shared.selectedSchool?.schoolID, !scid.isEmpty {
                 schoolID = scid
-                print("🔄 schoolID from selectedSchool:", schoolID)
             } else if let scid = UserDefaults.standard.string(forKey: "SCHOOL_ID"), !scid.isEmpty {
                 schoolID = scid
-                print("🔄 schoolID from UserDefaults[SCHOOL_ID]:", schoolID)
             } else if let scid = UserDefaults.standard.string(forKey: "SchoolID"), !scid.isEmpty {
                 schoolID = scid
-                print("🔄 schoolID from UserDefaults[SchoolID]:", schoolID)
             } else if let scid = UserDefaults.standard.string(forKey: "school_id"), !scid.isEmpty {
                 schoolID = scid
-                print("🔄 schoolID from UserDefaults[school_id]:", schoolID)
             } else {
                 schoolID = UserManager.shared.resolvedSchoolID
-                print("🔄 schoolID from resolvedSchoolID:", schoolID)
             }
         }
 
-        // ── meetingID resolution ─────────────────────────────
         if meetingID.isEmpty, let mid = meeting?.id, !mid.isEmpty {
             meetingID = mid
-            print("🔄 meetingID from meeting.id:", meetingID)
         }
     }
 
-    // MARK: - POST ATTENDING Response
-    // MARK: - POST ATTENDING Response
-    // MARK: - POST ATTENDING Response
-    // MARK: - POST ATTENDING Response
+    // MARK: - POST ATTENDING Response using raw URLRequest
     private func postAttendingResponse() {
-        guard !hasPostedResponse else {
-            print("ℹ️ ATTENDING already posted — skipping")
-            return
-        }
-        guard !meetingID.isEmpty, !studentID.isEmpty else {
-            print("⚠️ postAttendingResponse: meetingID or studentID empty — skipping")
-            return
-        }
+        guard !hasPostedResponse else { return }
+        guard !meetingID.isEmpty, !studentID.isEmpty else { return }
 
         hasPostedResponse = true
 
-        // ✅ FIX: No query param — student_id goes in JSON body
-        let baseURL   = API.BASE_URL.hasSuffix("/")
+        let baseURL = API.BASE_URL.hasSuffix("/")
                         ? String(API.BASE_URL.dropLast())
                         : API.BASE_URL
-        let urlString = "\(baseURL)/ptm/parent-response/\(meetingID)"
 
-        print("📡 POST ATTENDING Response")
+        let urlString = "\(baseURL)/ptm/parent-response/\(meetingID)?student_id=\(studentID)"
+
+        print("📡 POST ATTENDING Response (raw URLRequest)")
         print("   URL       : \(urlString)")
-        print("   studentID : \(studentID)")
-        print("   schoolID  : \(schoolID)")
 
-        // ✅ FIX: student_id IN body params
-        let bodyParams: [String: Any] = [
+        let bodyDict: [String: Any] = [
             "student_id":      studentID,
             "response_status": PTMResponseStatus.attending.rawValue
         ]
 
-        print("   bodyParams: \(bodyParams)")
-
-        NetworkManager.shared.request(
-            urlString: urlString,
-            method: .POST,
-            requiresAuth: true,
-            parameters: bodyParams,           // ← all in body
-            headers: ["X-School-Id": schoolID]
-        ) { (result: Result<APIResponse<PTMParentResponseData>, NetworkError>) in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let response):
-                    print("✅ ATTENDING posted successfully")
-                    print("   status      : \(response.data?.responseStatus      ?? "nil")")
-                    print("   respondedAt : \(response.data?.formattedRespondedAt ?? "nil")")
-                case .failure(let error):
-                    print("❌ ATTENDING post failed: \(error)")
-                }
-            }
-        }
-    }
-    // MARK: - API Call: PTM Meetings (fetch fresh data)
-    private func fetchPTMMeetings() {
-        guard !studentID.isEmpty, !schoolID.isEmpty else {
-            print("⚠️ studentID or schoolID is empty — skipping API call")
+        guard let jsonData = try? JSONSerialization.data(
+            withJSONObject: bodyDict,
+            options: []
+        ) else {
+            print("❌ Failed to serialize JSON body")
+            hasPostedResponse = false
             return
         }
 
-        print("🌐 Fetching PTM Meetings:", API.PTM_MEETINGS)
-        print("   student_id  :", studentID)
-        print("   X-School-Id :", schoolID)
+        guard let url = URL(string: urlString) else { return }
 
-        NetworkManager.shared.request(
-            urlString: API.PTM_MEETINGS,
-            method: .GET,
-            requiresAuth: true,
-            parameters: ["student_id": studentID],
-            headers: ["X-School-Id": schoolID]
-        ) { [weak self] (result: Result<APIResponse<PTMResponseData>, NetworkError>) in
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue(schoolID, forHTTPHeaderField: "X-School-Id")
+        request.httpBody = jsonData
+        request.timeoutInterval = 60
 
-            guard let self = self else { return }
-
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let response):
-                    print("✅ PTM Meetings — success:", response.success)
-                    print("   description :", response.description)
-
-                    guard let data = response.data else {
-                        print("⚠️ No data in PTM response")
-                        return
-                    }
-
-                    self.student = data.student
-                    print("👨‍🎓 Student:", data.student.name)
-                    print("📅 Meetings count:", data.meetings.count)
-
-                    let matched: PTMMeeting?
-                    if !self.meetingID.isEmpty {
-                        matched = data.meetings.first(where: { $0.id == self.meetingID })
-                                  ?? data.meetings.first
-                    } else {
-                        matched = data.meetings.first
-                    }
-
-                    if let meeting = matched {
-                        self.meeting = meeting
-                        self.populateUI(with: meeting)
-                    } else {
-                        print("⚠️ No meeting found in response")
-                    }
-
-                case .failure(let error):
-                    print("❌ PTM Meetings failed:", error)
+        // Add auth token
+        let possibleKeys = ["ACCESSTOKEN", "accessToken", "access_token", "token"]
+        for key in possibleKeys {
+            if let storedToken = UserDefaults.standard.string(forKey: key) {
+                let cleaned = storedToken.trimmingCharacters(in: .whitespacesAndNewlines)
+                if !cleaned.isEmpty {
+                    let authValue = cleaned.lowercased().hasPrefix("bearer ") || cleaned.lowercased().hasPrefix("token ")
+                        ? cleaned
+                        : "Bearer \(cleaned)"
+                    request.setValue(authValue, forHTTPHeaderField: "Authorization")
+                    break
                 }
             }
         }
+
+        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            guard let self = self else { return }
+
+            DispatchQueue.main.async {
+                if let error = error {
+                    print("❌ ATTENDING post failed: \(error.localizedDescription)")
+                    self.hasPostedResponse = false
+                    return
+                }
+
+                guard let httpResponse = response as? HTTPURLResponse else { return }
+
+                let responseString = String(data: data ?? Data(), encoding: .utf8) ?? ""
+                print("📥 ATTENDING Response status: \(httpResponse.statusCode)")
+                print("📥 ATTENDING Response body: \(responseString)")
+
+                guard let data = data else { return }
+
+                do {
+                    let decoded = try JSONDecoder().decode(
+                        APIResponse<PTMParentResponseData>.self,
+                        from: data
+                    )
+
+                    if decoded.success {
+                        print("✅ ATTENDING posted successfully")
+                        print("   status      : \(decoded.data?.responseStatus ?? "nil")")
+                        
+                        // ✅ Trigger callback with the response status
+                        self.onResponsePosted?(decoded.data?.responseStatus ?? "ATTENDING")
+                    } else {
+                        print("⚠️ ATTENDING API returned success=false: \(decoded.description)")
+                    }
+                } catch {
+                    print("❌ ATTENDING decode failed: \(error)")
+                    if (200...299).contains(httpResponse.statusCode) {
+                        // ✅ Even if decode fails, treat as success
+                        self.onResponsePosted?("ATTENDING")
+                    }
+                }
+            }
+        }.resume()
     }
 
     // MARK: - Populate UI
@@ -235,25 +206,21 @@ class MeetingConfirmationVC: UIViewController {
     // MARK: - Add to Calendar
     @objc private func addToCalendarTapped() {
         print("📅 Add to Calendar tapped")
-        // TODO: Integrate EventKit if needed
     }
 
     // MARK: - Back to Home
     @objc private func backToHomeTapped() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-
-        if let homeVC = storyboard.instantiateViewController(
-            withIdentifier: "Homescreen"
-        ) as? Homescreen {
-            if let nav = navigationController {
-                nav.setNavigationBarHidden(true, animated: false)
-                nav.pushViewController(homeVC, animated: true)
-            } else {
-                homeVC.modalPresentationStyle = .fullScreen
-                present(homeVC, animated: true)
+        if let nav = navigationController {
+            for vc in nav.viewControllers {
+                if vc is PTMhomeVC {
+                    print("🔄 Popping back to existing PTMhomeVC")
+                    nav.popToViewController(vc, animated: true)
+                    return
+                }
             }
+            nav.popToRootViewController(animated: true)
         } else {
-            navigationController?.popToRootViewController(animated: true)
+            dismiss(animated: true)
         }
     }
 }

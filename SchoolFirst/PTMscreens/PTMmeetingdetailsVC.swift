@@ -61,6 +61,15 @@ class PTMmeetingdetailsVC: UIViewController {
         }
     }
 
+    // MARK: - View Will Appear (Refresh after returning from confirm/decline)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // ✅ Refresh cell state when returning from MeetingConfirmationVC/DeclinePopup
+        if meeting != nil {
+            tableview.reloadData()
+        }
+    }
+
     // MARK: - Actions
     @IBAction func NotificationButtonTapped(_ sender: UIButton) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -86,7 +95,7 @@ class PTMmeetingdetailsVC: UIViewController {
         }
     }
 
-    // MARK: - API Fetch
+    // MARK: - API Fetch (Meeting Details)
     private func fetchMeetingDetails() {
         isLoading = true
         tableview.reloadData()
@@ -103,11 +112,16 @@ class PTMmeetingdetailsVC: UIViewController {
             return
         }
 
+        let baseUrl = API.PTM_MEETINGS
+        let urlString = baseUrl.contains("?")
+            ? "\(baseUrl)&student_id=\(studentId)"
+            : "\(baseUrl)?student_id=\(studentId)"
+
         NetworkManager.shared.request(
-            urlString: API.PTM_MEETINGS,
+            urlString: urlString,
             method: .GET,
             requiresAuth: true,
-            parameters: ["student_id": studentId],
+            parameters: nil,
             headers: ["X-School-Id": schoolId]
         ) { [weak self] (result: Result<APIResponse<PTMResponseData>, NetworkError>) in
             guard let self = self else { return }
@@ -177,8 +191,24 @@ class PTMmeetingdetailsVC: UIViewController {
         tableview.showsVerticalScrollIndicator = false
     }
 
+    // MARK: - Confirm Meeting Handler
+    func handleConfirmMeeting() {
+        guard let meetingID = meeting?.id else {
+            print("❌ handleConfirmMeeting: No meetingID")
+            showAlert(title: "Error", message: "Meeting ID is missing.")
+            return
+        }
+        print("✅ Confirm tapped | meetingID: \(meetingID)")
+        navigateToMeetingConfirmation()
+    }
+
+    // MARK: - Decline Meeting Handler
+    func handleDeclineMeeting() {
+        print("❌ Decline tapped — navigating to MeetingdeclinepopupVC")
+        navigateToDeclinePopup()
+    }
+
     // MARK: - Navigate to MeetingConfirmationVC
-    // Called after ATTENDING API success
     private func navigateToMeetingConfirmation() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
@@ -218,7 +248,6 @@ class PTMmeetingdetailsVC: UIViewController {
     }
 
     // MARK: - Navigate to MeetingdeclinepopupVC
-    // Called when user taps Decline button
     private func navigateToDeclinePopup() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
@@ -257,195 +286,7 @@ class PTMmeetingdetailsVC: UIViewController {
         }
     }
 
-    // MARK: - Confirm Meeting (POST ATTENDING → navigate)
-    func handleConfirmMeeting() {
-        guard let meetingID = meeting?.id else {
-            print("❌ handleConfirmMeeting: No meetingID")
-            return
-        }
-        print("✅ Confirm tapped | meetingID: \(meetingID)")
-        postParentResponse(status: .attending, remarks: "") { [weak self] success in
-            guard let self = self else { return }
-            if success {
-                self.navigateToMeetingConfirmation()
-            }
-        }
-    }
-
-    // MARK: - Decline Meeting (navigate to popup)
-    func handleDeclineMeeting() {
-        print("❌ Decline tapped — navigating to MeetingdeclinepopupVC")
-        navigateToDeclinePopup()
-    }
-
-    // MARK: - POST Parent Response API
-    // URL: POST /ptm/parent-response/{meetingID}?student_id={studentID}
-    // MARK: - POST Parent Response API
-    // MARK: - POST Parent Response API
-    func postParentResponse(
-        status: PTMResponseStatus,
-        remarks: String,
-        completion: @escaping (_ success: Bool) -> Void
-    ) {
-        let schoolId  = schoolID.isEmpty  ? UserManager.shared.resolvedSchoolID  : schoolID
-        let studentId = studentID.isEmpty ? UserManager.shared.resolvedStudentID : studentID
-
-        guard let meetingID = meeting?.id,
-              !meetingID.isEmpty,
-              !studentId.isEmpty else {
-            print("❌ postParentResponse: Missing required data")
-            print("   meetingID : \(meeting?.id ?? "nil")")
-            print("   studentId : \(studentId)")
-            completion(false)
-            return
-        }
-
-        // ✅ FIX: student_id goes in JSON BODY (not query param)
-        // Strip trailing slash to avoid double slash
-        let baseURL   = API.BASE_URL.hasSuffix("/")
-                        ? String(API.BASE_URL.dropLast())
-                        : API.BASE_URL
-        let urlString = "\(baseURL)/ptm/parent-response/\(meetingID)"
-
-        print("📡 POST Parent Response")
-        print("   URL       : \(urlString)")
-        print("   studentId : \(studentId)")
-        print("   schoolId  : \(schoolId)")
-        print("   status    : \(status.rawValue)")
-        print("   remarks   : \(remarks)")
-
-        // Show loading
-        let loadingAlert = UIAlertController(
-            title: nil,
-            message: "Updating...",
-            preferredStyle: .alert
-        )
-        let spinner = UIActivityIndicatorView(
-            frame: CGRect(x: 10, y: 5, width: 50, height: 50)
-        )
-        spinner.hidesWhenStopped = true
-        spinner.style            = .medium
-        spinner.startAnimating()
-        loadingAlert.view.addSubview(spinner)
-        present(loadingAlert, animated: true)
-
-        // ✅ FIX: student_id IN body params
-        var bodyParams: [String: Any] = [
-            "student_id":      studentId,
-            "response_status": status.rawValue
-        ]
-        if !remarks.isEmpty {
-            bodyParams["remarks"] = remarks
-        }
-
-        print("   bodyParams: \(bodyParams)")
-
-        NetworkManager.shared.request(
-            urlString: urlString,
-            method: .POST,
-            requiresAuth: true,
-            parameters: bodyParams,           // ← student_id + response_status in body
-            headers: ["X-School-Id": schoolId]
-        ) { [weak self] (result: Result<APIResponse<PTMParentResponseData>, NetworkError>) in
-            guard let self = self else { return }
-            DispatchQueue.main.async {
-                loadingAlert.dismiss(animated: true) {
-                    switch result {
-                    case .success(let response):
-                        print("✅ Parent Response API success")
-                        print("   responseStatus : \(response.data?.responseStatus      ?? "nil")")
-                        print("   respondedAt    : \(response.data?.formattedRespondedAt ?? "nil")")
-                        if response.success {
-                            completion(true)
-                        } else {
-                            self.showAlert(
-                                title: "Error",
-                                message: response.description.isEmpty
-                                    ? "Failed to update. Please try again."
-                                    : response.description
-                            )
-                            completion(false)
-                        }
-                    case .failure(let error):
-                        print("❌ Parent Response API failed: \(error)")
-                        self.showAlert(
-                            title: "Error",
-                            message: "Network error. Please try again."
-                        )
-                        completion(false)
-                    }
-                }
-            }
-        }
-    }
-    // MARK: - Legacy postMeetingResponse (kept for backward compat)
-    private func postMeetingResponse(status: String) {
-        let schoolId  = schoolID.isEmpty  ? UserManager.shared.resolvedSchoolID  : schoolID
-        let studentId = studentID.isEmpty ? UserManager.shared.resolvedStudentID : studentID
-
-        guard let meetingID = meeting?.id,
-              !schoolId.isEmpty,
-              !studentId.isEmpty else {
-            print("❌ postMeetingResponse: missing data")
-            return
-        }
-
-        print("📡 PTM Response | status: \(status) | meetingID: \(meetingID)")
-
-        let loadingAlert = UIAlertController(
-            title: nil,
-            message: "Updating...",
-            preferredStyle: .alert
-        )
-        let spinner = UIActivityIndicatorView(
-            frame: CGRect(x: 10, y: 5, width: 50, height: 50)
-        )
-        spinner.hidesWhenStopped = true
-        spinner.style            = .medium
-        spinner.startAnimating()
-        loadingAlert.view.addSubview(spinner)
-        present(loadingAlert, animated: true)
-
-        NetworkManager.shared.request(
-            urlString: "\(API.PTM_MEETINGS)/\(meetingID)/respond",
-            method: .POST,
-            requiresAuth: true,
-            parameters: [
-                "student_id":      studentId,
-                "response_status": status
-            ],
-            headers: ["X-School-Id": schoolId]
-        ) { [weak self] (result: Result<APIResponse<PTMMeeting>, NetworkError>) in
-            guard let self = self else { return }
-            DispatchQueue.main.async {
-                loadingAlert.dismiss(animated: true) {
-                    switch result {
-                    case .success(let response):
-                        if response.success {
-                            let msg = status == "ATTENDING"
-                                ? "You have confirmed your attendance."
-                                : "You have declined this meeting."
-                            self.showAlert(title: "Updated", message: msg) {
-                                self.navigationController?.popViewController(animated: true)
-                            }
-                        } else {
-                            self.showAlert(
-                                title: "Error",
-                                message: "Failed to update. Please try again."
-                            )
-                        }
-                    case .failure(let error):
-                        print("❌ PTM response API failed: \(error)")
-                        self.showAlert(
-                            title: "Error",
-                            message: "Network error. Please try again."
-                        )
-                    }
-                }
-            }
-        }
-    }
-
+    // MARK: - Alert Helper
     private func showAlert(
         title: String,
         message: String,
@@ -537,7 +378,7 @@ extension PTMmeetingdetailsVC: UITableViewDelegate, UITableViewDataSource {
             cell.configure(with: meeting)
             cell.ConfirmButton.isEnabled = true
 
-            // Confirm: POST API then navigate to MeetingConfirmationVC
+            // Confirm: Navigate to MeetingConfirmationVC
             cell.onConfirmTap = { [weak self] in
                 self?.handleConfirmMeeting()
             }

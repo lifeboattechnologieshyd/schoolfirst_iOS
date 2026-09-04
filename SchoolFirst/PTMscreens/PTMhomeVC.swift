@@ -22,20 +22,23 @@ class PTMhomeVC: UIViewController {
     private var isLoadingCompleted: Bool = true
     private var loadedStudentId: String = ""
 
+    // ✅ NEW: Store completed meeting IDs to filter them out
+    private var completedMeetingIDs: Set<String> = []
+
+    // ✅ NEW: Filtered meetings (excluding completed ones)
+    private var filteredMeetings: [PTMMeeting] = []
+
     // MARK: - Computed Row Helpers
     private var meetingCount: Int {
-        return ptmData?.meetings.count ?? 0
+        return filteredMeetings.count  // ✅ Use filtered count
     }
 
-    /// Row 0         → Header cell
-    /// Rows 1..meetingCount → Meeting cells (0 if no meetings)
-    /// Row meetingCount+1   → Footer cell
     private var footerRow: Int {
         return meetingCount + 1
     }
 
     private var totalRows: Int {
-        return footerRow + 1  // header + meetings + footer
+        return footerRow + 1
     }
 
     // MARK: - Lifecycle
@@ -94,7 +97,6 @@ class PTMhomeVC: UIViewController {
         detailsVC.selectedMeeting   = meeting
         detailsVC.selectedMeetingID = meeting?.id
 
-        // ✅ Pass student name from already loaded ptmData
         detailsVC.studentName       = ptmData?.student.name ?? ""
 
         print("🚀 Navigating to PTMmeetingdetailsVC")
@@ -147,11 +149,16 @@ class PTMhomeVC: UIViewController {
             return
         }
 
+        let baseUrl = API.PTM_MEETINGS
+        let urlString = baseUrl.contains("?")
+            ? "\(baseUrl)&student_id=\(studentId)"
+            : "\(baseUrl)?student_id=\(studentId)"
+
         NetworkManager.shared.request(
-            urlString: API.PTM_MEETINGS,
+            urlString: urlString,
             method: .GET,
             requiresAuth: true,
-            parameters: ["student_id": studentId],
+            parameters: nil,
             headers: ["X-School-Id": schoolId]
         ) { [weak self] (result: Result<APIResponse<PTMResponseData>, NetworkError>) in
             guard let self = self else { return }
@@ -163,6 +170,7 @@ class PTMhomeVC: UIViewController {
                     if response.success, let data = response.data {
                         self.ptmData = data
                         self.loadedStudentId = studentId
+                        self.applyFilter()  // ✅ Apply filter after both APIs load
                     } else {
                         self.ptmData = nil
                     }
@@ -190,11 +198,16 @@ class PTMhomeVC: UIViewController {
             return
         }
 
+        let baseUrl = API.PTM_COMPLETED_MEETINGS
+        let urlString = baseUrl.contains("?")
+            ? "\(baseUrl)&student_id=\(studentId)"
+            : "\(baseUrl)?student_id=\(studentId)"
+
         NetworkManager.shared.request(
-            urlString: API.PTM_COMPLETED_MEETINGS,
+            urlString: urlString,
             method: .GET,
             requiresAuth: true,
-            parameters: ["student_id": studentId],
+            parameters: nil,
             headers: ["X-School-Id": schoolId]
         ) { [weak self] (result: Result<APIResponse<PTMCompletedMeetingsResponse>, NetworkError>) in
             guard let self = self else { return }
@@ -202,12 +215,34 @@ class PTMhomeVC: UIViewController {
                 self.isLoadingCompleted = false
                 if case .success(let response) = result, let data = response.data {
                     self.completedData = data
+
+                    // ✅ Build Set of completed meeting IDs
+                    self.completedMeetingIDs = Set(data.meetings.map { $0.id })
+                    print("   Completed meeting IDs: \(self.completedMeetingIDs.count)")
+
+                    self.applyFilter()  // ✅ Apply filter after both APIs load
                 } else {
                     self.completedData = nil
                 }
                 self.tableview.reloadData()
             }
         }
+    }
+
+    // MARK: - ✅ NEW: Filter Meetings (Exclude Completed)
+    private func applyFilter() {
+        guard let allMeetings = ptmData?.meetings else {
+            filteredMeetings = []
+            return
+        }
+
+        // ✅ Only include meetings NOT in completed list
+        filteredMeetings = allMeetings.filter { meeting in
+            !completedMeetingIDs.contains(meeting.id)
+        }
+
+        print("🔍 Filtered meetings: \(filteredMeetings.count) of \(allMeetings.count)")
+        print("   Excluded: \(allMeetings.count - filteredMeetings.count) completed meetings")
     }
 
     // MARK: - Setup
@@ -243,11 +278,9 @@ class PTMhomeVC: UIViewController {
 extension PTMhomeVC: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // While loading: show header + 1 skeleton meeting + footer = 3 rows
         if isLoading {
             return 3
         }
-        // After load: header(1) + meetings(n, can be 0) + footer(1)
         return totalRows
     }
 
@@ -268,19 +301,19 @@ extension PTMhomeVC: UITableViewDelegate, UITableViewDataSource {
                 cell.StudentnameLBl.text = "Hello!"
             }
 
-            // Configure labels dynamically depending on the presence of upcoming meetings
             if isLoading {
                 cell.upcomingCountLabel.text = "Loading..."
                 cell.UpcomingmeetingsLbl.text = "Upcoming Meetings"
             } else if meetingCount == 0 {
                 cell.upcomingCountLabel.text = "No upcoming PTM meetings."
-                cell.UpcomingmeetingsLbl.text = "No Upcoming Meetings" // ✅ Updated to show custom empty state
+                cell.UpcomingmeetingsLbl.text = "No Upcoming Meetings"
             } else {
                 cell.upcomingCountLabel.text = "You have \(meetingCount) upcoming PTM\(meetingCount > 1 ? "s" : "") this week."
-                cell.UpcomingmeetingsLbl.text = "Upcoming Meetings" // ✅ Restored original name
+                cell.UpcomingmeetingsLbl.text = "Upcoming Meetings"
             }
 
-            if let nextMeeting = ptmData?.meetings.first {
+            // ✅ Use filtered meetings for "next meeting" date
+            if let nextMeeting = filteredMeetings.first {
                 cell.UpcomingmeetingDateLbl.text = nextMeeting.formattedDate
             } else {
                 cell.UpcomingmeetingDateLbl.text = "No Meetings"
@@ -305,7 +338,6 @@ extension PTMhomeVC: UITableViewDelegate, UITableViewDataSource {
                 self?.navigateToPTMDetails(meeting: nil)
             }
 
-            // Totalattendedview tap → attendedhistoryVC
             cell.onAttendedHistoryTapped = { [weak self] in
                 self?.navigateToAttendedHistory()
             }
@@ -325,13 +357,11 @@ extension PTMhomeVC: UITableViewDelegate, UITableViewDataSource {
         }
 
         // ── Middle Rows: Upcoming Meeting Cells ─────────────────────────
-        // Rows 1 to meetingCount
         let meetingIndex = row - 1
 
-        // Safety guard — should never be out of range with correct numberOfRows
+        // ✅ Safety guard using filteredMeetings
         guard meetingIndex >= 0,
-              let meetings = ptmData?.meetings,
-              meetingIndex < meetings.count else {
+              meetingIndex < filteredMeetings.count else {
             print("⚠️ PTMhomeVC: meetingIndex \(meetingIndex) out of range (count: \(meetingCount)) — returning empty cell")
             return UITableViewCell()
         }
@@ -343,7 +373,7 @@ extension PTMhomeVC: UITableViewDelegate, UITableViewDataSource {
         cell.selectionStyle = .none
         cell.configureParent(parentVC: self)
 
-        let meeting = meetings[meetingIndex]
+        let meeting = filteredMeetings[meetingIndex]  // ✅ Use filtered list
         cell.configure(
             with: meeting,
             studentName: ptmData?.student.name ?? "Student",
@@ -357,10 +387,8 @@ extension PTMhomeVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let row = indexPath.row
 
-        // Header
         if row == 0 { return 230 }
 
-        // Footer → dynamic height based on completed meetings count
         if row == footerRow {
             if isLoadingCompleted {
                 return 120
@@ -368,7 +396,6 @@ extension PTMhomeVC: UITableViewDelegate, UITableViewDataSource {
             
             let completedCount = completedData?.meetings.count ?? 0
             if completedCount == 0 {
-                // Dynamic empty height set to 100 to let the placeholder sit beautifully
                 print("📐 Footer row height → empty state: 100")
                 return 100
             }
@@ -385,7 +412,6 @@ extension PTMhomeVC: UITableViewDelegate, UITableViewDataSource {
             return totalHeight
         }
 
-        // Meeting rows
         return 330
     }
 }

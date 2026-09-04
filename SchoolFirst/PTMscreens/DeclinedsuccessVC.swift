@@ -7,7 +7,7 @@ import UIKit
 
 class DeclinedsuccessVC: UIViewController {
 
-    // MARK: - Outlets (connect in Storyboard)
+    // MARK: - Outlets
     @IBOutlet weak var BacktohomeButton: UIButton!
     @IBOutlet weak var MeetingtitleLbl: UILabel!
     @IBOutlet weak var MeetingdateLbl: UILabel!
@@ -17,7 +17,7 @@ class DeclinedsuccessVC: UIViewController {
     @IBOutlet weak var RespondedAtLbl: UILabel!
     @IBOutlet weak var BackButton: UIButton!
     
-    // MARK: - Public Properties (set from MeetingdeclinepopupVC)
+    // MARK: - Public Properties
     var meeting         : PTMMeeting?
     var meetingID       : String = ""
     var studentID       : String = ""
@@ -52,7 +52,6 @@ class DeclinedsuccessVC: UIViewController {
             for: .touchUpInside
         )
 
-        // ── Programmatically register action for BackButton to ensure it works instantly ──
         BackButton?.addTarget(
             self,
             action: #selector(backButtonTappedAction),
@@ -63,7 +62,6 @@ class DeclinedsuccessVC: UIViewController {
     // MARK: - Populate UI
     private func populateUI() {
 
-        // ── Meeting Info ──────────────────────────────────────────────────
         if let meeting = meeting {
             MeetingtitleLbl?.text = meeting.title.isEmpty
                 ? "Parent-Teacher Meeting"
@@ -76,16 +74,14 @@ class DeclinedsuccessVC: UIViewController {
             MeetingtimeLbl?.text  = "--"
         }
 
-        // ── Response Info ─────────────────────────────────────────────────
         if let response = responseData {
-            StatusLbl?.text      = response.statusDisplayText  // "Not Attending"
+            StatusLbl?.text      = response.statusDisplayText
             RespondedAtLbl?.text = response.formattedRespondedAt
         } else {
             StatusLbl?.text      = "Not Attending"
             RespondedAtLbl?.text = "--"
         }
 
-        // ── Remarks ───────────────────────────────────────────────────────
         RemarksLbl?.text = selectedRemarks.isEmpty
             ? (responseData?.remarks.isEmpty == false ? responseData?.remarks : "No remarks provided")
             : selectedRemarks
@@ -103,7 +99,6 @@ class DeclinedsuccessVC: UIViewController {
 
     @objc private func backButtonTappedAction() {
         if let nav = navigationController {
-            // Find the existing PTMhomeVC in the navigation controller's stack and pop directly to it
             for vc in nav.viewControllers {
                 if vc is PTMhomeVC {
                     print("🔄 Popping back to existing PTMhomeVC")
@@ -111,7 +106,6 @@ class DeclinedsuccessVC: UIViewController {
                     return
                 }
             }
-            // Fallback: If PTMhomeVC is not found in the stack, pop one step back
             nav.popViewController(animated: true)
         } else {
             dismiss(animated: true)
@@ -119,27 +113,21 @@ class DeclinedsuccessVC: UIViewController {
     }
 
     @objc private func backToHomeTapped() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-
-        if let homeVC = storyboard.instantiateViewController(
-            withIdentifier: "Homescreen"
-        ) as? Homescreen {
-            if let nav = navigationController {
-                nav.setNavigationBarHidden(true, animated: false)
-                // Pop to root or push to home
-                nav.pushViewController(homeVC, animated: true)
-            } else {
-                homeVC.modalPresentationStyle = .fullScreen
-                present(homeVC, animated: true)
+        if let nav = navigationController {
+            for vc in nav.viewControllers {
+                if vc is PTMhomeVC {
+                    print("🔄 Popping back to existing PTMhomeVC")
+                    nav.popToViewController(vc, animated: true)
+                    return
+                }
             }
+            nav.popToRootViewController(animated: true)
         } else {
-            // Fallback: pop to root
-            navigationController?.popToRootViewController(animated: true)
+            dismiss(animated: true)
         }
     }
 
-    // MARK: - IBActions (connected via Storyboard)
-
+    // MARK: - IBActions
     @IBAction func BackButtonTapped(_ sender: UIButton) {
         backButtonTappedAction()
     }

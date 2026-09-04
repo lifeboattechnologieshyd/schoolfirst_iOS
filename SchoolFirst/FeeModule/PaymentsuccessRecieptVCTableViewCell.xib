@@ -313,6 +313,9 @@ your registered email address.</string>
                                 <real key="value" value="8"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
+                        <connections>
+                            <action selector="BacktodashboardbuttonTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="pOC-e7-hRE"/>
+                        </connections>
                     </button>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon 15" translatesAutoresizingMaskIntoConstraints="NO" id="APQ-hw-A4i">
                         <rect key="frame" x="60" y="874" width="12" height="13"/>
@@ -360,6 +363,7 @@ your registered email address.</string>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="Backtodashboardbutton" destination="tKt-t9-ewn" id="fzC-qn-UXx"/>
                 <outlet property="Paidamount" destination="ImK-Nd-wt2" id="xwT-fO-mgY"/>
                 <outlet property="PaymentDatetimeLbl" destination="HAN-Nb-KDK" id="wbc-H8-i2y"/>
                 <outlet property="StudentnameLbl" destination="NOd-8M-79w" id="D1q-nh-ecD"/>

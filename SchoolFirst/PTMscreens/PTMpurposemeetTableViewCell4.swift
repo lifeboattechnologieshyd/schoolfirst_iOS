@@ -72,14 +72,14 @@ class PTMpurposemeetTableViewCell4: UITableViewCell {
             // Already confirmed
             setConfirmButtonState(enabled: false, title: "✓ Confirmed")
             setDeclineButtonState(enabled: true,  title: "Decline")
-            ConfirmButton.backgroundColor = .systemGreen
+            ConfirmButton.backgroundColor = .green
             ConfirmButton.setTitleColor(.white, for: .normal)
 
         case "NOT_ATTENDING":
             // Already declined
             setConfirmButtonState(enabled: true,  title: "Confirm")
             setDeclineButtonState(enabled: false, title: "✗ Declined")
-            DeclineButton.backgroundColor = .systemRed
+            DeclineButton.backgroundColor = .red
             DeclineButton.setTitleColor(.white, for: .normal)
 
         case "MAYBE":

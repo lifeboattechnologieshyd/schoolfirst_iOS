@@ -71,7 +71,7 @@ class PTMhomeTableViewCell1TableViewCell2: UITableViewCell {
         NSLayoutConstraint.activate([
             noMeetingsLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             // Pushes the label down by 55 points so it sits beautifully below the "Completed Meetings" title
-            noMeetingsLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 55),
+            noMeetingsLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 80),
             noMeetingsLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             noMeetingsLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
         ])
