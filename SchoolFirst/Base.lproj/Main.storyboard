@@ -9341,7 +9341,79 @@ The school admin will review it soon.</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GJT-3d-XBK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="14020.6106870229" y="1538.7323943661972"/>
+            <point key="canvasLocation" x="13972" y="1541"/>
+        </scene>
+        <!--HomeworksubmitVC-->
+        <scene sceneID="HdG-GE-z4Q">
+            <objects>
+                <viewController storyboardIdentifier="HomeworksubmitVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="p5n-F0-AVr" customClass="HomeworksubmitVC" customModule="SchoolFirst" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="iLE-pD-Trr">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LrK-6F-n6x">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="100"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="y5C-h4-Tqd">
+                                        <rect key="frame" x="16" y="52" width="32" height="32"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="32" id="TXW-Rx-2lw"/>
+                                            <constraint firstAttribute="width" constant="32" id="mbU-Ap-C0j"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="Bluebackbutton">
+                                            <backgroundConfiguration key="background"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <action selector="BackButtonTapped:" destination="L1F-an-egZ" eventType="touchUpInside" id="Yh0-46-e9q"/>
+                                            <action selector="BackButtonTapped:" destination="Xyl-k8-vE2" eventType="touchUpInside" id="phh-tb-UAi"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Submit Homework" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FO7-BH-UT6">
+                                        <rect key="frame" x="52" y="56" width="180" height="24"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="180" id="MGR-L0-nUH"/>
+                                            <constraint firstAttribute="height" constant="24" id="SJg-sN-HLa"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                        <color key="textColor" red="0.14904786649999999" green="0.3332519531" blue="0.5844726562" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="FO7-BH-UT6" firstAttribute="centerY" secondItem="y5C-h4-Tqd" secondAttribute="centerY" id="RKh-m7-lhW"/>
+                                    <constraint firstItem="FO7-BH-UT6" firstAttribute="leading" secondItem="y5C-h4-Tqd" secondAttribute="trailing" constant="4" id="T9h-LR-5Ve"/>
+                                    <constraint firstItem="y5C-h4-Tqd" firstAttribute="leading" secondItem="LrK-6F-n6x" secondAttribute="leading" constant="16" id="YdM-e9-Zvh"/>
+                                    <constraint firstAttribute="height" constant="100" id="aDU-ZA-nQP"/>
+                                    <constraint firstItem="y5C-h4-Tqd" firstAttribute="top" secondItem="LrK-6F-n6x" secondAttribute="top" constant="52" id="vJx-Am-4Md"/>
+                                </constraints>
+                            </view>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="VuN-GM-g3I">
+                                <rect key="frame" x="0.0" y="101" width="393" height="683"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="piy-1a-0T5"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="LrK-6F-n6x" secondAttribute="trailing" id="OhL-3C-Mkt"/>
+                            <constraint firstItem="piy-1a-0T5" firstAttribute="bottom" secondItem="VuN-GM-g3I" secondAttribute="bottom" id="RAw-rh-pdT"/>
+                            <constraint firstItem="VuN-GM-g3I" firstAttribute="top" secondItem="LrK-6F-n6x" secondAttribute="bottom" constant="1" id="ZHW-gT-L4d"/>
+                            <constraint firstItem="LrK-6F-n6x" firstAttribute="leading" secondItem="iLE-pD-Trr" secondAttribute="leading" id="dLT-hu-bFw"/>
+                            <constraint firstItem="VuN-GM-g3I" firstAttribute="leading" secondItem="piy-1a-0T5" secondAttribute="leading" id="jh3-UZ-mmb"/>
+                            <constraint firstItem="piy-1a-0T5" firstAttribute="trailing" secondItem="VuN-GM-g3I" secondAttribute="trailing" id="nr2-WE-cj3"/>
+                            <constraint firstItem="LrK-6F-n6x" firstAttribute="top" secondItem="iLE-pD-Trr" secondAttribute="top" id="nv3-Xx-4Fa"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="Tableview" destination="VuN-GM-g3I" id="j4N-Vu-qXD"/>
+                        <outlet property="Topview" destination="LrK-6F-n6x" id="ONr-4v-IsD"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="gwk-Xf-elL" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="14625" y="1554"/>
         </scene>
         <!--Notification Homework ModuleVC-->
         <scene sceneID="Wpd-v9-D8l">
