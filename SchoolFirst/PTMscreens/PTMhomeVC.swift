@@ -301,23 +301,15 @@ extension PTMhomeVC: UITableViewDelegate, UITableViewDataSource {
                 cell.StudentnameLBl.text = "Hello!"
             }
 
-            // Configure labels dynamically depending on the presence of upcoming meetings
             if isLoading {
                 cell.upcomingCountLabel.text = "Loading..."
                 cell.UpcomingmeetingsLbl.text = "Upcoming Meetings"
             } else if meetingCount == 0 {
                 cell.upcomingCountLabel.text = "No upcoming PTM meetings."
-<<<<<<< HEAD
                 cell.UpcomingmeetingsLbl.text = "No Upcoming Meetings"
             } else {
                 cell.upcomingCountLabel.text = "You have \(meetingCount) upcoming PTM\(meetingCount > 1 ? "s" : "") this week."
                 cell.UpcomingmeetingsLbl.text = "Upcoming Meetings"
-=======
-                cell.UpcomingmeetingsLbl.text = "No Upcoming Meetings" // ✅ Updated to show custom empty state
-            } else {
-                cell.upcomingCountLabel.text = "You have \(meetingCount) upcoming PTM\(meetingCount > 1 ? "s" : "") this week."
-                cell.UpcomingmeetingsLbl.text = "Upcoming Meetings" // ✅ Restored original name
->>>>>>> origin/schoolzone
             }
 
             // ✅ Use filtered meetings for "next meeting" date
@@ -346,10 +338,6 @@ extension PTMhomeVC: UITableViewDelegate, UITableViewDataSource {
                 self?.navigateToPTMDetails(meeting: nil)
             }
 
-<<<<<<< HEAD
-=======
-            // Totalattendedview tap → attendedhistoryVC
->>>>>>> origin/schoolzone
             cell.onAttendedHistoryTapped = { [weak self] in
                 self?.navigateToAttendedHistory()
             }
@@ -408,10 +396,6 @@ extension PTMhomeVC: UITableViewDelegate, UITableViewDataSource {
             
             let completedCount = completedData?.meetings.count ?? 0
             if completedCount == 0 {
-<<<<<<< HEAD
-=======
-                // Dynamic empty height set to 100 to let the placeholder sit beautifully
->>>>>>> origin/schoolzone
                 print("📐 Footer row height → empty state: 100")
                 return 100
             }

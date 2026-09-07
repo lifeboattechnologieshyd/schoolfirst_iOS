@@ -17,11 +17,7 @@ class DeclinedsuccessVC: UIViewController {
     @IBOutlet weak var RespondedAtLbl: UILabel!
     @IBOutlet weak var BackButton: UIButton!
     
-<<<<<<< HEAD
     // MARK: - Public Properties
-=======
-    // MARK: - Public Properties (set from MeetingdeclinepopupVC)
->>>>>>> origin/schoolzone
     var meeting         : PTMMeeting?
     var meetingID       : String = ""
     var studentID       : String = ""
@@ -56,10 +52,6 @@ class DeclinedsuccessVC: UIViewController {
             for: .touchUpInside
         )
 
-<<<<<<< HEAD
-=======
-        // ── Programmatically register action for BackButton to ensure it works instantly ──
->>>>>>> origin/schoolzone
         BackButton?.addTarget(
             self,
             action: #selector(backButtonTappedAction),
@@ -104,29 +96,6 @@ class DeclinedsuccessVC: UIViewController {
     }
 
     // MARK: - Navigation Actions
-<<<<<<< HEAD
-=======
-
-    @objc private func backButtonTappedAction() {
-        if let nav = navigationController {
-            // Find the existing PTMhomeVC in the navigation controller's stack and pop directly to it
-            for vc in nav.viewControllers {
-                if vc is PTMhomeVC {
-                    print("🔄 Popping back to existing PTMhomeVC")
-                    nav.popToViewController(vc, animated: true)
-                    return
-                }
-            }
-            // Fallback: If PTMhomeVC is not found in the stack, pop one step back
-            nav.popViewController(animated: true)
-        } else {
-            dismiss(animated: true)
-        }
-    }
-
-    @objc private func backToHomeTapped() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
->>>>>>> origin/schoolzone
 
     @objc private func backButtonTappedAction() {
         if let nav = navigationController {
@@ -143,7 +112,6 @@ class DeclinedsuccessVC: UIViewController {
         }
     }
 
-<<<<<<< HEAD
     @objc private func backToHomeTapped() {
         if let nav = navigationController {
             for vc in nav.viewControllers {
@@ -160,10 +128,6 @@ class DeclinedsuccessVC: UIViewController {
     }
 
     // MARK: - IBActions
-=======
-    // MARK: - IBActions (connected via Storyboard)
-
->>>>>>> origin/schoolzone
     @IBAction func BackButtonTapped(_ sender: UIButton) {
         backButtonTappedAction()
     }
