@@ -11,6 +11,7 @@ import AVFoundation
 
 class QuestionVC: UIViewController {
     
+    @IBOutlet weak var Backbutton: UIButton!
     @IBOutlet weak var lottieViewImage: LottieAnimationView!
     @IBOutlet weak var resultPopup: UIView!
     @IBOutlet weak var scoreVw: UIView!
@@ -82,6 +83,13 @@ class QuestionVC: UIViewController {
         drawSlash()
         setupCelebrationLottie()
 
+    }
+    @IBAction func onClickBack(_ sender: UIButton) {
+        if let navigationController = self.navigationController {
+            navigationController.popViewController(animated: true)
+        } else {
+            self.dismiss(animated: true)
+        }
     }
     func setupCelebrationLottie() {
         celebrationLottieView = LottieAnimationView()

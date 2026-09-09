@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -38,11 +38,68 @@
                             <action selector="onClickPlay:" destination="gTV-IL-0wX" eventType="touchUpInside" id="8eJ-Eg-kdS"/>
                         </connections>
                     </button>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BfU-OK-NKg">
+                        <rect key="frame" x="126" y="209" width="60" height="30"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hWH-vU-X74">
+                                <rect key="frame" x="4" y="5" width="20" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="20" id="844-Gt-gNv"/>
+                                    <constraint firstAttribute="height" constant="20" id="NaQ-sa-e4C"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="like 1"/>
+                                <connections>
+                                    <action selector="onClickLike:" destination="gTV-IL-0wX" eventType="touchUpInside" id="9Rk-OM-StS"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0Ex-re-d9M">
+                                <rect key="frame" x="26" y="5" width="20" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="20" id="fJL-an-X5K"/>
+                                    <constraint firstAttribute="height" constant="20" id="ykr-sU-L7N"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.9877929688" green="0.9506835938" blue="0.3156738281" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="0.1253662109" green="0.1602783203" blue="0.22668458520000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <constraints>
+                            <constraint firstItem="0Ex-re-d9M" firstAttribute="leading" secondItem="hWH-vU-X74" secondAttribute="trailing" constant="2" id="4bb-Yu-nsS"/>
+                            <constraint firstItem="hWH-vU-X74" firstAttribute="centerY" secondItem="BfU-OK-NKg" secondAttribute="centerY" id="BEF-Ah-ER9"/>
+                            <constraint firstItem="hWH-vU-X74" firstAttribute="centerX" secondItem="BfU-OK-NKg" secondAttribute="centerX" constant="-16" id="EgH-S7-4le"/>
+                            <constraint firstAttribute="width" constant="60" id="dRS-SE-AIb"/>
+                            <constraint firstAttribute="height" constant="30" id="lva-p7-h1t"/>
+                            <constraint firstItem="0Ex-re-d9M" firstAttribute="centerY" secondItem="hWH-vU-X74" secondAttribute="centerY" id="rHE-CT-aD9"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="12"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </view>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZUZ-md-fc1">
+                        <rect key="frame" x="166" y="12" width="20" height="20"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="20" id="DYg-1j-GUS"/>
+                            <constraint firstAttribute="width" constant="20" id="xhB-PC-Gbd"/>
+                        </constraints>
+                        <state key="normal" title="Button"/>
+                        <buttonConfiguration key="configuration" style="plain" image=" share"/>
+                        <connections>
+                            <action selector="onClickShare:" destination="gTV-IL-0wX" eventType="touchUpInside" id="ZjY-AG-v4w"/>
+                        </connections>
+                    </button>
                 </subviews>
             </view>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
                 <constraint firstItem="HwE-jI-jq9" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="8" id="2L0-Ct-WP9"/>
+                <constraint firstItem="ZUZ-md-fc1" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="12" id="91Z-TM-H8x"/>
+                <constraint firstItem="ZUZ-md-fc1" firstAttribute="trailing" secondItem="BfU-OK-NKg" secondAttribute="trailing" id="HlH-Qg-dqV"/>
+                <constraint firstItem="BfU-OK-NKg" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="209" id="KKJ-ic-FKW"/>
+                <constraint firstItem="BfU-OK-NKg" firstAttribute="trailing" secondItem="HwE-jI-jq9" secondAttribute="trailing" id="Rry-qd-r54"/>
                 <constraint firstItem="V8T-3n-YYB" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="cPy-aZ-8hx"/>
                 <constraint firstAttribute="trailing" secondItem="V8T-3n-YYB" secondAttribute="trailing" id="dgy-Nu-S19"/>
                 <constraint firstItem="pSL-Xb-Ka5" firstAttribute="centerY" secondItem="V8T-3n-YYB" secondAttribute="centerY" id="en6-3k-xtS"/>
@@ -54,6 +111,9 @@
             </constraints>
             <size key="customSize" width="391" height="311"/>
             <connections>
+                <outlet property="LikeButton" destination="hWH-vU-X74" id="UWy-Xz-ujD"/>
+                <outlet property="NumberoflikeLbl" destination="0Ex-re-d9M" id="eXe-2r-Yus"/>
+                <outlet property="ShareButton" destination="ZUZ-md-fc1" id="LRr-2B-wTZ"/>
                 <outlet property="btnPlay" destination="pSL-Xb-Ka5" id="KsV-5x-1M2"/>
                 <outlet property="imgVw" destination="V8T-3n-YYB" id="VnH-G8-reC"/>
                 <outlet property="lblName" destination="HwE-jI-jq9" id="IBl-uY-g2i"/>
@@ -62,7 +122,9 @@
         </collectionViewCell>
     </objects>
     <resources>
+        <image name=" share" width="12" height="12"/>
         <image name="FeelsOne" width="160" height="284"/>
+        <image name="like 1" width="12" height="12"/>
         <image name="play" width="40" height="40"/>
     </resources>
 </document>

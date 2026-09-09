@@ -7,7 +7,11 @@
 
 import UIKit
 
-class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITextFieldDelegate {
+class FeelsViewController: UIViewController,
+                            UICollectionViewDelegate,
+                            UICollectionViewDataSource,
+                            UICollectionViewDelegateFlowLayout,
+                            UITextFieldDelegate {
     
     var page = 1
     var pageSize = 20
@@ -25,6 +29,10 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
     @IBOutlet weak var videonoTf: UITextField!
     
     var items = [FeelItem]()
+    
+    // ✅ Local overrides for like state/count
+    var likeStates: [String: Bool] = [:]   // id -> isLiked
+    var likeCounts: [String: Int] = [:]    // id -> likesCount
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -69,7 +77,6 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
     @objc func videoNoTextChanged() {
         let text = videonoTf.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         
-        // If cleared, show all videos
         if text.isEmpty {
             serialNumber = ""
             searchText = ""
@@ -80,7 +87,6 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
     }
     
     @IBAction func onClickGo(_ sender: UIButton) {
-        
         let serial = videonoTf.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         
         if serial.isEmpty {
@@ -90,18 +96,16 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
         
         view.endEditing(true)
         
-        // Clear title search
         searchTf.text = ""
         searchText = ""
-        
-        // Set serial number
         serialNumber = serial
         page = 1
         canLoadMore = false
         
-        // Call API - will show in same collection view
         getEdutainment()
     }
+    
+    // MARK: - Collection View DataSource
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return items.count
@@ -115,23 +119,48 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
         
         cell.imgVw.layer.cornerRadius = 8
         cell.btnPlay.tag = indexPath.row
+        cell.LikeButton.tag = indexPath.row
+        cell.ShareButton.tag = indexPath.row
         
-        if let url = self.items[indexPath.row].thumbnailImage {
+        let item = items[indexPath.row]
+        
+        // Load image
+        if let url = item.thumbnailImage {
             cell.imgVw.loadImage(url: url)
-        } else {
-            if let urlstring = "\(self.items[indexPath.row].youtubeVideo!)".extractYoutubeId() {
-                cell.imgVw.loadImage(url: urlstring.youtubeThumbnailURL())
+        } else if let videoURL = item.youtubeVideo {
+            let videoString = videoURL.absoluteString
+            if let youtubeID = videoString.extractYoutubeId() {
+                cell.imgVw.loadImage(url: youtubeID.youtubeThumbnailURL())
             }
         }
         
+        cell.lblName.text = item.title
+        
+        // ✅ Like handling – yellow fill when liked
+        let feelID = item.id
+        let isLiked = likeStates[feelID] ?? item.isLiked
+        let likeCount = likeCounts[feelID] ?? item.likesCount
+        
+        cell.NumberoflikeLbl.text = "\(likeCount)"
+        cell.LikeButton.tintColor = isLiked ? .systemYellow : .systemGray2
+        
+        // ✅ Closures
         cell.playClicked = { index in
             self.navigateToPlayer(index: index)
         }
         
-        cell.lblName.text = self.items[indexPath.row].title
+        cell.likeClicked = { [weak self] index in
+            self?.handleLikeTapped(at: index)
+        }
+        
+        cell.shareClicked = { [weak self] index in
+            self?.handleShareTapped(at: index)
+        }
         
         return cell
     }
+    
+    // MARK: - Collection View Layout
     
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
@@ -140,6 +169,8 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
         let width = (collectionView.frame.size.width - 8) / 2
         return CGSize(width: width, height: 284)
     }
+    
+    // MARK: - Navigation
     
     func navigateToPlayer(index: Int) {
         let stbd = UIStoryboard(name: "Feels", bundle: nil)
@@ -151,6 +182,8 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         navigateToPlayer(index: indexPath.row)
     }
+    
+    // MARK: - Pagination
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offsetY = scrollView.contentOffset.y
@@ -165,30 +198,137 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
         }
     }
     
+    // ✅ Handle Like/Unlike Tap
+    private func handleLikeTapped(at index: Int) {
+        guard index < items.count else { return }
+        
+        let item = items[index]
+        let feelID = item.id
+        
+        guard !feelID.isEmpty else {
+            showAlert(msg: "Unable to like this item.")
+            return
+        }
+        
+        let isLiked = likeStates[feelID] ?? item.isLiked
+        let currentCount = likeCounts[feelID] ?? item.likesCount
+        
+        // Optimistic update
+        let newLiked = !isLiked
+        let newCount = isLiked ? (currentCount - 1) : (currentCount + 1)
+        
+        likeStates[feelID] = newLiked
+        likeCounts[feelID] = newCount
+        
+        colVw.reloadItems(at: [IndexPath(row: index, section: 0)])
+        
+        let url = isLiked ? API.FEEL_UNLIKE : API.FEEL_LIKE
+        
+        NetworkManager.shared.request(
+            urlString: url,
+            method: .POST,
+            parameters: ["feel_id": feelID]
+        ) { [weak self] (result: Result<APIResponse<EmptyData>, NetworkError>) in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let response):
+                if response.success {
+                    print("✅ Like/Unlike success")
+                } else {
+                    self.likeStates[feelID] = isLiked
+                    self.likeCounts[feelID] = currentCount
+                    DispatchQueue.main.async {
+                        self.colVw.reloadItems(at: [IndexPath(row: index, section: 0)])
+                        self.showAlert(msg: response.description ?? "Failed to update like")
+                    }
+                }
+                
+            case .failure(let error):
+                self.likeStates[feelID] = isLiked
+                self.likeCounts[feelID] = currentCount
+                DispatchQueue.main.async {
+                    self.colVw.reloadItems(at: [IndexPath(row: index, section: 0)])
+                    self.showAlert(msg: error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    // ✅ Handle Share Tap – opens native share sheet and updates count
+    private func handleShareTapped(at index: Int) {
+        guard index < items.count else { return }
+        
+        let item = items[index]
+        let feelID = item.id
+        
+        // Build share text
+        var shareText = item.title
+        if let youtubeURL = item.youtubeVideo {
+            shareText = "\(item.title)\n\(youtubeURL.absoluteString)"
+        }
+        
+        let activityVC = UIActivityViewController(
+            activityItems: [shareText],
+            applicationActivities: nil
+        )
+        
+        // Required for iPad popover
+        if let popover = activityVC.popoverPresentationController {
+            popover.sourceView = self.view
+            popover.sourceRect = CGRect(x: self.view.bounds.midX,
+                                        y: self.view.bounds.midY,
+                                        width: 0,
+                                        height: 0)
+            popover.permittedArrowDirections = []
+        }
+        
+        present(activityVC, animated: true, completion: nil)
+        
+        // Update share count via API (if feelID exists)
+        guard !feelID.isEmpty else { return }
+        
+        NetworkManager.shared.request(
+            urlString: API.FEEL_SHARE,
+            method: .POST,
+            parameters: ["feel_id": feelID]
+        ) { [weak self] (result: Result<APIResponse<EmptyData>, NetworkError>) in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let response):
+                if response.success {
+                    print("✅ Share count updated")
+                } else {
+                    print("⚠️ Share count failed: \(response.description)")
+                }
+                
+            case .failure(let error):
+                print("❌ Share error: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    // MARK: - API
+    
     func getEdutainment() {
-        
-        
         guard !isLoading else { return }
         isLoading = true
         
         if page == 1 {
-                showLoader()
-            }
+            showLoader()
+        }
+        
         var url = ""
         
-        // Serial number search
         if !serialNumber.isEmpty {
             url = API.EDUTAIN_FEEL + "?serial_number=\(serialNumber)"
-        }
-        // Title search
-        else if !searchText.isEmpty {
+        } else if !searchText.isEmpty {
             url = API.EDUTAIN_FEEL + "?page_size=\(pageSize)&page=\(page)"
             if let encoded = searchText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
                 url += "&title=\(encoded)"
             }
-        }
-        // Normal - show all
-        else {
+        } else {
             url = API.EDUTAIN_FEEL + "?page_size=\(pageSize)&page=\(page)"
         }
         
@@ -198,12 +338,11 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
             guard let self = self else { return }
             self.isLoading = false
             self.hideLoader()
+            
             switch result {
             case .success(let info):
-                
                 if info.success {
                     if let data = info.data {
-                        
                         if data.count < self.pageSize {
                             self.canLoadMore = false
                         }
@@ -212,6 +351,14 @@ class FeelsViewController: UIViewController, UICollectionViewDelegate, UICollect
                             self.items = data
                         } else {
                             self.items.append(contentsOf: data)
+                        }
+                        
+                        for item in data {
+                            let id = item.id
+                            if self.likeStates[id] == nil {
+                                self.likeStates[id] = item.isLiked
+                                self.likeCounts[id] = item.likesCount
+                            }
                         }
                     } else {
                         if self.page == 1 {

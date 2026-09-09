@@ -1214,7 +1214,44 @@ struct CurriculumCategory: Codable, Identifiable {
         case gradeName = "grade_name"
     }
 }
+//***share API resposne model
+struct FeelShareRequest: Codable {
+    let feelID: String
 
+    enum CodingKeys: String, CodingKey {
+        case feelID = "feel_id"
+    }
+}
+//*****feels like and dislike response model
+struct FeelLikeRequest: Codable {
+    let feelID: String
+
+    enum CodingKeys: String, CodingKey {
+        case feelID = "feel_id"
+    }
+}
+
+// MARK: - Empty Data for Response `data` Field
+struct EmptyData: Codable {
+    // Intentionally empty – API returns `data: {}`
+}
+
+// MARK: - If you need a dedicated response model (optional)
+struct FeelLikeResponse: Codable {
+    let success: Bool
+    let errorCode: Int?
+    let description: String?
+    let total: Int?
+    let data: EmptyData?
+
+    enum CodingKeys: String, CodingKey {
+        case success
+        case errorCode = "error_code"
+        case description
+        case total
+        case data
+    }
+}
 struct LessonConcept: Codable, Identifiable {
     let id: String
     let lessonID: String

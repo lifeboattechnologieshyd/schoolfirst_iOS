@@ -80,7 +80,9 @@ struct API {
     static let EDUTAIN_FEEL = BASE_URL + "events/get/feels"
     static let EVENT_GALLERY = BASE_URL + "events/gallery"
     static let EVENTS_GETEVENTS = BASE_URL + "event/get/event"
-    
+    static let FEEL_LIKE = BASE_URL + "events/like/feel"
+    static let FEEL_UNLIKE = BASE_URL + "events/unlike/feel"
+    static let FEEL_SHARE = BASE_URL + "events/share/feel"
     
     static let VOCABEE_STATISTICS = BASE_URL + "vocabee/get/statistics"
     
