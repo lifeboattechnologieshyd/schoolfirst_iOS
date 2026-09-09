@@ -2603,6 +2603,8 @@ struct OnlineCourse: Codable {
     }
 }
 
+
+
 struct OfflineCourse: Codable {
     let id: String
     let name: String
