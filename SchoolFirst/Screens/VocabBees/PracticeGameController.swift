@@ -188,7 +188,7 @@ class PracticeGameController: UIViewController {
         }
 
         startTimer()
-        playWordAudio(url: word.pronunciation)
+        playWordAudio(url: word.audioUrlToPlay)
     }
 
     func submitWord() {
@@ -402,8 +402,27 @@ class PracticeGameController: UIViewController {
     }
 
     func playWordAudio(url: String) {
-        guard let audioURL = URL(string: url) else {
-            print("❌ Invalid audio URL")
+        let trimmed = url.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            print("❌ Empty or unavailable audio URL")
+            showAlert(msg: "Audio is not available for this word.")
+            return
+        }
+
+        var urlString = trimmed
+        if !urlString.lowercased().hasPrefix("http://") && !urlString.lowercased().hasPrefix("https://") {
+            let base = API.BASE_URL.replacingOccurrences(of: "/api/", with: "/")
+            if urlString.hasPrefix("/") {
+                urlString = base + String(urlString.dropFirst())
+            } else {
+                urlString = base + urlString
+            }
+        }
+
+        guard let encodedString = urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              let audioURL = URL(string: encodedString) else {
+            print("❌ Invalid audio URL: \(url)")
+            showAlert(msg: "Invalid audio URL format.")
             return
         }
 
@@ -424,7 +443,7 @@ class PracticeGameController: UIViewController {
         }
 
         player?.play()
-        print("🔊 Playing audio...")
+        print("🔊 Playing audio: \(audioURL.absoluteString)")
     }
 
     func startTimer() {

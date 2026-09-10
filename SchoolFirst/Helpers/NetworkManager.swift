@@ -1310,16 +1310,13 @@ struct WordInfo: Codable {
     let partsOfSpeech: String?
     let others: String?
     let othersVoice: String?
-    let pronunciation: String = ""
-    let partsOfSpeechVoice: String = ""
-    let definitionVoice: String = ""
-    let originVoice: String = ""
-    let usageVoice: String = ""
+    var pronunciation: String
+    var partsOfSpeechVoice: String
+    var definitionVoice: String
+    var originVoice: String
+    var usageVoice: String
     let date: String?
 
-    
-    
-    
     enum CodingKeys: String, CodingKey {
         case id
         case word
@@ -1331,11 +1328,71 @@ struct WordInfo: Codable {
         case others
         case othersVoice = "others_voice"
         case pronunciation
+        case pronunciationVoice = "pronunciation_voice"
+        case pronunciationAudio = "pronunciation_audio"
+        case audio
         case partsOfSpeechVoice = "parts_of_speech_voice"
         case definitionVoice = "definition_voice"
         case originVoice = "origin_voice"
         case usageVoice = "usage_voice"
         case date
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = (try? container.decode(String.self, forKey: .id)) ?? ""
+        self.word = (try? container.decode(String.self, forKey: .word)) ?? ""
+        self.definition = (try? container.decode(String.self, forKey: .definition)) ?? ""
+        self.points = (try? container.decode(Int.self, forKey: .points)) ?? 0
+        self.usage = (try? container.decode(String.self, forKey: .usage)) ?? ""
+        self.origin = (try? container.decode(String.self, forKey: .origin)) ?? ""
+        self.partsOfSpeech = try? container.decodeIfPresent(String.self, forKey: .partsOfSpeech)
+        self.others = try? container.decodeIfPresent(String.self, forKey: .others)
+        self.othersVoice = try? container.decodeIfPresent(String.self, forKey: .othersVoice)
+        self.date = try? container.decodeIfPresent(String.self, forKey: .date)
+
+        let p1 = try? container.decodeIfPresent(String.self, forKey: .pronunciation)
+        let p2 = try? container.decodeIfPresent(String.self, forKey: .pronunciationVoice)
+        let p3 = try? container.decodeIfPresent(String.self, forKey: .pronunciationAudio)
+        let p4 = try? container.decodeIfPresent(String.self, forKey: .audio)
+        self.pronunciation = p1 ?? p2 ?? p3 ?? p4 ?? ""
+
+        self.partsOfSpeechVoice = (try? container.decodeIfPresent(String.self, forKey: .partsOfSpeechVoice)) ?? ""
+        self.definitionVoice = (try? container.decodeIfPresent(String.self, forKey: .definitionVoice)) ?? ""
+        self.originVoice = (try? container.decodeIfPresent(String.self, forKey: .originVoice)) ?? ""
+        self.usageVoice = (try? container.decodeIfPresent(String.self, forKey: .usageVoice)) ?? ""
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(word, forKey: .word)
+        try container.encode(definition, forKey: .definition)
+        try container.encode(points, forKey: .points)
+        try container.encode(usage, forKey: .usage)
+        try container.encode(origin, forKey: .origin)
+        try container.encodeIfPresent(partsOfSpeech, forKey: .partsOfSpeech)
+        try container.encodeIfPresent(others, forKey: .others)
+        try container.encodeIfPresent(othersVoice, forKey: .othersVoice)
+        try container.encode(pronunciation, forKey: .pronunciation)
+        try container.encode(partsOfSpeechVoice, forKey: .partsOfSpeechVoice)
+        try container.encode(definitionVoice, forKey: .definitionVoice)
+        try container.encode(originVoice, forKey: .originVoice)
+        try container.encode(usageVoice, forKey: .usageVoice)
+        try container.encodeIfPresent(date, forKey: .date)
+    }
+
+    var audioUrlToPlay: String {
+        let list: [String?] = [pronunciation, definitionVoice, usageVoice, originVoice, othersVoice]
+        for item in list {
+            if let str = item {
+                let trimmed = str.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+                if !trimmed.isEmpty {
+                    return trimmed
+                }
+            }
+        }
+        return ""
     }
 }
 

@@ -158,7 +158,7 @@ class DailyChallengeViewController: UIViewController {
     
     @IBAction func onTapListen(_ sender: UIButton) {
         guard hasValidWord else { return }
-        playWordAudio(url: words[currentWordIndex].pronunciation)
+        playWordAudio(url: words[currentWordIndex].audioUrlToPlay)
     }
     
     @IBAction func onClickDefination(_ sender: UITapGestureRecognizer) {
@@ -219,12 +219,31 @@ class DailyChallengeViewController: UIViewController {
             return
         }
         startTimer()
-        playWordAudio(url: words[currentWordIndex].pronunciation)
+        playWordAudio(url: words[currentWordIndex].audioUrlToPlay)
     }
     
     func playWordAudio(url: String) {
-        guard let audioURL = URL(string: url) else {
-            print("❌ Invalid audio URL")
+        let trimmed = url.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            print("❌ Empty or unavailable audio URL")
+            showAlert(msg: "Audio is not available for this word.")
+            return
+        }
+
+        var urlString = trimmed
+        if !urlString.lowercased().hasPrefix("http://") && !urlString.lowercased().hasPrefix("https://") {
+            let base = API.BASE_URL.replacingOccurrences(of: "/api/", with: "/")
+            if urlString.hasPrefix("/") {
+                urlString = base + String(urlString.dropFirst())
+            } else {
+                urlString = base + urlString
+            }
+        }
+
+        guard let encodedString = urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              let audioURL = URL(string: encodedString) else {
+            print("❌ Invalid audio URL: \(url)")
+            showAlert(msg: "Invalid audio URL format.")
             return
         }
 
@@ -236,8 +255,6 @@ class DailyChallengeViewController: UIViewController {
         let playerItem = AVPlayerItem(url: audioURL)
         player = AVPlayer(playerItem: playerItem)
 
-        player?.play()
-
         playerObserver = NotificationCenter.default.addObserver(
             forName: .AVPlayerItemDidPlayToEndTime,
             object: playerItem,
@@ -245,6 +262,9 @@ class DailyChallengeViewController: UIViewController {
         ) { _ in
             print("✅ Audio finished playing")
         }
+
+        player?.play()
+        print("🔊 Playing audio: \(audioURL.absoluteString)")
     }
 
     func startTimer() {
