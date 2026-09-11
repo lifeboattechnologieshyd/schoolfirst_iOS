@@ -53,8 +53,20 @@ class AssessmentPreparationVC: UIViewController {
                 switch result {
                 case .success(let info):
                     if info.success, let data = info.data, let assessment = data.first {
-                        UserManager.shared.assessment_created_assessment = assessment
-                        self.goToStartTestVC()
+                        if assessment.questions.isEmpty {
+                            let alert = UIAlertController(
+                                title: "No Questions Available",
+                                message: "No questions are available for the selected lesson(s). Please try selecting different lessons.",
+                                preferredStyle: .alert
+                            )
+                            alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+                                self?.navigationController?.popViewController(animated: true)
+                            })
+                            self.present(alert, animated: true)
+                        } else {
+                            UserManager.shared.assessment_created_assessment = assessment
+                            self.goToStartTestVC()
+                        }
                     } else {
                         self.showAlert(msg: info.description)
                         self.navigationController?.popViewController(animated: true)

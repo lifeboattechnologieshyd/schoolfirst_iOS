@@ -43,6 +43,18 @@ class StartTestVC: UIViewController {
     }
 
     @IBAction func onClickStartButton(_ sender: UIButton) {
+        guard let assessment = assessment, !assessment.questions.isEmpty else {
+            let alert = UIAlertController(
+                title: "No Questions Available",
+                message: "No questions are available for this assessment.",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+                self?.navigationController?.popViewController(animated: true)
+            })
+            present(alert, animated: true)
+            return
+        }
         guard let vc = storyboard?.instantiateViewController(identifier: "QuestionVC") as? QuestionVC else {
             return
         }
