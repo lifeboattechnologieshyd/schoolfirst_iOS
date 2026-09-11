@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -12,17 +12,17 @@
         <!--Ed Store View Controller-->
         <scene sceneID="s0d-6b-0kx">
             <objects>
-                <viewController storyboardIdentifier="EdStoreViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Y6W-OH-hqX" customClass="EdStoreViewController" customModule="SF_Dev" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="EdStoreViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Y6W-OH-hqX" customClass="EdStoreViewController" customModule="SchoolFirst" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="RSa-Cz-jXD">
-                                <rect key="frame" x="0.0" y="109" width="393" height="709"/>
+                                <rect key="frame" x="0.0" y="168" width="393" height="616"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aC3-wi-ftw">
-                                <rect key="frame" x="0.0" y="59" width="393" height="50"/>
+                                <rect key="frame" x="0.0" y="118" width="393" height="50"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F1Z-E2-YGN">
                                         <rect key="frame" x="16" y="16" width="16" height="16"/>
@@ -58,7 +58,7 @@
                                             <fragment content="Add your Delivery Address">
                                                 <attributes>
                                                     <color key="NSColor" red="0.034841082990000001" green="0.40597915649999999" blue="0.22152757640000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                                    <font key="NSFont" metaFont="cellTitle"/>
                                                     <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                                 </attributes>
                                             </fragment>
@@ -76,7 +76,7 @@
                                             <attributedString key="attributedTitle">
                                                 <fragment content="Change">
                                                     <attributes>
-                                                        <font key="NSFont" size="12" name="Lexend-Light"/>
+                                                        <font key="NSFont" metaFont="cellTitle"/>
                                                         <font key="NSOriginalFont" size="12" name="Helvetica"/>
                                                     </attributes>
                                                 </fragment>
@@ -129,17 +129,17 @@
         <!--Check Out View Controller-->
         <scene sceneID="nPY-WY-Xne">
             <objects>
-                <viewController storyboardIdentifier="CheckOutViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="wYb-qD-aKY" customClass="CheckOutViewController" customModule="SF_Dev" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CheckOutViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="wYb-qD-aKY" customClass="CheckOutViewController" customModule="SchoolFirst" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="kFG-Mt-Gng">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Fwn-L2-ACU">
-                                <rect key="frame" x="0.0" y="109" width="393" height="637"/>
+                                <rect key="frame" x="0.0" y="168" width="393" height="544"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9VD-Oo-bMP">
-                                <rect key="frame" x="0.0" y="59" width="393" height="50"/>
+                                <rect key="frame" x="0.0" y="118" width="393" height="50"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FRk-3p-LT5">
                                         <rect key="frame" x="16" y="16" width="16" height="16"/>
@@ -175,7 +175,7 @@
                                             <fragment content="Add your Delivery Address">
                                                 <attributes>
                                                     <color key="NSColor" red="0.034840000000000003" green="0.40598000000000001" blue="0.22153" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                                    <font key="NSFont" metaFont="cellTitle"/>
                                                     <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO"/>
                                                 </attributes>
                                             </fragment>
@@ -218,7 +218,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="159-RQ-sh3">
-                                <rect key="frame" x="0.0" y="746" width="393" height="72"/>
+                                <rect key="frame" x="0.0" y="712" width="393" height="72"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" ₹200" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qU6-E2-dh9">
                                         <rect key="frame" x="16" y="16" width="43" height="20"/>
@@ -249,7 +249,7 @@
                                             <fragment content="View Price Break-up">
                                                 <attributes>
                                                     <color key="NSColor" red="0.14991122479999999" green="0.33004361389999998" blue="0.58626025920000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                                    <font key="NSFont" size="12" name="Lexend-Light"/>
+                                                    <font key="NSFont" metaFont="cellTitle"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
@@ -269,7 +269,7 @@
                                                     <attributedString key="attributedTitle">
                                                         <fragment content="BUY NOW">
                                                             <attributes>
-                                                                <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                                                <font key="NSFont" metaFont="system" size="16"/>
                                                                 <font key="NSOriginalFont" size="12" name="Helvetica"/>
                                                             </attributes>
                                                         </fragment>
@@ -343,13 +343,13 @@
         <!--Make Payment View Controller-->
         <scene sceneID="MCv-ve-NLc">
             <objects>
-                <viewController storyboardIdentifier="MakePaymentViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Ml8-DT-sYp" customClass="MakePaymentViewController" customModule="SF_Dev" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MakePaymentViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Ml8-DT-sYp" customClass="MakePaymentViewController" customModule="SchoolFirst" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="9KY-8D-rHQ">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="UBV-7A-wjc">
-                                <rect key="frame" x="0.0" y="109" width="393" height="637"/>
+                                <rect key="frame" x="0.0" y="168" width="393" height="544"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
@@ -358,7 +358,7 @@
                                 </userDefinedRuntimeAttributes>
                             </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="c4y-BJ-ZHB">
-                                <rect key="frame" x="0.0" y="59" width="393" height="50"/>
+                                <rect key="frame" x="0.0" y="118" width="393" height="50"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qcn-cQ-nSR">
                                         <rect key="frame" x="16" y="16" width="16" height="16"/>
@@ -393,7 +393,7 @@
                                         <attributedString key="attributedText">
                                             <fragment content=" Just one step away!">
                                                 <attributes>
-                                                    <font key="NSFont" size="12" name="Lexend-Regular"/>
+                                                    <font key="NSFont" metaFont="cellTitle"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
@@ -412,7 +412,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Vwf-dB-xLR">
-                                <rect key="frame" x="0.0" y="746" width="393" height="72"/>
+                                <rect key="frame" x="0.0" y="712" width="393" height="72"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" ₹236" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OgT-bz-xSB">
                                         <rect key="frame" x="16" y="16" width="43" height="20"/>
@@ -433,7 +433,7 @@
                                             <fragment content="Free Shipping!">
                                                 <attributes>
                                                     <color key="NSColor" red="0.14991122479999999" green="0.33004361389999998" blue="0.58626025920000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                                    <font key="NSFont" size="12" name="Lexend-Light"/>
+                                                    <font key="NSFont" metaFont="cellTitle"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
@@ -453,7 +453,7 @@
                                                     <attributedString key="attributedTitle">
                                                         <fragment content="MAKE PAYMENT">
                                                             <attributes>
-                                                                <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                                                <font key="NSFont" metaFont="system" size="16"/>
                                                                 <font key="NSOriginalFont" size="12" name="Helvetica"/>
                                                             </attributes>
                                                         </fragment>
@@ -527,13 +527,13 @@
         <!--Save AddressVC-->
         <scene sceneID="Haz-go-h7x">
             <objects>
-                <viewController storyboardIdentifier="SaveAddressVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="9xg-cG-QW0" customClass="SaveAddressVC" customModule="SF_Dev" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SaveAddressVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="9xg-cG-QW0" customClass="SaveAddressVC" customModule="SchoolFirst" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ohp-5R-lXU">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EIg-e2-NXQ">
-                                <rect key="frame" x="0.0" y="59" width="393" height="50"/>
+                                <rect key="frame" x="0.0" y="118" width="393" height="50"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aZK-2h-IGw">
                                         <rect key="frame" x="12" y="12" width="24" height="24"/>
@@ -549,14 +549,14 @@
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4hZ-AR-OXA">
-                                        <rect key="frame" x="44.000000000000007" y="14" width="117.66666666666669" height="20"/>
+                                        <rect key="frame" x="44.000000000000007" y="14" width="109.66666666666669" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="dbw-fF-PPL"/>
                                         </constraints>
                                         <attributedString key="attributedText">
                                             <fragment content="ADD ADDRESS">
                                                 <attributes>
-                                                    <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                                    <font key="NSFont" metaFont="system" size="16"/>
                                                     <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                                 </attributes>
                                             </fragment>
@@ -574,11 +574,11 @@
                                 </constraints>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="AMm-dT-HeY">
-                                <rect key="frame" x="0.0" y="114" width="393" height="634"/>
+                                <rect key="frame" x="0.0" y="173" width="393" height="541"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UyM-uU-gH0">
-                                <rect key="frame" x="16" y="756" width="361" height="48"/>
+                                <rect key="frame" x="16" y="722" width="361" height="48"/>
                                 <color key="backgroundColor" red="0.089936695989999996" green="0.3610355556" blue="0.62060129639999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="vGp-qM-BSv"/>
@@ -589,7 +589,7 @@
                                         <fragment content="SAVE ADDRESS">
                                             <attributes>
                                                 <color key="NSColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                                <font key="NSFont" metaFont="system" size="16"/>
                                                 <font key="NSOriginalFont" size="12" name="Helvetica"/>
                                                 <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                             </attributes>

@@ -290,10 +290,6 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
                     in: .whitespacesAndNewlines
                 )
 
-        /*
-         Remarks are optional. An empty value is converted
-         to nil before sending it to the view controller.
-         */
         let optionalRemarks: String?
 
         if let remarks = remarks,
@@ -336,6 +332,31 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
 
         Addremarkstextview.isEditable =
             !submitting
+    }
+
+    // ✅ Lock the cell after a successful submission
+    func lockAfterSubmission() {
+
+        SubmitButton.isEnabled =
+            false
+
+        SubmitButton.alpha =
+            0.6
+
+        SubmitButton.setTitle(
+            "Submitted",
+            for: .normal
+        )
+
+        // Make remarks text view uneditable and non-interactive
+        Addremarkstextview.isEditable =
+            false
+
+        Addremarkstextview.isSelectable =
+            false
+
+        Addremarkstextview.isUserInteractionEnabled =
+            false
     }
 
     // MARK: - Configure API Data
@@ -456,7 +477,14 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
             for: .normal
         )
 
+        // ✅ Make remarks uneditable & non-interactive if already submitted
         Addremarkstextview.isEditable =
+            !isAlreadySubmitted
+
+        Addremarkstextview.isSelectable =
+            !isAlreadySubmitted
+
+        Addremarkstextview.isUserInteractionEnabled =
             !isAlreadySubmitted
     }
 

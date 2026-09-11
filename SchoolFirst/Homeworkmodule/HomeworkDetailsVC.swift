@@ -28,17 +28,11 @@ class HomeworkDetailsVC: UIViewController {
     private var isSubmitting = false
     private var loadedStudentId = ""
 
+    // ✅ Tracks if the homework has been submitted successfully in this session
+    private var didSubmitSuccessfully = false
+
     // MARK: - Optional Attachments
 
-    /*
-     Attachments are optional.
-
-     Leave this array empty when the student is submitting
-     without any attachment.
-
-     After implementing file upload, add the uploaded file
-     information to this array before tapping Submit.
-     */
     var submissionAttachments: [HomeworkSubmissionAttachment] = []
 
     // MARK: - Lifecycle
@@ -352,24 +346,12 @@ class HomeworkDetailsVC: UIViewController {
             "student_id": studentId
         ]
 
-        /*
-         Remarks are optional.
-
-         When the text view is empty, the remarks key is
-         not added to the JSON payload.
-         */
         if !trimmedRemarks.isEmpty {
 
             parameters["remarks"] =
                 trimmedRemarks
         }
 
-        /*
-         Attachments are optional.
-
-         When the attachment array is nil or empty, the
-         attachments key is not added to the payload.
-         */
         if let attachments = attachments,
            !attachments.isEmpty {
 
@@ -447,15 +429,13 @@ class HomeworkDetailsVC: UIViewController {
 
                 self.isSubmitting = false
 
-                cell?.setSubmitting(
-                    false
-                )
-
                 switch result {
 
                 case .success(let response):
 
                     guard response.success else {
+
+                        cell?.setSubmitting(false)
 
                         let message =
                             response.description.isEmpty
@@ -496,15 +476,23 @@ class HomeworkDetailsVC: UIViewController {
                         )
                     }
 
+                    // ✅ Mark as submitted so button shows "Submitted"
+                    // and remarks becomes uneditable permanently.
+                    self.didSubmitSuccessfully = true
+
+                    // ✅ Lock the current cell immediately
+                    cell?.lockAfterSubmission()
+
                     self.navigateToMarkedCompletedVC()
 
                 case .failure(let error):
+
+                    cell?.setSubmitting(false)
 
                     print(
                         "❌ Homework submission failed: \(error)"
                     )
 
-                    // NetworkManager already displays alerts for these errors.
                     switch error {
 
                     case .noData,
@@ -573,8 +561,6 @@ class HomeworkDetailsVC: UIViewController {
 
     // MARK: - Navigate to MarkedcompletedVC
 
-    // MARK: - Navigate to MarkedcompletedVC
-
     private func navigateToMarkedCompletedVC() {
 
         let storyboard = UIStoryboard(
@@ -597,13 +583,9 @@ class HomeworkDetailsVC: UIViewController {
         let selectedHomework =
             homeworkDetails ?? studentHomework
 
-        // Pass the selected homework ID so MarkedcompletedVC
-        // can find the correct homework from the latest API response.
         markedCompletedVC.homeworkID =
             selectedHomework?.id
 
-        // Pass the existing model to display immediately while
-        // MarkedcompletedVC refreshes from the API.
         markedCompletedVC.submittedHomework =
             selectedHomework
 
@@ -629,6 +611,7 @@ class HomeworkDetailsVC: UIViewController {
             )
         }
     }
+
     // MARK: - Pull to Refresh
 
     @objc
@@ -863,6 +846,12 @@ extension HomeworkDetailsVC:
             isSubmitting
         )
 
+        // ✅ If already submitted successfully this session,
+        // keep the cell locked even after reload/scroll.
+        if didSubmitSuccessfully {
+            cell.lockAfterSubmission()
+        }
+
         cell.onSubmitTapped = { [weak self, weak cell]
             remarks in
 
@@ -871,10 +860,6 @@ extension HomeworkDetailsVC:
                 return
             }
 
-            /*
-             Remarks may be empty.
-             Attachments may also be empty.
-             */
             self.submitHomework(
                 remarks: remarks,
                 attachments:
