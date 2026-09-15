@@ -1,13 +1,13 @@
 //
-//  ContactslistVC.swift
+//  ContactdetailsVC.swift
 //  SchoolFirst
 //
-//  Created by vamshi krishna on 11/09/26.
+//  Created by vamshi krishna on 15/09/26.
 //
 
 import UIKit
 
-class ContactslistVC: UIViewController {
+class ContactdetailsVC: UIViewController {
 
     @IBOutlet weak var tableview: UITableView!
 
@@ -24,13 +24,14 @@ class ContactslistVC: UIViewController {
         tableview.delegate = self
         tableview.dataSource = self
 
-        tableview.rowHeight = 176
-        
-
         tableview.register(
-            UINib(nibName: "ContactdetailsTBVCLL", bundle: nil),
-            forCellReuseIdentifier: "ContactdetailsTBVCLL"
+            UINib(nibName: "ContactfulldetailsTBVCLL", bundle: nil),
+            forCellReuseIdentifier: "ContactfulldetailsTBVCLL"
         )
+
+        tableview.rowHeight = 1400
+
+        tableview.separatorStyle = .none
 
         tableview.tableFooterView = UIView()
     }
@@ -38,13 +39,13 @@ class ContactslistVC: UIViewController {
 
 // MARK: - UITableViewDataSource
 
-extension ContactslistVC: UITableViewDataSource {
+extension ContactdetailsVC: UITableViewDataSource {
 
     func tableView(
         _ tableView: UITableView,
         numberOfRowsInSection section: Int
     ) -> Int {
-        return 2
+        return 1
     }
 
     func tableView(
@@ -53,9 +54,9 @@ extension ContactslistVC: UITableViewDataSource {
     ) -> UITableViewCell {
 
         guard let cell = tableView.dequeueReusableCell(
-            withIdentifier: "ContactdetailsTBVCLL",
+            withIdentifier: "ContactfulldetailsTBVCLL",
             for: indexPath
-        ) as? ContactdetailsTBVCLL else {
+        ) as? ContactfulldetailsTBVCLL else {
             return UITableViewCell()
         }
 
@@ -65,12 +66,12 @@ extension ContactslistVC: UITableViewDataSource {
 
 // MARK: - UITableViewDelegate
 
-extension ContactslistVC: UITableViewDelegate {
+extension ContactdetailsVC: UITableViewDelegate {
 
     func tableView(
         _ tableView: UITableView,
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
-        return 162
+        return 800
     }
 }

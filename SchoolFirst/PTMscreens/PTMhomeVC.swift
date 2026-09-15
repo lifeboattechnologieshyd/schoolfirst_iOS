@@ -298,7 +298,7 @@ extension PTMhomeVC: UITableViewDelegate, UITableViewDataSource {
             if let student = ptmData?.student {
                 cell.StudentnameLBl.text = "Hello, \(student.name)"
             } else {
-                cell.StudentnameLBl.text = "Hello!"
+                cell.StudentnameLBl.text = "Hello, \(UserManager.shared.kids.first?.name ?? "")"
             }
 
             if isLoading {

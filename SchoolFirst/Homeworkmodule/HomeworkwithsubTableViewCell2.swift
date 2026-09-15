@@ -41,10 +41,14 @@ class HomeworkwithsubTableViewCell2: UITableViewCell {
         )
 
         button.setTitleColor(
-            .systemBlue,
+            UIColor(
+                red: 26.0 / 255.0,
+                green: 53.0 / 255.0,
+                blue: 103.0 / 255.0,
+                alpha: 1.0
+            ),
             for: .normal
         )
-
         button.titleLabel?.font =
             UIFont.systemFont(
                 ofSize: 14,
