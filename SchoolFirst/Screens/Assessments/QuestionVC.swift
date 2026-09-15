@@ -405,20 +405,6 @@ class QuestionVC: UIViewController {
             lblQuestion.text = ""
             lblDesciption.text = ""
 
-            let alert = UIAlertController(
-                title: "No Questions Available",
-                message: "No questions are available for this assessment.",
-                preferredStyle: .alert
-            )
-            alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
-                if let nav = self?.navigationController {
-                    nav.popViewController(animated: true)
-                } else {
-                    self?.dismiss(animated: true)
-                }
-            })
-            present(alert, animated: true)
-
             return
         }
 
@@ -430,12 +416,15 @@ class QuestionVC: UIViewController {
         print("Options Count: \(question.options.count)")
         print("========================================")
 
-        guard question.options.count >= 1 else {
+        // IMPORTANT:
+        // Your UI has A/B/C/D, so API must provide at least 4 options.
+        guard question.options.count >= 4 else {
 
-            print("❌ Question has 0 options")
+            print("❌ Question has less than 4 options")
+            print("Options Count: \(question.options.count)")
 
             self.showAlert(
-                msg: "This question does not have options."
+                msg: "This question does not have enough options."
             )
 
             stackViewOptions.isHidden = true
@@ -461,17 +450,18 @@ class QuestionVC: UIViewController {
                 text: question.description
             ) {
 
-                self.lblOptionA.text = question.options.indices.contains(0) ? question.options[0] : ""
-                self.optionAView.isHidden = !question.options.indices.contains(0)
+                // Safe because we already checked count >= 4
+                self.lblOptionA.text =
+                    question.options[0]
 
-                self.lblOptionB.text = question.options.indices.contains(1) ? question.options[1] : ""
-                self.optionBView.isHidden = !question.options.indices.contains(1)
+                self.lblOptionB.text =
+                    question.options[1]
 
-                self.lblOptionC.text = question.options.indices.contains(2) ? question.options[2] : ""
-                self.optionCView.isHidden = !question.options.indices.contains(2)
+                self.lblOptionC.text =
+                    question.options[2]
 
-                self.lblOptionD.text = question.options.indices.contains(3) ? question.options[3] : ""
-                self.optionDView.isHidden = !question.options.indices.contains(3)
+                self.lblOptionD.text =
+                    question.options[3]
 
                 self.lblOptionHint.text =
                     "I don't know"

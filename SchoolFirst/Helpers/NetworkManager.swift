@@ -1668,52 +1668,6 @@ struct Assessment: Codable {
         case totalMarks = "total_marks"
         case status
         case questions
-        case questionList = "question_list"
-        case questionsList = "questions_list"
-        case questionDetails = "question_details"
-        case questionsData = "questions_data"
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.id = (try? container.decode(String.self, forKey: .id)) ?? ""
-        self.gradeID = (try? container.decode(String.self, forKey: .gradeID)) ?? ""
-        self.gradeName = (try? container.decode(String.self, forKey: .gradeName)) ?? ""
-        self.subjectID = (try? container.decode(String.self, forKey: .subjectID)) ?? ""
-        self.subjectName = (try? container.decode(String.self, forKey: .subjectName)) ?? ""
-        self.name = (try? container.decode(String.self, forKey: .name)) ?? ""
-        self.description = (try? container.decode(String.self, forKey: .description)) ?? ""
-        self.numberOfQuestions = (try? container.decode(Int.self, forKey: .numberOfQuestions)) ?? 0
-        self.attemptedQuestions = (try? container.decode(Int.self, forKey: .attemptedQuestions)) ?? 0
-        self.isEvaluationRequired = (try? container.decode(Bool.self, forKey: .isEvaluationRequired)) ?? false
-        self.totalMarks = (try? container.decode(Int.self, forKey: .totalMarks)) ?? 0
-        self.status = (try? container.decode(String.self, forKey: .status)) ?? ""
-
-        let q1 = try? container.decodeIfPresent([AssessmentQuestion].self, forKey: .questions)
-        let q2 = try? container.decodeIfPresent([AssessmentQuestion].self, forKey: .questionList)
-        let q3 = try? container.decodeIfPresent([AssessmentQuestion].self, forKey: .questionsList)
-        let q4 = try? container.decodeIfPresent([AssessmentQuestion].self, forKey: .questionDetails)
-        let q5 = try? container.decodeIfPresent([AssessmentQuestion].self, forKey: .questionsData)
-
-        let parsedQuestions = q1 ?? q2 ?? q3 ?? q4 ?? q5 ?? []
-        self.questions = parsedQuestions
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(id, forKey: .id)
-        try container.encode(gradeID, forKey: .gradeID)
-        try container.encode(gradeName, forKey: .gradeName)
-        try container.encode(subjectID, forKey: .subjectID)
-        try container.encode(subjectName, forKey: .subjectName)
-        try container.encode(name, forKey: .name)
-        try container.encode(description, forKey: .description)
-        try container.encode(numberOfQuestions, forKey: .numberOfQuestions)
-        try container.encode(attemptedQuestions, forKey: .attemptedQuestions)
-        try container.encode(isEvaluationRequired, forKey: .isEvaluationRequired)
-        try container.encode(totalMarks, forKey: .totalMarks)
-        try container.encode(status, forKey: .status)
-        try container.encode(questions, forKey: .questions)
     }
 }
 
@@ -1744,38 +1698,6 @@ struct AssessmentQuestion: Codable {
         case hint
         case skillTested = "skill_tested"
         case levelOfDifficulty = "level_of_difficulty"
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.id = (try? container.decode(String.self, forKey: .id)) ?? ""
-        self.questionType = (try? container.decode(String.self, forKey: .questionType)) ?? ""
-        self.question = (try? container.decode(String.self, forKey: .question)) ?? ""
-        self.options = (try? container.decode([String].self, forKey: .options)) ?? []
-        self.answer = (try? container.decode(String.self, forKey: .answer)) ?? ""
-        self.description = (try? container.decode(String.self, forKey: .description)) ?? ""
-        self.marks = (try? container.decode(Int.self, forKey: .marks)) ?? 1
-        self.subjectID = (try? container.decode(String.self, forKey: .subjectID)) ?? ""
-        self.gradeID = (try? container.decode(String.self, forKey: .gradeID)) ?? ""
-        self.hint = (try? container.decode(String.self, forKey: .hint)) ?? ""
-        self.skillTested = (try? container.decode(String.self, forKey: .skillTested)) ?? ""
-        self.levelOfDifficulty = (try? container.decode(Int.self, forKey: .levelOfDifficulty)) ?? 1
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(id, forKey: .id)
-        try container.encode(questionType, forKey: .questionType)
-        try container.encode(question, forKey: .question)
-        try container.encode(options, forKey: .options)
-        try container.encode(answer, forKey: .answer)
-        try container.encode(description, forKey: .description)
-        try container.encode(marks, forKey: .marks)
-        try container.encode(subjectID, forKey: .subjectID)
-        try container.encode(gradeID, forKey: .gradeID)
-        try container.encode(hint, forKey: .hint)
-        try container.encode(skillTested, forKey: .skillTested)
-        try container.encode(levelOfDifficulty, forKey: .levelOfDifficulty)
     }
 }
 struct AssessmentAnswerResponse: Codable {
