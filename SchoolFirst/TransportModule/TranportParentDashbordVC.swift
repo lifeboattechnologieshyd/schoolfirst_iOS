@@ -14,14 +14,20 @@ class TranportParentDashbordVC: UIViewController {
     // MARK: - Outlets
     @IBOutlet weak var Tableview: UITableView!
 
+    // MARK: - API Data
+    private var busData: StudentBusData?
+    private var routeData: TransportRouteData?
+    private var isLoading = false
+
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
+        fetchBusDetails()   // ✅ Load bus details
+        fetchRouteDetails() // ✅ Load Route Pickup & Drop details
     }
 
     @IBAction func BackButtonTapped(_ sender: UIButton) {
-        // If Homescreen was pushed from EdutainmentVC
         navigationController?.popViewController(animated: true)
     }
 
@@ -39,6 +45,142 @@ class TranportParentDashbordVC: UIViewController {
         Tableview.showsVerticalScrollIndicator = false
     }
 
+    // MARK: - Fetch Bus Details API
+    private func fetchBusDetails() {
+
+        let studentId = UserManager.shared.resolvedStudentID
+        let schoolId  = UserManager.shared.resolvedSchoolID
+
+        guard !studentId.isEmpty else {
+            print("❌ Student ID is empty")
+            return
+        }
+
+        guard !schoolId.isEmpty else {
+            print("❌ School ID is empty")
+            return
+        }
+
+        guard !isLoading else { return }
+        isLoading = true
+
+        showLoader()
+
+        NetworkManager.shared.request(
+            urlString: API.TRANSPORT_BUS,
+            method: .GET,
+            requiresAuth: true,
+            parameters: [
+                "student_id": studentId
+            ],
+            headers: [
+                "X-School-Id": schoolId
+            ]
+        ) { [weak self] (result: Result<APIResponse<StudentBusData>, NetworkError>) in
+
+            guard let self = self else { return }
+
+            DispatchQueue.main.async {
+
+                self.isLoading = false
+                self.hideLoader()
+
+                switch result {
+
+                case .success(let response):
+
+                    if response.success, let data = response.data {
+
+                        self.busData = data
+
+                        print("✅ Bus details retrieved successfully")
+                        print("🚌 Vehicle Number: \(data.bus?.vehicleNumber ?? "N/A")")
+                        print("👨‍✈️ Driver: \(data.driver?.name ?? "N/A")")
+                        print("🧑‍💼 Attendant: \(data.attendant?.name ?? "N/A")")
+
+                        self.Tableview.reloadData()
+
+                    } else {
+                        print("❌ Bus API returned no data: \(response.description)")
+                    }
+
+                case .failure(let error):
+
+                    switch error {
+                    case .noaccess:
+                        print("❌ Session expired")
+                    default:
+                        print("❌ Bus API error: \(error.localizedDescription)")
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Fetch Transport Route Details API
+    private func fetchRouteDetails() {
+
+        let studentId = UserManager.shared.resolvedStudentID
+        let schoolId  = UserManager.shared.resolvedSchoolID
+
+        guard !studentId.isEmpty else {
+            print("❌ Student ID is empty")
+            return
+        }
+
+        guard !schoolId.isEmpty else {
+            print("❌ School ID is empty")
+            return
+        }
+
+        NetworkManager.shared.request(
+            urlString: API.TRANSPORT_ROUTEDETAILS,
+            method: .GET,
+            requiresAuth: true,
+            parameters: [
+                "student_id": studentId
+            ],
+            headers: [
+                "X-School-Id": schoolId
+            ]
+        ) { [weak self] (result: Result<APIResponse<TransportRouteData>, NetworkError>) in
+
+            guard let self = self else { return }
+
+            DispatchQueue.main.async {
+
+                switch result {
+
+                case .success(let response):
+
+                    if response.success, let data = response.data {
+
+                        self.routeData = data
+
+                        print("✅ Route details retrieved successfully")
+                        print("🗺️ Route Name: \(data.route?.routeName ?? "N/A")")
+                        print("📍 Pickup Stop: \(data.pickupStop?.stopName ?? "N/A") - \(data.pickupStop?.pickupTime ?? "N/A")")
+                        print("📍 Drop Stop: \(data.dropStop?.stopName ?? "N/A") - \(data.dropStop?.dropTime ?? "N/A")")
+
+                        self.Tableview.reloadData()
+
+                    } else {
+                        print("❌ Route API returned no data: \(response.description)")
+                    }
+
+                case .failure(let error):
+
+                    switch error {
+                    case .noaccess:
+                        print("❌ Session expired")
+                    default:
+                        print("❌ Route API error: \(error.localizedDescription)")
+                    }
+                }
+            }
+        }
+    }
+
     // MARK: - Navigation Helpers
     private func navigateToLiveTracking() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -50,6 +192,7 @@ class TranportParentDashbordVC: UIViewController {
         }
         navigationController?.pushViewController(vc, animated: true)
     }
+
     private func navigateToPickupandDrop() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let vc = storyboard.instantiateViewController(
@@ -58,10 +201,13 @@ class TranportParentDashbordVC: UIViewController {
             print("❌ TRSPRTpickupanddropVC not found in storyboard. Check Storyboard ID.")
             return
         }
+        // Pass Bus Number and Route Code from Dashboard API Data
+        vc.busNumber = busData?.bus?.vehicleNumber
+        vc.routeCode = routeData?.route?.routeCode
+        
         navigationController?.pushViewController(vc, animated: true)
     }
-    
-    
+
     private func navigateToFeeModule() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let vc = storyboard.instantiateViewController(
@@ -111,8 +257,12 @@ extension TranportParentDashbordVC: UITableViewDelegate, UITableViewDataSource {
 
         cell.selectionStyle = .none
 
-        // ── Assign delegate so cell can trigger navigation ─────────────────
+        // Assign delegate so cell can trigger navigation
         cell.delegate = self
+
+        // ✅ Configure cell with bus data and route data
+        cell.configureBusDetails(busData)
+        cell.configureRouteDetails(routeData)
 
         return cell
     }
@@ -121,7 +271,7 @@ extension TranportParentDashbordVC: UITableViewDelegate, UITableViewDataSource {
         _ tableView: UITableView,
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
-        return 1000
+        return 900
     }
 }
 

@@ -14,46 +14,46 @@ class BuslivetrackingVC: UIViewController {
     @IBOutlet weak var Mapview    : MKMapView!
     @IBOutlet weak var BackButton : UIButton!
 
-    // MARK: - Private
+    // MARK: - Private Properties
     private var busAnnotation  : BusAnnotation?
-    private var movementTimer  : Timer?
-    private var currentIndex   : Int = 0
+    private var lastCoordinate : CLLocationCoordinate2D?
+    private var locationTimer  : Timer?
+    private let refreshInterval: TimeInterval = 5.0 // Fetch live location every 5 seconds
 
-    // ✅ Simulated bus route coordinates (Hyderabad path)
-    // Replace with your city coordinates or actual API later
-    private let routeCoordinates: [CLLocationCoordinate2D] = [
-        CLLocationCoordinate2D(latitude: 17.3850, longitude: 78.4867),  // Start
-        CLLocationCoordinate2D(latitude: 17.3870, longitude: 78.4880),
-        CLLocationCoordinate2D(latitude: 17.3890, longitude: 78.4895),
-        CLLocationCoordinate2D(latitude: 17.3910, longitude: 78.4910),
-        CLLocationCoordinate2D(latitude: 17.3930, longitude: 78.4925),
-        CLLocationCoordinate2D(latitude: 17.3950, longitude: 78.4940),
-        CLLocationCoordinate2D(latitude: 17.3970, longitude: 78.4955),
-        CLLocationCoordinate2D(latitude: 17.3990, longitude: 78.4970),
-        CLLocationCoordinate2D(latitude: 17.4010, longitude: 78.4985),
-        CLLocationCoordinate2D(latitude: 17.4030, longitude: 78.5000),
-        CLLocationCoordinate2D(latitude: 17.4050, longitude: 78.5015),
-        CLLocationCoordinate2D(latitude: 17.4070, longitude: 78.5030),
-        CLLocationCoordinate2D(latitude: 17.4090, longitude: 78.5045),
-        CLLocationCoordinate2D(latitude: 17.4110, longitude: 78.5060)   // End
-    ]
+    // Native Activity Indicator
+    private let activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.color = .systemBlue
+        indicator.hidesWhenStopped = true
+        return indicator
+    }()
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("📌 BuslivetrackingVC — viewDidLoad")
+        setupLoader()
         setupMapView()
-        addBusAnnotation()
+        fetchLiveLocation()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        startBusSimulation()
+        startLiveLocationTracking()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        stopBusSimulation()
+        stopLiveLocationTracking()
+    }
+
+    // MARK: - Setup Loader
+    private func setupLoader() {
+        view.addSubview(activityIndicator)
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
     }
 
     // MARK: - Setup MapView
@@ -63,113 +63,217 @@ class BuslivetrackingVC: UIViewController {
         Mapview.showsUserLocation = false
         Mapview.showsCompass      = true
         Mapview.showsScale        = true
-
-        // Zoom to route start point
-        let startCoord = routeCoordinates.first ?? CLLocationCoordinate2D(
-            latitude:  17.3850,
-            longitude: 78.4867
-        )
-        let region = MKCoordinateRegion(
-            center             : startCoord,
-            latitudinalMeters  : 3000,
-            longitudinalMeters : 3000
-        )
-        Mapview.setRegion(region, animated: false)
-        print("✅ MapView setup done")
     }
 
-    // MARK: - Add Bus Annotation at Start Position
-    private func addBusAnnotation() {
-        guard let startCoord = routeCoordinates.first else { return }
+    // MARK: - Fetch Live Location API
+    private func fetchLiveLocation() {
+        let studentId = UserManager.shared.resolvedStudentID
+        let schoolId  = UserManager.shared.resolvedSchoolID
 
-        let annotation      = BusAnnotation(coordinate: startCoord)
-        annotation.title    = "🚌 School Bus"
-        annotation.subtitle = "Route A - Kukatpally"
+        guard !studentId.isEmpty else {
+            print("❌ Student ID is empty")
+            self.showErrorAlert(message: "Student configuration is missing.")
+            return
+        }
 
-        busAnnotation = annotation
-        Mapview.addAnnotation(annotation)
-        print("✅ Bus annotation added at start")
-    }
+        guard !schoolId.isEmpty else {
+            print("❌ School ID is empty")
+            self.showErrorAlert(message: "School configuration is missing.")
+            return
+        }
 
-    // MARK: - Start Simulated Bus Movement
-    private func startBusSimulation() {
-        print("🚌 Starting bus simulation...")
+        activityIndicator.startAnimating()
 
-        // Move bus every 2 seconds
-        movementTimer = Timer.scheduledTimer(
-            withTimeInterval: 2.0,
-            repeats: true
-        ) { [weak self] _ in
-            self?.moveBusToNextPoint()
+        NetworkManager.shared.request(
+            urlString: API.TRANSPORT_LIVELOCATION,
+            method: .GET,
+            requiresAuth: true,
+            parameters: [
+                "student_id": studentId
+            ],
+            headers: [
+                "X-School-Id": schoolId
+            ]
+        ) { [weak self] (result: Result<APIResponse<TransportLiveLocationData>, NetworkError>) in
+
+            guard let self = self else { return }
+
+            DispatchQueue.main.async {
+                self.activityIndicator.stopAnimating()
+
+                switch result {
+                case .success(let response):
+                    if response.success, let data = response.data {
+
+                        // Check if live location is available
+                        if data.isAvailable == false {
+                            self.showErrorAlert(message: "Bus live location is not available at this moment.")
+                            return
+                        }
+
+                        // Check if location data exists
+                        guard let location = data.location,
+                              let latitude = location.latitude,
+                              let longitude = location.longitude else {
+                            self.showErrorAlert(message: "Live location coordinates not found.")
+                            return
+                        }
+
+                        let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                        let vehicleNumber = data.vehicle?.vehicleNumber ?? "School Bus"
+                        let tripStatus = data.trip?.status ?? "Active"
+                        let speed = location.speed ?? 0.0
+                        let heading = location.heading
+
+                        self.updateBusLocation(
+                            coordinate: coordinate,
+                            vehicleNumber: vehicleNumber,
+                            tripStatus: tripStatus,
+                            speed: speed,
+                            heading: heading
+                        )
+
+                    } else {
+                        let errorMsg = response.description.isEmpty ? "Failed to fetch live location." : response.description
+                        self.showErrorAlert(message: errorMsg)
+                    }
+
+                case .failure(let error):
+                    switch error {
+                    case .noaccess:
+                        print("❌ Session expired")
+                    case .noInternet:
+                        print("❌ No internet connection")
+                    case .serverError(let message):
+                        self.showErrorAlert(message: message)
+                    case .decodingError(let message):
+                        print("❌ Decoding Error: \(message)")
+                        self.showErrorAlert(message: "Failed to parse live location data.")
+                    case .invalidURL:
+                        self.showErrorAlert(message: "Invalid Request URL.")
+                    case .noData:
+                        self.showErrorAlert(message: "No data received from server.")
+                    }
+                }
+            }
         }
     }
 
-    // MARK: - Stop Simulation
-    private func stopBusSimulation() {
-        movementTimer?.invalidate()
-        movementTimer = nil
-        print("🛑 Bus simulation stopped")
-    }
+    // MARK: - Update Bus Location on Map (Rapido/Swiggy Like Smooth Animation)
+    private func updateBusLocation(coordinate: CLLocationCoordinate2D,
+                                   vehicleNumber: String,
+                                   tripStatus: String,
+                                   speed: Double,
+                                   heading: Int?) {
 
-    // MARK: - Move Bus to Next Point in Route
-    private func moveBusToNextPoint() {
+        let busHeading = Double(heading ?? 0)
+
+        // If annotation does not exist, add it for the first time
+        if busAnnotation == nil {
+            let annotation = BusAnnotation(coordinate: coordinate)
+            annotation.title = "🚌 \(vehicleNumber)"
+            annotation.subtitle = "Trip: \(tripStatus.capitalized)"
+
+            busAnnotation = annotation
+            Mapview.addAnnotation(annotation)
+            lastCoordinate = coordinate
+
+            // Zoom and center map to current bus location
+            let region = MKCoordinateRegion(
+                center: coordinate,
+                latitudinalMeters: 1000,
+                longitudinalMeters: 1000
+            )
+            Mapview.setRegion(region, animated: true)
+            print("✅ Bus annotation added at: \(coordinate.latitude), \(coordinate.longitude)")
+            return
+        }
+
         guard let annotation = busAnnotation else { return }
 
-        // Increment index, loop back to start when reached end
-        currentIndex += 1
-        if currentIndex >= routeCoordinates.count {
-            currentIndex = 0
-            print("🔄 Route completed — restarting from beginning")
+        let previousCoordinate = lastCoordinate ?? annotation.coordinate
+
+        // Calculate heading if API doesn't provide valid heading (0 can be North)
+        var directionDegrees = busHeading
+        if heading == nil {
+            directionDegrees = calculateHeading(from: previousCoordinate, to: coordinate)
         }
 
-        let nextCoord = routeCoordinates[currentIndex]
-
-        // ── Calculate heading (direction) for bus rotation ──────
-        let heading = calculateHeading(
-            from: annotation.coordinate,
-            to:   nextCoord
-        )
-
-        // ── Animate coordinate change (smooth movement) ─────────
-        UIView.animate(withDuration: 1.8) {
-            annotation.coordinate = nextCoord
+        // Smoothly animate bus movement
+        UIView.animate(withDuration: 1.0, delay: 0, options: [.curveEaseInOut]) {
+            annotation.coordinate = coordinate
         }
 
-        // ── Rotate bus icon towards direction ───────────────────
+        // Update Callout Info
+        annotation.title = "🚌 \(vehicleNumber)"
+        annotation.subtitle = "Trip: \(tripStatus.capitalized)"
+
+        // Rotate Bus Icon based on Direction
         if let annotationView = Mapview.view(for: annotation) as? BusAnnotationView {
-            annotationView.rotate(degrees: heading)
+            annotationView.rotate(degrees: directionDegrees)
         }
 
-        print("🚌 Bus moved to point \(currentIndex + 1)/\(routeCoordinates.count)")
-        print("   lat: \(nextCoord.latitude) | lng: \(nextCoord.longitude)")
-        print("   heading: \(Int(heading))°")
+        // Smoothly follow bus on map (Like Rapido/Swiggy)
+        Mapview.setCenter(coordinate, animated: true)
 
-        // Optional: keep bus visible in map view
-        // Mapview.setCenter(nextCoord, animated: true)
+        lastCoordinate = coordinate
+
+        print("🚌 Bus Live Location Updated → Lat: \(String(format: "%.6f", coordinate.latitude)), Lng: \(String(format: "%.6f", coordinate.longitude)), Speed: \(String(format: "%.2f", speed)) km/h, Heading: \(Int(directionDegrees))°")
     }
 
     // MARK: - Calculate Heading Between Two Coordinates
-    private func calculateHeading(
-        from: CLLocationCoordinate2D,
-        to  : CLLocationCoordinate2D
-    ) -> Double {
+    private func calculateHeading(from: CLLocationCoordinate2D,
+                                  to: CLLocationCoordinate2D) -> Double {
         let deltaLon = to.longitude - from.longitude
-        let y        = sin(deltaLon) * cos(to.latitude)
-        let x        = cos(from.latitude) * sin(to.latitude) -
-                       sin(from.latitude) * cos(to.latitude) * cos(deltaLon)
+        let y = sin(deltaLon) * cos(to.latitude)
+        let x = cos(from.latitude) * sin(to.latitude) -
+        sin(from.latitude) * cos(to.latitude) * cos(deltaLon)
 
-        var radians  = atan2(y, x)
-        var degrees  = radians * 180.0 / .pi
+        var radians = atan2(y, x)
+        var degrees = radians * 180.0 / .pi
 
-        // Normalize to 0-360
+        // Normalize to 0 - 360 degrees
         degrees = (degrees + 360).truncatingRemainder(dividingBy: 360)
         return degrees
     }
 
-    // MARK: - Actions
+    // MARK: - Start Live Location Tracking (Auto Refresh)
+    private func startLiveLocationTracking() {
+        // Invalidate existing timer if any
+        locationTimer?.invalidate()
 
+        // Poll live location every 5 seconds
+        locationTimer = Timer.scheduledTimer(withTimeInterval: refreshInterval,
+                                             repeats: true) { [weak self] _ in
+            self?.fetchLiveLocation()
+        }
+        print("🔄 Live location tracking started (Refresh every \(Int(refreshInterval))s)")
+    }
+
+    // MARK: - Stop Live Location Tracking
+    private func stopLiveLocationTracking() {
+        locationTimer?.invalidate()
+        locationTimer = nil
+        print("🛑 Live location tracking stopped")
+    }
+
+    // MARK: - Error Alert
+    private func showErrorAlert(message: String) {
+        let alert = UIAlertController(
+            title: "Live Bus Tracking",
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        alert.addAction(UIAlertAction(title: "Retry", style: .default, handler: { [weak self] _ in
+            self?.fetchLiveLocation()
+        }))
+        self.present(alert, animated: true)
+    }
+
+    // MARK: - Back Button Action
     @IBAction func BackButtonTapped(_ sender: UIButton) {
-        stopBusSimulation()
+        stopLiveLocationTracking()
         navigationController?.popViewController(animated: true)
     }
 }
@@ -177,10 +281,8 @@ class BuslivetrackingVC: UIViewController {
 // MARK: - MKMapViewDelegate
 extension BuslivetrackingVC: MKMapViewDelegate {
 
-    func mapView(
-        _ mapView: MKMapView,
-        viewFor annotation: MKAnnotation
-    ) -> MKAnnotationView? {
+    func mapView(_ mapView: MKMapView,
+                 viewFor annotation: MKAnnotation) -> MKAnnotationView? {
 
         // Only customize BusAnnotation
         guard annotation is BusAnnotation else { return nil }
@@ -195,8 +297,8 @@ extension BuslivetrackingVC: MKMapViewDelegate {
         }
 
         return BusAnnotationView(
-            annotation      : annotation,
-            reuseIdentifier : reuseID
+            annotation: annotation,
+            reuseIdentifier: reuseID
         )
     }
 }

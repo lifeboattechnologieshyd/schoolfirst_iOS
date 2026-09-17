@@ -285,7 +285,173 @@ struct APIResponse<T: Decodable>: Decodable {
         data = try? container.decodeIfPresent(T.self, forKey: .data)
     }
 }
+///**** Transport module live location API response model
+struct TransportLiveLocationResponse: Codable {
+    let success: Bool?
+    let description: String?
+    let data: TransportLiveLocationData?
+}
 
+// MARK: - Transport Live Location Data
+struct TransportLiveLocationData: Codable {
+    let vehicle: LiveLocationVehicle?
+    let trip: LiveLocationTrip?
+    let isAvailable: Bool?
+    let location: LiveLocationDetails?
+
+    enum CodingKeys: String, CodingKey {
+        case vehicle
+        case trip
+        case isAvailable = "is_available"
+        case location
+    }
+}
+
+// MARK: - Vehicle
+struct LiveLocationVehicle: Codable {
+    let id: String?
+    let vehicleNumber: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case vehicleNumber = "vehicle_number"
+    }
+}
+
+// MARK: - Trip
+struct LiveLocationTrip: Codable {
+    let id: String?
+    let status: String?
+}
+
+// MARK: - Live Location Details
+struct LiveLocationDetails: Codable {
+    let latitude: Double?
+    let longitude: Double?
+    let speed: Double?
+    let heading: Int?
+    let altitude: Double?
+    let accuracy: Double?
+    let deviceTimestamp: String?
+
+    enum CodingKeys: String, CodingKey {
+        case latitude
+        case longitude
+        case speed
+        case heading
+        case altitude
+        case accuracy
+        case deviceTimestamp = "device_timestamp"
+    }
+}
+//****Transport routs API repsonse model
+
+// MARK: - Transport Route Response
+struct TransportRouteResponse: Codable {
+    let success: Bool?
+    let description: String?
+    let data: TransportRouteData?
+}
+
+// MARK: - Transport Route Data
+struct TransportRouteData: Codable {
+    let route: RouteDetails?
+    let pickupStop: StopDetails?
+    let dropStop: StopDetails?
+    let routeStops: [RouteStop]?
+    let tripType: String?
+
+    enum CodingKeys: String, CodingKey {
+        case route
+        case pickupStop = "pickup_stop"
+        case dropStop = "drop_stop"
+        case routeStops = "route_stops"
+        case tripType = "trip_type"
+    }
+}
+
+// MARK: - Route Details
+struct RouteDetails: Codable {
+    let id: String?
+    let routeCode: String?
+    let routeName: String?
+    let source: String?
+    let destination: String?
+    let totalDistance: Double?
+    let estimatedDuration: Int?
+    let shift: String?
+    let status: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case routeCode = "route_code"
+        case routeName = "route_name"
+        case source
+        case destination
+        case totalDistance = "total_distance"
+        case estimatedDuration = "estimated_duration"
+        case shift
+        case status
+    }
+}
+
+// MARK: - Pickup and Drop Stop Details
+struct StopDetails: Codable {
+    let id: String?
+    let stopName: String?
+    let stopCode: String?
+    let landmark: String?
+    let address: String?
+    let latitude: Double?
+    let longitude: Double?
+    let pickupTime: String?
+    let dropTime: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case stopName = "stop_name"
+        case stopCode = "stop_code"
+        case landmark
+        case address
+        case latitude
+        case longitude
+        case pickupTime = "pickup_time"
+        case dropTime = "drop_time"
+    }
+}
+
+// MARK: - Route Stops
+struct RouteStop: Codable {
+    let id: String?
+    let stopName: String?
+    let stopCode: String?
+    let stopType: String?
+    let stopOrder: Int?
+    let landmark: String?
+    let address: String?
+    let latitude: Double?
+    let longitude: Double?
+    let pickupTime: String?
+    let dropTime: String?
+    let distanceFromPreviousStop: Double?
+    let estimatedTravelTime: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case stopName = "stop_name"
+        case stopCode = "stop_code"
+        case stopType = "stop_type"
+        case stopOrder = "stop_order"
+        case landmark
+        case address
+        case latitude
+        case longitude
+        case pickupTime = "pickup_time"
+        case dropTime = "drop_time"
+        case distanceFromPreviousStop = "distance_from_previous_stop"
+        case estimatedTravelTime = "estimated_travel_time"
+    }
+}////****end
 
 struct MobileCheckResponse : Decodable {
     var username : String?
@@ -362,6 +528,54 @@ struct User: Codable {
         return schoolIDs.compactMap { $0 }
     }
 
+}
+
+//****bus, driver and attendant response model
+// MARK: - Student Bus Details (data object)
+struct StudentBusData: Codable {
+    let bus: BusInfo?
+    let driver: BusStaff?
+    let attendant: BusStaff?
+
+    enum CodingKeys: String, CodingKey {
+        case bus
+        case driver
+        case attendant
+    }
+}
+
+// MARK: - Bus Info
+struct BusInfo: Codable {
+    let id: String?
+    let vehicleNumber: String?
+    let vehicleType: String?
+    let capacity: Int?
+    let status: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case vehicleNumber = "vehicle_number"
+        case vehicleType = "vehicle_type"
+        case capacity
+        case status
+    }
+}
+
+// MARK: - Bus Staff (Driver / Attendant share same structure)
+struct BusStaff: Codable {
+    let id: String?
+    let name: String?
+    let mobile: String?
+    let experience: Double?
+    let profileImage: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case mobile
+        case experience
+        case profileImage = "profile_image"
+    }
 }
 //*** - Student Profile API Response Struct
 struct StudentProfileResponse: Decodable {

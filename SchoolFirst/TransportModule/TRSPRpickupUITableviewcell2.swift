@@ -9,6 +9,7 @@ import UIKit
 
 class TRSPRpickupUITableviewcell2: UITableViewCell {
 
+    @IBOutlet weak var DrivernameLabel: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

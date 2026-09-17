@@ -12,6 +12,10 @@ class TRSPRTpickupanddropVC: UIViewController {
 
     // Track the selected segment index (0 = Pickup, 1 = Drop)
     private var selectedSegmentIndex: Int = 0
+    
+    // Bus Number Passed from Dashboard
+    var busNumber: String?
+    var routeCode: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,10 +23,7 @@ class TRSPRTpickupanddropVC: UIViewController {
     }
     
     @IBAction func BackButtonTapped(_ sender: UIButton) {
-
-        // If Homescreen was pushed from EdutainmentVC
         navigationController?.popViewController(animated: true)
-
     }
     
 
@@ -68,6 +69,10 @@ extension TRSPRTpickupanddropVC: UITableViewDelegate, UITableViewDataSource {
 
             // Set initial segment index
             cell.segmentcontroller.selectedSegmentIndex = selectedSegmentIndex
+            
+            // Configure Bus Number
+            cell.configureBusNumber(busNumber)
+            cell.configureRouteCode(routeCode)
 
             // Handle segment changes
             cell.onSegmentChange = { [weak self] index in
@@ -103,7 +108,7 @@ extension TRSPRTpickupanddropVC: UITableViewDelegate, UITableViewDataSource {
         if indexPath.row == 0 {
             return 280 // Height for segment control cell
         } else {
-            return 540// Height for Pickup/Drop cells
+            return 540 // Height for Pickup/Drop cells
         }
     }
 }

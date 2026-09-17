@@ -5,7 +5,6 @@
 //  Created by vamshi krishna on 10/08/26.
 //
 
-
 import MapKit
 
 class BusAnnotationView: MKAnnotationView {
@@ -24,11 +23,11 @@ class BusAnnotationView: MKAnnotationView {
     // MARK: - Setup
     private func setupView() {
 
-        // ── Option 1: Custom bus image from Assets ────────────────────
+        // Custom bus image from Assets
         if let busImage = UIImage(named: "bus_icon") {
-            image = resizeImage(busImage, targetSize: CGSize(width: 50, height: 50))
+            image = resizeImage(busImage, targetSize: CGSize(width: 45, height: 45))
         } else {
-            // ── Option 2: SF Symbol fallback with white circle bg ────
+            // SF Symbol fallback with white circle background
             image = createBusIconWithBackground()
         }
 
@@ -36,7 +35,7 @@ class BusAnnotationView: MKAnnotationView {
         canShowCallout = true
     }
 
-    // MARK: - Rotate bus based on movement direction
+    // MARK: - Rotate Bus Based on Movement Direction
     func rotate(degrees: Double) {
         let radians = CGFloat(degrees * .pi / 180)
         UIView.animate(withDuration: 0.3) {
@@ -54,17 +53,17 @@ class BusAnnotationView: MKAnnotationView {
 
     // MARK: - SF Symbol Bus with White Circle Background
     private func createBusIconWithBackground() -> UIImage {
-        let size     = CGSize(width: 50, height: 50)
+        let size     = CGSize(width: 45, height: 45)
         let renderer = UIGraphicsImageRenderer(size: size)
 
         return renderer.image { ctx in
             let context = ctx.cgContext
 
-            // ── White circle background ──────────────────────────
+            // White circle background
             context.setFillColor(UIColor.white.cgColor)
             context.fillEllipse(in: CGRect(origin: .zero, size: size))
 
-            // ── Blue border ──────────────────────────────────────
+            // Blue border
             context.setStrokeColor(UIColor.systemBlue.cgColor)
             context.setLineWidth(2)
             context.strokeEllipse(in: CGRect(
@@ -73,13 +72,13 @@ class BusAnnotationView: MKAnnotationView {
                 height: size.height - 2
             ))
 
-            // ── Draw bus SF Symbol centered ──────────────────────
-            let config = UIImage.SymbolConfiguration(pointSize: 28, weight: .bold)
+            // Draw bus SF Symbol
+            let config = UIImage.SymbolConfiguration(pointSize: 24, weight: .bold)
             let busIcon = UIImage(systemName: "bus.fill", withConfiguration: config)?
-                          .withTintColor(.systemYellow, renderingMode: .alwaysOriginal)
+                .withTintColor(.systemBlue, renderingMode: .alwaysOriginal)
 
             if let busIcon = busIcon {
-                let iconSize = CGSize(width: 30, height: 30)
+                let iconSize = CGSize(width: 26, height: 26)
                 let origin   = CGPoint(
                     x: (size.width  - iconSize.width)  / 2,
                     y: (size.height - iconSize.height) / 2

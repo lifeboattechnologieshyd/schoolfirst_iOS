@@ -15,7 +15,20 @@ protocol TRNSPTdashbordCell1Delegate: AnyObject {
 
 class TRNSPTdashbordUITableViewCell1: UITableViewCell {
 
+    @IBOutlet weak var DroplocationView: UIView!
+    @IBOutlet weak var DropTime: UILabel!
+    
+    @IBOutlet weak var PickupTime: UILabel!
+    @IBOutlet weak var OnrouteView: UIView!
+    @IBOutlet weak var DurationLabel: UILabel!
+    @IBOutlet weak var PickuplocationView: UIView!
+    @IBOutlet weak var DroplocationLabel: UILabel!
+    @IBOutlet weak var PickuplocationLabel: UILabel!
+    @IBOutlet weak var PickuptimeLabel: UILabel!
+    
     // MARK: - Outlets
+    @IBOutlet weak var DrivernameLabel: UILabel!
+    @IBOutlet weak var BusnumberLabel: UILabel!
     @IBOutlet weak var StudentgradeLbl: UILabel!
     @IBOutlet weak var StudentnameLbl: UILabel!
     @IBOutlet weak var CollectionView2: UICollectionView!   // Today's Journey list
@@ -79,38 +92,13 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
         let iconBackgroundColor: UIColor
     }
 
-    private let journeyItems: [JourneyItem] = [
-        JourneyItem(
-            title: "Pickup",
-            time: "07:30 AM",
-            location: "Green Park Layout",
-            imageName: "icon 47",
-            iconTintColor:       UIColor(red:  22/255, green: 163/255, blue:  74/255, alpha: 1.0),
-            iconBackgroundColor: UIColor(red: 220/255, green: 252/255, blue: 231/255, alpha: 1.0)
-        ),
-        JourneyItem(
-            title: "On Route",
-            time: "07:50 AM",
-            location: "Towards Springdale School",
-            imageName: "icon 48",
-            iconTintColor:       UIColor(red:  22/255, green: 163/255, blue:  74/255, alpha: 1.0),
-            iconBackgroundColor: UIColor(red: 220/255, green: 252/255, blue: 231/255, alpha: 1.0)
-        ),
-        JourneyItem(
-            title: "School",
-            time: "08:20 AM",
-            location: "Springdale International School",
-            imageName: "icon 49",
-            iconTintColor:       UIColor(red:  37/255, green:  99/255, blue: 235/255, alpha: 1.0),
-            iconBackgroundColor: UIColor(red: 219/255, green: 234/255, blue: 254/255, alpha: 1.0)
-        )
-    ]
+    private var journeyItems: [JourneyItem] = []
 
     // MARK: - Lifecycle
     override func awakeFromNib() {
         super.awakeFromNib()
-        StudentnameLbl.text = UserManager.shared.resolvedStudentName
-        StudentgradeLbl.text   = UserManager.shared.resolvedGradeSection
+        StudentnameLbl.text  = UserManager.shared.resolvedStudentName
+        StudentgradeLbl.text = UserManager.shared.resolvedGradeSection
         
         selectionStyle = .none
 
@@ -124,9 +112,139 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        // ✅ Frame is final here — recalc card sizes so leading/trailing match
         CollectionView?.collectionViewLayout.invalidateLayout()
         CollectionView2?.collectionViewLayout.invalidateLayout()
+    }
+
+    // MARK: - Convert 24-Hour Time to 12-Hour AM/PM
+    private func formatTimeTo12Hour(_ timeString: String?) -> String {
+        guard let timeString = timeString else { return "N/A" }
+
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "HH:mm:ss"
+        inputFormatter.locale = Locale(identifier: "en_US_POSIX")
+
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "hh:mm a"
+        outputFormatter.locale = Locale(identifier: "en_US_POSIX")
+
+        // Try with HH:mm:ss format
+        if let date = inputFormatter.date(from: timeString) {
+            return outputFormatter.string(from: date)
+        }
+
+        // Try with milliseconds (e.g., 08:00:00.200000)
+        if let dotRange = timeString.range(of: ".") {
+            let cleanTime = String(timeString[..<dotRange.lowerBound])
+            if let date = inputFormatter.date(from: cleanTime) {
+                return outputFormatter.string(from: date)
+            }
+        }
+
+        // Try with HH:mm format if seconds are missing
+        let inputFormatterHHmm = DateFormatter()
+        inputFormatterHHmm.dateFormat = "HH:mm"
+        inputFormatterHHmm.locale = Locale(identifier: "en_US_POSIX")
+
+        if let date = inputFormatterHHmm.date(from: timeString) {
+            return outputFormatter.string(from: date)
+        }
+
+        return "N/A"
+    }
+
+    // MARK: - ✅ Configure Bus Details from API
+    func configureBusDetails(_ busData: StudentBusData?) {
+
+        // Driver name
+        DrivernameLabel.text =
+            busData?.driver?.name?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+            ? busData?.driver?.name
+            : "N/A"
+
+        // Bus number
+        BusnumberLabel.text =
+            busData?.bus?.vehicleNumber?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+            ? busData?.bus?.vehicleNumber
+            : "N/A"
+    }
+
+    // MARK: - ✅ Configure Route Details (Pickup & Drop) from API
+    func configureRouteDetails(_ routeData: TransportRouteData?) {
+
+        // Pickup Stop Name
+        if let pickupStopName = routeData?.pickupStop?.stopName, !pickupStopName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            PickuplocationLabel.text = pickupStopName
+        } else {
+            PickuplocationLabel.text = "N/A"
+        }
+
+        // Pickup Time (Use pickupStop.pickupTime)
+        let pickupTime = routeData?.pickupStop?.pickupTime
+        PickupTime.text = formatTimeTo12Hour(pickupTime)
+        PickuptimeLabel.text = formatTimeTo12Hour(pickupTime)
+
+        // Drop Stop Name
+        if let dropStopName = routeData?.dropStop?.stopName, !dropStopName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            DroplocationLabel.text = dropStopName
+        } else {
+            DroplocationLabel.text = "N/A"
+        }
+
+        // Drop Time (Use dropStop.dropTime)
+        let dropTime = routeData?.dropStop?.dropTime
+        DropTime.text = formatTimeTo12Hour(dropTime)
+
+        // Estimated Journey Duration (From Route Details)
+        if let duration = routeData?.route?.estimatedDuration {
+            DurationLabel.text = "\(duration) Min"
+        } else {
+            DurationLabel.text = "N/A"
+        }
+
+        // Build and Reload Today's Journey from Route Details
+        buildJourneyItems(routeData)
+        CollectionView2.reloadData()
+    }
+
+    // MARK: - Build Today's Journey Items From Route API
+    private func buildJourneyItems(_ routeData: TransportRouteData?) {
+        journeyItems.removeAll()
+
+        let pickupStop = routeData?.pickupStop
+        let dropStop = routeData?.dropStop
+        let route = routeData?.route
+
+        // 1. Pickup
+        journeyItems.append(JourneyItem(
+            title: "Pickup",
+            time: formatTimeTo12Hour(pickupStop?.pickupTime),
+            location: pickupStop?.stopName ?? "N/A",
+            imageName: "icon 47",
+            iconTintColor: UIColor(red: 22/255, green: 163/255, blue: 74/255, alpha: 1.0),
+            iconBackgroundColor: UIColor(red: 220/255, green: 252/255, blue: 231/255, alpha: 1.0)
+        ))
+
+        // 2. On Route
+        let destinationName = route?.destination ?? dropStop?.stopName ?? "School"
+        journeyItems.append(JourneyItem(
+            title: "On Route",
+            time: "",
+            location: "Towards \(destinationName)",
+            imageName: "icon 48",
+            iconTintColor: UIColor(red: 22/255, green: 163/255, blue: 74/255, alpha: 1.0),
+            iconBackgroundColor: UIColor(red: 220/255, green: 252/255, blue: 231/255, alpha: 1.0)
+        ))
+
+        // 3. School
+        journeyItems.append(JourneyItem(
+            title: "School",
+            time: formatTimeTo12Hour(dropStop?.dropTime),
+            location: dropStop?.stopName ?? route?.destination ?? "School",
+            imageName: "icon 49",
+            iconTintColor: UIColor(red: 37/255, green: 99/255, blue: 235/255, alpha: 1.0),
+            iconBackgroundColor: UIColor(red: 219/255, green: 234/255, blue: 254/255, alpha: 1.0)
+        ))
     }
 
     // MARK: - Top CollectionView Setup
@@ -137,7 +255,7 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
         cv.dataSource = self
         cv.backgroundColor = .clear
         cv.showsHorizontalScrollIndicator = false
-        cv.isScrollEnabled = false   // ✅ no scroll — all 4 fit
+        cv.isScrollEnabled = false
         cv.bounces         = false
         cv.tag = 1
 
@@ -150,7 +268,6 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
         layout.scrollDirection         = .horizontal
         layout.minimumLineSpacing      = cardSpacing
         layout.minimumInteritemSpacing = cardSpacing
-        // ✅ Equal insets — itemSize handled in sizeForItemAt (dynamic)
         layout.sectionInset = UIEdgeInsets(top: 8, left: sideInset, bottom: 8, right: sideInset)
         cv.collectionViewLayout = layout
 
@@ -237,7 +354,7 @@ extension TRNSPTdashbordUITableViewCell1: UICollectionViewDataSource,
         return cell
     }
 
-    // MARK: - ✅ Dynamic Size (fixes unequal leading/trailing)
+    // MARK: - Dynamic Size
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -246,11 +363,9 @@ extension TRNSPTdashbordUITableViewCell1: UICollectionViewDataSource,
             return CGSize(width: collectionView.bounds.width, height: 48)
         }
 
-        // ✅ 4 cards exactly fill width:
-        // total = (cardWidth × 4) + (spacing × 3) + leftInset + rightInset
-        let cardCount: CGFloat    = CGFloat(items.count)          // 4
-        let totalSpacing: CGFloat = cardSpacing * (cardCount - 1) // 12 × 3 = 36
-        let totalInsets: CGFloat  = sideInset * 2                 // 16 + 16 = 32
+        let cardCount: CGFloat    = CGFloat(items.count)
+        let totalSpacing: CGFloat = cardSpacing * (cardCount - 1)
+        let totalInsets: CGFloat  = sideInset * 2
 
         let availableWidth = collectionView.bounds.width - totalSpacing - totalInsets
         let cardWidth = floor(availableWidth / cardCount)
@@ -262,13 +377,11 @@ extension TRNSPTdashbordUITableViewCell1: UICollectionViewDataSource,
     func collectionView(_ collectionView: UICollectionView,
                         didSelectItemAt indexPath: IndexPath) {
 
-        // ── Journey CollectionView taps ───────────────────────────────────
         if collectionView.tag == 2 {
             print("🛣️ Journey selected: \(journeyItems[indexPath.item].title)")
             return
         }
 
-        // ── Top Module CollectionView taps ────────────────────────────────
         let selectedTitle = items[indexPath.item].title
         print("🚌 Module selected: \(selectedTitle)")
 

@@ -7,6 +7,8 @@ import UIKit
 
 class TRSPRTpickupanddropUITableviewcell: UITableViewCell {
 
+    @IBOutlet weak var RoutecodeLabel: UILabel!
+    @IBOutlet weak var BusnumberLabel: UILabel!
     @IBOutlet weak var StudentNameLbl: UILabel!
     @IBOutlet weak var segmentcontroller: UISegmentedControl!
 
@@ -42,6 +44,23 @@ class TRSPRTpickupanddropUITableviewcell: UITableViewCell {
             .font: UIFont.systemFont(ofSize: 14, weight: .semibold)
         ], for: .selected)
     }
+    
+    // MARK: - Configure Bus Number
+    func configureBusNumber(_ busNumber: String?) {
+        if let busNo = busNumber, !busNo.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            BusnumberLabel.text = busNo
+        } else {
+            BusnumberLabel.text = "N/A"
+        }
+    }
+    func configureRouteCode(_ routeCode: String?) {
+            if let code = routeCode, !code.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                RoutecodeLabel.text = code
+            } else {
+                RoutecodeLabel.text = "N/A"
+            }
+        }
+
 
     @objc private func segmentValueChanged(_ sender: UISegmentedControl) {
         onSegmentChange?(sender.selectedSegmentIndex)

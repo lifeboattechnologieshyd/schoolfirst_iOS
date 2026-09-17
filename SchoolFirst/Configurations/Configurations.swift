@@ -199,6 +199,9 @@ struct API {
     static let FEE_COMPLETED_PAYMENT = BASE_URL + "fee/completed/payment"
     static let CALENDAR_EVENTS = BASE_URL + "calendar/event"
     static let STUDENT_HOMEWORK = BASE_URL + "homework/student"
+    static let TRANSPORT_BUS = BASE_URL + "transport/bus"
+    static let TRANSPORT_ROUTEDETAILS = BASE_URL + "transport/route"
+    static let TRANSPORT_LIVELOCATION = BASE_URL + "transport/live-location"
     
     static func HOMEWORK_SUBMISSION(
         homeworkID: String
