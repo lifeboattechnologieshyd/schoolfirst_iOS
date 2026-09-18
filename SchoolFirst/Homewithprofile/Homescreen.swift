@@ -20,72 +20,58 @@ class Homescreen: UIViewController {
     // MARK: - MODULE DATA
     
     var modulesData: [[String: String]] = [
-        
         [
             "title" : "Profile",
             "image" : "studentprofile"
         ],
-        
         [
             "title" : "Bulletin",
             "image" : "bulletin"
         ],
-        
         [
             "title" : "Homework",
             "image" : "homework"
         ],
-        
         [
             "title" : "Fee",
             "image" : "feemanagement"
         ],
-        
         [
             "title" : "Time Table",
             "image" : "time_table"
         ],
-        
         [
             "title" : "Attendance",
             "image" : "attedence"
         ],
-        
         [
             "title" : "Exams",
             "image" : "exams"
         ],
-        
         [
             "title" : "Gallery",
             "image" : "gallery 1"
         ],
-        
         [
             "title" : "Transport",
             "image" : "transport"
         ],
-        
         [
             "title" : "Calendar",
             "image" : "calender"
         ],
-        
         [
             "title" : "Remarks",
             "image" : "Remarks"
         ],
-        
         [
             "title" : "Contact us",
             "image" : "communicate"
         ],
-        
         [
             "title" : "Events",
             "image" : "event"
         ],
-        
         [
             "title" : "PTM",
             "image" : "PTMimage"
@@ -99,25 +85,21 @@ class Homescreen: UIViewController {
     // MARK: - CARD DATA
     
     var cardData: [[String: String]] = [
-        
         [
             "title" : "HOMEWORK",
             "value" : "85%",
             "subtitle" : "35/30"
         ],
-        
         [
             "title" : "ATTENDANCE",
             "value" : "92.5%",
             "subtitle" : "15/180 Absents"
         ],
-        
         [
             "title" : "FEES",
             "value" : "Paid",
             "subtitle" : "No Dues"
         ],
-        
         [
             "title" : "GRADE",
             "value" : "A+",
@@ -137,30 +119,98 @@ class Homescreen: UIViewController {
         CollectionView.isScrollEnabled = true
         CollectionView.alwaysBounceVertical = true
         CollectionView.showsVerticalScrollIndicator = false
-        ProfileImageView.backgroundColor = .clear
         
+        setupProfileImageViewStyle()
+        
+        // Set up Student Information from UserManager fallbacks
         StudentnameLbl.text = UserManager.shared.resolvedStudentName
-        StudentGadeLbl.text   = UserManager.shared.resolvedGradeSection
+        StudentGadeLbl.text = UserManager.shared.resolvedGradeSection
+        
+        // Configure profile picture load
+        loadStudentProfileImage()
     }
     
-    
     @IBAction func BackButtonTapped(_ sender: UIButton) {
-
         // If Homescreen was pushed from EdutainmentVC
         navigationController?.popViewController(animated: true)
-
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // HIDE DEFAULT NAVIGATION BAR
         navigationController?.setNavigationBarHidden(true, animated: animated)
+        
+        // Reload image in viewWillAppear in case user edited profile details
+        loadStudentProfileImage()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
+        // Recalculate dynamic aspect ratio circular clipping
+        ProfileImageView.layer.cornerRadius = ProfileImageView.frame.size.height / 2
+        
         createCards()
+    }
+}
+
+// MARK: - PROFILE IMAGE LOADER METHOD
+
+extension Homescreen {
+    
+    /// Style setup for circular profile visual styling
+    private func setupProfileImageViewStyle() {
+        ProfileImageView.backgroundColor = .clear
+        ProfileImageView.contentMode = .scaleAspectFill
+        ProfileImageView.clipsToBounds = true
+        ProfileImageView.layer.borderWidth = 1.5
+        ProfileImageView.layer.borderColor = UIColor.white.cgColor
+    }
+    
+    /// Safely loads student profile picture using resolved URL from DBManager/UserDefaults
+    private func loadStudentProfileImage() {
+        let photoURLString = UserManager.shared.resolvedStudentPhotoURL
+        
+        // Handle Empty or Invalid URL String with placeholder
+        guard let url = URL(string: photoURLString), !photoURLString.isEmpty else {
+            setProfilePlaceholder()
+            return
+        }
+        
+        // Async fetch image
+        URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+            guard let self = self else { return }
+            
+            if let error = error {
+                print("❌ Error loading profile image: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    self.setProfilePlaceholder()
+                }
+                return
+            }
+            
+            guard let data = data, let downloadedImage = UIImage(data: data) else {
+                DispatchQueue.main.async {
+                    self.setProfilePlaceholder()
+                }
+                return
+            }
+            
+            // Assign downloaded image cleanly on main queue
+            DispatchQueue.main.async {
+                self.ProfileImageView.image = downloadedImage
+            }
+        }.resume()
+    }
+    
+    /// Configures default Fallback Image Asset
+    private func setProfilePlaceholder() {
+        if let localAsset = UIImage(named: "studentprofile") {
+            self.ProfileImageView.image = localAsset
+        } else {
+            self.ProfileImageView.image = UIImage(systemName: "person.crop.circle.fill")
+            self.ProfileImageView.tintColor = .lightGray
+        }
     }
 }
 
@@ -205,8 +255,8 @@ extension Homescreen {
         
         CollectionView.collectionViewLayout = layout
     }
+    
     private func setupBackButton() {
-
         BackButton.addTarget(
             self,
             action: #selector(backButtonTapped),
@@ -236,8 +286,6 @@ extension Homescreen {
             }
         }
     }
-
-    // MARK: - Notif
 }
 
 // MARK: - COLLECTIONVIEW METHODS
@@ -268,53 +316,32 @@ UICollectionViewDelegateFlowLayout {
         let item = modulesData[indexPath.row]
         
         // TITLE
-        
         cell.ModuleTitle.text = item["title"]
         
         // IMAGE
-        
         cell.ImageView.image = UIImage(
             named: item["image"] ?? ""
         )
         
         // CELL DESIGN
-        
         cell.view.backgroundColor = .white
-        
         cell.view.layer.cornerRadius = 20
-        
         cell.view.layer.cornerCurve = .continuous
         
         // SHADOW
-        
         cell.layer.shadowColor = UIColor.black.cgColor
-        
         cell.layer.shadowOpacity = 0.08
-        
-        cell.layer.shadowOffset = CGSize(
-            width: 0,
-            height: 2
-        )
-        
+        cell.layer.shadowOffset = CGSize(width: 0, height: 2)
         cell.layer.shadowRadius = 8
-        
         cell.layer.masksToBounds = false
         
         // IMAGE
-        
         cell.ImageView.contentMode = .scaleAspectFit
         
         // TITLE
-        
         cell.ModuleTitle.textAlignment = .center
-        
         cell.ModuleTitle.numberOfLines = 2
-        
-        cell.ModuleTitle.font = UIFont.systemFont(
-            ofSize: 14,
-            weight: .semibold
-        )
-        
+        cell.ModuleTitle.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
         cell.ModuleTitle.textColor = UIColor.darkGray
         
         return cell
@@ -345,14 +372,13 @@ UICollectionViewDelegateFlowLayout {
             
         case "Calendar":
             navigateToCalendar()
+            
         case "PTM":
             navigateToPTM()
         
-        // ✅ ADDED: Fee module navigation
         case "Fee":
             navigateToParentfeeVC()
             
-        // ADD MORE CASES HERE LATER FOR OTHER MODULES
         case "Homework":
             navigateToHomework()
             
@@ -377,8 +403,6 @@ UICollectionViewDelegateFlowLayout {
     }
     
     private func navigateToStudentProfile() {
-        
-        // OPTION 1: If StudentprofileVC is in Storyboard with identifier "StudentprofileVC"
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
         if let profileVC = storyboard.instantiateViewController(
@@ -402,7 +426,6 @@ UICollectionViewDelegateFlowLayout {
     }
     
     private func navigateToEditProfile() {
-
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
         if let editVC = storyboard.instantiateViewController(
@@ -412,23 +435,16 @@ UICollectionViewDelegateFlowLayout {
             editVC.hidesBottomBarWhenPushed = true
 
             if let nav = navigationController {
-
                 nav.setNavigationBarHidden(true, animated: false)
                 nav.pushViewController(editVC, animated: true)
-
             } else {
-
                 editVC.modalPresentationStyle = .fullScreen
                 present(editVC, animated: true)
             }
         }
     }
     
-    
-    // MARK: - NAVIGATE TO CALENDAR
-    
     private func navigateToPTM() {
-
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
         if let PTMVC = storyboard.instantiateViewController(
@@ -438,19 +454,16 @@ UICollectionViewDelegateFlowLayout {
             PTMVC.hidesBottomBarWhenPushed = true
 
             if let nav = navigationController {
-
                 nav.setNavigationBarHidden(true, animated: false)
                 nav.pushViewController(PTMVC, animated: true)
-
             } else {
-
                 PTMVC.modalPresentationStyle = .fullScreen
                 present(PTMVC, animated: true)
             }
         }
     }
+    
     private func navigateToHomework() {
-
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
         if let homeworkVC = storyboard.instantiateViewController(
@@ -460,23 +473,16 @@ UICollectionViewDelegateFlowLayout {
             homeworkVC.hidesBottomBarWhenPushed = true
 
             if let nav = navigationController {
-
                 nav.setNavigationBarHidden(true, animated: false)
                 nav.pushViewController(homeworkVC, animated: true)
-
             } else {
-
                 homeworkVC.modalPresentationStyle = .fullScreen
                 present(homeworkVC, animated: true)
             }
         }
     }
     
-    
-    // MARK: - NAVIGATE TO TRANSPORT
-    
     private func navigateToTransport() {
-
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
         if let TRANSPORT = storyboard.instantiateViewController(
@@ -486,21 +492,16 @@ UICollectionViewDelegateFlowLayout {
             TRANSPORT.hidesBottomBarWhenPushed = true
 
             if let nav = navigationController {
-
                 nav.setNavigationBarHidden(true, animated: false)
                 nav.pushViewController(TRANSPORT, animated: true)
-
             } else {
-
                 TRANSPORT.modalPresentationStyle = .fullScreen
                 present(TRANSPORT, animated: true)
             }
         }
     }
-
     
     private func navigateToCalendar() {
-        
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
         if let calendarVC = storyboard.instantiateViewController(
@@ -520,7 +521,6 @@ UICollectionViewDelegateFlowLayout {
     }
     
     private func navigateToAttendance() {
-        
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
         if let AttendancedashboardVC = storyboard.instantiateViewController(
@@ -538,8 +538,8 @@ UICollectionViewDelegateFlowLayout {
             }
         }
     }
+    
     private func navigateToPortofolio() {
-        
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
         if let StudentportfolioVC = storyboard.instantiateViewController(
@@ -558,10 +558,7 @@ UICollectionViewDelegateFlowLayout {
         }
     }
     
-    // MARK: - NAVIGATE TO PAYMENT GATEWAY ✅ NEWLY ADDED
-    
     private func navigateToParentfeeVC() {
-        
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
         if let paymentVC = storyboard.instantiateViewController(
@@ -595,57 +592,38 @@ extension Homescreen {
         )
         
         ContainerView.layer.cornerRadius = 20
-        
         ContainerView.clipsToBounds = true
     }
     
     private func createCards() {
         
         // REMOVE OLD VIEWS
-        
         ContainerView.subviews.forEach {
             $0.removeFromSuperview()
         }
         
         // CARD SETTINGS
-        
         let horizontalPadding: CGFloat = 14
-        
-        let verticalPadding: CGFloat = 12
-        
         let spacing: CGFloat = 12
         
-        let cardWidth =
-        (ContainerView.frame.width - (horizontalPadding * 2) - spacing) / 2
-        
+        let cardWidth = (ContainerView.frame.width - (horizontalPadding * 2) - spacing) / 2
         let cardHeight: CGFloat = 85
         
         // TOTAL CONTENT HEIGHT
-        
-        let totalCardsHeight =
-        (cardHeight * 2) + spacing
+        let totalCardsHeight = (cardHeight * 2) + spacing
         
         // CENTER VERTICALLY
-        
-        let startY =
-        (ContainerView.frame.height - totalCardsHeight) / 2
+        let startY = (ContainerView.frame.height - totalCardsHeight) / 2
         
         for (index, item) in cardData.enumerated() {
             
             let row = index / 2
-            
             let column = index % 2
             
-            let x =
-            horizontalPadding +
-            CGFloat(column) * (cardWidth + spacing)
-            
-            let y =
-            startY +
-            CGFloat(row) * (cardHeight + spacing)
+            let x = horizontalPadding + CGFloat(column) * (cardWidth + spacing)
+            let y = startY + CGFloat(row) * (cardHeight + spacing)
             
             // CARD VIEW
-            
             let cardView = UIView(frame: CGRect(
                 x: x,
                 y: y,
@@ -661,16 +639,12 @@ extension Homescreen {
             )
             
             cardView.layer.cornerRadius = 18
-            
             cardView.layer.borderWidth = 1
-            
-            cardView.layer.borderColor =
-            UIColor.white.withAlphaComponent(0.12).cgColor
+            cardView.layer.borderColor = UIColor.white.withAlphaComponent(0.12).cgColor
             
             ContainerView.addSubview(cardView)
             
             // TITLE LABEL
-            
             let titleLabel = UILabel(frame: CGRect(
                 x: 14,
                 y: 10,
@@ -679,26 +653,17 @@ extension Homescreen {
             ))
             
             titleLabel.text = item["title"]
-            
             titleLabel.font = UIFont.boldSystemFont(ofSize: 12)
-            
-            titleLabel.textColor = UIColor(
-                white: 0.85,
-                alpha: 1
-            )
+            titleLabel.textColor = UIColor(white: 0.85, alpha: 1)
             
             cardView.addSubview(titleLabel)
             
             // VALUE LABEL
-            
             let valueLabel = UILabel()
-            
             valueLabel.font = UIFont.boldSystemFont(ofSize: 24)
-            
             valueLabel.textColor = .white
             
             // FEES CARD
-            
             if item["title"] == "FEES" {
                 
                 let greenDot = UIView(frame: CGRect(
@@ -709,7 +674,6 @@ extension Homescreen {
                 ))
                 
                 greenDot.backgroundColor = .systemGreen
-                
                 greenDot.layer.cornerRadius = 7
                 
                 cardView.addSubview(greenDot)
@@ -738,7 +702,6 @@ extension Homescreen {
             cardView.addSubview(valueLabel)
             
             // SUBTITLE
-            
             let subtitleLabel = UILabel(frame: CGRect(
                 x: 14,
                 y: 62,
@@ -747,9 +710,7 @@ extension Homescreen {
             ))
             
             subtitleLabel.text = item["subtitle"]
-            
             subtitleLabel.font = UIFont.boldSystemFont(ofSize: 11)
-            
             subtitleLabel.textColor = .yellow
             
             cardView.addSubview(subtitleLabel)

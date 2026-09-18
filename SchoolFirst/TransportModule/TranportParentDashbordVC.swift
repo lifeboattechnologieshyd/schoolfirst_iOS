@@ -16,7 +16,6 @@ class TranportParentDashbordVC: UIViewController {
 
     // MARK: - API Data
     private var busData: StudentBusData?
-    private var routeData: TransportRouteData?
     private var isLoading = false
 
     // MARK: - Lifecycle
@@ -24,7 +23,6 @@ class TranportParentDashbordVC: UIViewController {
         super.viewDidLoad()
         setupTableView()
         fetchBusDetails()   // ✅ Load bus details
-        fetchRouteDetails() // ✅ Load Route Pickup & Drop details
     }
 
     @IBAction func BackButtonTapped(_ sender: UIButton) {
@@ -96,7 +94,11 @@ class TranportParentDashbordVC: UIViewController {
                         print("✅ Bus details retrieved successfully")
                         print("🚌 Vehicle Number: \(data.bus?.vehicleNumber ?? "N/A")")
                         print("👨‍✈️ Driver: \(data.driver?.name ?? "N/A")")
+                        print("📞 Driver Mobile: \(data.driver?.mobile ?? "N/A")")
                         print("🧑‍💼 Attendant: \(data.attendant?.name ?? "N/A")")
+                        print("🗺️ Route Name: \(data.route?.routeName ?? "N/A")")
+                        print("📍 Pickup Stop: \(data.pickupStop?.stopName ?? "N/A") - \(data.pickupStop?.pickupTime ?? "N/A")")
+                        print("📍 Drop Stop: \(data.dropStop?.stopName ?? "N/A") - \(data.dropStop?.dropTime ?? "N/A")")
 
                         self.Tableview.reloadData()
 
@@ -117,68 +119,37 @@ class TranportParentDashbordVC: UIViewController {
         }
     }
 
-    // MARK: - Fetch Transport Route Details API
-    private func fetchRouteDetails() {
-
-        let studentId = UserManager.shared.resolvedStudentID
-        let schoolId  = UserManager.shared.resolvedSchoolID
-
-        guard !studentId.isEmpty else {
-            print("❌ Student ID is empty")
+    // MARK: - ✅ Call Driver with API mobile number
+    private func callDriver() {
+        guard let phone = busData?.driver?.mobile?
+                .trimmingCharacters(in: .whitespacesAndNewlines),
+              !phone.isEmpty else {
+            print("❌ Driver mobile number not available")
+            let alert = UIAlertController(
+                title: "Driver Contact",
+                message: "Driver phone number is not available.",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
             return
         }
 
-        guard !schoolId.isEmpty else {
-            print("❌ School ID is empty")
+        // Clean number: remove spaces, dashes, brackets
+        let cleanNumber = phone
+            .replacingOccurrences(of: " ", with: "")
+            .replacingOccurrences(of: "-", with: "")
+            .replacingOccurrences(of: "(", with: "")
+            .replacingOccurrences(of: ")", with: "")
+
+        guard let url = URL(string: "tel://\(cleanNumber)"),
+              UIApplication.shared.canOpenURL(url) else {
+            print("❌ Cannot place call to: \(cleanNumber)")
             return
         }
 
-        NetworkManager.shared.request(
-            urlString: API.TRANSPORT_ROUTEDETAILS,
-            method: .GET,
-            requiresAuth: true,
-            parameters: [
-                "student_id": studentId
-            ],
-            headers: [
-                "X-School-Id": schoolId
-            ]
-        ) { [weak self] (result: Result<APIResponse<TransportRouteData>, NetworkError>) in
-
-            guard let self = self else { return }
-
-            DispatchQueue.main.async {
-
-                switch result {
-
-                case .success(let response):
-
-                    if response.success, let data = response.data {
-
-                        self.routeData = data
-
-                        print("✅ Route details retrieved successfully")
-                        print("🗺️ Route Name: \(data.route?.routeName ?? "N/A")")
-                        print("📍 Pickup Stop: \(data.pickupStop?.stopName ?? "N/A") - \(data.pickupStop?.pickupTime ?? "N/A")")
-                        print("📍 Drop Stop: \(data.dropStop?.stopName ?? "N/A") - \(data.dropStop?.dropTime ?? "N/A")")
-
-                        self.Tableview.reloadData()
-
-                    } else {
-                        print("❌ Route API returned no data: \(response.description)")
-                    }
-
-                case .failure(let error):
-
-                    switch error {
-                    case .noaccess:
-                        print("❌ Session expired")
-                    default:
-                        print("❌ Route API error: \(error.localizedDescription)")
-                    }
-                }
-            }
-        }
+        print("📞 Calling driver: \(cleanNumber)")
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
 
     // MARK: - Navigation Helpers
@@ -203,8 +174,8 @@ class TranportParentDashbordVC: UIViewController {
         }
         // Pass Bus Number and Route Code from Dashboard API Data
         vc.busNumber = busData?.bus?.vehicleNumber
-        vc.routeCode = routeData?.route?.routeCode
-        
+        vc.routeCode = busData?.route?.routeCode
+
         navigationController?.pushViewController(vc, animated: true)
     }
 
@@ -257,12 +228,12 @@ extension TranportParentDashbordVC: UITableViewDelegate, UITableViewDataSource {
 
         cell.selectionStyle = .none
 
-        // Assign delegate so cell can trigger navigation
+        // Assign delegate so cell can trigger navigation + call
         cell.delegate = self
 
-        // ✅ Configure cell with bus data and route data
+        // ✅ Configure cell with bus data
         cell.configureBusDetails(busData)
-        cell.configureRouteDetails(routeData)
+        cell.configureRouteDetails(busData)
 
         return cell
     }
@@ -271,7 +242,8 @@ extension TranportParentDashbordVC: UITableViewDelegate, UITableViewDataSource {
         _ tableView: UITableView,
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
-        return 900
+        return 920
+    
     }
 }
 
@@ -285,10 +257,17 @@ extension TranportParentDashbordVC: TRNSPTdashbordCell1Delegate {
     func didTapDriverContact() {
         navigateToDriverContact()
     }
+
     func didTapFeeModule() {
         navigateToFeeModule()
     }
+
     func didTapPickupandDrop() {
         navigateToPickupandDrop()
+    }
+
+    // ✅ NEW: Call driver with API mobile number
+    func didTapCallDriver() {
+        callDriver()
     }
 }

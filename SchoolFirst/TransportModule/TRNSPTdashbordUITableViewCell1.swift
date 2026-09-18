@@ -11,10 +11,15 @@ protocol TRNSPTdashbordCell1Delegate: AnyObject {
     func didTapDriverContact()
     func didTapFeeModule()
     func didTapPickupandDrop()
+    func didTapCallDriver()
 }
+
+// Shared image cache for dashboard cell
+private let dashImageCache = NSCache<NSString, UIImage>()
 
 class TRNSPTdashbordUITableViewCell1: UITableViewCell {
 
+    @IBOutlet weak var DriverImageview: UIImageView!
     @IBOutlet weak var DroplocationView: UIView!
     @IBOutlet weak var DropTime: UILabel!
     
@@ -26,7 +31,10 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
     @IBOutlet weak var PickuplocationLabel: UILabel!
     @IBOutlet weak var PickuptimeLabel: UILabel!
     
+    @IBOutlet weak var Studentprofileimageview: UIImageView!
     // MARK: - Outlets
+    @IBOutlet weak var CalldriverButton: UIButton!
+    @IBOutlet weak var Busimageview: UIImageView!
     @IBOutlet weak var DrivernameLabel: UILabel!
     @IBOutlet weak var BusnumberLabel: UILabel!
     @IBOutlet weak var StudentgradeLbl: UILabel!
@@ -37,10 +45,14 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
     // MARK: - Delegate
     weak var delegate: TRNSPTdashbordCell1Delegate?
 
+    private var driverImageTask: URLSessionDataTask?
+    private var busImageTask: URLSessionDataTask?
+    private var studentImageTask: URLSessionDataTask?
+
     // MARK: - Layout Constants (Top cards)
-    private let cardSpacing: CGFloat   = 12   // gap between cards
-    private let sideInset: CGFloat     = 16   // leading & trailing — MUST be equal
-    private let cardHeight: CGFloat    = 120
+    private let cardSpacing: CGFloat   = 2
+    private let sideInset: CGFloat     = 14
+    private let cardHeight: CGFloat    = 126
 
     // MARK: - Transport Item Model (Top cards)
     private struct TransportItem {
@@ -69,7 +81,7 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
         TransportItem(
             title: "Fee\nModule",
             description: "Manage Payments",
-            imageName: "icon 44",
+            imageName: "icon44",
             backgroundColor: UIColor(red: 225/255, green: 220/255, blue: 245/255, alpha: 1.0),
             iconTintColor:   UIColor(red: 170/255, green: 110/255, blue: 200/255, alpha: 1.0)
         ),
@@ -101,8 +113,9 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
         StudentgradeLbl.text = UserManager.shared.resolvedGradeSection
         
         selectionStyle = .none
+        setupImageViews()
+        setupCallButton()
 
-        // ── DEBUG ─────────────────────────────────────────────────────────
         print("🔍 CollectionView  :", CollectionView  == nil ? "❌ NIL" : "✅ connected")
         print("🔍 CollectionView2 :", CollectionView2 == nil ? "❌ NIL" : "✅ connected")
 
@@ -110,50 +123,226 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
         setupJourneyCollectionView()
     }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        driverImageTask?.cancel()
+        busImageTask?.cancel()
+        studentImageTask?.cancel()
+        driverImageTask = nil
+        busImageTask = nil
+        studentImageTask = nil
+
+        setDriverPlaceholder()
+        setBusPlaceholder()
+        setStudentPlaceholder()
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
+        
+        // Driver — circular
+        if let iv = DriverImageview, iv.bounds.height > 0 {
+            iv.layer.cornerRadius = iv.bounds.height / 2
+        }
+        
+        // Bus — square with corner radius 16 (matches Figma / IB: 146x146, radius 16)
+        if let iv = Busimageview {
+            iv.layer.cornerRadius = 16
+            iv.clipsToBounds = true
+            iv.contentMode = .scaleAspectFill
+        }
+        
+        // Student — circular
+        if let iv = Studentprofileimageview, iv.bounds.height > 0 {
+            iv.layer.cornerRadius = iv.bounds.height / 2
+        }
+        
         CollectionView?.collectionViewLayout.invalidateLayout()
         CollectionView2?.collectionViewLayout.invalidateLayout()
     }
 
+    // MARK: - ✅ Call Driver Button Setup
+    private func setupCallButton() {
+        CalldriverButton?.addTarget(
+            self,
+            action: #selector(callDriverButtonTapped),
+            for: .touchUpInside
+        )
+    }
+
+    @objc private func callDriverButtonTapped() {
+        print("📞 Call driver button tapped")
+        delegate?.didTapCallDriver()
+    }
+
+    // MARK: - Image View Setup
+    private func setupImageViews() {
+        // Driver — circular avatar
+        DriverImageview?.contentMode = .scaleAspectFill
+        DriverImageview?.clipsToBounds = true
+        DriverImageview?.layer.cornerRadius = (DriverImageview?.bounds.height ?? 40) / 2
+        setDriverPlaceholder()
+
+        // Bus — square fill image (146x146, corner radius 16)
+        Busimageview?.contentMode = .scaleAspectFill
+        Busimageview?.clipsToBounds = true
+        Busimageview?.layer.cornerRadius = 16
+        Busimageview?.layer.masksToBounds = true
+        Busimageview?.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
+        setBusPlaceholder()
+
+        // Student — circular avatar
+        Studentprofileimageview?.contentMode = .scaleAspectFill
+        Studentprofileimageview?.clipsToBounds = true
+        Studentprofileimageview?.layer.cornerRadius = (Studentprofileimageview?.bounds.height ?? 50) / 2
+        setStudentPlaceholder()
+    }
+
+    private func setDriverPlaceholder() {
+        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
+        DriverImageview?.image = UIImage(systemName: "person.crop.circle.fill", withConfiguration: config)
+        DriverImageview?.tintColor = .systemGray3
+        DriverImageview?.contentMode = .scaleAspectFill
+    }
+
+    // No default bus image. Shows empty background until API image loads.
+    private func setBusPlaceholder() {
+        Busimageview?.image = nil
+        Busimageview?.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
+        Busimageview?.tintColor = nil
+        Busimageview?.contentMode = .scaleAspectFill
+        Busimageview?.clipsToBounds = true
+        Busimageview?.layer.cornerRadius = 16
+    }
+
+    // Student placeholder — gray person icon until real image loads
+    private func setStudentPlaceholder() {
+        let config = UIImage.SymbolConfiguration(pointSize: 28, weight: .regular)
+        Studentprofileimageview?.image = UIImage(systemName: "person.crop.circle.fill", withConfiguration: config)
+        Studentprofileimageview?.tintColor = .systemGray3
+        Studentprofileimageview?.backgroundColor = .systemGray6
+        Studentprofileimageview?.contentMode = .scaleAspectFill
+    }
+
+    // MARK: - Generic Remote Image Loader
+    private func loadImage(
+        urlString: String?,
+        into imageView: UIImageView?,
+        placeholder: () -> Void,
+        taskStore: inout URLSessionDataTask?,
+        isBusImage: Bool = false
+    ) {
+        placeholder()
+
+        guard var raw = urlString?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !raw.isEmpty else {
+            return
+        }
+
+        // Auto-convert http to https to prevent ATS blocks
+        if raw.hasPrefix("http://") {
+            raw = raw.replacingOccurrences(of: "http://", with: "https://")
+        }
+
+        guard let url = URL(string: raw) else {
+            print("❌ Invalid URL string: \(raw)")
+            return
+        }
+
+        let cacheKey = NSString(string: url.absoluteString)
+
+        // Cache hit
+        if let cached = dashImageCache.object(forKey: cacheKey) {
+            applyLoadedImage(cached, to: imageView, isBusImage: isBusImage)
+            return
+        }
+
+        taskStore?.cancel()
+
+        let task = URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
+            if let error = error {
+                print("❌ Failed to download image from \(url): \(error.localizedDescription)")
+                return
+            }
+            guard let data = data, let image = UIImage(data: data) else {
+                print("❌ Failed to decode image data from \(url)")
+                return
+            }
+
+            dashImageCache.setObject(image, forKey: cacheKey)
+
+            DispatchQueue.main.async {
+                self?.applyLoadedImage(image, to: imageView, isBusImage: isBusImage)
+            }
+        }
+        taskStore = task
+        task.resume()
+    }
+
+    /// Applies downloaded/cached image with correct fill style
+    private func applyLoadedImage(_ image: UIImage, to imageView: UIImageView?, isBusImage: Bool) {
+        guard let imageView = imageView else { return }
+        
+        imageView.tintColor = nil
+        imageView.backgroundColor = .clear
+        imageView.image = image.withRenderingMode(.alwaysOriginal)
+        imageView.contentMode = .scaleAspectFill   // ✅ FILL the frame
+        imageView.clipsToBounds = true
+        
+        if isBusImage {
+            // Square rounded rect — matches IB 146x146 + corner radius 16
+            imageView.layer.cornerRadius = 16
+            imageView.layer.masksToBounds = true
+        }
+    }
+
     // MARK: - Convert 24-Hour Time to 12-Hour AM/PM
     private func formatTimeTo12Hour(_ timeString: String?) -> String {
-        guard let timeString = timeString else { return "N/A" }
-
-        let inputFormatter = DateFormatter()
-        inputFormatter.dateFormat = "HH:mm:ss"
-        inputFormatter.locale = Locale(identifier: "en_US_POSIX")
+        guard var value = timeString?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !value.isEmpty else {
+            return "N/A"
+        }
 
         let outputFormatter = DateFormatter()
         outputFormatter.dateFormat = "hh:mm a"
         outputFormatter.locale = Locale(identifier: "en_US_POSIX")
 
-        // Try with HH:mm:ss format
-        if let date = inputFormatter.date(from: timeString) {
-            return outputFormatter.string(from: date)
+        let upper = value.uppercased()
+        if upper.contains("AM") || upper.contains("PM") {
+            let ampmFormats = ["hh:mm a", "h:mm a", "hh:mm:ss a", "h:mm:ss a", "hh:mma", "h:mma"]
+            for format in ampmFormats {
+                let parser = DateFormatter()
+                parser.locale = Locale(identifier: "en_US_POSIX")
+                parser.dateFormat = format
+                if let date = parser.date(from: value) {
+                    return outputFormatter.string(from: date)
+                }
+            }
+            return upper
+                .replacingOccurrences(of: "AM", with: " AM")
+                .replacingOccurrences(of: "PM", with: " PM")
+                .replacingOccurrences(of: "  ", with: " ")
+                .trimmingCharacters(in: .whitespaces)
         }
 
-        // Try with milliseconds (e.g., 08:00:00.200000)
-        if let dotRange = timeString.range(of: ".") {
-            let cleanTime = String(timeString[..<dotRange.lowerBound])
-            if let date = inputFormatter.date(from: cleanTime) {
+        if let dotIndex = value.firstIndex(of: ".") {
+            value = String(value[..<dotIndex])
+        }
+
+        let inputFormats = ["HH:mm:ss", "H:mm:ss", "HH:mm", "H:mm"]
+        for format in inputFormats {
+            let parser = DateFormatter()
+            parser.locale = Locale(identifier: "en_US_POSIX")
+            parser.dateFormat = format
+            if let date = parser.date(from: value) {
                 return outputFormatter.string(from: date)
             }
-        }
-
-        // Try with HH:mm format if seconds are missing
-        let inputFormatterHHmm = DateFormatter()
-        inputFormatterHHmm.dateFormat = "HH:mm"
-        inputFormatterHHmm.locale = Locale(identifier: "en_US_POSIX")
-
-        if let date = inputFormatterHHmm.date(from: timeString) {
-            return outputFormatter.string(from: date)
         }
 
         return "N/A"
     }
 
-    // MARK: - ✅ Configure Bus Details from API
+    // MARK: - ✅ Configure Bus & Driver Details from API
     func configureBusDetails(_ busData: StudentBusData?) {
 
         // Driver name
@@ -167,53 +356,89 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
             busData?.bus?.vehicleNumber?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
             ? busData?.bus?.vehicleNumber
             : "N/A"
+
+        // ✅ 1. Load Driver Image from Bus API
+        loadImage(
+            urlString: busData?.driver?.profileImage,
+            into: DriverImageview,
+            placeholder: { [weak self] in self?.setDriverPlaceholder() },
+            taskStore: &driverImageTask,
+            isBusImage: false
+        )
+
+        // ✅ 2. Load Bus Image from Bus API — FILL square image view (corner radius 16)
+        let busImageURL = busData?.bus?.image
+            ?? busData?.bus?.busImage
+            ?? busData?.bus?.vehicleImage
+            ?? busData?.bus?.vehiclePhoto
+            ?? busData?.bus?.busPhoto
+            ?? busData?.bus?.photo
+
+        print("🚌 Bus Image URL: \(busImageURL ?? "NIL")")
+
+        loadImage(
+            urlString: busImageURL,
+            into: Busimageview,
+            placeholder: { [weak self] in self?.setBusPlaceholder() },
+            taskStore: &busImageTask,
+            isBusImage: true
+        )
+
+        // ✅ 3. Load Student Image — saved by StudentprofileVC (STUDENT_PHOTO_URL)
+        let studentPhotoURL = UserDefaults.standard.string(forKey: "STUDENT_PHOTO_URL")
+            ?? UserManager.shared.resolvedStudentPhotoURL
+        print("🧑‍🎓 Student Image URL (saved): \(studentPhotoURL.isEmpty ? "NIL / Not Found" : studentPhotoURL)")
+
+        loadImage(
+            urlString: studentPhotoURL.isEmpty ? nil : studentPhotoURL,
+            into: Studentprofileimageview,
+            placeholder: { [weak self] in self?.setStudentPlaceholder() },
+            taskStore: &studentImageTask,
+            isBusImage: false
+        )
     }
 
     // MARK: - ✅ Configure Route Details (Pickup & Drop) from API
-    func configureRouteDetails(_ routeData: TransportRouteData?) {
+    func configureRouteDetails(_ busData: StudentBusData?) {
 
-        // Pickup Stop Name
-        if let pickupStopName = routeData?.pickupStop?.stopName, !pickupStopName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        if let pickupStopName = busData?.pickupStop?.stopName,
+           !pickupStopName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             PickuplocationLabel.text = pickupStopName
         } else {
             PickuplocationLabel.text = "N/A"
         }
 
-        // Pickup Time (Use pickupStop.pickupTime)
-        let pickupTime = routeData?.pickupStop?.pickupTime
+        let pickupTime = busData?.pickupStop?.pickupTime
         PickupTime.text = formatTimeTo12Hour(pickupTime)
         PickuptimeLabel.text = formatTimeTo12Hour(pickupTime)
 
-        // Drop Stop Name
-        if let dropStopName = routeData?.dropStop?.stopName, !dropStopName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        if let dropStopName = busData?.dropStop?.stopName,
+           !dropStopName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             DroplocationLabel.text = dropStopName
         } else {
             DroplocationLabel.text = "N/A"
         }
 
-        // Drop Time (Use dropStop.dropTime)
-        let dropTime = routeData?.dropStop?.dropTime
+        let dropTime = busData?.dropStop?.dropTime
         DropTime.text = formatTimeTo12Hour(dropTime)
 
-        // Estimated Journey Duration (From Route Details)
-        if let duration = routeData?.route?.estimatedDuration {
+        if let duration = busData?.route?.estimatedDuration {
             DurationLabel.text = "\(duration) Min"
         } else {
             DurationLabel.text = "N/A"
         }
 
-        // Build and Reload Today's Journey from Route Details
-        buildJourneyItems(routeData)
+        buildJourneyItems(busData)
         CollectionView2.reloadData()
     }
 
     // MARK: - Build Today's Journey Items From Route API
-    private func buildJourneyItems(_ routeData: TransportRouteData?) {
+    private func buildJourneyItems(_ busData: StudentBusData?) {
         journeyItems.removeAll()
 
-        let pickupStop = routeData?.pickupStop
-        let dropStop = routeData?.dropStop
-        let route = routeData?.route
+        let pickupStop = busData?.pickupStop
+        let dropStop = busData?.dropStop
+        let route = busData?.route
 
         // 1. Pickup
         journeyItems.append(JourneyItem(
@@ -293,7 +518,7 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
 
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection         = .vertical
-        layout.minimumLineSpacing      = 16
+        layout.minimumLineSpacing      = 8
         layout.minimumInteritemSpacing = 0
         layout.sectionInset            = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
         cv.collectionViewLayout        = layout
@@ -318,7 +543,6 @@ extension TRNSPTdashbordUITableViewCell1: UICollectionViewDataSource,
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
-        // ── Journey Cell (CollectionView2) ────────────────────────────────
         if collectionView.tag == 2 {
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: "TRNSPTTodayJourneyCollectionViewCell",
@@ -337,7 +561,6 @@ extension TRNSPTdashbordUITableViewCell1: UICollectionViewDataSource,
             return cell
         }
 
-        // ── Top Module Cell (CollectionView) ──────────────────────────────
         let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: "TRNSPTdashbordCollectionViewCell",
             for: indexPath
@@ -354,7 +577,6 @@ extension TRNSPTdashbordUITableViewCell1: UICollectionViewDataSource,
         return cell
     }
 
-    // MARK: - Dynamic Size
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -373,7 +595,6 @@ extension TRNSPTdashbordUITableViewCell1: UICollectionViewDataSource,
         return CGSize(width: cardWidth, height: cardHeight)
     }
 
-    // MARK: - didSelectItemAt (Navigation via Delegate)
     func collectionView(_ collectionView: UICollectionView,
                         didSelectItemAt indexPath: IndexPath) {
 
@@ -387,19 +608,15 @@ extension TRNSPTdashbordUITableViewCell1: UICollectionViewDataSource,
 
         switch selectedTitle {
         case "Live\nTracking":
-            print("📍 Navigating to BuslivetrackingVC")
             delegate?.didTapLiveTracking()
 
         case "Fee\nModule":
-            print("📍 Navigating to TRSPRTfeepaymentVC")
             delegate?.didTapFeeModule()
 
         case "Driver\nContact":
-            print("📞 Navigating to TRSPRTcantactdriverVC")
             delegate?.didTapDriverContact()
 
         case "Pickup&Drop\nDetails":
-            print("Navigating to TRSPRTpickupanddropVC")
             delegate?.didTapPickupandDrop()
 
         default:

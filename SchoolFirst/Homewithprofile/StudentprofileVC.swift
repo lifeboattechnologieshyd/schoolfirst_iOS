@@ -182,6 +182,16 @@ class StudentprofileVC: UIViewController {
                         self.profileData = data
                         self.loadedStudentId = studentId
                         print("✅ Student Profile parsed successfully for \(data.name)")
+                        
+                        // ✅ SAVE photo URL so OTHER SCREENS can reuse it
+                        if let photoUrl = data.photoUrl,
+                           !photoUrl.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            UserDefaults.standard.set(photoUrl, forKey: "STUDENT_PHOTO_URL")
+                            print("💾 Saved STUDENT_PHOTO_URL:", photoUrl)
+                        } else {
+                            UserDefaults.standard.removeObject(forKey: "STUDENT_PHOTO_URL")
+                        }
+                        
                     } else {
                         self.profileData = nil
                     }
@@ -243,13 +253,10 @@ extension StudentprofileVC: UITableViewDelegate, UITableViewDataSource {
                 for: indexPath
             ) as! DocumentsTableViewCell2
             
-            // Configure DocumentsTableViewCell2 cell if needed here
-            
             return cell
         }
     }
     
-    // Optional: Ensure no action on tap (extra safety)
     func tableView(
         _ tableView: UITableView,
         didSelectRowAt indexPath: IndexPath

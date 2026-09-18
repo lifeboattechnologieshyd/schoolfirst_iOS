@@ -1,8 +1,7 @@
+
 //
 //  SceneDelegate.swift
 //  SchoolFirst
-//
-//  Created by Ranjith Padidala on 13/06/25.
 //
 
 import UIKit
@@ -11,77 +10,149 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
+    func scene(
+        _ scene: UIScene,
+        willConnectTo session: UISceneSession,
+        options connectionOptions: UIScene.ConnectionOptions
+    ) {
 
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        
         _ = ReachabilityManager.shared
-        
-        if UserDefaults.standard.bool(forKey: "LOGGEDIN") {
-            self.setHomeScreen()
-        }
-        guard let _ = (scene as? UIWindowScene) else { return }
-        
-        window?.overrideUserInterfaceStyle = .light
 
-        
+        guard let windowScene = (scene as? UIWindowScene) else {
+            return
+        }
+
+        // 1. Initialize UIWindow properly with the scene
+        let window = UIWindow(windowScene: windowScene)
+
+        window.overrideUserInterfaceStyle = .light
+
+        self.window = window
+
+        // 2. Check if user is logged in
+        let isLoggedIn = UserDefaults.standard.bool(forKey: "LOGGEDIN")
+
+        print("📱 SceneDelegate launch - LOGGEDIN status:", isLoggedIn)
+
+        if isLoggedIn {
+
+            // ✅ Load Initial ViewController from Main.storyboard
+            self.setInitialScreen(targetWindow: window)
+
+        } else {
+
+            // ✅ Set Login screen if NOT logged in
+            self.setLoginScreen(targetWindow: window)
+        }
+
+        window.makeKeyAndVisible()
     }
 
-    func setHomeScreen(){
+    // MARK: - Set Initial Screen
+
+    func setInitialScreen(targetWindow: UIWindow? = nil) {
+
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let tabBarController = storyboard.instantiateViewController(withIdentifier: "MainTabBarController") as? MainTabBarController else {
-            print("Could not find MainTabBarController")
+
+        guard let initialVC = storyboard.instantiateInitialViewController() else {
+
+            print("❌ Could not find Initial View Controller in Main.storyboard")
+
+            setLoginScreen(targetWindow: targetWindow)
+
             return
         }
-        
-        // Set it as the root view controller
+
+        let win = targetWindow ?? self.window ?? UIApplication.shared.windows.first
+
+        win?.rootViewController = initialVC
+
+        print("✅ Successfully set Initial ViewController from Main.storyboard")
+    }
+
+    // MARK: - Set Home Screen (MainTabBarController)
+
+    func setHomeScreen(targetWindow: UIWindow? = nil) {
+
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+        guard let tabBarController = storyboard.instantiateViewController(
+            withIdentifier: "MainTabBarController"
+        ) as? MainTabBarController else {
+
+            print("❌ Could not find MainTabBarController in Main.storyboard")
+
+            setLoginScreen(targetWindow: targetWindow)
+
+            return
+        }
+
         tabBarController.selectedIndex = 2
-        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = scene.windows.first else {
-            print("Unable to find a valid window")
+
+        let win = targetWindow ?? self.window ?? UIApplication.shared.windows.first
+
+        win?.rootViewController = tabBarController
+
+        print("✅ Successfully set MainTabBarController as rootViewController")
+    }
+
+    // MARK: - Set Login Screen (Fallback when not logged in)
+
+    func setLoginScreen(targetWindow: UIWindow? = nil) {
+
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+        let win = targetWindow ?? self.window ?? UIApplication.shared.windows.first
+
+        // Try to load initial view controller from Main.storyboard
+        if let initialVC = storyboard.instantiateInitialViewController() {
+
+            win?.rootViewController = initialVC
+
+        } else if let loginVC = storyboard.instantiateViewController(
+            withIdentifier: "LoginVC"
+        ) as? UIViewController {
+
+            let nav = UINavigationController(rootViewController: loginVC)
+
+            win?.rootViewController = nav
+
+        } else {
+
+            print("❌ Could not find LoginVC or Initial VC in Main.storyboard")
+        }
+
+        print("🔑 Set Login screen as rootViewController")
+    }
+
+    func sceneDidDisconnect(_ scene: UIScene) {}
+
+    func sceneDidBecomeActive(_ scene: UIScene) {}
+
+    func sceneWillResignActive(_ scene: UIScene) {}
+
+    func sceneWillEnterForeground(_ scene: UIScene) {}
+
+    func sceneDidEnterBackground(_ scene: UIScene) {}
+
+    func scene(
+        _ scene: UIScene,
+        openURLContexts URLContexts: Set<UIOpenURLContext>
+    ) {
+
+        guard let url = URLContexts.first?.url else {
             return
         }
-      // VM window.rootViewController = tabBarController
-       // VMwindow.makeKeyAndVisible()
-    }
-    func sceneDidDisconnect(_ scene: UIScene) {
-        // Called as the scene is being released by the system.
-        // This occurs shortly after the scene enters the background, or when its session is discarded.
-        // Release any resources associated with this scene that can be re-created the next time the scene connects.
-        // The scene may re-connect later, as its session was not necessarily discarded (see `application:didDiscardSceneSessions` instead).
-    }
 
-    func sceneDidBecomeActive(_ scene: UIScene) {
-        // Called when the scene has moved from an inactive state to an active state.
-        // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
-    }
-
-    func sceneWillResignActive(_ scene: UIScene) {
-        // Called when the scene will move from an active state to an inactive state.
-        // This may occur due to temporary interruptions (ex. an incoming phone call).
-    }
-
-    func sceneWillEnterForeground(_ scene: UIScene) {
-        // Called as the scene transitions from the background to the foreground.
-        // Use this method to undo the changes made on entering the background.
-    }
-
-    func sceneDidEnterBackground(_ scene: UIScene) {
-        // Called as the scene transitions from the foreground to the background.
-        // Use this method to save data, release shared resources, and store enough scene-specific state information
-        // to restore the scene back to its current state.
-    }
-
-    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        guard let url = URLContexts.first?.url else { return }
-        
-        // ✅ Let PhonePe Payment Manager handle the callback URL
         let handled = PhonePePaymentManager.shared.handleDeeplink(url)
+
         if handled {
+
             print("✅ PhonePe SDK handled the URL: \(url)")
+
             return
         }
-        
-        // Handle other URLs here
+
         print("📱 Unhandled URL: \(url)")
     }
 }

@@ -30,6 +30,17 @@
                                             <constraint firstAttribute="width" constant="96" id="4WX-jL-VQr"/>
                                             <constraint firstAttribute="height" constant="96" id="9T3-oJ-wYE"/>
                                         </constraints>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                                <real key="value" value="48"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                                <real key="value" value="1"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                                <color key="value" systemColor="systemGray4Color"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
                                     </imageView>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -103,6 +114,9 @@
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="phone" catalog="system"/>
+                                        <connections>
+                                            <action selector="VoicecallbuttonTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="iyW-OK-pru"/>
+                                        </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Voice Call" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OLq-ZU-q4t">
                                         <rect key="frame" x="27" y="48" width="80" height="20"/>
@@ -215,7 +229,22 @@
                                 <real key="value" value="0.5"/>
                             </userDefinedRuntimeAttribute>
                             <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                <color key="value" red="0.5922851562" green="0.6352539062" blue="0.7138671875" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <color key="value" systemColor="systemGray5Color"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="color" keyPath="shadowColorIB">
+                                <color key="value" systemColor="systemGray6Color"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="shadowOpacityIB">
+                                <real key="value" value="2"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="shadowRadiusIB">
+                                <real key="value" value="2"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="shadowOffsetWidthIB">
+                                <real key="value" value="2"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="shadowOffsetHeightIB">
+                                <real key="value" value="2"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </view>
@@ -249,6 +278,9 @@
                                 <buttonConfiguration key="configuration" style="plain" title="Track Live ➜">
                                     <fontDescription key="titleFontDescription" type="system" weight="semibold" pointSize="14"/>
                                 </buttonConfiguration>
+                                <connections>
+                                    <action selector="LivetrackbuttonTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="sJv-bo-6Np"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="0.9506835938" green="0.9907226562" blue="0.9594726562" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -309,7 +341,22 @@
                                 <real key="value" value="0.5"/>
                             </userDefinedRuntimeAttribute>
                             <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                <color key="value" red="0.5922851562" green="0.6352539062" blue="0.7138671875" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <color key="value" systemColor="systemGray5Color"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="shadowOpacityIB">
+                                <real key="value" value="2"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="shadowRadiusIB">
+                                <real key="value" value="2"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="shadowOffsetWidthIB">
+                                <real key="value" value="2"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="shadowOffsetHeightIB">
+                                <real key="value" value="2"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="color" keyPath="shadowColorIB">
+                                <color key="value" systemColor="systemGray6Color"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </view>
@@ -326,13 +373,13 @@
                                 <color key="textColor" red="0.5922851562" green="0.6352539062" blue="0.7138671875" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="West Wing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="duG-J3-QIn">
-                                <rect key="frame" x="20" y="43" width="120" height="28"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="West Wing" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="duG-J3-QIn">
+                                <rect key="frame" x="20" y="39" width="140" height="40"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="120" id="nmw-ER-bQh"/>
-                                    <constraint firstAttribute="height" constant="28" id="ofA-gA-89i"/>
+                                    <constraint firstAttribute="width" constant="140" id="nmw-ER-bQh"/>
+                                    <constraint firstAttribute="height" constant="40" id="ofA-gA-89i"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -344,7 +391,7 @@
                             <constraint firstAttribute="width" constant="178" id="IVg-3l-Fdz"/>
                             <constraint firstItem="otE-YL-wle" firstAttribute="top" secondItem="2GX-Jg-M8h" secondAttribute="top" constant="20" id="eGh-zy-0tY"/>
                             <constraint firstAttribute="height" constant="82" id="lEu-aF-mVj"/>
-                            <constraint firstItem="duG-J3-QIn" firstAttribute="top" secondItem="otE-YL-wle" secondAttribute="bottom" constant="8" id="leP-AX-COT"/>
+                            <constraint firstItem="duG-J3-QIn" firstAttribute="top" secondItem="otE-YL-wle" secondAttribute="bottom" constant="4" id="leP-AX-COT"/>
                         </constraints>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
@@ -354,7 +401,22 @@
                                 <real key="value" value="0.5"/>
                             </userDefinedRuntimeAttribute>
                             <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                <color key="value" red="0.5922851562" green="0.6352539062" blue="0.7138671875" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <color key="value" systemColor="systemGray5Color"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="shadowOpacityIB">
+                                <real key="value" value="2"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="shadowRadiusIB">
+                                <real key="value" value="2"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="shadowOffsetWidthIB">
+                                <real key="value" value="2"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="shadowOffsetHeightIB">
+                                <real key="value" value="2"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="color" keyPath="shadowColorIB">
+                                <color key="value" systemColor="systemGray6Color"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </view>
@@ -500,9 +562,12 @@
                 <outlet property="BusnumberLabel" destination="S9c-yf-uKK" id="OIA-em-H2H"/>
                 <outlet property="DriverExperienceLabel" destination="Yf1-8t-s3o" id="ZvP-xC-Uzq"/>
                 <outlet property="Driverimg" destination="gBe-Ll-Rgw" id="e7g-dU-Edd"/>
-                <outlet property="DrivernameLabel" destination="cKB-CR-5cZ" id="2c9-LU-pwf"/>
+                <outlet property="DrivernameLabel" destination="cKB-CR-5cZ" id="t56-9n-IUY"/>
+                <outlet property="Livetrackbutton" destination="7LN-NI-l7r" id="GEy-rv-JD5"/>
                 <outlet property="MessageButton" destination="QkT-Be-hrh" id="rni-2g-Zom"/>
+                <outlet property="RoutenameLabel" destination="duG-J3-QIn" id="Ppd-96-g9t"/>
                 <outlet property="StatusLabel" destination="Ao2-lx-sNS" id="9Ox-U6-M50"/>
+                <outlet property="Voicecallbutton" destination="7yK-XB-bKc" id="TOk-5f-jkb"/>
             </connections>
             <point key="canvasLocation" x="192.36641221374046" y="437.32394366197184"/>
         </tableViewCell>
@@ -518,6 +583,15 @@
         <image name="phone" catalog="system" width="128" height="115"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGray4Color">
+            <color red="0.81960784310000001" green="0.81960784310000001" blue="0.83921568629999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemGray5Color">
+            <color red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemGray6Color">
+            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

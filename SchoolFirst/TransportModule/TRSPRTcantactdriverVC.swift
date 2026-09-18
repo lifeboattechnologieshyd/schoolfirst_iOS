@@ -108,6 +108,13 @@ class TRSPRTcantactdriverVC: UIViewController {
                 case .success(let response):
                     if response.success, let data = response.data {
                         self.busDetails = data
+
+                        print("✅ Driver object received:")
+                        print("   name     :", data.driver?.name ?? "nil")
+                        print("   mobile   :", data.driver?.mobile ?? "nil")
+                        print("   image    :", data.driver?.profileImage ?? "nil")
+                        print("   exp      :", data.driver?.experience ?? -1)
+
                         self.tableview.reloadData()
                     } else {
                         let errorMsg = response.description.isEmpty ? "No driver details available." : response.description
@@ -135,6 +142,39 @@ class TRSPRTcantactdriverVC: UIViewController {
         }
     }
 
+    // MARK: - ✅ Call Driver (tel://) using API mobile number
+    private func callDriver() {
+        guard let phone = busDetails?.driver?.mobile?
+                .trimmingCharacters(in: .whitespacesAndNewlines),
+              !phone.isEmpty else {
+            print("❌ Driver mobile number not available")
+            let alert = UIAlertController(
+                title: "Driver Contact",
+                message: "Driver phone number is not available.",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+            return
+        }
+
+        // Clean number: remove spaces, dashes, brackets
+        let cleanNumber = phone
+            .replacingOccurrences(of: " ", with: "")
+            .replacingOccurrences(of: "-", with: "")
+            .replacingOccurrences(of: "(", with: "")
+            .replacingOccurrences(of: ")", with: "")
+
+        guard let url = URL(string: "tel://\(cleanNumber)"),
+              UIApplication.shared.canOpenURL(url) else {
+            print("❌ Cannot place call to: \(cleanNumber)")
+            return
+        }
+
+        print("📞 Calling driver: \(cleanNumber)")
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+    }
+
     // MARK: - Error Handling Alert Helper
     private func showErrorAlert(message: String) {
         let alert = UIAlertController(
@@ -149,7 +189,7 @@ class TRSPRTcantactdriverVC: UIViewController {
         self.present(alert, animated: true)
     }
 
-    // MARK: - Navigation Helper (Passes Driver Name & Status to Chat VC)
+    // MARK: - Navigation Helper (Passes Driver Name, Status, Image, Mobile to Chat VC)
     private func navigateToChat() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let chatVC = storyboard.instantiateViewController(
@@ -159,11 +199,25 @@ class TRSPRTcantactdriverVC: UIViewController {
             return
         }
         
-        // Pass the driver name and status to ChatVC
-        chatVC.driverName = busDetails?.driver?.name ?? "Driver"
-        chatVC.driverStatus = busDetails?.bus?.status ?? "Active"
+        // ✅ Pass all required data to ChatVC
+        chatVC.driverName      = busDetails?.driver?.name ?? "Driver"
+        chatVC.driverStatus    = busDetails?.bus?.status ?? "Active"
+        chatVC.driverImageURL  = busDetails?.driver?.profileImage
+        chatVC.driverMobile    = busDetails?.driver?.mobile
         
         navigationController?.pushViewController(chatVC, animated: true)
+    }
+
+    // MARK: - Navigate to Live Tracking
+    private func navigateToLiveTracking() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(
+            withIdentifier: "BuslivetrackingVC"
+        ) as? BuslivetrackingVC else {
+            print("❌ BuslivetrackingVC not found in storyboard. Check Storyboard ID.")
+            return
+        }
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
 
@@ -171,7 +225,7 @@ class TRSPRTcantactdriverVC: UIViewController {
 extension TRSPRTcantactdriverVC: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return busDetails != nil ? 1 : 0
+        return 1
     }
 
     func tableView(
@@ -195,7 +249,7 @@ extension TRSPRTcantactdriverVC: UITableViewDelegate, UITableViewDataSource {
         _ tableView: UITableView,
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
-        return 800
+        return 750
     }
 }
 
@@ -204,5 +258,13 @@ extension TRSPRTcantactdriverVC: TRSPRTcantactdriverCellDelegate {
 
     func didTapMessageButton() {
         navigateToChat()
+    }
+
+    func didTapLiveTrackButton() {
+        navigateToLiveTracking()
+    }
+
+    func didTapVoiceCallButton() {
+        callDriver()
     }
 }

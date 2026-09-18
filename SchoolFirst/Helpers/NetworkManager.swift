@@ -344,17 +344,99 @@ struct LiveLocationDetails: Codable {
         case deviceTimestamp = "device_timestamp"
     }
 }
-//****Transport routs API repsonse model
 
-// MARK: - Transport Route Response
-struct TransportRouteResponse: Codable {
-    let success: Bool?
-    let description: String?
-    let data: TransportRouteData?
+struct MobileCheckResponse : Decodable {
+    var username : String?
+    var profile_pic : String?
+    var message : String?
+    var password_required : Bool?
+    var otp : String?        // Dev backend may return OTP — used for simulator auto-fill
 }
 
-// MARK: - Transport Route Data
-struct TransportRouteData: Codable {
+
+
+
+struct LoginResponse: Decodable {
+    let refreshToken: String
+    let accessToken: String
+    let isNewUser: Bool
+    
+    let setNewPassword: Bool
+    let user: User
+
+    enum CodingKeys: String, CodingKey {
+        case refreshToken = "refresh_token"
+        case accessToken = "access_token"
+        case isNewUser = "is_new_user"
+        case setNewPassword = "set_new_password"
+        case user
+    }
+}
+
+struct VerifyOTPResponse: Decodable {
+    let access: String
+    let refresh: String
+    let userId: String
+    let schoolId: String?
+    let students: [Student]
+
+    enum CodingKeys: String, CodingKey {
+        case access, refresh
+        case userId = "user_id"
+        case schoolId = "school_id"
+        case students
+    }
+}
+
+struct User: Codable {
+    let id: String
+    let firstName: String?
+    let lastName: String?
+    let schoolIDs: [String?]
+    let username: String
+    let profileImage: String?
+    let email: String?
+    let referralCode: String
+    let mobile: Int64?
+    let deviceID: String?
+    var students : [Student]?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case firstName = "first_name"
+        case lastName = "last_name"
+        case schoolIDs = "school_ids"
+        case username
+        case profileImage = "profile_image"
+        case email
+        case referralCode = "referral_code"
+        case mobile
+        case deviceID = "device_id"
+        case students
+    }
+    
+    // Clean up nulls
+    var cleanSchoolIDs: [String] {
+        return schoolIDs.compactMap { $0 }
+    }
+
+}
+
+//****bus, driver and attendant response model
+
+// MARK: - Transport Bus Response
+struct TransportBusResponse: Codable {
+    let success: Bool?
+    let description: String?
+    let data: StudentBusData?
+}
+
+
+struct StudentBusData: Codable {
+    let student: StudentInfo?
+    let bus: BusInfo?
+    let driver: BusStaff?
+    let attendant: BusStaff?
     let route: RouteDetails?
     let pickupStop: StopDetails?
     let dropStop: StopDetails?
@@ -362,11 +444,66 @@ struct TransportRouteData: Codable {
     let tripType: String?
 
     enum CodingKeys: String, CodingKey {
+        case student
+        case bus
+        case driver
+        case attendant
         case route
         case pickupStop = "pickup_stop"
         case dropStop = "drop_stop"
         case routeStops = "route_stops"
         case tripType = "trip_type"
+    }
+}
+
+// MARK: - Student Info
+struct StudentInfo: Codable {
+    let id: String?
+    let name: String?
+}
+
+// MARK: - Bus Info
+struct BusInfo: Codable {
+    let id: String?
+    let vehicleNumber: String?
+    let vehicleType: String?
+    let capacity: Int?
+    let status: String?
+    let image: String?
+    let busImage: String?
+    let vehicleImage: String?
+    let vehiclePhoto: String?
+    let busPhoto: String?
+    let photo: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case vehicleNumber = "vehicle_number"
+        case vehicleType   = "vehicle_type"
+        case capacity
+        case status
+        case image
+        case busImage     = "bus_image"
+        case vehicleImage = "vehicle_image"
+        case vehiclePhoto = "vehicle_photo"
+        case busPhoto     = "bus_photo"
+        case photo
+    }
+}
+// MARK: - Bus Staff (Driver / Attendant share same structure)
+struct BusStaff: Codable {
+    let id: String?
+    let name: String?
+    let mobile: String?
+    let experience: Double?
+    let profileImage: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case mobile
+        case experience
+        case profileImage = "profile_image"
     }
 }
 
@@ -450,131 +587,6 @@ struct RouteStop: Codable {
         case dropTime = "drop_time"
         case distanceFromPreviousStop = "distance_from_previous_stop"
         case estimatedTravelTime = "estimated_travel_time"
-    }
-}////****end
-
-struct MobileCheckResponse : Decodable {
-    var username : String?
-    var profile_pic : String?
-    var message : String?
-    var password_required : Bool?
-    var otp : String?        // Dev backend may return OTP — used for simulator auto-fill
-}
-
-
-
-
-struct LoginResponse: Decodable {
-    let refreshToken: String
-    let accessToken: String
-    let isNewUser: Bool
-    
-    let setNewPassword: Bool
-    let user: User
-
-    enum CodingKeys: String, CodingKey {
-        case refreshToken = "refresh_token"
-        case accessToken = "access_token"
-        case isNewUser = "is_new_user"
-        case setNewPassword = "set_new_password"
-        case user
-    }
-}
-
-struct VerifyOTPResponse: Decodable {
-    let access: String
-    let refresh: String
-    let userId: String
-    let schoolId: String?
-    let students: [Student]
-
-    enum CodingKeys: String, CodingKey {
-        case access, refresh
-        case userId = "user_id"
-        case schoolId = "school_id"
-        case students
-    }
-}
-
-struct User: Codable {
-    let id: String
-    let firstName: String?
-    let lastName: String?
-    let schoolIDs: [String?]
-    let username: String
-    let profileImage: String?
-    let email: String?
-    let referralCode: String
-    let mobile: Int64?
-    let deviceID: String?
-    var students : [Student]?
-
-    enum CodingKeys: String, CodingKey {
-        case id
-        case firstName = "first_name"
-        case lastName = "last_name"
-        case schoolIDs = "school_ids"
-        case username
-        case profileImage = "profile_image"
-        case email
-        case referralCode = "referral_code"
-        case mobile
-        case deviceID = "device_id"
-        case students
-    }
-    
-    // Clean up nulls
-    var cleanSchoolIDs: [String] {
-        return schoolIDs.compactMap { $0 }
-    }
-
-}
-
-//****bus, driver and attendant response model
-// MARK: - Student Bus Details (data object)
-struct StudentBusData: Codable {
-    let bus: BusInfo?
-    let driver: BusStaff?
-    let attendant: BusStaff?
-
-    enum CodingKeys: String, CodingKey {
-        case bus
-        case driver
-        case attendant
-    }
-}
-
-// MARK: - Bus Info
-struct BusInfo: Codable {
-    let id: String?
-    let vehicleNumber: String?
-    let vehicleType: String?
-    let capacity: Int?
-    let status: String?
-
-    enum CodingKeys: String, CodingKey {
-        case id
-        case vehicleNumber = "vehicle_number"
-        case vehicleType = "vehicle_type"
-        case capacity
-        case status
-    }
-}
-
-// MARK: - Bus Staff (Driver / Attendant share same structure)
-struct BusStaff: Codable {
-    let id: String?
-    let name: String?
-    let mobile: String?
-    let experience: Double?
-    let profileImage: String?
-
-    enum CodingKeys: String, CodingKey {
-        case id
-        case name
-        case mobile
-        case experience
-        case profileImage = "profile_image"
     }
 }
 //*** - Student Profile API Response Struct

@@ -23,39 +23,47 @@ class DBManager {
             UserDefaults.standard.set(firstStudentSchoolId, forKey: "SCHOOL_ID")
         }
         
-        // ── NEW: Save selected student ID + school ID ──────────────────────
+        // ── Save selected student ID + school ID + photo ─────────────────
         if let firstStudent = user.students?.first {
             saveSelectedStudent(firstStudent)
         }
     }
     
     // MARK: - Save Selected Student + School IDs to UserDefaults
-    // ✅ UPDATED: Now also saves NAME, GRADE, SECTION for display without API calls
     func saveSelectedStudent(_ student: Student) {
         
         // Save studentID
         UserDefaults.standard.set(student.studentID, forKey: "STUDENT_ID")
         print("💾 Saved STUDENT_ID:", student.studentID)
         
-        // ── ✅ NEW: Save student name ──────────────────────────────────────
+        // ── Save student name ────────────────────────────────────────────
         UserDefaults.standard.set(student.name, forKey: "STUDENT_NAME")
         print("💾 Saved STUDENT_NAME:", student.name)
         
-        // ── ✅ NEW: Save grade ─────────────────────────────────────────────
+        // ── Save grade ───────────────────────────────────────────────────
         UserDefaults.standard.set(student.grade, forKey: "STUDENT_GRADE")
         print("💾 Saved STUDENT_GRADE:", student.grade)
         
-        // ── ✅ NEW: Save section ───────────────────────────────────────────
+        // ── Save section ─────────────────────────────────────────────────
         UserDefaults.standard.set(student.section ?? "", forKey: "STUDENT_SECTION")
         print("💾 Saved STUDENT_SECTION:", student.section ?? "")
         
-        // ── ✅ NEW: Save combined "Grade 5 - A" display string ─────────────
+        // ── Save combined "Grade 5 - A" display string ───────────────────
         var gradeSection = student.grade
         if let section = student.section, !section.isEmpty {
             gradeSection = "\(student.grade) - \(section)"
         }
         UserDefaults.standard.set(gradeSection, forKey: "STUDENT_GRADE_SECTION")
         print("💾 Saved STUDENT_GRADE_SECTION:", gradeSection)
+        
+        // ── ✅ NEW: Save student photo URL (runtime-safe extraction) ─────
+        if let photoURL = DBManager.extractPhotoURL(from: student),
+           !photoURL.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            UserDefaults.standard.set(photoURL, forKey: "STUDENT_PHOTO_URL")
+            print("💾 Saved STUDENT_PHOTO_URL:", photoURL)
+        } else {
+            print("⚠️ saveSelectedStudent — no photo URL found for:", student.name)
+        }
         
         // Save schoolID from student's school
         if let schoolID = student.school?.schoolID, !schoolID.isEmpty {
@@ -66,6 +74,33 @@ class DBManager {
         } else {
             print("⚠️ saveSelectedStudent — student.school is nil for:", student.name)
         }
+    }
+    
+    // MARK: - ✅ Runtime-safe photo URL extractor
+    /// Reads the photo field from Student model WITHOUT compile-time dependency.
+    /// Works whatever the property is named: photoUrl, photo, profileImage, image, etc.
+    static func extractPhotoURL(from student: Student) -> String? {
+        let candidateKeys = [
+            "photoUrl", "photoURL", "photo_url",
+            "photo", "profileImage", "profile_image",
+            "profilePhoto", "profile_photo",
+            "image", "imageUrl", "image_url",
+            "studentPhoto", "student_photo",
+            "avatar", "avatarUrl", "avatar_url"
+        ]
+        
+        let mirror = Mirror(reflecting: student)
+        for child in mirror.children {
+            guard let label = child.label, candidateKeys.contains(label) else { continue }
+            if let str = child.value as? String, !str.isEmpty {
+                return str
+            }
+            // Handle Optional<String>
+            if let optionalStr = child.value as? String?, let str = optionalStr, !str.isEmpty {
+                return str
+            }
+        }
+        return nil
     }
     
     // MARK: - Save Selected Kid Index
@@ -92,16 +127,15 @@ class DBManager {
         UserDefaults.standard.removeObject(forKey: "STUDENT_ID")
         UserDefaults.standard.removeObject(forKey: "SELECTED_KID_INDEX")
         
-        // ── ✅ NEW: Clear name + grade keys ────────────────────────────────
+        // ── Clear name + grade keys ──────────────────────────────────────
         UserDefaults.standard.removeObject(forKey: "STUDENT_NAME")
         UserDefaults.standard.removeObject(forKey: "STUDENT_GRADE")
         UserDefaults.standard.removeObject(forKey: "STUDENT_SECTION")
         UserDefaults.standard.removeObject(forKey: "STUDENT_GRADE_SECTION")
+        
+        // ── ✅ NEW: Clear photo URL ──────────────────────────────────────
+        UserDefaults.standard.removeObject(forKey: "STUDENT_PHOTO_URL")
     }
-    
-//    func allStudents(schools: [School]) -> [Student] {
-//        return schools.flatMap { $0.students ?? [] }  // Handle optional students
-//    }
     
     func getuser() -> User? {
         if let data = UserDefaults.standard.data(forKey: "USER_INFO") {
@@ -123,6 +157,7 @@ class DBManager {
         print("   STUDENT_GRADE         :", UserDefaults.standard.string(forKey: "STUDENT_GRADE")         ?? "nil")
         print("   STUDENT_SECTION       :", UserDefaults.standard.string(forKey: "STUDENT_SECTION")       ?? "nil")
         print("   STUDENT_GRADE_SECTION :", UserDefaults.standard.string(forKey: "STUDENT_GRADE_SECTION") ?? "nil")
+        print("   STUDENT_PHOTO_URL     :", UserDefaults.standard.string(forKey: "STUDENT_PHOTO_URL")     ?? "nil")
         print("   SCHOOL_ID             :", UserDefaults.standard.string(forKey: "SCHOOL_ID")             ?? "nil")
         print("   SchoolID              :", UserDefaults.standard.string(forKey: "SchoolID")              ?? "nil")
         print("   school_id             :", UserDefaults.standard.string(forKey: "school_id")             ?? "nil")
@@ -134,7 +169,6 @@ class DBManager {
 class UserManager {
     static let shared = UserManager()
     private init() {
-        // ── Restore selectedKidIndex from UserDefaults on app launch ──────
         _selectedKidIndex = DBManager.shared.loadSelectedKidIndex()
         print("🔄 UserManager init — restored selectedKidIndex:", _selectedKidIndex)
     }
@@ -157,16 +191,13 @@ class UserManager {
         return getUser()?.students ?? []
     }
     
-    // ── selectedKidIndex persisted via UserDefaults ────────────────────────
     private var _selectedKidIndex: Int = 0
     
     var selectedKidIndex: Int {
         get { return _selectedKidIndex }
         set {
             _selectedKidIndex = newValue
-            // Persist index to UserDefaults
             DBManager.shared.saveSelectedKidIndex(newValue)
-            // Also update STUDENT_ID + SCHOOL_ID + NAME + GRADE whenever kid changes
             if let kid = selectedKid {
                 DBManager.shared.saveSelectedStudent(kid)
             }
@@ -188,22 +219,18 @@ class UserManager {
     
     // MARK: - Resolved IDs with fallback chain
     var resolvedStudentID: String {
-        // Priority 1: In-memory selectedKid
         if let sid = selectedKid?.studentID, !sid.isEmpty {
             return sid
         }
-        // Priority 2: UserDefaults fallback
         let fallback = UserDefaults.standard.string(forKey: "STUDENT_ID") ?? ""
         print("⚠️ resolvedStudentID — using UserDefaults fallback:", fallback)
         return fallback
     }
     
     var resolvedSchoolID: String {
-        // Priority 1: In-memory selectedKid's school
         if let scid = selectedSchool?.schoolID, !scid.isEmpty {
             return scid
         }
-        // Priority 2: UserDefaults fallbacks
         for key in ["SCHOOL_ID", "SchoolID", "school_id"] {
             if let scid = UserDefaults.standard.string(forKey: key), !scid.isEmpty {
                 print("⚠️ resolvedSchoolID — using UserDefaults[\(key)] fallback:", scid)
@@ -214,13 +241,11 @@ class UserManager {
         return ""
     }
     
-    // MARK: - ✅ NEW: Resolved Student Name (no API call needed)
+    // MARK: - Resolved Student Name
     var resolvedStudentName: String {
-        // Priority 1: In-memory selectedKid
         if let name = selectedKid?.name, !name.isEmpty {
             return name
         }
-        // Priority 2: UserDefaults fallback
         let fallback = UserDefaults.standard.string(forKey: "STUDENT_NAME") ?? ""
         if !fallback.isEmpty {
             print("⚠️ resolvedStudentName — using UserDefaults fallback:", fallback)
@@ -229,13 +254,11 @@ class UserManager {
         return "Student"
     }
     
-    // MARK: - ✅ NEW: Resolved Grade (no API call needed)
+    // MARK: - Resolved Grade
     var resolvedStudentGrade: String {
-        // Priority 1: In-memory selectedKid
         if let grade = selectedKid?.grade, !grade.isEmpty {
             return grade
         }
-        // Priority 2: UserDefaults fallback
         let fallback = UserDefaults.standard.string(forKey: "STUDENT_GRADE") ?? ""
         if !fallback.isEmpty {
             print("⚠️ resolvedStudentGrade — using UserDefaults fallback:", fallback)
@@ -244,31 +267,45 @@ class UserManager {
         return ""
     }
     
-    // MARK: - ✅ NEW: Resolved Section (no API call needed)
+    // MARK: - Resolved Section
     var resolvedStudentSection: String {
-        // Priority 1: In-memory selectedKid
         if let section = selectedKid?.section, !section.isEmpty {
             return section
         }
-        // Priority 2: UserDefaults fallback
         return UserDefaults.standard.string(forKey: "STUDENT_SECTION") ?? ""
     }
     
-    // MARK: - ✅ NEW: Resolved "Grade 5 - A" display string (no API call needed)
+    // MARK: - Resolved "Grade 5 - A" display string
     var resolvedGradeSection: String {
-        // Priority 1: Build from in-memory selectedKid
         if let kid = selectedKid, !kid.grade.isEmpty {
             if let section = kid.section, !section.isEmpty {
                 return "\(kid.grade) - \(section)"
             }
             return kid.grade
         }
-        // Priority 2: UserDefaults fallback
         let fallback = UserDefaults.standard.string(forKey: "STUDENT_GRADE_SECTION") ?? ""
         if !fallback.isEmpty {
             print("⚠️ resolvedGradeSection — using UserDefaults fallback:", fallback)
             return fallback
         }
+        return ""
+    }
+    
+    // MARK: - ✅ NEW: Resolved Student Photo URL (no API call needed)
+    var resolvedStudentPhotoURL: String {
+        // Priority 1: In-memory selectedKid (runtime-safe extraction)
+        if let kid = selectedKid,
+           let url = DBManager.extractPhotoURL(from: kid),
+           !url.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return url
+        }
+        // Priority 2: UserDefaults fallback (saved at login / kid switch / profile screen)
+        let fallback = UserDefaults.standard.string(forKey: "STUDENT_PHOTO_URL") ?? ""
+        if !fallback.isEmpty {
+            print("⚠️ resolvedStudentPhotoURL — using UserDefaults fallback:", fallback)
+            return fallback
+        }
+        print("❌ resolvedStudentPhotoURL — no photo URL available")
         return ""
     }
     
@@ -309,7 +346,7 @@ class UserManager {
             print("❌ switchKid — invalid index:", index)
             return
         }
-        selectedKidIndex = index  // setter handles persistence + ID + name + grade save
+        selectedKidIndex = index
         print("✅ Switched to kid:", kids[index].name,
               "| studentID:", kids[index].studentID,
               "| schoolID :", selectedSchool?.schoolID ?? "nil")
@@ -319,14 +356,15 @@ class UserManager {
     func debugPrint() {
         print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
         print("🔍 UserManager Debug")
-        print("   kids count           :", kids.count)
-        print("   selectedKidIndex     :", _selectedKidIndex)
-        print("   selectedKid.name     :", selectedKid?.name ?? "nil")
-        print("   resolvedStudentID    :", resolvedStudentID)
-        print("   resolvedStudentName  :", resolvedStudentName)
-        print("   resolvedStudentGrade :", resolvedStudentGrade)
-        print("   resolvedGradeSection :", resolvedGradeSection)
-        print("   resolvedSchoolID     :", resolvedSchoolID)
+        print("   kids count              :", kids.count)
+        print("   selectedKidIndex        :", _selectedKidIndex)
+        print("   selectedKid.name        :", selectedKid?.name ?? "nil")
+        print("   resolvedStudentID       :", resolvedStudentID)
+        print("   resolvedStudentName     :", resolvedStudentName)
+        print("   resolvedStudentGrade    :", resolvedStudentGrade)
+        print("   resolvedGradeSection    :", resolvedGradeSection)
+        print("   resolvedSchoolID        :", resolvedSchoolID)
+        print("   resolvedStudentPhotoURL :", resolvedStudentPhotoURL)
         DBManager.shared.debugPrintSavedKeys()
         print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     }
