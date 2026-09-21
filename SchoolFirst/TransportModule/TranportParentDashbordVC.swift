@@ -242,7 +242,7 @@ extension TranportParentDashbordVC: UITableViewDelegate, UITableViewDataSource {
         _ tableView: UITableView,
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
-        return 920
+        return 880
     
     }
 }

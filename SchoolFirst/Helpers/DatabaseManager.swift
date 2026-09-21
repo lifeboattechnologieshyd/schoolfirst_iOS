@@ -44,15 +44,13 @@ class DBManager {
         UserDefaults.standard.set(student.grade, forKey: "STUDENT_GRADE")
         print("💾 Saved STUDENT_GRADE:", student.grade)
         
-        // ── Save section ─────────────────────────────────────────────────
+        // ── Save section (Still saved, but not used in grade display) ───
         UserDefaults.standard.set(student.section ?? "", forKey: "STUDENT_SECTION")
         print("💾 Saved STUDENT_SECTION:", student.section ?? "")
         
-        // ── Save combined "Grade 5 - A" display string ───────────────────
-        var gradeSection = student.grade
-        if let section = student.section, !section.isEmpty {
-            gradeSection = "\(student.grade) - \(section)"
-        }
+        // ── Save grade display string - ONLY GRADE (No section) ─────────
+        // Requirement: save section but don't pass section while passing grade
+        let gradeSection = student.grade
         UserDefaults.standard.set(gradeSection, forKey: "STUDENT_GRADE_SECTION")
         print("💾 Saved STUDENT_GRADE_SECTION:", gradeSection)
         
@@ -267,7 +265,7 @@ class UserManager {
         return ""
     }
     
-    // MARK: - Resolved Section
+    // MARK: - Resolved Section (still saved)
     var resolvedStudentSection: String {
         if let section = selectedKid?.section, !section.isEmpty {
             return section
@@ -275,16 +273,20 @@ class UserManager {
         return UserDefaults.standard.string(forKey: "STUDENT_SECTION") ?? ""
     }
     
-    // MARK: - Resolved "Grade 5 - A" display string
+    // MARK: - Resolved Grade display string - ONLY GRADE
     var resolvedGradeSection: String {
+        // Only grade, no section per UI requirement
         if let kid = selectedKid, !kid.grade.isEmpty {
-            if let section = kid.section, !section.isEmpty {
-                return "\(kid.grade) - \(section)"
-            }
             return kid.grade
         }
         let fallback = UserDefaults.standard.string(forKey: "STUDENT_GRADE_SECTION") ?? ""
         if !fallback.isEmpty {
+            // Strip old cached "Grade 5 - A" format if exists
+            if fallback.contains(" - ") {
+                let onlyGrade = fallback.components(separatedBy: " - ").first?.trimmingCharacters(in: .whitespaces) ?? fallback
+                print("⚠️ resolvedGradeSection — stripping section from fallback, using:", onlyGrade)
+                return onlyGrade
+            }
             print("⚠️ resolvedGradeSection — using UserDefaults fallback:", fallback)
             return fallback
         }
