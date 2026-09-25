@@ -4,6 +4,7 @@
 //
 //  Created by Ranjith Padidala on 13/06/25.
 //
+
 import UIKit
 import IQKeyboardManagerSwift
 import Firebase
@@ -20,20 +21,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        
-        _ = ReachabilityManager.shared
 
+        _ = ReachabilityManager.shared
         configureFirebase()
         setupPushNotifications(application: application)
         setupKeyboardManager()
         setupNavigationBar()
-
         checkForUpdate()
-
         Analytics.logEvent("app_launched", parameters: nil)
         Crashlytics.crashlytics().log("App launched successfully")
         PhonePePaymentManager.shared.initializeSDK()
 
+        // MARK: - HANKEN GROTESK FONT CHECK
+        for family in UIFont.familyNames.sorted() {
+            if family.lowercased().contains("hanken") {
+                print("🔥 HANKEN FAMILY: \(family)")
+
+                for font in UIFont.fontNames(forFamilyName: family) {
+                    print("🔥 HANKEN FONT: \(font)")
+                }
+            }
+        }
 
         return true
     }
@@ -50,7 +58,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 let info = results.first,
                 let appStoreVersion = info["version"] as? String,
                 let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
-            else { return }
+            else {
+                return
+            }
 
             if appStoreVersion.compare(currentVersion, options: .numeric) == .orderedDescending {
                 DispatchQueue.main.async {
@@ -61,7 +71,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func showUpdateAlert(appID: String) {
-
         #if PRODUCTION
 
         let alert = UIAlertController(
@@ -72,7 +81,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         alert.addAction(
             UIAlertAction(title: "Update Now", style: .default) { _ in
-
                 if let url = URL(string: "https://apps.apple.com/app/id\(appID)") {
                     UIApplication.shared.open(url)
                 }
@@ -91,11 +99,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         #endif
     }
+
     private func configureFirebase() {
+
         if let filePath = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
            let options = FirebaseOptions(contentsOfFile: filePath) {
+
             FirebaseApp.configure(options: options)
             print("✅ Firebase configured using: \(filePath)")
+
         } else {
             print("❌ GoogleService-Info.plist not found!")
         }
@@ -104,12 +116,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     private func setupPushNotifications(application: UIApplication) {
+
         UNUserNotificationCenter.current().delegate = self
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+
+        UNUserNotificationCenter.current().requestAuthorization(
+            options: [.alert, .badge, .sound]
+        ) { granted, error in
+
             print("🔔 Push permission granted: \(granted)")
+
             if let error = error {
                 print("❌ Push permission error: \(error.localizedDescription)")
             }
+
             if granted {
                 DispatchQueue.main.async {
                     application.registerForRemoteNotifications()
@@ -118,26 +137,42 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        let token = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
-        print("📱 APNs token: \(token)")
-        Messaging.messaging().apnsToken = deviceToken
+    func application(
+        _ application: UIApplication,
+        didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
+    ) {
 
+        let token = deviceToken.map {
+            String(format: "%02.2hhx", $0)
+        }.joined()
+
+        print("📱 APNs token: \(token)")
+
+        Messaging.messaging().apnsToken = deviceToken
         subscribeToFirebaseTopics()
     }
 
-    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+    func application(
+        _ application: UIApplication,
+        didFailToRegisterForRemoteNotificationsWithError error: Error
+    ) {
+
         print("❌ Failed to register for remote notifications: \(error.localizedDescription)")
     }
 
-    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        guard let token = fcmToken else {
+    func messaging(
+        _ messaging: Messaging,
+        didReceiveRegistrationToken fCMToken: String?
+    ) {
+
+        guard let token = fCMToken else {
             print("⚠️ No FCM token received.")
             return
         }
 
         // Save FCM token so it can be sent with OTP API calls
         UserDefaults.standard.set(token, forKey: "FCMToken")
+
         print("✅ FCM token saved to UserDefaults")
 
         #if DEBUG
@@ -148,10 +183,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     private func subscribeToFirebaseTopics() {
+
         let topics = ["ALL", "iOS"]
 
         for topic in topics {
+
             Messaging.messaging().subscribe(toTopic: topic) { error in
+
                 if let error = error {
                     print("❌ Failed to subscribe to topic '\(topic)': \(error.localizedDescription)")
                 } else {
@@ -166,41 +204,54 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
+
         completionHandler([.banner, .sound, .badge])
     }
 
     // ---------------------------------------------------------
     // MARK: KEYBOARD MANAGER
     // ---------------------------------------------------------
-    //import FirebaseCrashlytics
+
     private func setupKeyboardManager() {
+
         IQKeyboardManager.shared.isEnabled = true
         IQKeyboardManager.shared.enableAutoToolbar = true
         IQKeyboardManager.shared.resignOnTouchOutside = true
     }
 
-
     private func setupNavigationBar() {
+
         if #available(iOS 15.0, *) {
+
             let appearance = UINavigationBarAppearance()
+
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = .white
             appearance.shadowColor = .lightGray
-            appearance.titleTextAttributes = [.foregroundColor: UIColor.black]
+            appearance.titleTextAttributes = [
+                .foregroundColor: UIColor.black
+            ]
+
             UINavigationBar.appearance().standardAppearance = appearance
             UINavigationBar.appearance().scrollEdgeAppearance = appearance
         }
     }
-    
 
-   //import FirebaseMessaging
     func application(
         _ application: UIApplication,
         configurationForConnecting connectingSceneSession: UISceneSession,
         options: UIScene.ConnectionOptions
     ) -> UISceneConfiguration {
-        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+
+        return UISceneConfiguration(
+            name: "Default Configuration",
+            sessionRole: connectingSceneSession.role
+        )
     }
 
-    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {}
+    func application(
+        _ application: UIApplication,
+        didDiscardSceneSessions sceneSessions: Set<UISceneSession>
+    ) {
+    }
 }

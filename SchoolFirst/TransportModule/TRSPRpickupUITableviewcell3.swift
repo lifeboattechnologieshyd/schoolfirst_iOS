@@ -21,7 +21,13 @@ class TRSPRpickupUITableviewcell3: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         setupUI()
+        setupFonts()
     }
+    private func setupFonts() {
+        DrivernameLabel?.font = .hankenBold(size: 16)
+        
+    }
+    
 
     private func setupUI() {
         // Round the image profile layout automatically

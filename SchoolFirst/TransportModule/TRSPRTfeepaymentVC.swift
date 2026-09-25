@@ -30,6 +30,7 @@ class TRSPRTfeepaymentVC: UIViewController {
 
     @IBOutlet weak var tableview: UITableView!
 
+    @IBOutlet weak var Topview: UIView!
     @IBOutlet weak var BackButton: UIButton!
     // MARK: - Sample Data (replace with API response later)
     private var currentMonthFees: [CurrentMonthFeeItem] = [
@@ -71,9 +72,41 @@ class TRSPRTfeepaymentVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupTopViewBottomShadowAndBorder()
 
         setupTableView()
     }
+    
+    private func setupTopViewBottomShadowAndBorder() {
+           guard let topView = Topview else { return }
+
+           // 1. Bottom Shadow Setup
+           topView.layer.masksToBounds = false
+           topView.layer.shadowColor = UIColor.black.cgColor
+           topView.layer.shadowOpacity = 0.08
+           topView.layer.shadowOffset = CGSize(width: 0, height: 3)
+           topView.layer.shadowRadius = 4.0
+           
+           // Optimize rendering performance using a precise shadow path along the bottom
+           let shadowRect = CGRect(x: 0, y: topView.bounds.height - 2, width: topView.bounds.width, height: 4)
+           topView.layer.shadowPath = UIBezierPath(rect: shadowRect).cgPath
+
+           // 2. Bottom Border Line Setup
+           topView.layer.sublayers?.removeAll(where: { $0.name == "TopViewBottomBorder" })
+
+           let borderHeight: CGFloat = 1.0
+           let bottomBorder = CALayer()
+           bottomBorder.name = "TopViewBottomBorder"
+           bottomBorder.frame = CGRect(
+               x: 0,
+               y: topView.bounds.height - borderHeight,
+               width: topView.bounds.width,
+               height: borderHeight
+           )
+           bottomBorder.backgroundColor = UIColor.systemGray5.cgColor
+           topView.layer.addSublayer(bottomBorder)
+       }
+
     @IBAction func BackButtonTapped(_ sender: UIButton) {
 
         // If Homescreen was pushed from EdutainmentVC

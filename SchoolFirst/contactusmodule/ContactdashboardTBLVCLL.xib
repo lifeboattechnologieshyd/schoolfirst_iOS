@@ -145,13 +145,47 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="School Information" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dgK-o7-x6X">
+                                <rect key="frame" x="68" y="16" width="200" height="18"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="200" id="D0i-4B-v9B"/>
+                                    <constraint firstAttribute="height" constant="18" id="zD4-Zd-CFf"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
+                                <color key="textColor" red="0.79296875" green="0.22802735869999999" blue="0.19409178199999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Address, hours &amp; contact details" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GOu-vA-rbJ">
+                                <rect key="frame" x="68" y="36" width="189" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="TQ3-ok-E4y"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="12"/>
+                                <color key="textColor" red="0.5913085938" green="0.6381835938" blue="0.712890625" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mF1-td-jMQ">
+                                <rect key="frame" x="383" y="26" width="20" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="20" id="4Nh-IF-tnJ"/>
+                                    <constraint firstAttribute="height" constant="20" id="9lz-j5-mfj"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="Arrow"/>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.9741210938" green="0.9799804688" blue="0.9873046875" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
                             <constraint firstItem="Dhd-LD-eyI" firstAttribute="leading" secondItem="qTC-LD-hFC" secondAttribute="leading" constant="16" id="6EM-CJ-ERA"/>
                             <constraint firstAttribute="bottom" secondItem="Dhd-LD-eyI" secondAttribute="bottom" constant="16" id="LQW-Py-D23"/>
+                            <constraint firstItem="GOu-vA-rbJ" firstAttribute="top" secondItem="dgK-o7-x6X" secondAttribute="bottom" constant="2" id="QJe-KZ-KXz"/>
                             <constraint firstItem="Dhd-LD-eyI" firstAttribute="top" secondItem="qTC-LD-hFC" secondAttribute="top" constant="16" id="Rwb-mA-Z3o"/>
                             <constraint firstAttribute="height" constant="72" id="ZTr-bj-7dI"/>
+                            <constraint firstItem="dgK-o7-x6X" firstAttribute="leading" secondItem="Dhd-LD-eyI" secondAttribute="trailing" constant="12" id="jQt-4p-Nmj"/>
+                            <constraint firstAttribute="trailing" secondItem="mF1-td-jMQ" secondAttribute="trailing" constant="16" id="jjh-iy-Efc"/>
+                            <constraint firstItem="GOu-vA-rbJ" firstAttribute="leading" secondItem="dgK-o7-x6X" secondAttribute="leading" id="s3Q-Hf-zRO"/>
+                            <constraint firstItem="mF1-td-jMQ" firstAttribute="centerY" secondItem="Dhd-LD-eyI" secondAttribute="centerY" id="uyt-gB-vff"/>
+                            <constraint firstItem="dgK-o7-x6X" firstAttribute="top" secondItem="Dhd-LD-eyI" secondAttribute="top" id="xLO-We-Yvx"/>
                         </constraints>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
@@ -183,12 +217,15 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="EmergencycontacttextLabel" destination="3Jh-NZ-xzk" id="aYu-cS-ea6"/>
+                <outlet property="Needhelptitlelabel" destination="JWb-X2-dqX" id="I18-d3-aK7"/>
                 <outlet property="containerview" destination="OgI-4f-96m" id="mIG-Zq-jPG"/>
             </connections>
             <point key="canvasLocation" x="238.93129770992365" y="290.84507042253523"/>
         </tableViewCell>
     </objects>
     <resources>
+        <image name="Arrow" width="6.6666665077209473" height="19.333333969116211"/>
         <image name="icon 44" width="20" height="20"/>
         <image name="phone" catalog="system" width="128" height="115"/>
         <image name="warningicon" width="22" height="19"/>

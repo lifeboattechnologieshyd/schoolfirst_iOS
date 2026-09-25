@@ -188,6 +188,7 @@ extension UIFont {
         return UIFont(name: style.rawValue, size: size) ?? UIFont.systemFont(ofSize: size)
     }
 }
+
 import Photos
 
 extension String {

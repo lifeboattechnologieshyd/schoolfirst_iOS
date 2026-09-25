@@ -24,6 +24,7 @@ class TRSPRTpickupanddropUITableviewcell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        setupFonts()
         StudentNameLbl.text = UserManager.shared.resolvedStudentName
         setupSegmentAppearance()
         setupStudentImageView()
@@ -53,6 +54,12 @@ class TRSPRTpickupanddropUITableviewcell: UITableViewCell {
         if let iv = StudentProfileimageview, iv.bounds.height > 0 {
             iv.layer.cornerRadius = iv.bounds.height / 2
         }
+    }
+    
+    private func setupFonts() {
+        StudentNameLbl?.font = .hankenSemiBold(size: 20)
+        RoutecodeLabel?.font = .hankenSemiBold(size: 20)
+        BusnumberLabel?.font = .hankenRegular(size: 16)
     }
 
     // MARK: - Segment Appearance

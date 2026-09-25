@@ -9,6 +9,8 @@ import UIKit
 
 class TRSPRTcantactdriverVC: UIViewController {
 
+    @IBOutlet weak var ContactdriverLabel: UILabel!
+    @IBOutlet weak var Topview: UIView!
     // MARK: - Outlets
     @IBOutlet weak var BackButton: UIButton!
     @IBOutlet weak var tableview: UITableView!
@@ -28,10 +30,44 @@ class TRSPRTcantactdriverVC: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupTopViewBottomShadowAndBorder()
         setupLoader()
         setupTableView()
         fetchBusDetails()
     }
+    private func setupFonts() {
+        ContactdriverLabel?.font = .hankenBold(size: 20)
+        
+    }
+    private func setupTopViewBottomShadowAndBorder() {
+           guard let topView = Topview else { return }
+
+           // 1. Bottom Shadow Setup
+           topView.layer.masksToBounds = false
+           topView.layer.shadowColor = UIColor.black.cgColor
+           topView.layer.shadowOpacity = 0.08
+           topView.layer.shadowOffset = CGSize(width: 0, height: 3)
+           topView.layer.shadowRadius = 4.0
+           
+           // Optimize rendering performance using a precise shadow path along the bottom
+           let shadowRect = CGRect(x: 0, y: topView.bounds.height - 2, width: topView.bounds.width, height: 4)
+           topView.layer.shadowPath = UIBezierPath(rect: shadowRect).cgPath
+
+           // 2. Bottom Border Line Setup
+           topView.layer.sublayers?.removeAll(where: { $0.name == "TopViewBottomBorder" })
+
+           let borderHeight: CGFloat = 1.0
+           let bottomBorder = CALayer()
+           bottomBorder.name = "TopViewBottomBorder"
+           bottomBorder.frame = CGRect(
+               x: 0,
+               y: topView.bounds.height - borderHeight,
+               width: topView.bounds.width,
+               height: borderHeight
+           )
+           bottomBorder.backgroundColor = UIColor.systemGray5.cgColor
+           topView.layer.addSublayer(bottomBorder)
+       }
 
     // MARK: - Back Button Action
     @IBAction func BackButtonTapped(_ sender: UIButton) {
@@ -193,8 +229,8 @@ class TRSPRTcantactdriverVC: UIViewController {
     private func navigateToChat() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let chatVC = storyboard.instantiateViewController(
-            withIdentifier: "TRSPTchatVC"
-        ) as? TRSPTchatVC else {
+            withIdentifier: "comimgsoonVC"
+        ) as? comimgsoonVC else {
             print("❌ TRSPTchatVC not found in storyboard. Check Storyboard ID.")
             return
         }

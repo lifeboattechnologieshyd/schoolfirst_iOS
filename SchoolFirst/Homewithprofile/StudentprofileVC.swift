@@ -183,13 +183,19 @@ class StudentprofileVC: UIViewController {
                         self.loadedStudentId = studentId
                         print("✅ Student Profile parsed successfully for \(data.name)")
                         
-                        // ✅ SAVE photo URL so OTHER SCREENS can reuse it
+                        // ✅ SAVE photo URL for this specific student ID so OTHER SCREENS can reuse it
                         if let photoUrl = data.photoUrl,
                            !photoUrl.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                            UserDefaults.standard.set(photoUrl, forKey: "STUDENT_PHOTO_URL")
-                            print("💾 Saved STUDENT_PHOTO_URL:", photoUrl)
+                            UserDefaults.standard.set(photoUrl, forKey: "STUDENT_PHOTO_URL_\(studentId)")
+                            if studentId == UserManager.shared.resolvedStudentID {
+                                UserDefaults.standard.set(photoUrl, forKey: "STUDENT_PHOTO_URL")
+                            }
+                            print("💾 Saved STUDENT_PHOTO_URL for \(data.name) (\(studentId)):", photoUrl)
                         } else {
-                            UserDefaults.standard.removeObject(forKey: "STUDENT_PHOTO_URL")
+                            UserDefaults.standard.removeObject(forKey: "STUDENT_PHOTO_URL_\(studentId)")
+                            if studentId == UserManager.shared.resolvedStudentID {
+                                UserDefaults.standard.removeObject(forKey: "STUDENT_PHOTO_URL")
+                            }
                         }
                         
                     } else {

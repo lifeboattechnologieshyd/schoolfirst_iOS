@@ -27,7 +27,10 @@ class TRSPRTcantactdriverVCUITableViewCell: UITableViewCell {
     @IBOutlet weak var Voicecallbutton: UIButton!
     @IBOutlet weak var Driverimg: UIImageView!
    
+    @IBOutlet weak var SafetysupportLabel: UILabel!
+    @IBOutlet weak var ReportissueLabel: UILabel!
     @IBOutlet weak var DriverExperienceLabel: UILabel!
+    @IBOutlet weak var EmergrncysupportLabel: UILabel!
     @IBOutlet weak var BusnumberLabel: UILabel!
     @IBOutlet weak var StatusLabel: UILabel!
     @IBOutlet weak var MessageButton: UIButton!
@@ -41,6 +44,7 @@ class TRSPRTcantactdriverVCUITableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         setupUI()
+        setupFonts()      // ✅ Apply fonts on first load
         clearStaticText()
 
         // ── DEBUG: verify outlet is connected ──
@@ -76,19 +80,25 @@ class TRSPRTcantactdriverVCUITableViewCell: UITableViewCell {
         Driverimg.clipsToBounds = true
         Driverimg.contentMode = .scaleAspectFill
 
-        // Live Track button target
-        Livetrackbutton?.addTarget(
-            self,
-            action: #selector(liveTrackButtonTapped),
-            for: .touchUpInside
-        )
-
-        // Voice Call button target
-        Voicecallbutton?.addTarget(
-            self,
-            action: #selector(voiceCallButtonTapped),
-            for: .touchUpInside
-        )
+        // ❌ REMOVED addTarget for Livetrackbutton & Voicecallbutton
+        // They are already connected via @IBAction in the XIB.
+        // Keeping both caused the screen to open TWICE.
+    }
+    
+    private func setupFonts() {
+        DrivernameLabel?.font        = .hankenBold(size: 24)
+        DriverExperienceLabel?.font  = .hankenMedium(size: 12)
+        BusnumberLabel?.font         = .hankenBold(size: 18)
+        ReportissueLabel?.font       = .hankenSemiBold(size: 14)
+        EmergrncysupportLabel?.font  = .hankenSemiBold(size: 14)
+        SafetysupportLabel?.font     = .hankenBold(size: 12)
+        StatusLabel?.font            = .hankenMedium(size: 12)
+        
+        RoutenameLabel?.numberOfLines             = 2
+        RoutenameLabel?.lineBreakMode             = .byWordWrapping
+        RoutenameLabel?.adjustsFontSizeToFitWidth = true
+        RoutenameLabel?.minimumScaleFactor        = 0.75
+        RoutenameLabel?.font = .hankenBold(size: 14)
     }
 
     // MARK: - Configure Data with Model
@@ -105,7 +115,7 @@ class TRSPRTcantactdriverVCUITableViewCell: UITableViewCell {
             return
         }
 
-        // ✅ 1. DRIVER NAME — EXACT SAME PATTERN AS DASHBOARD CELL
+        // ✅ 1. DRIVER NAME
         DrivernameLabel.text =
             data.driver?.name?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
             ? data.driver?.name
@@ -190,23 +200,13 @@ class TRSPRTcantactdriverVCUITableViewCell: UITableViewCell {
         imageDownloadTask?.resume()
     }
 
-    // MARK: - Button Actions
+    // MARK: - Button Actions (ONLY these — no addTarget)
+    
     @IBAction func MessageButtonTapped(_ sender: UIButton) {
         print("💬 Message button tapped")
         delegate?.didTapMessageButton()
     }
 
-    @objc private func liveTrackButtonTapped() {
-        print("📍 Live Track button tapped")
-        delegate?.didTapLiveTrackButton()
-    }
-
-    @objc private func voiceCallButtonTapped() {
-        print("📞 Voice call button tapped")
-        delegate?.didTapVoiceCallButton()
-    }
-
-    // Optional: if buttons are already connected via IBAction in XIB
     @IBAction func LivetrackbuttonTapped(_ sender: UIButton) {
         print("📍 Live Track button tapped")
         delegate?.didTapLiveTrackButton()

@@ -9,8 +9,10 @@ import UIKit
 
 class ContactdashboardTBLVCLL: UITableViewCell {
 
+    @IBOutlet weak var Needhelptitlelabel: UILabel!
     @IBOutlet weak var containerview: UIView!
     
+    @IBOutlet weak var EmergencycontacttextLabel: UILabel!
     // MARK: - Data Model
     private struct ContactOption {
         let title: String
@@ -32,10 +34,16 @@ class ContactdashboardTBLVCLL: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         setupGrid()
+        setupFonts()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
+    }
+    
+    private func setupFonts() {
+        EmergencycontacttextLabel?.font = .hankenBold(size: 14)
+        Needhelptitlelabel?.font = .hankenMedium(size: 14)
     }
     
     // MARK: - Grid Setup
@@ -126,7 +134,7 @@ class ContactdashboardTBLVCLL: UITableViewCell {
         // Title Label
         let titleLabel = UILabel()
         titleLabel.text = data.title
-        titleLabel.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+        titleLabel.font = .hankenBold(size: 14)          // ✅ Hanken Grotesk Bold
         titleLabel.textColor = .darkText
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         card.addSubview(titleLabel)
@@ -134,7 +142,7 @@ class ContactdashboardTBLVCLL: UITableViewCell {
         // Subtitle Label
         let subtitleLabel = UILabel()
         subtitleLabel.text = data.subtitle
-        subtitleLabel.font = UIFont.systemFont(ofSize: 11, weight: .regular)
+        subtitleLabel.font = .hankenRegular(size: 11)    // ✅ Hanken Grotesk Regular
         subtitleLabel.textColor = .gray
         subtitleLabel.numberOfLines = 2
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false

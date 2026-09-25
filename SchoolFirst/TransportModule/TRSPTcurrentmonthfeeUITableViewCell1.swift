@@ -19,6 +19,7 @@ class TRSPTcurrentmonthfeeUITableViewCell1: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         setupUI()
+        setupFonts()
     }
 
     override func prepareForReuse() {
@@ -27,6 +28,11 @@ class TRSPTcurrentmonthfeeUITableViewCell1: UITableViewCell {
         SubscriptiontypeLbl.text = nil
         AmountLbl.text          = nil
         ImageView.image         = nil
+    }
+    private func setupFonts() {
+        FeetypeLbl?.font = .hankenBold(size: 18)
+        SubscriptiontypeLbl?.font = .hankenSemiBold(size: 14)
+        
     }
 
     // MARK: - UI Setup

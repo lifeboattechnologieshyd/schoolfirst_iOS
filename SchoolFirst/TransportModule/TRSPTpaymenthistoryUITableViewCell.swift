@@ -24,6 +24,7 @@ class TRSPTpaymenthistoryUITableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         setupUI()
+        setupFonts()
     }
 
     override func prepareForReuse() {
@@ -34,6 +35,10 @@ class TRSPTpaymenthistoryUITableViewCell: UITableViewCell {
         AmountLbl.text        = nil
         statusLabel.text      = nil
         ImageView.image       = nil
+    }
+    private func setupFonts() {
+        PaymentmonthLbl?.font = .hankenBold(size: 16)
+        
     }
 
     // MARK: - UI Setup
@@ -88,7 +93,7 @@ class TRSPTpaymenthistoryUITableViewCell: UITableViewCell {
 
         // Checkmark icon
         ImageView.image = UIImage(
-            systemName: "checkmark",
+            systemName: "icon 12",
             withConfiguration: UIImage.SymbolConfiguration(pointSize: 14, weight: .bold)
         )
 

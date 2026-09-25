@@ -11,6 +11,8 @@ import MapKit
 class BuslivetrackingVC: UIViewController {
 
     // MARK: - Outlets
+    @IBOutlet weak var Topview: UIView!
+    @IBOutlet weak var LivetrackingLabel: UILabel!
     @IBOutlet weak var Mapview    : MKMapView!
     @IBOutlet weak var BackButton : UIButton!
 
@@ -27,13 +29,19 @@ class BuslivetrackingVC: UIViewController {
         indicator.hidesWhenStopped = true
         return indicator
     }()
+    
+    // MARK: - Attractive "Not Started" Overlay
+    private var notStartedOverlay: UIView!
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLoader()
         setupMapView()
+        setupNotStartedOverlay()
         fetchLiveLocation()
+        setupFonts()
+        setupTopViewShadow()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -45,6 +53,18 @@ class BuslivetrackingVC: UIViewController {
         super.viewWillDisappear(animated)
         stopLiveLocationTracking()
     }
+    
+    private func setupTopViewShadow() {
+        Topview.layer.shadowColor = UIColor.lightGray.cgColor
+        Topview.layer.shadowOpacity = 0.4
+        Topview.layer.shadowOffset = CGSize(width: 0, height: 4)
+        Topview.layer.shadowRadius = 2
+        Topview.layer.masksToBounds = false
+    }
+    
+    private func setupFonts() {
+        LivetrackingLabel?.font = .hankenBold(size: 16)
+    }
 
     // MARK: - Setup Loader
     private func setupLoader() {
@@ -54,6 +74,114 @@ class BuslivetrackingVC: UIViewController {
             activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
+    }
+    
+    // MARK: - Setup Attractive Not Started Popup
+    private func setupNotStartedOverlay() {
+        // Dark translucent background
+        notStartedOverlay = UIView()
+        notStartedOverlay.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        notStartedOverlay.translatesAutoresizingMaskIntoConstraints = false
+        notStartedOverlay.isHidden = true
+        notStartedOverlay.alpha = 0
+        view.addSubview(notStartedOverlay)
+        
+        // White Card
+        let cardView = UIView()
+        cardView.backgroundColor = .white
+        cardView.layer.cornerRadius = 20
+        cardView.layer.shadowColor = UIColor.black.cgColor
+        cardView.layer.shadowOpacity = 0.1
+        cardView.layer.shadowRadius = 15
+        cardView.translatesAutoresizingMaskIntoConstraints = false
+        notStartedOverlay.addSubview(cardView)
+        
+        // Bus/Clock Icon
+        let iconView = UIImageView(image: UIImage(systemName: "clock.badge.exclamationmark"))
+        iconView.tintColor = .systemOrange
+        iconView.contentMode = .scaleAspectFit
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Title Label
+        let titleLabel = UILabel()
+        titleLabel.text = "Trip Not Started Yet"
+        titleLabel.font = .hankenBold(size: 20)
+        titleLabel.textColor = .black
+        titleLabel.textAlignment = .center
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Message Label
+        let messageLabel = UILabel()
+        messageLabel.text = "The driver hasn't initiated the trip yet.\nStay on this screen, we are actively checking. Tracking will begin automatically once started."
+        messageLabel.font = .hankenRegular(size: 14)
+        messageLabel.textColor = .darkGray
+        messageLabel.textAlignment = .center
+        messageLabel.numberOfLines = 0
+        messageLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Go Back Button
+        let backBtn = UIButton(type: .system)
+        backBtn.setTitle("Go Back", for: .normal)
+        backBtn.titleLabel?.font = .hankenBold(size: 16)
+        backBtn.setTitleColor(.white, for: .normal)
+        backBtn.backgroundColor = UIColor(red: 0/255, green: 92/255, blue: 170/255, alpha: 1) // App Blue
+        backBtn.layer.cornerRadius = 12
+        backBtn.translatesAutoresizingMaskIntoConstraints = false
+        backBtn.addTarget(self, action: #selector(BackButtonTapped(_:)), for: .touchUpInside)
+        
+        // Add subviews to card
+        cardView.addSubview(iconView)
+        cardView.addSubview(titleLabel)
+        cardView.addSubview(messageLabel)
+        cardView.addSubview(backBtn)
+        
+        // Constraints
+        NSLayoutConstraint.activate([
+            notStartedOverlay.topAnchor.constraint(equalTo: view.topAnchor),
+            notStartedOverlay.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            notStartedOverlay.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            notStartedOverlay.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            cardView.centerXAnchor.constraint(equalTo: notStartedOverlay.centerXAnchor),
+            cardView.centerYAnchor.constraint(equalTo: notStartedOverlay.centerYAnchor),
+            cardView.widthAnchor.constraint(equalTo: notStartedOverlay.widthAnchor, constant: -60),
+            
+            iconView.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 30),
+            iconView.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
+            iconView.widthAnchor.constraint(equalToConstant: 50),
+            iconView.heightAnchor.constraint(equalToConstant: 50),
+            
+            titleLabel.topAnchor.constraint(equalTo: iconView.bottomAnchor, constant: 16),
+            titleLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 20),
+            titleLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -20),
+            
+            messageLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12),
+            messageLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 20),
+            messageLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -20),
+            
+            backBtn.topAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: 24),
+            backBtn.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 24),
+            backBtn.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -24),
+            backBtn.heightAnchor.constraint(equalToConstant: 48),
+            backBtn.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -24)
+        ])
+    }
+
+    private func showNotStartedPopup() {
+        guard notStartedOverlay.isHidden else { return }
+        notStartedOverlay.isHidden = false
+        UIView.animate(withDuration: 0.3) {
+            self.notStartedOverlay.alpha = 1
+        }
+    }
+    
+    private func hideNotStartedPopup() {
+        guard !notStartedOverlay.isHidden else { return }
+        UIView.animate(withDuration: 0.3, animations: {
+            self.notStartedOverlay.alpha = 0
+        }) { _ in
+            self.notStartedOverlay.isHidden = true
+        }
     }
 
     // MARK: - Setup MapView
@@ -70,30 +198,20 @@ class BuslivetrackingVC: UIViewController {
         let studentId = UserManager.shared.resolvedStudentID
         let schoolId  = UserManager.shared.resolvedSchoolID
 
-        guard !studentId.isEmpty else {
-            print("❌ Student ID is empty")
-            self.showErrorAlert(message: "Student configuration is missing.")
-            return
-        }
+        guard !studentId.isEmpty else { return }
+        guard !schoolId.isEmpty else { return }
 
-        guard !schoolId.isEmpty else {
-            print("❌ School ID is empty")
-            self.showErrorAlert(message: "School configuration is missing.")
-            return
+        // Only show activity indicator on first load
+        if busAnnotation == nil && notStartedOverlay.isHidden {
+            activityIndicator.startAnimating()
         }
-
-        activityIndicator.startAnimating()
 
         NetworkManager.shared.request(
             urlString: API.TRANSPORT_LIVELOCATION,
             method: .GET,
             requiresAuth: true,
-            parameters: [
-                "student_id": studentId
-            ],
-            headers: [
-                "X-School-Id": schoolId
-            ]
+            parameters: ["student_id": studentId],
+            headers: ["X-School-Id": schoolId]
         ) { [weak self] (result: Result<APIResponse<TransportLiveLocationData>, NetworkError>) in
 
             guard let self = self else { return }
@@ -104,6 +222,18 @@ class BuslivetrackingVC: UIViewController {
                 switch result {
                 case .success(let response):
                     if response.success, let data = response.data {
+                        
+                        let tripStatus = data.trip?.status?.lowercased() ?? ""
+                        let isActive = ["active", "started", "live", "running", "on_route"].contains(tripStatus)
+                        
+                        // ✅ IF NOT STARTED: Show popup, but keep polling!
+                        if !isActive {
+                            self.showNotStartedPopup()
+                            return
+                        }
+                        
+                        // ✅ IF STARTED: Hide popup, process location
+                        self.hideNotStartedPopup()
 
                         // Check if live location is available
                         if data.isAvailable == false {
@@ -115,13 +245,11 @@ class BuslivetrackingVC: UIViewController {
                         guard let location = data.location,
                               let latitude = location.latitude,
                               let longitude = location.longitude else {
-                            self.showErrorAlert(message: "Live location coordinates not found.")
                             return
                         }
 
                         let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
                         let vehicleNumber = data.vehicle?.vehicleNumber ?? "School Bus"
-                        let tripStatus = data.trip?.status ?? "Active"
                         let speed = location.speed ?? 0.0
                         let heading = location.heading
 
@@ -132,28 +260,11 @@ class BuslivetrackingVC: UIViewController {
                             speed: speed,
                             heading: heading
                         )
-
-                    } else {
-                        let errorMsg = response.description.isEmpty ? "Failed to fetch live location." : response.description
-                        self.showErrorAlert(message: errorMsg)
                     }
 
-                case .failure(let error):
-                    switch error {
-                    case .noaccess:
-                        print("❌ Session expired")
-                    case .noInternet:
-                        print("❌ No internet connection")
-                    case .serverError(let message):
-                        self.showErrorAlert(message: message)
-                    case .decodingError(let message):
-                        print("❌ Decoding Error: \(message)")
-                        self.showErrorAlert(message: "Failed to parse live location data.")
-                    case .invalidURL:
-                        self.showErrorAlert(message: "Invalid Request URL.")
-                    case .noData:
-                        self.showErrorAlert(message: "No data received from server.")
-                    }
+                case .failure(_):
+                    // Keep polling silently in background if error occurs (e.g. temporary network drop)
+                    break
                 }
             }
         }
@@ -185,7 +296,6 @@ class BuslivetrackingVC: UIViewController {
                 longitudinalMeters: 1000
             )
             Mapview.setRegion(region, animated: true)
-            print("✅ Bus annotation added at: \(coordinate.latitude), \(coordinate.longitude)")
             return
         }
 
@@ -215,10 +325,7 @@ class BuslivetrackingVC: UIViewController {
 
         // Smoothly follow bus on map (Like Rapido/Swiggy)
         Mapview.setCenter(coordinate, animated: true)
-
         lastCoordinate = coordinate
-
-        print("🚌 Bus Live Location Updated → Lat: \(String(format: "%.6f", coordinate.latitude)), Lng: \(String(format: "%.6f", coordinate.longitude)), Speed: \(String(format: "%.2f", speed)) km/h, Heading: \(Int(directionDegrees))°")
     }
 
     // MARK: - Calculate Heading Between Two Coordinates
@@ -239,22 +346,17 @@ class BuslivetrackingVC: UIViewController {
 
     // MARK: - Start Live Location Tracking (Auto Refresh)
     private func startLiveLocationTracking() {
-        // Invalidate existing timer if any
         locationTimer?.invalidate()
-
-        // Poll live location every 5 seconds
         locationTimer = Timer.scheduledTimer(withTimeInterval: refreshInterval,
                                              repeats: true) { [weak self] _ in
             self?.fetchLiveLocation()
         }
-        print("🔄 Live location tracking started (Refresh every \(Int(refreshInterval))s)")
     }
 
     // MARK: - Stop Live Location Tracking
     private func stopLiveLocationTracking() {
         locationTimer?.invalidate()
         locationTimer = nil
-        print("🛑 Live location tracking stopped")
     }
 
     // MARK: - Error Alert
@@ -265,9 +367,6 @@ class BuslivetrackingVC: UIViewController {
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        alert.addAction(UIAlertAction(title: "Retry", style: .default, handler: { [weak self] _ in
-            self?.fetchLiveLocation()
-        }))
         self.present(alert, animated: true)
     }
 

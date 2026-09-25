@@ -31,32 +31,37 @@ class TRNSPTdashbordCollectionViewCell: UICollectionViewCell {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        TitleLbl?.text                     = nil
-        DescriptionLbl?.text               = nil
-        ImageView?.image                   = nil
+        TitleLbl?.text                      = nil
+        DescriptionLbl?.text                = nil
+        ImageView?.image                    = nil
         CardBackgroundView?.backgroundColor = .clear
+        CardBackgroundView?.layer.borderColor = nil
     }
 
     // MARK: - Default UI
     private func setupDefaultUI() {
-        CardBackgroundView?.layer.cornerRadius = 12
+        CardBackgroundView?.layer.cornerRadius = 14
         CardBackgroundView?.clipsToBounds      = true
+        CardBackgroundView?.layer.borderWidth  = 1.0 // Subtle border to match Figma
 
         contentView.backgroundColor = .clear
         backgroundColor             = .clear
 
-     //   TitleLbl?.textColor       = .black
-        //TitleLbl?.font            = UIFont.systemFont(ofSize: 12, weight: .semibold)
-       // TitleLbl?.numberOfLines   = 2
-       // TitleLbl?.textAlignment   = .center
+        // MARK: - Title Label Setup (Thick/Bold)
+        TitleLbl?.font                      = .hankenBold(size: 11)
+        TitleLbl?.textAlignment            = .center
+        TitleLbl?.numberOfLines            = 2
+        TitleLbl?.lineBreakMode            = .byWordWrapping
+        TitleLbl?.adjustsFontSizeToFitWidth = true
+        TitleLbl?.minimumScaleFactor       = 0.75
 
-       // DescriptionLbl?.textColor     = .darkGray
-       // DescriptionLbl?.font          = UIFont.systemFont(ofSize: 9, weight: .regular)
-       // DescriptionLbl?.numberOfLines = 2
-      //  DescriptionLbl?.textAlignment = .center
-
-       // ImageView?.contentMode   = .scaleAspectFit
-       // ImageView?.clipsToBounds = true
+        // MARK: - Description Label Setup
+        DescriptionLbl?.font                      = .hankenRegular(size: 9)
+        DescriptionLbl?.textAlignment            = .center
+        DescriptionLbl?.numberOfLines            = 2
+        DescriptionLbl?.lineBreakMode            = .byWordWrapping
+        DescriptionLbl?.adjustsFontSizeToFitWidth = true
+        DescriptionLbl?.minimumScaleFactor       = 0.75
     }
 
     // MARK: - Configure
@@ -64,11 +69,15 @@ class TRNSPTdashbordCollectionViewCell: UICollectionViewCell {
                    description: String,
                    imageName: String,
                    backgroundColor: UIColor,
-                   iconTint: UIColor) {
+                   iconTint: UIColor,
+                   borderColor: UIColor) {
 
         TitleLbl?.text       = title
         DescriptionLbl?.text = description
+        
+        // Fill and Border
         CardBackgroundView?.backgroundColor = backgroundColor
+        CardBackgroundView?.layer.borderColor = borderColor.cgColor
 
         if let assetImage = UIImage(named: imageName) {
             ImageView?.image = assetImage.withRenderingMode(.alwaysTemplate)
@@ -77,6 +86,6 @@ class TRNSPTdashbordCollectionViewCell: UICollectionViewCell {
         }
         ImageView?.tintColor = iconTint
 
-        print("🎨 Cell configured: \(title) | bg: \(backgroundColor) | icon: \(imageName)")
+        print("🎨 Cell configured: \(title)")
     }
 }

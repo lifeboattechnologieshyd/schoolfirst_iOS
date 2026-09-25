@@ -7,9 +7,11 @@ import UIKit
 
 class TRSPRTpickupanddropVC: UIViewController {
 
+    @IBOutlet weak var PickupanddropLabel: UILabel!
     @IBOutlet weak var BackButton: UIButton!
     @IBOutlet weak var tableview: UITableView!
 
+    @IBOutlet weak var Topview: UIView!
     // 0 = Morning Pickup, 1 = Evening Drop
     private var selectedSegmentIndex: Int = 0
 
@@ -32,7 +34,42 @@ class TRSPRTpickupanddropVC: UIViewController {
         super.viewDidLoad()
         setupTableView()
         fetchBusData()
+        setupTopViewBottomShadowAndBorder()
     }
+    private func setupFonts() {
+        PickupanddropLabel?.font = .hankenSemiBold(size: 20)
+        
+    }
+    private func setupTopViewBottomShadowAndBorder() {
+           guard let topView = Topview else { return }
+
+           // 1. Bottom Shadow Setup
+           topView.layer.masksToBounds = false
+           topView.layer.shadowColor = UIColor.black.cgColor
+           topView.layer.shadowOpacity = 0.08
+           topView.layer.shadowOffset = CGSize(width: 0, height: 3)
+           topView.layer.shadowRadius = 4.0
+           
+           // Optimize rendering performance using a precise shadow path along the bottom
+           let shadowRect = CGRect(x: 0, y: topView.bounds.height - 2, width: topView.bounds.width, height: 4)
+           topView.layer.shadowPath = UIBezierPath(rect: shadowRect).cgPath
+
+           // 2. Bottom Border Line Setup
+           topView.layer.sublayers?.removeAll(where: { $0.name == "TopViewBottomBorder" })
+
+           let borderHeight: CGFloat = 1.0
+           let bottomBorder = CALayer()
+           bottomBorder.name = "TopViewBottomBorder"
+           bottomBorder.frame = CGRect(
+               x: 0,
+               y: topView.bounds.height - borderHeight,
+               width: topView.bounds.width,
+               height: borderHeight
+           )
+           bottomBorder.backgroundColor = UIColor.systemGray5.cgColor
+           topView.layer.addSublayer(bottomBorder)
+       }
+
 
     @IBAction func BackButtonTapped(_ sender: UIButton) {
         navigationController?.popViewController(animated: true)
@@ -142,50 +179,111 @@ class TRSPRTpickupanddropVC: UIViewController {
     }
 
     // MARK: - Core Logic: Decide Passed / Live / Upcoming
-    private func determineStopState(stop: RouteStop, formattedTime: String, isDrop: Bool) -> (isPassed: Bool, isLive: Bool) {
-        // 1. Check live id/order from busData (if backend sends live position)
-        if let liveId = currentLiveStopId, let sid = stop.id, sid == liveId {
-            return (false, true)
+    private func findLiveStopIndex(in stops: [RouteStop], isDrop: Bool) -> Int? {
+        guard !stops.isEmpty else { return nil }
+
+        // 1. Check live ID / order from top-level busData
+        if let liveId = currentLiveStopId {
+            if let idx = stops.firstIndex(where: { $0.id != nil && $0.id == liveId }) {
+                return idx
+            }
         }
-        if let liveOrder = currentLiveStopOrder, let order = stop.stopOrder, order == liveOrder {
-            return (false, true)
+        if let liveOrder = currentLiveStopOrder {
+            if let idx = stops.firstIndex(where: { $0.stopOrder != nil && $0.stopOrder == liveOrder }) {
+                return idx
+            }
         }
 
-        // 2. Check explicit status fields inside RouteStop
+        // 2. Check explicit status string or boolean inside each RouteStop for a live indicator
+        for (idx, stop) in stops.enumerated() {
+            if let statusStr = extractStringValue(from: stop, keys: ["status","stopStatus","stop_status","pickupStatus","dropStatus","state","stage","currentStatus","tripStatus"])?.lowercased() {
+                if statusStr.contains("live") || statusStr.contains("current") || statusStr.contains("active") || statusStr.contains("onroute") || statusStr.contains("on_route") || statusStr.contains("running") || statusStr.contains("arrived") || statusStr.contains("in_stop") || statusStr.contains("at_stop") {
+                    return idx
+                }
+            }
+            if let isLiveBool = extractBoolValue(from: stop, keys: ["isLive","is_live","live","isCurrent","is_current","current","isActive","active","isOnRoute"]), isLiveBool {
+                return idx
+            }
+        }
+
+        // 3. Check for transition: last stop marked "passed" -> next stop is live
+        var lastPassedIdx: Int? = nil
+        for (idx, stop) in stops.enumerated() {
+            var isPassed = false
+            if let statusStr = extractStringValue(from: stop, keys: ["status","stopStatus","stop_status","pickupStatus","dropStatus","state","stage","currentStatus","tripStatus"])?.lowercased() {
+                if statusStr.contains("pass") || statusStr.contains("complete") || statusStr.contains("done") || statusStr.contains("visited") {
+                    isPassed = true
+                }
+            }
+            if !isPassed, let isPassedBool = extractBoolValue(from: stop, keys: ["isPassed","is_passed","passed","isCompleted","is_completed","completed","isVisited","visited"]) {
+                if isPassedBool { isPassed = true }
+            }
+            if isPassed {
+                lastPassedIdx = idx
+            }
+        }
+
+        if let lastP = lastPassedIdx {
+            if lastP + 1 < stops.count {
+                return lastP + 1
+            } else {
+                return nil // All stops passed
+            }
+        }
+
+        // 4. Fallback: Time-based active stop search
+        let now = Date()
+        for (idx, stop) in stops.enumerated() {
+            let time: String?
+            if !isDrop {
+                time = stop.pickupTime
+            } else {
+                let drop = stop.dropTime?.trimmingCharacters(in: .whitespacesAndNewlines)
+                time = (drop?.isEmpty == false) ? stop.dropTime : stop.pickupTime
+            }
+            let formatted = TRSPRpickupUITableviewcell2.formatTime(time, isDrop: isDrop)
+            if let targetDate = timeStringToDate(raw: formatted, isDrop: isDrop) {
+                let diff = targetDate.timeIntervalSince(now)
+                if diff >= -600 {
+                    return idx
+                }
+            }
+        }
+
+        return nil
+    }
+
+    private func determineStopState(stopIndex: Int, stops: [RouteStop], formattedTime: String, isDrop: Bool) -> (isPassed: Bool, isLive: Bool) {
+        guard stopIndex >= 0 && stopIndex < stops.count else { return (false, false) }
+        let liveIdx = findLiveStopIndex(in: stops, isDrop: isDrop)
+
+        if let liveIdx = liveIdx {
+            if stopIndex < liveIdx {
+                return (true, false)
+            } else if stopIndex == liveIdx {
+                return (false, true)
+            } else {
+                return (false, false)
+            }
+        }
+
+        let stop = stops[stopIndex]
         if let statusStr = extractStringValue(from: stop, keys: ["status","stopStatus","stop_status","pickupStatus","dropStatus","state","stage","currentStatus","tripStatus"])?.lowercased() {
             if statusStr.contains("pass") || statusStr.contains("complete") || statusStr.contains("done") || statusStr.contains("visited") {
                 return (true, false)
             }
-            if statusStr.contains("live") || statusStr.contains("current") || statusStr.contains("active") || statusStr.contains("onroute") || statusStr.contains("on_route") || statusStr.contains("running") {
-                return (false, true)
-            }
-            if statusStr.contains("upcoming") || statusStr.contains("pending") || statusStr.contains("scheduled") {
-                return (false, false)
-            }
         }
-        if let isPassedBool = extractBoolValue(from: stop, keys: ["isPassed","is_passed","passed","isCompleted","is_completed","completed","isVisited","visited"]) {
-            if isPassedBool { return (true, false) }
-        }
-        if let isLiveBool = extractBoolValue(from: stop, keys: ["isLive","is_live","live","isCurrent","is_current","current","isActive","active","isOnRoute"]) {
-            if isLiveBool { return (false, true) }
-        }
-
-        // 3. Fallback: Time based calculation
-        guard let targetDate = timeStringToDate(raw: formattedTime, isDrop: isDrop) else {
-            // If time parsing fails, treat as upcoming
-            return (false, false)
-        }
-        let now = Date()
-        let diff = targetDate.timeIntervalSince(now) // +ve future, -ve past
-
-        // Passed if more than 10 mins ago, Live if within +/-10 mins, else Upcoming
-        if diff < -600 { // 10 mins ago
+        if let isPassedBool = extractBoolValue(from: stop, keys: ["isPassed","is_passed","passed","isCompleted","is_completed","completed","isVisited","visited"]), isPassedBool {
             return (true, false)
-        } else if diff >= -600 && diff <= 600 {
-            return (false, true)
-        } else {
-            return (false, false)
         }
+
+        if let targetDate = timeStringToDate(raw: formattedTime, isDrop: isDrop) {
+            if targetDate.timeIntervalSince(Date()) < -600 {
+                return (true, false)
+            }
+        }
+
+        return (false, false)
     }
 
     private func timeStringToDate(raw: String?, isDrop: Bool) -> Date? {
@@ -300,7 +398,7 @@ extension TRSPRTpickupanddropVC: UITableViewDelegate, UITableViewDataSource {
         }
 
         let formatted = TRSPRpickupUITableviewcell2.formatTime(time, isDrop: isDrop)
-        let state = determineStopState(stop: stop, formattedTime: formatted, isDrop: isDrop)
+        let state = determineStopState(stopIndex: stopIndex, stops: displayStops, formattedTime: formatted, isDrop: isDrop)
 
         cell.configure(
             stopName: stop.stopName,
@@ -320,6 +418,6 @@ extension TRSPRTpickupanddropVC: UITableViewDelegate, UITableViewDataSource {
         let stopsCount = displayStops.count
         if indexPath.row == 0 { return 280 }
         else if indexPath.row == stopsCount + 1 { return 200 }
-        else { return 70 }
+        else { return 90}
     }
 }

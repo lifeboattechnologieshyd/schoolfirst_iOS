@@ -54,12 +54,16 @@ class DBManager {
         UserDefaults.standard.set(gradeSection, forKey: "STUDENT_GRADE_SECTION")
         print("💾 Saved STUDENT_GRADE_SECTION:", gradeSection)
         
-        // ── ✅ NEW: Save student photo URL (runtime-safe extraction) ─────
+        // ── Save student photo URL (student-scoped key) ─────
+        let studentKey = "STUDENT_PHOTO_URL_" + student.studentID
         if let photoURL = DBManager.extractPhotoURL(from: student),
            !photoURL.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            UserDefaults.standard.set(photoURL, forKey: studentKey)
             UserDefaults.standard.set(photoURL, forKey: "STUDENT_PHOTO_URL")
-            print("💾 Saved STUDENT_PHOTO_URL:", photoURL)
+            print("💾 Saved STUDENT_PHOTO_URL for \(student.name) (\(student.studentID)):", photoURL)
         } else {
+            UserDefaults.standard.removeObject(forKey: studentKey)
+            UserDefaults.standard.removeObject(forKey: "STUDENT_PHOTO_URL")
             print("⚠️ saveSelectedStudent — no photo URL found for:", student.name)
         }
         
@@ -293,21 +297,26 @@ class UserManager {
         return ""
     }
     
-    // MARK: - ✅ NEW: Resolved Student Photo URL (no API call needed)
+    // MARK: - Resolved Student Photo URL (strictly scoped to currently selected student)
     var resolvedStudentPhotoURL: String {
+        let sid = resolvedStudentID
+        
         // Priority 1: In-memory selectedKid (runtime-safe extraction)
         if let kid = selectedKid,
            let url = DBManager.extractPhotoURL(from: kid),
            !url.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return url
         }
-        // Priority 2: UserDefaults fallback (saved at login / kid switch / profile screen)
-        let fallback = UserDefaults.standard.string(forKey: "STUDENT_PHOTO_URL") ?? ""
-        if !fallback.isEmpty {
-            print("⚠️ resolvedStudentPhotoURL — using UserDefaults fallback:", fallback)
-            return fallback
+        
+        // Priority 2: Student-specific UserDefaults key for currently selected student
+        if !sid.isEmpty,
+           let studentScopedURL = UserDefaults.standard.string(forKey: "STUDENT_PHOTO_URL_\(sid)"),
+           !studentScopedURL.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return studentScopedURL
         }
-        print("❌ resolvedStudentPhotoURL — no photo URL available")
+        
+        // Return empty string for placeholder UI — NEVER return another student's photo URL!
+        print("❌ resolvedStudentPhotoURL — no photo URL available for student ID:", sid)
         return ""
     }
     

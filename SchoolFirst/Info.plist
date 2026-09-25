@@ -16,13 +16,44 @@
 	<string></string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.schoolfirst.phonepe</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>schoolfirst.phonepe</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>ppemerchantsdkv1</string>
+		<string>ppemerchantsdkv2</string>
+		<string>phonepe</string>
+	</array>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>HankenGrotesk-Bold.ttf</string>
+		<string>HankenGrotesk-Black.ttf</string>
+		<string>HankenGrotesk-ExtraBold.ttf</string>
+		<string>HankenGrotesk-ExtraLight.ttf</string>
+		<string>HankenGrotesk-Light.ttf</string>
+		<string>HankenGrotesk-Medium.ttf</string>
+		<string>HankenGrotesk-Regular.ttf</string>
+		<string>HankenGrotesk-SemiBold.ttf</string>
+		<string>HankenGrotesk-Thin.ttf</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -62,24 +93,5 @@
 	<string>$(server_url)</string>
 	<key>server_url_2</key>
 	<string>$(server_url_2)</string>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>ppemerchantsdkv1</string>
-		<string>ppemerchantsdkv2</string>
-		<string>phonepe</string>
-	</array>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>com.schoolfirst.phonepe</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>schoolfirst.phonepe</string>
-			</array>
-		</dict>
-	</array>
 </dict>
 </plist>
