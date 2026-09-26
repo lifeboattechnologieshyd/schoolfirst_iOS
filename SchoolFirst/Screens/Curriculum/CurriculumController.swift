@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CurriculumController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITableViewDelegate, UITableViewDataSource {
+class CurriculumController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var topView: UIView!
     @IBOutlet weak var colVw: UICollectionView!
@@ -19,66 +19,62 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
     var allGrades: [Grade] = []
     var isGradesLoading = false
     
-    private let kidSectionInset: CGFloat = 16
-    private let kidInterItemSpacing: CGFloat = 12
-    private let kidCellHeight: CGFloat = 72
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         topView.addBottomShadow()
         
-        colVw.register(UINib(nibName: "KidSelectionCell", bundle: nil), forCellWithReuseIdentifier: "KidSelectionCell")
         tblVw.register(UINib(nibName: "CurriculumTypeCell", bundle: nil), forCellReuseIdentifier: "CurriculumTypeCell")
         
-        configureKidsCollectionView()
+        removeKidSelection()
         
         getCurriculumType()
         getGradesList()
         
-        colVw.delegate = self
-        colVw.dataSource = self
-        
         tblVw.delegate = self
         tblVw.dataSource = self
+        tblVw.backgroundColor = .white
+        tblVw.separatorStyle = .none
         
         tblVw.reloadData()
     }
     
-    private func configureKidsCollectionView() {
-        // Force fixed-size cells (disable self-sizing from storyboard)
-        if let layout = colVw.collectionViewLayout as? UICollectionViewFlowLayout {
-            layout.scrollDirection = .horizontal
-            layout.minimumLineSpacing = kidInterItemSpacing
-            layout.minimumInteritemSpacing = kidInterItemSpacing
-            layout.sectionInset = UIEdgeInsets(
-                top: 8,
-                left: kidSectionInset,
-                bottom: 8,
-                right: kidSectionInset
-            )
-            // Turn off self-sizing so sizeForItemAt is respected
-            layout.estimatedItemSize = .zero
+    // MARK: - Remove Kid Selection UI (collapse storyboard collection view)
+    private func removeKidSelection() {
+        guard let colVw = colVw else { return }
+        
+        colVw.isHidden = true
+        colVw.dataSource = nil
+        colVw.delegate = nil
+        
+        // Collapse any existing height constraint on the collection view
+        var foundHeight = false
+        for c in colVw.constraints where c.firstAttribute == .height && c.firstItem === colVw {
+            c.constant = 0
+            foundHeight = true
+        }
+        if !foundHeight {
+            let h = colVw.heightAnchor.constraint(equalToConstant: 0)
+            h.priority = .required
+            h.isActive = true
         }
         
-        colVw.showsHorizontalScrollIndicator = false
-        colVw.alwaysBounceHorizontal = true
-        colVw.contentInsetAdjustmentBehavior = .never
-        colVw.contentInset = .zero
-        colVw.clipsToBounds = true
-        colVw.backgroundColor = .clear
-        colVw.decelerationRate = .fast
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        colVw.collectionViewLayout.invalidateLayout()
+        // Remove any vertical spacing between collection view and table
+        for c in view.constraints {
+            let involvesCol = (c.firstItem === colVw || c.secondItem === colVw)
+            let involvesTbl = (c.firstItem === tblVw || c.secondItem === tblVw)
+            if involvesCol && involvesTbl,
+               c.firstAttribute == .top || c.firstAttribute == .bottom {
+                c.constant = 0
+            }
+        }
+        
+        view.layoutIfNeeded()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupUI()
-        colVw.reloadData()
     }
     
     var hasShownAddKid = false
@@ -89,7 +85,6 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
         if kids.isEmpty && !hasShownAddKid {
             hasShownAddKid = true
             
-            colVw.isHidden = true
             tblVw.isHidden = true
             lblNoKids?.isHidden = true
             
@@ -105,7 +100,6 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
         }
 
         if !kids.isEmpty {
-            colVw.isHidden = false
             tblVw.isHidden = false
             lblNoKids?.isHidden = true
 
@@ -117,20 +111,7 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
                 UserManager.shared.curriculamSelectedStudent = kids[0]
             }
 
-            colVw.reloadData()
             tblVw.reloadData()
-            
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                let count = UserManager.shared.kids.count
-                if count > 0, self.selected_student < count {
-                    self.colVw.scrollToItem(
-                        at: IndexPath(item: self.selected_student, section: 0),
-                        at: .centeredHorizontally,
-                        animated: false
-                    )
-                }
-            }
         }
     }
     
@@ -299,55 +280,6 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
         navigationController?.pushViewController(vc, animated: true)
     }
     
-    // MARK: Collection View
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return UserManager.shared.kids.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "KidSelectionCell", for: indexPath) as! KidSelectionCell
-        let kids = UserManager.shared.kids
-        cell.setup(student: kids[indexPath.item], isSelected: selected_student == indexPath.item)
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let previousIndex = selected_student
-        selected_student = indexPath.item
-        UserManager.shared.curriculamSelectedStudent = UserManager.shared.kids[indexPath.item]
-        
-        var indexPathsToReload = [indexPath]
-        if previousIndex != indexPath.item {
-            indexPathsToReload.append(IndexPath(item: previousIndex, section: 0))
-        }
-        colVw.reloadItems(at: indexPathsToReload)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let totalKids = UserManager.shared.kids.count
-        let boundsWidth = collectionView.bounds.width
-        
-        guard boundsWidth > 0 else {
-            return CGSize(width: 160, height: kidCellHeight)
-        }
-        
-        if totalKids <= 1 {
-            let width = boundsWidth - (kidSectionInset * 2)
-            return CGSize(width: max(width, 120), height: kidCellHeight)
-        }
-        
-        if totalKids == 2 {
-            let totalHorizontalPadding = (kidSectionInset * 2) + kidInterItemSpacing
-            let width = floor((boundsWidth - totalHorizontalPadding) / 2.0)
-            return CGSize(width: max(width, 120), height: kidCellHeight)
-        }
-        
-        let width = floor((boundsWidth - (kidSectionInset * 2) - kidInterItemSpacing) / 2.0)
-        return CGSize(width: max(width, 140), height: kidCellHeight)
-    }
-    
     // MARK: Table View
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -358,6 +290,7 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
         let cell = tableView.dequeueReusableCell(withIdentifier: "CurriculumTypeCell") as? CurriculumTypeCell
         cell?.lblDesc.text = types[indexPath.row].description
         cell?.lblName.text = types[indexPath.row].curriculumName
+        cell?.selectionStyle = .none
         return cell!
     }
     
