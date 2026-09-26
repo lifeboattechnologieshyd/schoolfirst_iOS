@@ -16,19 +16,25 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
     
     var selected_student = 0
     var types = [Curriculum]()
-    var allGrades: [Grade] = []          // ✅ All grades from GRADES_LIST API
+    var allGrades: [Grade] = []
     var isGradesLoading = false
+    
+    private let kidSectionInset: CGFloat = 16
+    private let kidInterItemSpacing: CGFloat = 12
+    private let kidCellHeight: CGFloat = 72
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         topView.addBottomShadow()
         
-        self.colVw.register(UINib(nibName: "KidSelectionCell", bundle: nil), forCellWithReuseIdentifier: "KidSelectionCell")
-        self.tblVw.register(UINib(nibName: "CurriculumTypeCell", bundle: nil), forCellReuseIdentifier: "CurriculumTypeCell")
+        colVw.register(UINib(nibName: "KidSelectionCell", bundle: nil), forCellWithReuseIdentifier: "KidSelectionCell")
+        tblVw.register(UINib(nibName: "CurriculumTypeCell", bundle: nil), forCellReuseIdentifier: "CurriculumTypeCell")
         
-        self.getCurriculumType()
-        self.getGradesList()   // ✅ Load grades for matching
+        configureKidsCollectionView()
+        
+        getCurriculumType()
+        getGradesList()
         
         colVw.delegate = self
         colVw.dataSource = self
@@ -37,6 +43,36 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
         tblVw.dataSource = self
         
         tblVw.reloadData()
+    }
+    
+    private func configureKidsCollectionView() {
+        // Force fixed-size cells (disable self-sizing from storyboard)
+        if let layout = colVw.collectionViewLayout as? UICollectionViewFlowLayout {
+            layout.scrollDirection = .horizontal
+            layout.minimumLineSpacing = kidInterItemSpacing
+            layout.minimumInteritemSpacing = kidInterItemSpacing
+            layout.sectionInset = UIEdgeInsets(
+                top: 8,
+                left: kidSectionInset,
+                bottom: 8,
+                right: kidSectionInset
+            )
+            // Turn off self-sizing so sizeForItemAt is respected
+            layout.estimatedItemSize = .zero
+        }
+        
+        colVw.showsHorizontalScrollIndicator = false
+        colVw.alwaysBounceHorizontal = true
+        colVw.contentInsetAdjustmentBehavior = .never
+        colVw.contentInset = .zero
+        colVw.clipsToBounds = true
+        colVw.backgroundColor = .clear
+        colVw.decelerationRate = .fast
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        colVw.collectionViewLayout.invalidateLayout()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -63,7 +99,7 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
                 addKidVC.onDismissWithoutAdding = { [weak self] in
                     self?.navigationController?.popViewController(animated: true)
                 }
-                self.present(addKidVC, animated: true, completion: nil)
+                present(addKidVC, animated: true, completion: nil)
             }
             return
         }
@@ -73,19 +109,36 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
             tblVw.isHidden = false
             lblNoKids?.isHidden = true
 
-            selected_student = 0
-            UserManager.shared.curriculamSelectedStudent = kids[0]
+            if let selected = UserManager.shared.curriculamSelectedStudent,
+               let idx = kids.firstIndex(where: { $0.id == selected.id }) {
+                selected_student = idx
+            } else {
+                selected_student = 0
+                UserManager.shared.curriculamSelectedStudent = kids[0]
+            }
 
             colVw.reloadData()
             tblVw.reloadData()
+            
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                let count = UserManager.shared.kids.count
+                if count > 0, self.selected_student < count {
+                    self.colVw.scrollToItem(
+                        at: IndexPath(item: self.selected_student, section: 0),
+                        at: .centeredHorizontally,
+                        animated: false
+                    )
+                }
+            }
         }
     }
     
     @IBAction func onClickBack(_ sender: UIButton) {
-        self.navigationController?.popViewController(animated: true)
+        navigationController?.popViewController(animated: true)
     }
     
-    // MARK: - Get Selected Student (safe unwrap)
+    // MARK: - Get Selected Student
     func currentSelectedStudent() -> Student? {
         if let selected = UserManager.shared.curriculamSelectedStudent {
             return selected
@@ -96,21 +149,17 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
     }
     
     // MARK: - Resolve Grade ID
-    /// Resolves the grade ID for the given student using multiple strategies.
     func resolveGradeID(for student: Student) -> String {
         
-        // 1) Direct gradeID (if available)
         let directID = student.gradeID.trimmingCharacters(in: .whitespacesAndNewlines)
         if !directID.isEmpty {
             print("✅ Using direct gradeID: \(directID)")
             return directID
         }
         
-        // Normalize student's grade display string
         let studentGradeRaw = student.grade.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
         print("🔎 Resolving grade for '\(student.name)' | grade='\(studentGradeRaw)' | numeric_grade=\(student.numeric_grade)")
         
-        // 2) Exact name match (e.g. student "VI" == grade name "VI")
         if !studentGradeRaw.isEmpty {
             if let match = allGrades.first(where: {
                 $0.name.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() == studentGradeRaw
@@ -120,12 +169,10 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
             }
         }
         
-        // 3) Convert student grade to a class number and match by numeric_grade
         let studentClassNumber = classNumber(from: studentGradeRaw, fallbackNumeric: student.numeric_grade)
         print("   student class number = \(studentClassNumber)")
         
         if studentClassNumber != Int.min {
-            // Try matching grade whose class number equals studentClassNumber
             if let match = allGrades.first(where: {
                 classNumber(from: $0.name.uppercased(), fallbackNumeric: $0.numericGrade ?? 0) == studentClassNumber
             }) {
@@ -134,7 +181,6 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
             }
         }
         
-        // 4) Match by numeric_grade directly (if both have it)
         if student.numeric_grade > 0 {
             if let match = allGrades.first(where: { $0.numericGrade == student.numeric_grade }) {
                 print("✅ Matched by numeric_grade \(student.numeric_grade): '\(match.name)' → \(match.id)")
@@ -142,7 +188,6 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
             }
         }
         
-        // 5) Partial/contains name match
         if !studentGradeRaw.isEmpty {
             if let match = allGrades.first(where: {
                 let gName = $0.name.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
@@ -153,7 +198,6 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
             }
         }
         
-        // Debug dump
         print("⚠️ Could NOT resolve grade for '\(student.name)'")
         print("   Available grades:")
         for g in allGrades {
@@ -163,14 +207,9 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
         return ""
     }
     
-    /// Converts a grade display string to a universal "class number".
-    /// Pre-primary: Nursery=-2, LKG/PP1=-1, UKG/PP2=0
-    /// Grades: Grade1/I=1 ... Grade12/XII=12
-    /// Returns Int.min if unresolvable.
     func classNumber(from raw: String, fallbackNumeric: Int) -> Int {
         let s = raw.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
         
-        // Pre-primary keywords
         if s.contains("NURSERY") || s.contains("PRE-KG") || s.contains("PREKG") || s.contains("PRE KG") {
             return -2
         }
@@ -181,19 +220,23 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
             return 0
         }
         
-        // Try Roman numeral (VI, VIII, XII, etc.)
-        let roman = romanToInt(s)
-        if roman > 0 {
-            return roman
+        let tokens = s.components(separatedBy: CharacterSet.alphanumerics.inverted).filter { !$0.isEmpty }
+        
+        for token in tokens {
+            if let n = Int(token), n > 0 {
+                return n
+            }
+            let roman = romanToInt(token)
+            if roman > 0 {
+                return roman
+            }
         }
         
-        // Try to extract plain digits (e.g. "Grade 8", "8")
         let digits = s.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
         if let n = Int(digits), n > 0 {
             return n
         }
         
-        // Fallback to numeric_grade if positive
         if fallbackNumeric > 0 {
             return fallbackNumeric
         }
@@ -201,11 +244,11 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
         return Int.min
     }
     
-    /// Convert Roman numeral to Int. Returns 0 if invalid.
     func romanToInt(_ input: String) -> Int {
         let values: [Character: Int] = ["I":1, "V":5, "X":10, "L":50, "C":100, "D":500, "M":1000]
         let cleaned = input.replacingOccurrences(of: " ", with: "").uppercased()
         if cleaned.isEmpty { return 0 }
+        
         for ch in cleaned where values[ch] == nil { return 0 }
         
         var total = 0
@@ -220,14 +263,13 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
     // MARK: - Navigation
     func handleNavigate() {
         guard let student = currentSelectedStudent() else {
-            self.showAlert(msg: "Please select a student first.")
+            showAlert(msg: "Please select a student first.")
             return
         }
         
         let gradeID = resolveGradeID(for: student)
         
         if gradeID.isEmpty {
-            // If grades still loading, retry after fetching
             if isGradesLoading || allGrades.isEmpty {
                 showLoader()
                 getGradesList { [weak self] in
@@ -241,7 +283,7 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
                     }
                 }
             } else {
-                self.showAlert(msg: "Grade information not available for the selected student.")
+                showAlert(msg: "Grade information not available for the selected student.")
             }
             return
         }
@@ -266,26 +308,44 @@ class CurriculumController: UIViewController, UICollectionViewDelegate, UICollec
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "KidSelectionCell", for: indexPath) as! KidSelectionCell
         let kids = UserManager.shared.kids
-        cell.setup(student: kids[indexPath.row], isSelected: selected_student == indexPath.row)
+        cell.setup(student: kids[indexPath.item], isSelected: selected_student == indexPath.item)
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let previousIndex = selected_student
-        selected_student = indexPath.row
-        UserManager.shared.curriculamSelectedStudent = UserManager.shared.kids[indexPath.row]
+        selected_student = indexPath.item
+        UserManager.shared.curriculamSelectedStudent = UserManager.shared.kids[indexPath.item]
         
         var indexPathsToReload = [indexPath]
-        if previousIndex != indexPath.row {
-            indexPathsToReload.append(IndexPath(row: previousIndex, section: 0))
+        if previousIndex != indexPath.item {
+            indexPathsToReload.append(IndexPath(item: previousIndex, section: 0))
         }
         colVw.reloadItems(at: indexPathsToReload)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = (collectionView.frame.size.width - 20) / 2
-        return CGSize(width: width, height: 80)
+        let totalKids = UserManager.shared.kids.count
+        let boundsWidth = collectionView.bounds.width
+        
+        guard boundsWidth > 0 else {
+            return CGSize(width: 160, height: kidCellHeight)
+        }
+        
+        if totalKids <= 1 {
+            let width = boundsWidth - (kidSectionInset * 2)
+            return CGSize(width: max(width, 120), height: kidCellHeight)
+        }
+        
+        if totalKids == 2 {
+            let totalHorizontalPadding = (kidSectionInset * 2) + kidInterItemSpacing
+            let width = floor((boundsWidth - totalHorizontalPadding) / 2.0)
+            return CGSize(width: max(width, 120), height: kidCellHeight)
+        }
+        
+        let width = floor((boundsWidth - (kidSectionInset * 2) - kidInterItemSpacing) / 2.0)
+        return CGSize(width: max(width, 140), height: kidCellHeight)
     }
     
     // MARK: Table View

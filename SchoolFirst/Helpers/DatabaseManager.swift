@@ -131,6 +131,7 @@ class UserManager {
     var kids: [Student] {
         return getUser()?.students ?? []
     }
+    var gradesList: [GradeModel] = []
     
     // Store the currently active student index
     var selectedKidIndex: Int = 0

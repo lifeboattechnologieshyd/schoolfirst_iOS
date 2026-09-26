@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -19,7 +19,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kmf-7A-1Au">
-                        <rect key="frame" x="10" y="11" width="422" height="696"/>
+                        <rect key="frame" x="10" y="15" width="422" height="696"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="SaveAddress" translatesAutoresizingMaskIntoConstraints="NO" id="bOA-m2-U0M">
                                 <rect key="frame" x="12" y="12" width="24" height="24"/>
@@ -37,21 +37,21 @@
                                 <attributedString key="attributedText">
                                     <fragment content="Name">
                                         <attributes>
-                                            <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                            <font key="NSFont" metaFont="system" size="16"/>
                                         </attributes>
                                     </fragment>
                                 </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ub1-UZ-cTU">
-                                <rect key="frame" x="44" y="14" width="257.33333333333331" height="20"/>
+                                <rect key="frame" x="44.000000000000014" y="14" width="234.33333333333337" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="g8P-K1-Afo"/>
                                 </constraints>
                                 <attributedString key="attributedText">
                                     <fragment content="ADD YOUR DELIVERY ADDRESS">
                                         <attributes>
-                                            <font key="NSFont" size="16" name="Lexend-SemiBold"/>
+                                            <font key="NSFont" metaFont="system" size="16"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                         </attributes>
                                     </fragment>
@@ -75,21 +75,21 @@
                                 <attributedString key="attributedText">
                                     <fragment content="Business Address">
                                         <attributes>
-                                            <font key="NSFont" size="14" name="Lexend-SemiBold"/>
+                                            <font key="NSFont" metaFont="menu" size="14"/>
                                         </attributes>
                                     </fragment>
                                 </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oex-SF-vpg">
-                                <rect key="frame" x="12" y="280" width="74.333333333333329" height="20"/>
+                                <rect key="frame" x="12" y="280" width="67.333333333333329" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="XGM-MQ-blv"/>
                                 </constraints>
                                 <attributedString key="attributedText">
                                     <fragment content="City Name">
                                         <attributes>
-                                            <font key="NSFont" size="14" name="Lexend-SemiBold"/>
+                                            <font key="NSFont" metaFont="menu" size="14"/>
                                         </attributes>
                                     </fragment>
                                 </attributedString>
@@ -104,14 +104,14 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h73-wq-fvE">
-                                <rect key="frame" x="12" y="368" width="83.666666666666671" height="20"/>
+                                <rect key="frame" x="12" y="368" width="78.666666666666671" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="Unb-X6-ujF"/>
                                 </constraints>
                                 <attributedString key="attributedText">
                                     <fragment content="Select State">
                                         <attributes>
-                                            <font key="NSFont" size="14" name="Lexend-SemiBold"/>
+                                            <font key="NSFont" metaFont="menu" size="14"/>
                                         </attributes>
                                     </fragment>
                                 </attributedString>
@@ -126,14 +126,14 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hy3-eF-PIQ">
-                                <rect key="frame" x="12" y="456" width="66" height="20"/>
+                                <rect key="frame" x="11.999999999999996" y="456" width="58.666666666666657" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="PXV-ub-DEh"/>
                                 </constraints>
                                 <attributedString key="attributedText">
                                     <fragment content="PIN code">
                                         <attributes>
-                                            <font key="NSFont" size="14" name="Lexend-SemiBold"/>
+                                            <font key="NSFont" metaFont="menu" size="14"/>
                                         </attributes>
                                     </fragment>
                                 </attributedString>
@@ -148,14 +148,14 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zkf-Bm-mXn">
-                                <rect key="frame" x="12" y="544" width="116" height="20"/>
+                                <rect key="frame" x="12" y="544" width="107" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="0lI-Jk-WkX"/>
                                 </constraints>
                                 <attributedString key="attributedText">
                                     <fragment content="Contact Number">
                                         <attributes>
-                                            <font key="NSFont" size="14" name="Lexend-SemiBold"/>
+                                            <font key="NSFont" metaFont="menu" size="14"/>
                                         </attributes>
                                     </fragment>
                                 </attributedString>
@@ -188,7 +188,7 @@
                                     <fragment content="Enter Full Address">
                                         <attributes>
                                             <color key="NSColor" systemColor="labelColor"/>
-                                            <font key="NSFont" size="14" name="Lexend-Light"/>
+                                            <font key="NSFont" metaFont="system" size="14"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                         </attributes>
                                     </fragment>
