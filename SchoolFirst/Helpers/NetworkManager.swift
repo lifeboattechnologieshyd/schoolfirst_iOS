@@ -1195,23 +1195,25 @@ struct Curriculum: Codable, Identifiable {
 
 struct CurriculumCategory: Codable, Identifiable {
     let id: String
-    let categoryName: String
-    let categoryImage: String
-    let gradeIDs: [String]
-    let curriculumID: String
     let curriculumName: String
+    let description: String?
+    let gradeIDs: [String]
+    let gradeNames: [String]
     let status: String
-    let gradeName: String?
+    let isDefault: Bool
+    let createdAt: String?
+    let updatedAt: String?
 
     enum CodingKeys: String, CodingKey {
         case id
-        case categoryName = "category_name"
-        case categoryImage = "category_image"
-        case gradeIDs = "grade_ids"
-        case curriculumID = "curriculum_id"
         case curriculumName = "curriculum_name"
+        case description
+        case gradeIDs = "grade_ids"
+        case gradeNames = "grade_names"
         case status
-        case gradeName = "grade_name"
+        case isDefault = "is_default"
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
     }
 }
 //***share API resposne model
