@@ -1180,37 +1180,54 @@ struct FeelItem: Identifiable, Codable, Hashable {
 
 struct Curriculum: Codable, Identifiable {
     let id: String
-    let curriculumName: String
+    let curriculumName: String?
     let description: String?
-    let status: String
+    let status: String?
+    let gradeIDs: [String]?
+    let gradeNames: [String]?
+    let isDefault: Bool?
+    let createdAt: String?
+    let updatedAt: String?
     
     enum CodingKeys: String, CodingKey {
         case id
         case curriculumName = "curriculum_name"
         case description
         case status
+        case gradeIDs = "grade_ids"
+        case gradeNames = "grade_names"
+        case isDefault = "is_default"
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
     }
 }
 
-
 struct CurriculumCategory: Codable, Identifiable {
     let id: String
-    let curriculumName: String
+    let categoryName: String?
+    let categoryImage: String?
+    let gradeIDs: [String]?
+    let status: String?
+    let curriculumName: String?
     let description: String?
-    let gradeIDs: [String]
-    let gradeNames: [String]
-    let status: String
-    let isDefault: Bool
+    let gradeNames: [String]?
+    let isDefault: Bool?
     let createdAt: String?
     let updatedAt: String?
 
+    var name: String {
+        return categoryName ?? curriculumName ?? ""
+    }
+
     enum CodingKeys: String, CodingKey {
         case id
+        case categoryName = "category_name"
+        case categoryImage = "category_image"
+        case gradeIDs = "grade_ids"
+        case status
         case curriculumName = "curriculum_name"
         case description
-        case gradeIDs = "grade_ids"
         case gradeNames = "grade_names"
-        case status
         case isDefault = "is_default"
         case createdAt = "created_at"
         case updatedAt = "updated_at"

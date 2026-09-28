@@ -1,4 +1,3 @@
-//
 //  CurriculumController.swift
 //  SchoolFirst
 //
@@ -128,9 +127,7 @@ class CurriculumController: UIViewController, UITableViewDelegate, UITableViewDa
         guard let vc = stbd.instantiateViewController(identifier: "CurriculumCategoryController")
                 as? CurriculumCategoryController else { return }
         
-        // If your category controller needs curriculum info, pass it here:
-        // vc.selectedCurriculum = selectedCurriculum
-        // vc.curriculumId = selectedCurriculum.id
+        vc.selectedCurriculum = selectedCurriculum
         
         navigationController?.pushViewController(vc, animated: true)
     }
