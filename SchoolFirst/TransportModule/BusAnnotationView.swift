@@ -24,7 +24,7 @@ class BusAnnotationView: MKAnnotationView {
     private func setupView() {
 
         // Custom bus image from Assets
-        if let busImage = UIImage(named: "bus_icon") {
+        if let busImage = UIImage(named: "bus icon") {
             image = resizeImage(busImage, targetSize: CGSize(width: 45, height: 45))
         } else {
             // SF Symbol fallback with white circle background

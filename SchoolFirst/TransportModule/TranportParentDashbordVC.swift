@@ -173,6 +173,7 @@ class TranportParentDashbordVC: UIViewController {
     private func navigateToLiveTracking() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let vc = storyboard.instantiateViewController(withIdentifier: "BuslivetrackingVC") as? BuslivetrackingVC else { return }
+        vc.busData = busData          // ✅ pass stops so the route can be drawn
         navigationController?.pushViewController(vc, animated: true)
     }
 
