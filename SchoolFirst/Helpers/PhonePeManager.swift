@@ -5,7 +5,9 @@
 
 import Foundation
 import UIKit
+#if canImport(PhonePePayment)
 import PhonePePayment
+#endif
 
 class PhonePePaymentManager {
 
@@ -16,11 +18,15 @@ class PhonePePaymentManager {
     // MARK: - Configuration
 
     private let merchantId = "PGTESTPAYUAT86"
+
+    #if canImport(PhonePePayment)
     private var ppPayment: PPPayment?
+    #endif
 
     // MARK: - Initialize SDK (Call in AppDelegate)
 
     func initializeSDK() {
+        #if canImport(PhonePePayment)
         ppPayment = PPPayment(
             environment: .sandbox,       // ✅ Change to .production for live
             flowId: "schoolfirst_fee",
@@ -28,6 +34,9 @@ class PhonePePaymentManager {
             enableLogging: true
         )
         print("✅ PhonePe SDK initialized | merchantId: \(merchantId)")
+        #else
+        print("⚠️ PhonePe SDK not available at compile time. Skipping initialization.")
+        #endif
     }
 
     // MARK: - Start Checkout Payment
@@ -37,7 +46,7 @@ class PhonePePaymentManager {
         from viewController: UIViewController,
         completion: @escaping (PaymentResultStatus) -> Void
     ) {
-
+        #if canImport(PhonePePayment)
         // ✅ Check SDK initialized
         guard let ppPayment = ppPayment else {
             print("❌ PhonePe SDK not initialized")
@@ -75,10 +84,15 @@ class PhonePePaymentManager {
             viewController: viewController,
             completion: completion
         )
+        #else
+        print("⚠️ PhonePe SDK not integrated. Returning failure to caller.")
+        completion(.failure(.invalidResponse))
+        #endif
     }
 
     // MARK: - Private Checkout
 
+    #if canImport(PhonePePayment)
     private func startCheckout(
         pp: PPPayment,
         paymentData: FeePaymentCreationResponse,
@@ -143,17 +157,26 @@ class PhonePePaymentManager {
             }
         }
     }
+    #endif
 
     // MARK: - Check PhonePe Installed
 
     func isPhonePeInstalled() -> Bool {
+        #if canImport(PhonePePayment)
         return PPPayment.isPhonePeInstalled()
+        #else
+        return false
+        #endif
     }
 
     // MARK: - Handle Deeplink (Call in AppDelegate/SceneDelegate)
 
     func handleDeeplink(_ url: URL) -> Bool {
+        #if canImport(PhonePePayment)
         return PPPayment.checkDeeplink(url)
+        #else
+        return false
+        #endif
     }
 }
 
