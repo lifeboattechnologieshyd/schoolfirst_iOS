@@ -16,7 +16,7 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
     @IBOutlet weak var timelineTopLine: UIView?
     @IBOutlet weak var timelineBottomLine: UIView?
 
-    // MARK: - Figma "Your Stop" Highlight UI Elements
+    // MARK: - Figma "Your Stop" Highlight
     private let highlightCardView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 8
@@ -31,22 +31,63 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
     private let mapIconImageView: UIImageView = {
         let iv = UIImageView()
         iv.image = UIImage(systemName: "map")
-        iv.tintColor = UIColor(red: 0/255, green: 92/255, blue: 170/255, alpha: 1)
+        iv.tintColor = UIColor(red: 68/255.0, green: 70/255.0, blue: 86/255.0, alpha: 1.0)
         iv.contentMode = .scaleAspectFit
         iv.isHidden = true
         iv.translatesAutoresizingMaskIntoConstraints = false
         return iv
     }()
 
+    // MARK: - Programmatic status badge fallback
+    private let fallbackStatusBadge: UILabel = {
+        let label = UILabel()
+        label.font = .hankenBold(size: 9)
+        label.textAlignment = .center
+        label.layer.cornerRadius = 4
+        label.clipsToBounds = true
+        label.isHidden = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
+    private var activeBadgeLabel: UILabel? {
+        return statusBadgeLabel ?? fallbackStatusBadge
+    }
+
+    // MARK: - Programmatic timeline lines (fallback if XIB nil)
+    private let fallbackTopLine: UIView = {
+        let v = UIView()
+        v.translatesAutoresizingMaskIntoConstraints = false
+        v.isHidden = true
+        return v
+    }()
+
+    private let fallbackBottomLine: UIView = {
+        let v = UIView()
+        v.translatesAutoresizingMaskIntoConstraints = false
+        v.isHidden = true
+        return v
+    }()
+
+    private var activeTopLine: UIView? {
+        return timelineTopLine ?? fallbackTopLine
+    }
+
+    private var activeBottomLine: UIView? {
+        return timelineBottomLine ?? fallbackBottomLine
+    }
+
     // MARK: - Lifecycle
     override func awakeFromNib() {
         super.awakeFromNib()
         setupFonts()
         setupHighlightCard()
-        
+        setupFallbackBadgeIfNeeded()
+        setupFallbackTimelineIfNeeded()
+
         imagebackgroundview?.layer.cornerRadius = (imagebackgroundview?.frame.height ?? 28) / 2
         imagebackgroundview?.clipsToBounds = true
-        
+
         statusBadgeLabel?.layer.cornerRadius = 4
         statusBadgeLabel?.clipsToBounds = true
         statusBadgeLabel?.textAlignment = .center
@@ -55,21 +96,63 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
     private func setupHighlightCard() {
         contentView.insertSubview(highlightCardView, at: 0)
         contentView.addSubview(mapIconImageView)
-        
-        // Keep clear gap from the circle so blue card never touches it
+
         guard let circleView = imagebackgroundview else { return }
-        
+
         NSLayoutConstraint.activate([
             highlightCardView.leadingAnchor.constraint(equalTo: circleView.trailingAnchor, constant: 12),
             highlightCardView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             highlightCardView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             highlightCardView.heightAnchor.constraint(greaterThanOrEqualToConstant: 60),
-            
+
             mapIconImageView.trailingAnchor.constraint(equalTo: highlightCardView.trailingAnchor, constant: -12),
             mapIconImageView.centerYAnchor.constraint(equalTo: highlightCardView.centerYAnchor),
             mapIconImageView.widthAnchor.constraint(equalToConstant: 20),
             mapIconImageView.heightAnchor.constraint(equalToConstant: 20)
         ])
+    }
+
+    private func setupFallbackBadgeIfNeeded() {
+        guard statusBadgeLabel == nil else { return }
+        contentView.addSubview(fallbackStatusBadge)
+
+        NSLayoutConstraint.activate([
+            fallbackStatusBadge.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -24),
+            fallbackStatusBadge.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            fallbackStatusBadge.heightAnchor.constraint(equalToConstant: 22),
+            fallbackStatusBadge.widthAnchor.constraint(greaterThanOrEqualToConstant: 56)
+        ])
+    }
+
+    /// Vertical line through the circle center — Figma style
+    private func setupFallbackTimelineIfNeeded() {
+        // Only create if XIB outlets missing
+        let needTop = (timelineTopLine == nil)
+        let needBottom = (timelineBottomLine == nil)
+        guard needTop || needBottom else { return }
+        guard let circle = imagebackgroundview else { return }
+
+        let lineWidth: CGFloat = 2.0
+
+        if needTop {
+            contentView.insertSubview(fallbackTopLine, at: 0)
+            NSLayoutConstraint.activate([
+                fallbackTopLine.centerXAnchor.constraint(equalTo: circle.centerXAnchor),
+                fallbackTopLine.topAnchor.constraint(equalTo: contentView.topAnchor),
+                fallbackTopLine.bottomAnchor.constraint(equalTo: circle.topAnchor),
+                fallbackTopLine.widthAnchor.constraint(equalToConstant: lineWidth)
+            ])
+        }
+
+        if needBottom {
+            contentView.insertSubview(fallbackBottomLine, at: 0)
+            NSLayoutConstraint.activate([
+                fallbackBottomLine.centerXAnchor.constraint(equalTo: circle.centerXAnchor),
+                fallbackBottomLine.topAnchor.constraint(equalTo: circle.bottomAnchor),
+                fallbackBottomLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+                fallbackBottomLine.widthAnchor.constraint(equalToConstant: lineWidth)
+            ])
+        }
     }
 
     private func setupFonts() {
@@ -82,18 +165,25 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
         super.prepareForReuse()
         StopnameLabel.text = nil
         PickupandDroptimelabel.text = nil
+
         statusBadgeLabel?.text = nil
         statusBadgeLabel?.isHidden = true
+        fallbackStatusBadge.text = nil
+        fallbackStatusBadge.isHidden = true
+
         Ckeckmarkimageview?.image = nil
         Ckeckmarkimageview?.tintColor = nil
         contentView.backgroundColor = .clear
-        
+
         imagebackgroundview?.backgroundColor = .clear
         imagebackgroundview?.layer.borderWidth = 0
         imagebackgroundview?.layer.borderColor = nil
-        
+
         highlightCardView.isHidden = true
         mapIconImageView.isHidden = true
+
+        activeTopLine?.isHidden = true
+        activeBottomLine?.isHidden = true
     }
 
     override func layoutSubviews() {
@@ -119,50 +209,73 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
         StopnameLabel.text = (name?.isEmpty == false) ? name : "N/A"
         PickupandDroptimelabel.text = Self.formatTime(time, isDrop: isDrop)
 
-        // Base Colors
         let primaryBlue = UIColor(red: 0/255, green: 92/255, blue: 170/255, alpha: 1)
-        let grayColor   = UIColor.systemGray4
+        let grayColor   = UIColor(red: 196/255, green: 197/255, blue: 216/255, alpha: 1) // #C4C5D8 Figma
         let lightGray   = UIColor.systemGray3
-        
-        // 1. TIMELINE LOGIC (Match Figma exactly)
-        timelineTopLine?.backgroundColor = (isLive || isPassed) ? primaryBlue : grayColor
-        timelineBottomLine?.backgroundColor = isPassed ? primaryBlue : grayColor
-        timelineTopLine?.isHidden = isFirst
-        timelineBottomLine?.isHidden = isLast
 
-        // Keep circle + lines above the highlight card
-        if let top = timelineTopLine { contentView.bringSubviewToFront(top) }
-        if let bottom = timelineBottomLine { contentView.bringSubviewToFront(bottom) }
+        // ═══════════════════════════════════════
+        // TIMELINE LINES (Figma exact)
+        // ───────────────────────────────────────
+        // Top line  → blue if this stop is PASSED or LIVE
+        //             (bus already came from above / is here)
+        // Bottom line → blue ONLY if PASSED
+        //             (bus has left this stop going down)
+        // First stop → hide top
+        // Last stop  → hide bottom
+        // ═══════════════════════════════════════
+        let topLine = activeTopLine
+        let bottomLine = activeBottomLine
+
+        topLine?.isHidden = isFirst
+        bottomLine?.isHidden = isLast
+
+        // Colour: grey by default, blue after reach
+        topLine?.backgroundColor = (isPassed || isLive) ? primaryBlue : grayColor
+        bottomLine?.backgroundColor = isPassed ? primaryBlue : grayColor
+
+        // Keep lines behind circle
+        if let top = topLine { contentView.insertSubview(top, at: 0) }
+        if let bottom = bottomLine { contentView.insertSubview(bottom, at: 0) }
         if let circle = imagebackgroundview { contentView.bringSubviewToFront(circle) }
         if let icon = Ckeckmarkimageview { contentView.bringSubviewToFront(icon) }
 
-        // Reset base states
+        // Reset
         imagebackgroundview?.layer.borderWidth = 0
         imagebackgroundview?.layer.borderColor = nil
         imagebackgroundview?.backgroundColor = .clear
         StopnameLabel.font = .hankenRegular(size: 15)
         StopnameLabel.textColor = .black
         PickupandDroptimelabel.textColor = .darkGray
+
         statusBadgeLabel?.isHidden = true
+        fallbackStatusBadge.isHidden = true
         highlightCardView.isHidden = true
         mapIconImageView.isHidden = true
         Ckeckmarkimageview?.contentMode = .scaleAspectFit
 
-        // --- STATE VISUALS ---
+        let badge = activeBadgeLabel
+
+        // ─────────────────────────────────────────
+        // STATE PRIORITY (Figma):
+        // 1. LIVE
+        // 2. YOUR STOP  ← never PASSED badge
+        // 3. PASSED
+        // 4. UPCOMING
+        // ─────────────────────────────────────────
+
         if isLive {
-            // 🚌 BUS IN A STOP (Evening Drop live / current)
+            // 🚌 LIVE
             imagebackgroundview?.backgroundColor = primaryBlue
             imagebackgroundview?.layer.borderWidth = 0
-            
-            var busImg: UIImage? = UIImage(named: "Icon 30")
-            if busImg == nil { busImg = UIImage(named: "Icon30") }
-            if busImg == nil { busImg = UIImage(named: "icon 30") }
-            if busImg == nil { busImg = UIImage(named: "icon30") }
-            if busImg == nil { busImg = UIImage(named: "busicon") }
-            if busImg == nil { busImg = UIImage(named: "school_bus") }
-            
+
+            let busImg = UIImage(named: "Icon 30")
+                ?? UIImage(named: "Icon30")
+                ?? UIImage(named: "icon 30")
+                ?? UIImage(named: "icon30")
+                ?? UIImage(named: "busicon")
+                ?? UIImage(named: "school_bus")
+
             if let bImg = busImg {
-                // ✅ FORCE WHITE bus icon on blue background
                 Ckeckmarkimageview?.image = bImg.withRenderingMode(.alwaysTemplate)
                 Ckeckmarkimageview?.tintColor = .white
             } else {
@@ -172,24 +285,56 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
 
             StopnameLabel.font = .hankenBold(size: 15)
             StopnameLabel.textColor = primaryBlue
-            statusBadgeLabel?.isHidden = false
-            statusBadgeLabel?.text = "  LIVE  "
-            statusBadgeLabel?.backgroundColor = primaryBlue
-            statusBadgeLabel?.textColor = .white
+
+            badge?.isHidden = false
+            badge?.text = "  LIVE  "
+            badge?.backgroundColor = primaryBlue
+            badge?.textColor = .white
+
+        } else if isYourStop {
+            // 📍 YOUR STOP
+            imagebackgroundview?.backgroundColor = .white
+            imagebackgroundview?.layer.borderWidth = 2.0
+            imagebackgroundview?.layer.borderColor = UIColor(red: 196/255, green: 197/255, blue: 216/255, alpha: 1).cgColor // #C4C5D8
+
+            let pinColor = UIColor(red: 75/255, green: 85/255, blue: 99/255, alpha: 1) // #4B5563
+            let locImg = UIImage(named: "locationicon")
+                ?? UIImage(named: "Location")
+                ?? UIImage(named: "locatio")
+                ?? UIImage(named: "locationiconblue")
+
+            if let lImg = locImg {
+                Ckeckmarkimageview?.image = lImg.withRenderingMode(.alwaysOriginal)
+                Ckeckmarkimageview?.tintColor = nil
+            } else {
+                Ckeckmarkimageview?.image = UIImage(systemName: "mappin") ?? UIImage(systemName: "mappin.and.ellipse")
+                Ckeckmarkimageview?.tintColor = pinColor
+            }
+
+            highlightCardView.isHidden = false
+            mapIconImageView.isHidden = false
+
+            StopnameLabel.font = .hankenBold(size: 15)
+            StopnameLabel.textColor = .black
+            PickupandDroptimelabel.textColor = .darkGray
+
+            badge?.isHidden = false
+            badge?.text = "  YOUR STOP  "
+            badge?.backgroundColor = primaryBlue
+            badge?.textColor = .white
 
         } else if isPassed {
-            // ✅ BUS PASSED STOP
-            // ✅ FIX: Add 1pt gray border (especially needed for pickup index 0)
+            // ✅ PASSED
             imagebackgroundview?.backgroundColor = .white
             imagebackgroundview?.layer.borderWidth = 1.0
             imagebackgroundview?.layer.borderColor = lightGray.cgColor
-            
-            var checkImg: UIImage? = UIImage(named: "Circle_checkbox")
-            if checkImg == nil { checkImg = UIImage(named: "check-mark") }
-            if checkImg == nil { checkImg = UIImage(named: "GreenTick") }
-            if checkImg == nil { checkImg = UIImage(named: "tickmark") }
-            if checkImg == nil { checkImg = UIImage(named: "done_check") }
-            
+
+            let checkImg = UIImage(named: "Circle_checkbox")
+                ?? UIImage(named: "check-mark")
+                ?? UIImage(named: "GreenTick")
+                ?? UIImage(named: "tickmark")
+                ?? UIImage(named: "done_check")
+
             if let cImg = checkImg {
                 Ckeckmarkimageview?.image = cImg.withRenderingMode(.alwaysOriginal)
                 Ckeckmarkimageview?.tintColor = nil
@@ -197,58 +342,38 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
                 Ckeckmarkimageview?.image = UIImage(systemName: "checkmark.circle.fill")
                 Ckeckmarkimageview?.tintColor = primaryBlue
             }
-            
+
             StopnameLabel.font = .hankenRegular(size: 15)
             StopnameLabel.textColor = .black
-            statusBadgeLabel?.isHidden = false
-            statusBadgeLabel?.text = "  PASSED  "
-            statusBadgeLabel?.backgroundColor = primaryBlue.withAlphaComponent(0.12)
-            statusBadgeLabel?.textColor = primaryBlue
+
+            badge?.isHidden = false
+            badge?.text = "  PASSED  "
+            badge?.backgroundColor = primaryBlue.withAlphaComponent(0.12)
+            badge?.textColor = primaryBlue
 
         } else {
-            // 📍 UPCOMING STOPS: Empty circle + light grey border
+            // ⚪ UPCOMING
             imagebackgroundview?.backgroundColor = .white
             imagebackgroundview?.layer.borderWidth = 1.0
             imagebackgroundview?.layer.borderColor = lightGray.cgColor
-            
-            if isYourStop {
-                var locImg: UIImage? = UIImage(named: "locationicon")
-                if locImg == nil { locImg = UIImage(named: "Location") }
-                if locImg == nil { locImg = UIImage(named: "locatio") }
-                if locImg == nil { locImg = UIImage(named: "locationiconblue") }
-                
-                if let lImg = locImg {
-                    Ckeckmarkimageview?.image = lImg.withRenderingMode(.alwaysOriginal)
-                    Ckeckmarkimageview?.tintColor = nil
-                } else {
-                    Ckeckmarkimageview?.image = UIImage(systemName: "mappin.and.ellipse") ?? UIImage(systemName: "mappin")
-                    Ckeckmarkimageview?.tintColor = primaryBlue
-                }
-            } else {
-                Ckeckmarkimageview?.image = nil
-            }
-            
+            Ckeckmarkimageview?.image = nil
+
             StopnameLabel.font = .hankenRegular(size: 15)
             StopnameLabel.textColor = .darkGray
             PickupandDroptimelabel.textColor = .lightGray
         }
 
-        // --- "YOUR STOP" HIGHLIGHT OVERRIDE ---
-        if isYourStop {
-            highlightCardView.isHidden = false
-            mapIconImageView.isHidden = false
-            
-            StopnameLabel.font = .hankenBold(size: 15)
-            StopnameLabel.textColor = .black
-            PickupandDroptimelabel.textColor = .darkGray
-            
-            // If it's not live or passed, show the YOUR STOP badge
-            if !isLive && !isPassed {
-                statusBadgeLabel?.isHidden = false
-                statusBadgeLabel?.text = "  YOUR STOP  "
-                statusBadgeLabel?.backgroundColor = primaryBlue
-                statusBadgeLabel?.textColor = .white
-            }
+        // Z-order
+        if let activeBadge = badge { contentView.bringSubviewToFront(activeBadge) }
+        if !highlightCardView.isHidden {
+            contentView.insertSubview(highlightCardView, at: 0)
+            // lines stay at back
+            if let top = topLine { contentView.insertSubview(top, at: 0) }
+            if let bottom = bottomLine { contentView.insertSubview(bottom, at: 0) }
+            contentView.bringSubviewToFront(mapIconImageView)
+            if let activeBadge = badge { contentView.bringSubviewToFront(activeBadge) }
+            if let circle = imagebackgroundview { contentView.bringSubviewToFront(circle) }
+            if let icon = Ckeckmarkimageview { contentView.bringSubviewToFront(icon) }
         }
     }
 
@@ -264,10 +389,15 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
                 parser.dateFormat = format
                 if let date = parser.date(from: value) { return displayFormatter.string(from: date) }
             }
-            return upper.replacingOccurrences(of: "AM", with: " AM").replacingOccurrences(of: "PM", with: " PM").replacingOccurrences(of: "  ", with: " ").trimmingCharacters(in: .whitespaces)
+            return upper
+                .replacingOccurrences(of: "AM", with: " AM")
+                .replacingOccurrences(of: "PM", with: " PM")
+                .replacingOccurrences(of: "  ", with: " ")
+                .trimmingCharacters(in: .whitespaces)
         }
         if let dotIndex = value.firstIndex(of: ".") { value = String(value[..<dotIndex]) }
-        let inputFormats = ["HH:mm:ss","H:mm:ss","HH:mm","H:mm","yyyy-MM-dd'T'HH:mm:ss","yyyy-MM-dd'T'HH:mm:ssZ","yyyy-MM-dd HH:mm:ss"]
+        let inputFormats = ["HH:mm:ss","H:mm:ss","HH:mm","H:mm",
+                            "yyyy-MM-dd'T'HH:mm:ss","yyyy-MM-dd'T'HH:mm:ssZ","yyyy-MM-dd HH:mm:ss"]
         var parsedDate: Date?
         for format in inputFormats {
             let parser = DateFormatter()
@@ -284,7 +414,9 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
             var components = DateComponents()
             components.hour = hour
             components.minute = minute
-            if let updatedDate = calendar.date(from: components) { return displayFormatter.string(from: updatedDate) }
+            if let updatedDate = calendar.date(from: components) {
+                return displayFormatter.string(from: updatedDate)
+            }
         }
         return displayFormatter.string(from: date)
     }

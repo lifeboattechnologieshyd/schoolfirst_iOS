@@ -1,4 +1,3 @@
-//
 //  TRNSPTdashbordUITableViewCell1.swift
 //  SchoolFirst
 //
@@ -57,7 +56,6 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
     private let sideInset: CGFloat     = 14
     private let cardHeight: CGFloat    = 126
 
-    // ✅ UPDATED STRUCT to include Border Color
     private struct TransportItem {
         let title: String
         let description: String
@@ -67,9 +65,7 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
         let iconTintColor: UIColor
     }
 
-    // ✅ UPDATED COLORS based on your screenshot
     private let items: [TransportItem] = [
-        // 1. Live Tracking — soft mint green
         TransportItem(
             title: "Live\nTracking",
             description: "Track bus live",
@@ -78,7 +74,6 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
             borderColor:     UIColor(red: 180/255, green: 220/255, blue: 195/255, alpha: 1.0),
             iconTintColor:   UIColor(red:  46/255, green: 160/255, blue:  90/255, alpha: 1.0)
         ),
-        // 2. Driver Contact — soft peach
         TransportItem(
             title: "Driver\nContact",
             description: "Call or message",
@@ -87,7 +82,6 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
             borderColor:     UIColor(red: 255/255, green: 220/255, blue: 185/255, alpha: 1.0),
             iconTintColor:   UIColor(red: 230/255, green: 120/255, blue:  40/255, alpha: 1.0)
         ),
-        // 3. Fee Module — soft lavender
         TransportItem(
             title: "Fee\nModule",
             description: "Manage Payments",
@@ -96,7 +90,6 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
             borderColor:     UIColor(red: 215/255, green: 195/255, blue: 235/255, alpha: 1.0),
             iconTintColor:   UIColor(red: 155/255, green: 100/255, blue: 200/255, alpha: 1.0)
         ),
-        // 4. Pickup & Drop — soft pink
         TransportItem(
             title: "Pickup&Drop\nDetails",
             description: "View timings",
@@ -297,26 +290,123 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
         loadImage(urlString: studentPhotoURL.isEmpty ? nil : studentPhotoURL, into: Studentprofileimageview, placeholder: { [weak self] in self?.setStudentPlaceholder() }, taskStore: &studentImageTask, isBusImage: false)
     }
 
+    // ✅ UPDATED: Configures Pickup and Drop labels safely matching MORNING or EVENING shifts
     func configureRouteDetails(_ busData: StudentBusData?) {
-        PickuplocationLabel.text = busData?.pickupStop?.stopName?.isEmpty == false ? busData?.pickupStop?.stopName : "N/A"
-        PickupTime.text = formatTimeTo12Hour(busData?.pickupStop?.pickupTime)
-        PickuptimeLabel.text = formatTimeTo12Hour(busData?.pickupStop?.pickupTime)
-        DroplocationLabel.text = busData?.dropStop?.stopName?.isEmpty == false ? busData?.dropStop?.stopName : "N/A"
-        DropTime.text = formatTimeTo12Hour(busData?.dropStop?.dropTime)
+        let shift = (busData?.route?.shift ?? "MORNING").uppercased()
+        let isEvening = shift == "EVENING"
+        
+        // Find the designated school stop from the routeStops list
+        let schoolStop = busData?.routeStops?.first(where: { $0.stopType?.uppercased() == "SCHOOL" })
+        let schoolName = schoolStop?.stopName ?? "School"
+        
+        if isEvening {
+            // Evening Trip: School is Pickup Stop -> Home Stop is Drop Stop
+            let pickupStopName = schoolName
+            let pickupTimeValue = schoolStop?.pickupTime ?? "05:50:00"
+            
+            let dropStopName = busData?.dropStop?.stopName ?? "Home"
+            let dropTimeValue = busData?.dropStop?.dropTime ?? "18:20:00"
+            
+            PickuplocationLabel.text = pickupStopName.isEmpty == false ? pickupStopName : "School"
+            let formattedPickupTime = formatTimeTo12Hour(pickupTimeValue)
+            PickupTime.text = formattedPickupTime
+            PickuptimeLabel.text = formattedPickupTime
+            
+            DroplocationLabel.text = dropStopName.isEmpty == false ? dropStopName : "Home"
+            DropTime.text = formatTimeTo12Hour(dropTimeValue)
+        } else {
+            // Morning Trip: Home Stop is Pickup Stop -> School is Drop Stop
+            let pickupStopName = busData?.pickupStop?.stopName ?? "Home"
+            let pickupTimeValue = busData?.pickupStop?.pickupTime ?? "07:50:00"
+            
+            let dropStopName = schoolName
+            let dropTimeValue = schoolStop?.dropTime ?? "08:30:00"
+            
+            PickuplocationLabel.text = pickupStopName.isEmpty == false ? pickupStopName : "Home Stop"
+            let formattedPickupTime = formatTimeTo12Hour(pickupTimeValue)
+            PickupTime.text = formattedPickupTime
+            PickuptimeLabel.text = formattedPickupTime
+            
+            DroplocationLabel.text = dropStopName.isEmpty == false ? dropStopName : "School"
+            DropTime.text = formatTimeTo12Hour(dropTimeValue)
+        }
+        
         DurationLabel.text = busData?.route?.estimatedDuration != nil ? "\(busData!.route!.estimatedDuration!) Min" : "N/A"
-        buildJourneyItems(busData)
+        
+        buildJourneyItems(busData, isEvening: isEvening, schoolStop: schoolStop)
         CollectionView2.reloadData()
     }
 
-    private func buildJourneyItems(_ busData: StudentBusData?) {
+    // ✅ UPDATED: Rebuilds Journey timeline points based on MORNING / EVENING logic
+    private func buildJourneyItems(_ busData: StudentBusData?, isEvening: Bool, schoolStop: RouteStop?) {
         journeyItems.removeAll()
-        let pickupStop = busData?.pickupStop
-        let dropStop = busData?.dropStop
-        let route = busData?.route
-        journeyItems.append(JourneyItem(title: "Pickup", time: formatTimeTo12Hour(pickupStop?.pickupTime), location: pickupStop?.stopName ?? "N/A", imageName: "icon 47", iconTintColor: UIColor(red: 22/255, green: 163/255, blue: 74/255, alpha: 1.0), iconBackgroundColor: UIColor(red: 220/255, green: 252/255, blue: 231/255, alpha: 1.0)))
-        let destinationName = route?.destination ?? dropStop?.stopName ?? "School"
-        journeyItems.append(JourneyItem(title: "On Route", time: "", location: "Towards \(destinationName)", imageName: "icon 48", iconTintColor: UIColor(red: 22/255, green: 163/255, blue: 74/255, alpha: 1.0), iconBackgroundColor: UIColor(red: 220/255, green: 252/255, blue: 231/255, alpha: 1.0)))
-        journeyItems.append(JourneyItem(title: "School", time: formatTimeTo12Hour(dropStop?.dropTime), location: dropStop?.stopName ?? route?.destination ?? "School", imageName: "icon 49", iconTintColor: UIColor(red: 37/255, green: 99/255, blue: 235/255, alpha: 1.0), iconBackgroundColor: UIColor(red: 219/255, green: 234/255, blue: 254/255, alpha: 1.0)))
+        let schoolName = schoolStop?.stopName ?? "School"
+        
+        if isEvening {
+            // Evening Flow: School (Departure) -> On Route (Towards Home) -> Drop (Home Stop Arrival)
+            let schoolTime = formatTimeTo12Hour(schoolStop?.pickupTime ?? "17:50:00")
+            let homeStopName = busData?.dropStop?.stopName ?? "Home Stop"
+            let homeTime = formatTimeTo12Hour(busData?.dropStop?.dropTime ?? "18:20:00")
+            
+            journeyItems.append(JourneyItem(
+                title: "School",
+                time: schoolTime,
+                location: schoolName,
+                imageName: "icon 47",
+                iconTintColor: UIColor(red: 37/255, green: 99/255, blue: 235/255, alpha: 1.0),
+                iconBackgroundColor: UIColor(red: 219/255, green: 234/255, blue: 254/255, alpha: 1.0)
+            ))
+            
+            journeyItems.append(JourneyItem(
+                title: "On Route",
+                time: "",
+                location: "Towards \(homeStopName)",
+                imageName: "icon 48",
+                iconTintColor: UIColor(red: 22/255, green: 163/255, blue: 74/255, alpha: 1.0),
+                iconBackgroundColor: UIColor(red: 220/255, green: 252/255, blue: 231/255, alpha: 1.0)
+            ))
+            
+            journeyItems.append(JourneyItem(
+                title: "Drop",
+                time: homeTime,
+                location: homeStopName,
+                imageName: "icon 49",
+                iconTintColor: UIColor(red: 22/255, green: 163/255, blue: 74/255, alpha: 1.0),
+                iconBackgroundColor: UIColor(red: 220/255, green: 252/255, blue: 231/255, alpha: 1.0)
+            ))
+        } else {
+            // Morning Flow (Default): Pickup (Home Stop) -> On Route (Towards School) -> School (Arrival)
+            let homeStopName = busData?.pickupStop?.stopName ?? "Home Stop"
+            let homeTime = formatTimeTo12Hour(busData?.pickupStop?.pickupTime ?? "07:50:00")
+            let schoolTime = formatTimeTo12Hour(schoolStop?.dropTime ?? "08:30:00")
+            
+            journeyItems.append(JourneyItem(
+                title: "Pickup",
+                time: homeTime,
+                location: homeStopName,
+                imageName: "icon 47",
+                iconTintColor: UIColor(red: 22/255, green: 163/255, blue: 74/255, alpha: 1.0),
+                iconBackgroundColor: UIColor(red: 220/255, green: 252/255, blue: 231/255, alpha: 1.0)
+            ))
+            
+            journeyItems.append(JourneyItem(
+                title: "On Route",
+                time: "",
+                location: "Towards \(schoolName)",
+                imageName: "icon 48",
+                iconTintColor: UIColor(red: 22/255, green: 163/255, blue: 74/255, alpha: 1.0),
+                iconBackgroundColor: UIColor(red: 220/255, green: 252/255, blue: 231/255, alpha: 1.0)
+            ))
+            
+            journeyItems.append(JourneyItem(
+                title: "School",
+                time: schoolTime,
+                location: schoolName,
+                imageName: "icon 49",
+                iconTintColor: UIColor(red: 37/255, green: 99/255, blue: 235/255, alpha: 1.0),
+                iconBackgroundColor: UIColor(red: 219/255, green: 234/255, blue: 254/255, alpha: 1.0)
+            ))
+        }
     }
 
     private func setupTopCollectionView() {
@@ -347,7 +437,6 @@ extension TRNSPTdashbordUITableViewCell1: UICollectionViewDataSource, UICollecti
         }
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TRNSPTdashbordCollectionViewCell", for: indexPath) as! TRNSPTdashbordCollectionViewCell
         let item = items[indexPath.item]
-        // ✅ Passed borderColor here
         cell.configure(title: item.title, description: item.description, imageName: item.imageName, backgroundColor: item.backgroundColor, iconTint: item.iconTintColor, borderColor: item.borderColor)
         return cell
     }

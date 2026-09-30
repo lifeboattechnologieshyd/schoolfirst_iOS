@@ -329,7 +329,7 @@ struct LiveLocationDetails: Codable {
     let latitude: Double?
     let longitude: Double?
     let speed: Double?
-    let heading: Int?
+    let heading: Double? // Made Double? to safely handle float or int GPS headings
     let altitude: Double?
     let accuracy: Double?
     let deviceTimestamp: String?
@@ -424,14 +424,13 @@ struct User: Codable {
 
 //****bus, driver and attendant response model
 
-// MARK: - Transport Bus Response
 struct TransportBusResponse: Codable {
     let success: Bool?
     let description: String?
     let data: StudentBusData?
 }
 
-
+// MARK: - Student Bus Data
 struct StudentBusData: Codable {
     let student: StudentInfo?
     let bus: BusInfo?
@@ -442,6 +441,7 @@ struct StudentBusData: Codable {
     let dropStop: StopDetails?
     let routeStops: [RouteStop]?
     let tripType: String?
+    let tripStatus: String? // <-- Added: For tracking trip status (e.g., "COMPLETED")
 
     enum CodingKeys: String, CodingKey {
         case student
@@ -453,6 +453,7 @@ struct StudentBusData: Codable {
         case dropStop = "drop_stop"
         case routeStops = "route_stops"
         case tripType = "trip_type"
+        case tripStatus = "trip_status" // <-- Added
     }
 }
 
@@ -490,7 +491,8 @@ struct BusInfo: Codable {
         case photo
     }
 }
-// MARK: - Bus Staff (Driver / Attendant share same structure)
+
+// MARK: - Bus Staff
 struct BusStaff: Codable {
     let id: String?
     let name: String?
@@ -532,7 +534,7 @@ struct RouteDetails: Codable {
     }
 }
 
-// MARK: - Pickup and Drop Stop Details
+// MARK: - Stop Details
 struct StopDetails: Codable {
     let id: String?
     let stopName: String?
@@ -572,6 +574,8 @@ struct RouteStop: Codable {
     let dropTime: String?
     let distanceFromPreviousStop: Double?
     let estimatedTravelTime: Int?
+    let status: String?        // <-- Added: Tracking if stop is "REACHED" or "PENDING"
+    let reachedTime: String?   // <-- Added: Arrival timestamp
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -587,6 +591,8 @@ struct RouteStop: Codable {
         case dropTime = "drop_time"
         case distanceFromPreviousStop = "distance_from_previous_stop"
         case estimatedTravelTime = "estimated_travel_time"
+        case status              // <-- Added
+        case reachedTime = "reached_time" // <-- Added
     }
 }
 //*** - Student Profile API Response Struct

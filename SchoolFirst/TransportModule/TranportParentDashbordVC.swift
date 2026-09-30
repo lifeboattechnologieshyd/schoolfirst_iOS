@@ -209,7 +209,7 @@ extension TranportParentDashbordVC: UITableViewDelegate, UITableViewDataSource {
         cell.configureRouteDetails(busData)
         return cell
     }
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat { return 900 }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat { return 940 }
 }
 
 extension TranportParentDashbordVC: TRNSPTdashbordCell1Delegate {

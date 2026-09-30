@@ -18,7 +18,10 @@ class TRSPRTcantactdriverVC: UIViewController {
     // MARK: - Properties
     private var busDetails: StudentBusData?
     private var isLoading = false
-    
+
+    /// ✅ API only once per screen entry
+    private var hasFetchedOnce = false
+
     // Native Loading Indicator
     private let activityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(style: .large)
@@ -33,41 +36,43 @@ class TRSPRTcantactdriverVC: UIViewController {
         setupTopViewBottomShadowAndBorder()
         setupLoader()
         setupTableView()
-        fetchBusDetails()
+        setupFonts()
+        // ✅ Call API only once when entering screen
+        fetchBusDetailsIfNeeded()
     }
+
     private func setupFonts() {
         ContactdriverLabel?.font = .hankenBold(size: 20)
-        
     }
+
     private func setupTopViewBottomShadowAndBorder() {
-           guard let topView = Topview else { return }
+        guard let topView = Topview else { return }
 
-           // 1. Bottom Shadow Setup
-           topView.layer.masksToBounds = false
-           topView.layer.shadowColor = UIColor.black.cgColor
-           topView.layer.shadowOpacity = 0.08
-           topView.layer.shadowOffset = CGSize(width: 0, height: 3)
-           topView.layer.shadowRadius = 4.0
-           
-           // Optimize rendering performance using a precise shadow path along the bottom
-           let shadowRect = CGRect(x: 0, y: topView.bounds.height - 2, width: topView.bounds.width, height: 4)
-           topView.layer.shadowPath = UIBezierPath(rect: shadowRect).cgPath
+        // 1. Bottom Shadow Setup
+        topView.layer.masksToBounds = false
+        topView.layer.shadowColor = UIColor.black.cgColor
+        topView.layer.shadowOpacity = 0.08
+        topView.layer.shadowOffset = CGSize(width: 0, height: 3)
+        topView.layer.shadowRadius = 4.0
 
-           // 2. Bottom Border Line Setup
-           topView.layer.sublayers?.removeAll(where: { $0.name == "TopViewBottomBorder" })
+        let shadowRect = CGRect(x: 0, y: topView.bounds.height - 2, width: topView.bounds.width, height: 4)
+        topView.layer.shadowPath = UIBezierPath(rect: shadowRect).cgPath
 
-           let borderHeight: CGFloat = 1.0
-           let bottomBorder = CALayer()
-           bottomBorder.name = "TopViewBottomBorder"
-           bottomBorder.frame = CGRect(
-               x: 0,
-               y: topView.bounds.height - borderHeight,
-               width: topView.bounds.width,
-               height: borderHeight
-           )
-           bottomBorder.backgroundColor = UIColor.systemGray5.cgColor
-           topView.layer.addSublayer(bottomBorder)
-       }
+        // 2. Bottom Border Line Setup
+        topView.layer.sublayers?.removeAll(where: { $0.name == "TopViewBottomBorder" })
+
+        let borderHeight: CGFloat = 1.0
+        let bottomBorder = CALayer()
+        bottomBorder.name = "TopViewBottomBorder"
+        bottomBorder.frame = CGRect(
+            x: 0,
+            y: topView.bounds.height - borderHeight,
+            width: topView.bounds.width,
+            height: borderHeight
+        )
+        bottomBorder.backgroundColor = UIColor.systemGray5.cgColor
+        topView.layer.addSublayer(bottomBorder)
+    }
 
     // MARK: - Back Button Action
     @IBAction func BackButtonTapped(_ sender: UIButton) {
@@ -101,6 +106,12 @@ class TRSPRTcantactdriverVC: UIViewController {
         tableview.showsVerticalScrollIndicator = false
     }
 
+    // MARK: - ✅ Fetch ONLY once when entering screen
+    private func fetchBusDetailsIfNeeded() {
+        guard !hasFetchedOnce, !isLoading else { return }
+        fetchBusDetails()
+    }
+
     // MARK: - Fetch API Data
     private func fetchBusDetails() {
         let studentId = UserManager.shared.resolvedStudentID
@@ -119,7 +130,10 @@ class TRSPRTcantactdriverVC: UIViewController {
         }
 
         guard !isLoading else { return }
+
+        // ✅ Lock so it never fires again for this screen session
         isLoading = true
+        hasFetchedOnce = true
         activityIndicator.startAnimating()
 
         NetworkManager.shared.request(
@@ -133,7 +147,7 @@ class TRSPRTcantactdriverVC: UIViewController {
                 "X-School-Id": schoolId
             ]
         ) { [weak self] (result: Result<APIResponse<StudentBusData>, NetworkError>) in
-            
+
             guard let self = self else { return }
 
             DispatchQueue.main.async {
@@ -153,16 +167,21 @@ class TRSPRTcantactdriverVC: UIViewController {
 
                         self.tableview.reloadData()
                     } else {
+                        // Allow retry only if response failed with no data
+                        self.hasFetchedOnce = false
                         let errorMsg = response.description.isEmpty ? "No driver details available." : response.description
                         self.showErrorAlert(message: errorMsg)
                     }
 
                 case .failure(let error):
+                    // Allow retry on failure
+                    self.hasFetchedOnce = false
                     switch error {
                     case .noaccess:
                         print("❌ Session expired")
                     case .noInternet:
                         print("❌ No internet")
+                        self.showErrorAlert(message: "No internet connection. Please try again.")
                     case .serverError(let message):
                         self.showErrorAlert(message: message)
                     case .decodingError(let message):
@@ -220,7 +239,9 @@ class TRSPRTcantactdriverVC: UIViewController {
         )
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         alert.addAction(UIAlertAction(title: "Retry", style: .default, handler: { [weak self] _ in
-            self?.fetchBusDetails()
+            // ✅ Retry explicitly allowed
+            self?.hasFetchedOnce = false
+            self?.fetchBusDetailsIfNeeded()
         }))
         self.present(alert, animated: true)
     }
@@ -234,13 +255,13 @@ class TRSPRTcantactdriverVC: UIViewController {
             print("❌ TRSPTchatVC not found in storyboard. Check Storyboard ID.")
             return
         }
-        
+
         // ✅ Pass all required data to ChatVC
         chatVC.driverName      = busDetails?.driver?.name ?? "Driver"
         chatVC.driverStatus    = busDetails?.bus?.status ?? "Active"
         chatVC.driverImageURL  = busDetails?.driver?.profileImage
         chatVC.driverMobile    = busDetails?.driver?.mobile
-        
+
         navigationController?.pushViewController(chatVC, animated: true)
     }
 
@@ -253,6 +274,8 @@ class TRSPRTcantactdriverVC: UIViewController {
             print("❌ BuslivetrackingVC not found in storyboard. Check Storyboard ID.")
             return
         }
+        // Pass already-fetched bus data so Live Tracking doesn't need extra fetch for static info
+        vc.busData = busDetails
         navigationController?.pushViewController(vc, animated: true)
     }
 }
