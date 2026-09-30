@@ -19,7 +19,6 @@ final class StopAnnotation: NSObject, MKAnnotation {
     var isReached: Bool
     private let timeText: String?
 
-    // Callout lo time + status chupistundi
     var subtitle: String? {
         var parts: [String] = []
         if let t = timeText, !t.isEmpty { parts.append(t) }
@@ -43,7 +42,7 @@ final class StopAnnotation: NSObject, MKAnnotation {
     }
 }
 
-// MARK: - Route Progress View (School → On Route → Stop → Home)
+// MARK: - Route Progress View
 final class RouteProgressView: UIView {
 
     enum State { case done, current, pending }
@@ -54,7 +53,6 @@ final class RouteProgressView: UIView {
     private let stack = UIStackView()
     private var circles: [UIView] = []
     private let blue = UIColor(red: 0/255, green: 92/255, blue: 170/255, alpha: 1)
-    private var activeWidth: NSLayoutConstraint?
 
     override init(frame: CGRect) { super.init(frame: frame); setup() }
     required init?(coder: NSCoder) { super.init(coder: coder); setup() }
@@ -164,7 +162,7 @@ class BuslivetrackingVC: UIViewController {
     @IBOutlet weak var Mapview    : MKMapView!
     @IBOutlet weak var BackButton : UIButton!
 
-    // MARK: - Input (set from dashboard)
+    // MARK: - Input
     var busData: StudentBusData?
 
     // MARK: - Private Properties
@@ -172,14 +170,22 @@ class BuslivetrackingVC: UIViewController {
     private var lastCoordinate : CLLocationCoordinate2D?
     private var locationTimer  : Timer?
     private let refreshInterval: TimeInterval = 5.0
-
-    // ✅ NEW: Flag to ensure TRANSPORT_BUS API is called only once
     private var hasFetchedBusDataOnce = false
 
+    // MARK: - ✅ NEW: Smooth Movement Properties
+    private var displayLink: CADisplayLink?
+    private var animationStartCoord: CLLocationCoordinate2D?
+    private var animationEndCoord: CLLocationCoordinate2D?
+    private var animationStartTime: CFTimeInterval = 0
+    private var animationDuration: CFTimeInterval = 5.0  // Match refresh interval
+    private var currentBusHeading: Double = 0
+    
     // MARK: - Route Properties
     private var routeStopCoordinates: [CLLocationCoordinate2D] = []
     private var routeStopNames: [String] = []
     private var routeOverlays: [MKPolyline] = []
+    private var fullRouteCoordinates: [CLLocationCoordinate2D] = []  // ✅ NEW: Complete route path
+    private var remainingRouteOverlay: MKPolyline?  // ✅ NEW: Only remaining portion
     private var isRouteDrawn = false
     private var hasFittedInitialRegion = false
     private let appBlue = UIColor(red: 0/255, green: 92/255, blue: 170/255, alpha: 1)
@@ -232,7 +238,6 @@ class BuslivetrackingVC: UIViewController {
     private let progressView = RouteProgressView()
     private var panelHeight: CGFloat = 0
 
-    // Native Activity Indicator
     private let activityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(style: .large)
         indicator.color = .systemBlue
@@ -240,7 +245,6 @@ class BuslivetrackingVC: UIViewController {
         return indicator
     }()
     
-    // MARK: - Attractive "Not Started" Overlay
     private var notStartedOverlay: UIView!
 
     // MARK: - Lifecycle
@@ -253,11 +257,8 @@ class BuslivetrackingVC: UIViewController {
         setupBottomPanel()
         setupNotStartedOverlay()
         
-        // Setup initial static data if provided
         setupRouteOnMap()
         populateStaticData()
-        
-        // ✅ Call Stops API (TRANSPORT_BUS) strictly ONCE when entering the screen
         fetchInitialBusData()
         
         setupFonts()
@@ -274,6 +275,7 @@ class BuslivetrackingVC: UIViewController {
         super.viewWillDisappear(animated)
         stopLiveLocationTracking()
         uiTimer?.invalidate(); uiTimer = nil
+        stopSmoothAnimation()
     }
 
     override func viewDidLayoutSubviews() {
@@ -294,7 +296,6 @@ class BuslivetrackingVC: UIViewController {
         LivetrackingLabel?.font = .hankenBold(size: 16)
     }
 
-    // MARK: - Setup Loader
     private func setupLoader() {
         view.addSubview(activityIndicator)
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
@@ -304,7 +305,7 @@ class BuslivetrackingVC: UIViewController {
         ])
     }
 
-    // MARK: - ================= HEADER =================
+    // MARK: - HEADER
     private func setupHeaderUI() {
         guard let top = Topview, let title = LivetrackingLabel else { return }
 
@@ -354,7 +355,7 @@ class BuslivetrackingVC: UIViewController {
         }
     }
 
-    // MARK: - ================= TOP INFO CARD =================
+    // MARK: - TOP INFO CARD
     private func setupInfoCard() {
         infoCard.backgroundColor = .white
         infoCard.layer.cornerRadius = 14
@@ -432,7 +433,7 @@ class BuslivetrackingVC: UIViewController {
         ])
     }
 
-    // MARK: - ================= BOTTOM PANEL =================
+    // MARK: - BOTTOM PANEL
     private func setupBottomPanel() {
         panel.backgroundColor = .white
         panel.layer.cornerRadius = 20
@@ -655,32 +656,25 @@ class BuslivetrackingVC: UIViewController {
         return row
     }
 
-    // MARK: - Populate static data from busData
     private func populateStaticData() {
         let data = busData
-
-        // Set Initial Trip Status
         self.currentTripStatus = data?.tripStatus?.lowercased() ?? ""
 
-        // Header subtitle
         let routeName = data?.route?.routeName ?? data?.route?.routeCode ?? "Route"
         let shiftRaw = (data?.route?.shift ?? data?.tripType ?? "").capitalized
         routeSubtitleLabel.text = shiftRaw.isEmpty ? routeName : "\(routeName) · \(shiftRaw)"
 
-        // Bus card
         let vehicle = data?.bus?.vehicleNumber ?? "School Bus"
         cardBusNumber.text = vehicle
         cardBusModel.text = data?.bus?.vehicleType ?? ""
         let busImageURL = data?.bus?.image ?? data?.bus?.busImage ?? data?.bus?.vehicleImage ?? data?.bus?.vehiclePhoto ?? data?.bus?.busPhoto ?? data?.bus?.photo
         if let u = busImageURL, !u.isEmpty { cardBusImage.loadImage(url: u) }
 
-        // Student
         let sName = UserManager.shared.resolvedStudentName
         studentName.text = sName.isEmpty ? (data?.student?.name ?? "Student") : sName
         let photo = UserManager.shared.resolvedStudentPhotoURL
         if !photo.isEmpty { studentImage.loadImage(url: photo) }
 
-        // Driver
         driverName.text = data?.driver?.name ?? "Driver"
         if let exp = data?.driver?.experience, exp > 0 {
             driverMeta.text = "⭐ \(String(format: "%.0f", exp))+ yrs experience"
@@ -689,7 +683,6 @@ class BuslivetrackingVC: UIViewController {
         }
         if let u = data?.driver?.profileImage, !u.isEmpty { driverImage.loadImage(url: u) }
 
-        // Stats
         statBusValue.text = data?.route?.routeCode.map { "Bus \($0)" } ?? "Bus"
         statBusSub.text = vehicle
         statModelValue.text = data?.bus?.vehicleType ?? "N/A"
@@ -713,7 +706,6 @@ class BuslivetrackingVC: UIViewController {
         let done = currentStopIndex ?? 0
         progressCount.text = stops > 0 ? "\(min(done, stops)) of \(stops) stops completed" : ""
 
-        // Has the bus passed the student's pickup stop?
         let pickupIdx = pickupStopIndex()
         let passedPickup = isActive && pickupIdx != nil && done > pickupIdx!
 
@@ -746,7 +738,6 @@ class BuslivetrackingVC: UIViewController {
         return routeStopCoordinates.first
     }
 
-    // MARK: - Driver actions
     @objc private func callDriverTapped() {
         guard let phone = busData?.driver?.mobile?.trimmingCharacters(in: .whitespacesAndNewlines), !phone.isEmpty else {
             showErrorAlert(message: "Driver phone number is not available."); return
@@ -767,7 +758,7 @@ class BuslivetrackingVC: UIViewController {
         }
     }
 
-    // MARK: - ================= LIVE INFO =================
+    // MARK: - LIVE INFO
     private func updateLiveInfo(busCoord: CLLocationCoordinate2D, speed: Double, status: String) {
         currentSpeed = speed
         currentTripStatus = status
@@ -859,7 +850,7 @@ class BuslivetrackingVC: UIViewController {
         }
     }
 
-    // MARK: - Setup Attractive Not Started Popup
+    // MARK: - Not Started Popup
     private func setupNotStartedOverlay() {
         notStartedOverlay = UIView()
         notStartedOverlay.backgroundColor = UIColor.black.withAlphaComponent(0.5)
@@ -968,7 +959,7 @@ class BuslivetrackingVC: UIViewController {
         Mapview.showsScale        = true
     }
 
-    // MARK: - ================= ROUTE DRAWING =================
+    // MARK: - ROUTE DRAWING
     private func setupRouteOnMap() {
         guard let data = busData else { return }
 
@@ -1030,6 +1021,7 @@ class BuslivetrackingVC: UIViewController {
 
         fitMapToRoute(includeBus: false)
         guard routeStopCoordinates.count >= 2 else { return }
+        fullRouteCoordinates.removeAll()
         drawRoadRoute(segmentIndex: 0)
     }
 
@@ -1052,16 +1044,34 @@ class BuslivetrackingVC: UIViewController {
             guard let self = self else { return }
 
             let polyline: MKPolyline
+            var coords: [CLLocationCoordinate2D] = []
+            
             if let route = response?.routes.first, error == nil {
                 polyline = route.polyline
+                let count = polyline.pointCount
+                var buffer = [CLLocationCoordinate2D](repeating: kCLLocationCoordinate2DInvalid, count: count)
+                polyline.getCoordinates(&buffer, range: NSRange(location: 0, length: count))
+                coords = buffer
             } else {
                 var pair = [from, to]
                 polyline = MKPolyline(coordinates: &pair, count: 2)
+                coords = pair
             }
 
             DispatchQueue.main.async {
                 self.routeOverlays.append(polyline)
                 self.Mapview.addOverlay(polyline, level: .aboveRoads)
+                
+                // ✅ Accumulate ALL polyline coordinates for future trimming
+                if !self.fullRouteCoordinates.isEmpty, let last = self.fullRouteCoordinates.last,
+                   let first = coords.first,
+                   abs(last.latitude - first.latitude) < 0.00001,
+                   abs(last.longitude - first.longitude) < 0.00001 {
+                    self.fullRouteCoordinates.append(contentsOf: coords.dropFirst())
+                } else {
+                    self.fullRouteCoordinates.append(contentsOf: coords)
+                }
+                
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
                     self.drawRoadRoute(segmentIndex: segmentIndex + 1)
                 }
@@ -1103,7 +1113,7 @@ class BuslivetrackingVC: UIViewController {
         return raw
     }
 
-    // MARK: - ✅ Fetch Stops Data ONLY ONCE
+    // MARK: - Fetch Bus Data
     private func fetchInitialBusData() {
         guard !hasFetchedBusDataOnce else { return }
         hasFetchedBusDataOnce = true
@@ -1141,8 +1151,6 @@ class BuslivetrackingVC: UIViewController {
         }
     }
     
-    // MARK: - Fetch Live Location API
-    // ✅ NO EARLY RETURNS: Always fetch live location to check if trip started
     private func fetchLiveLocation() {
         let studentId = UserManager.shared.resolvedStudentID
         let schoolId  = UserManager.shared.resolvedSchoolID
@@ -1175,14 +1183,12 @@ class BuslivetrackingVC: UIViewController {
                         
                         self.currentTripStatus = tripStatus
                         
-                        // Check if trip is active from the lightweight API
                         if !isActiveResponse {
                             self.liveBadge.isHidden = true
                             self.showNotStartedPopup()
                             return
                         }
 
-                        // Trip is active! Hide popup and update location
                         self.hideNotStartedPopup()
 
                         if data.isAvailable == false {
@@ -1218,6 +1224,7 @@ class BuslivetrackingVC: UIViewController {
         }
     }
 
+    // MARK: - ✅ SMOOTH BUS MOVEMENT
     private func updateBusLocation(coordinate: CLLocationCoordinate2D,
                                    vehicleNumber: String,
                                    tripStatus: String,
@@ -1226,6 +1233,7 @@ class BuslivetrackingVC: UIViewController {
 
         let busHeading = heading ?? 0.0
 
+        // First time: Just add annotation, don't animate
         if busAnnotation == nil {
             let annotation = BusAnnotation(coordinate: coordinate)
             annotation.title = "🚌 \(vehicleNumber)"
@@ -1234,49 +1242,167 @@ class BuslivetrackingVC: UIViewController {
             busAnnotation = annotation
             Mapview.addAnnotation(annotation)
             lastCoordinate = coordinate
+            currentBusHeading = busHeading
 
             if !routeStopCoordinates.isEmpty {
                 fitMapToRoute(includeBus: true)
             } else {
-                let region = MKCoordinateRegion(
-                    center: coordinate,
-                    latitudinalMeters: 1000,
-                    longitudinalMeters: 1000
-                )
+                let region = MKCoordinateRegion(center: coordinate,
+                                                latitudinalMeters: 1000,
+                                                longitudinalMeters: 1000)
                 Mapview.setRegion(region, animated: true)
             }
+            
+            // Initial trim of the traveled path
+            trimTraveledPath(currentCoord: coordinate)
             return
         }
 
         guard let annotation = busAnnotation else { return }
-        let previousCoordinate = lastCoordinate ?? annotation.coordinate
-        
-        var directionDegrees = busHeading
-        if heading == nil {
-            directionDegrees = calculateHeading(from: previousCoordinate, to: coordinate)
-        }
-
-        UIView.animate(withDuration: 1.0, delay: 0, options: [.curveEaseInOut]) {
-            annotation.coordinate = coordinate
-        }
-
         annotation.title = "🚌 \(vehicleNumber)"
         annotation.subtitle = "Trip: \(tripStatus.capitalized)"
 
+        let startCoord = annotation.coordinate
+
+        // ✅ Filter tiny GPS jitter - ignore movement less than 3 meters
+        let startLoc = CLLocation(latitude: startCoord.latitude, longitude: startCoord.longitude)
+        let endLoc = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        let distance = startLoc.distance(from: endLoc)
+
+        if distance < 3 {
+            // Almost same location, skip animation to avoid jitter
+            return
+        }
+
+        // Calculate heading
+        var directionDegrees = busHeading
+        if heading == nil {
+            directionDegrees = calculateHeading(from: startCoord, to: coordinate)
+        }
+        currentBusHeading = directionDegrees
+
+        // Rotate bus icon smoothly
         if let annotationView = Mapview.view(for: annotation) as? BusAnnotationView {
             annotationView.rotate(degrees: directionDegrees)
         }
 
-        Mapview.setCenter(coordinate, animated: true)
+        // ✅ Start smooth interpolation animation
+        startSmoothAnimation(from: startCoord, to: coordinate, duration: refreshInterval)
+
         lastCoordinate = coordinate
+    }
+
+    // MARK: - ✅ Smooth Interpolation with CADisplayLink
+    private func startSmoothAnimation(from start: CLLocationCoordinate2D,
+                                      to end: CLLocationCoordinate2D,
+                                      duration: TimeInterval) {
+        stopSmoothAnimation()
+        
+        animationStartCoord = start
+        animationEndCoord = end
+        animationStartTime = CACurrentMediaTime()
+        animationDuration = duration
+        
+        displayLink = CADisplayLink(target: self, selector: #selector(updateAnimation))
+        displayLink?.preferredFramesPerSecond = 60
+        displayLink?.add(to: .main, forMode: .common)
+    }
+    
+    private func stopSmoothAnimation() {
+        displayLink?.invalidate()
+        displayLink = nil
+    }
+    
+    @objc private func updateAnimation() {
+        guard let annotation = busAnnotation,
+              let start = animationStartCoord,
+              let end = animationEndCoord else {
+            stopSmoothAnimation()
+            return
+        }
+        
+        let elapsed = CACurrentMediaTime() - animationStartTime
+        var progress = elapsed / animationDuration
+        
+        if progress >= 1.0 {
+            progress = 1.0
+            annotation.coordinate = end
+            trimTraveledPath(currentCoord: end)
+            stopSmoothAnimation()
+            return
+        }
+        
+        // Ease-in-out cubic for buttery smooth feel
+        let eased = easeInOutCubic(progress)
+        
+        let lat = start.latitude + (end.latitude - start.latitude) * eased
+        let lng = start.longitude + (end.longitude - start.longitude) * eased
+        let interpolated = CLLocationCoordinate2D(latitude: lat, longitude: lng)
+        
+        annotation.coordinate = interpolated
+        
+        // Trim the traveled path in real-time
+        trimTraveledPath(currentCoord: interpolated)
+    }
+    
+    private func easeInOutCubic(_ t: Double) -> Double {
+        return t < 0.5
+            ? 4 * t * t * t
+            : 1 - pow(-2 * t + 2, 3) / 2
+    }
+
+    // MARK: - ✅ CLEAR PATH BEHIND BUS
+    private func trimTraveledPath(currentCoord: CLLocationCoordinate2D) {
+        guard fullRouteCoordinates.count > 1 else { return }
+        
+        // Find the closest point on the route to the current bus location
+        let busLoc = CLLocation(latitude: currentCoord.latitude, longitude: currentCoord.longitude)
+        var closestIndex = 0
+        var minDistance = CLLocationDistance.greatestFiniteMagnitude
+        
+        for (i, coord) in fullRouteCoordinates.enumerated() {
+            let d = busLoc.distance(from: CLLocation(latitude: coord.latitude, longitude: coord.longitude))
+            if d < minDistance {
+                minDistance = d
+                closestIndex = i
+            }
+        }
+        
+        // Remove old route overlays (drawn per-segment)
+        if !routeOverlays.isEmpty {
+            Mapview.removeOverlays(routeOverlays)
+            routeOverlays.removeAll()
+        }
+        
+        // Remove previous remaining route overlay
+        if let old = remainingRouteOverlay {
+            Mapview.removeOverlay(old)
+            remainingRouteOverlay = nil
+        }
+        
+        // Build the remaining path: from bus current location -> forward
+        var remainingCoords: [CLLocationCoordinate2D] = [currentCoord]
+        if closestIndex + 1 < fullRouteCoordinates.count {
+            remainingCoords.append(contentsOf: fullRouteCoordinates[(closestIndex + 1)...])
+        }
+        
+        guard remainingCoords.count > 1 else { return }
+        
+        let newPolyline = MKPolyline(coordinates: remainingCoords, count: remainingCoords.count)
+        remainingRouteOverlay = newPolyline
+        Mapview.addOverlay(newPolyline, level: .aboveRoads)
     }
 
     private func calculateHeading(from: CLLocationCoordinate2D,
                                   to: CLLocationCoordinate2D) -> Double {
-        let deltaLon = to.longitude - from.longitude
-        let y = sin(deltaLon) * cos(to.latitude)
-        let x = cos(from.latitude) * sin(to.latitude) -
-        sin(from.latitude) * cos(to.latitude) * cos(deltaLon)
+        let fromLat = from.latitude * .pi / 180
+        let fromLon = from.longitude * .pi / 180
+        let toLat = to.latitude * .pi / 180
+        let toLon = to.longitude * .pi / 180
+        
+        let deltaLon = toLon - fromLon
+        let y = sin(deltaLon) * cos(toLat)
+        let x = cos(fromLat) * sin(toLat) - sin(fromLat) * cos(toLat) * cos(deltaLon)
 
         let radians = atan2(y, x)
         var degrees = radians * 180.0 / .pi
@@ -1284,7 +1410,6 @@ class BuslivetrackingVC: UIViewController {
         return degrees
     }
 
-    // MARK: - Start/Stop Location Tracking (Auto Refresh)
     private func startLiveLocationTracking() {
         locationTimer?.invalidate()
         locationTimer = Timer.scheduledTimer(withTimeInterval: refreshInterval,
@@ -1298,7 +1423,6 @@ class BuslivetrackingVC: UIViewController {
         locationTimer = nil
     }
 
-    // ✅ Refresh dots based on initial load data
     private func refreshStopDots() {
         let reachedIds = Set(
             (busData?.routeStops ?? [])
@@ -1317,17 +1441,16 @@ class BuslivetrackingVC: UIViewController {
     }
 
     private func showErrorAlert(message: String) {
-        let alert = UIAlertController(
-            title: "Live Bus Tracking",
-            message: message,
-            preferredStyle: .alert
-        )
+        let alert = UIAlertController(title: "Live Bus Tracking",
+                                      message: message,
+                                      preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         self.present(alert, animated: true)
     }
 
     @IBAction func BackButtonTapped(_ sender: UIButton) {
         stopLiveLocationTracking()
+        stopSmoothAnimation()
         uiTimer?.invalidate(); uiTimer = nil
         navigationController?.popViewController(animated: true)
     }

@@ -9,6 +9,8 @@ import MapKit
 
 class BusAnnotationView: MKAnnotationView {
 
+    private var currentRotation: CGFloat = 0
+
     // MARK: - Init
     override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
         super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
@@ -22,25 +24,34 @@ class BusAnnotationView: MKAnnotationView {
 
     // MARK: - Setup
     private func setupView() {
-
-        // Custom bus image from Assets
         if let busImage = UIImage(named: "bus icon") {
             image = resizeImage(busImage, targetSize: CGSize(width: 45, height: 45))
         } else {
-            // SF Symbol fallback with white circle background
             image = createBusIconWithBackground()
         }
 
         centerOffset   = CGPoint(x: 0, y: -(image?.size.height ?? 0) / 2)
         canShowCallout = true
+        layer.shouldRasterize = true
+        layer.rasterizationScale = UIScreen.main.scale
     }
 
-    // MARK: - Rotate Bus Based on Movement Direction
+    // MARK: - Rotate Bus Smoothly (Shortest Path)
     func rotate(degrees: Double) {
-        let radians = CGFloat(degrees * .pi / 180)
-        UIView.animate(withDuration: 0.3) {
-            self.transform = CGAffineTransform(rotationAngle: radians)
+        let targetRadians = CGFloat(degrees * .pi / 180)
+        
+        // Find shortest angle
+        var delta = targetRadians - currentRotation
+        while delta > .pi { delta -= 2 * .pi }
+        while delta < -.pi { delta += 2 * .pi }
+        let newRotation = currentRotation + delta
+
+        UIView.animate(withDuration: 0.8,
+                       delay: 0,
+                       options: [.curveEaseInOut, .allowUserInteraction, .beginFromCurrentState]) {
+            self.transform = CGAffineTransform(rotationAngle: newRotation)
         }
+        currentRotation = newRotation
     }
 
     // MARK: - Resize Image Helper
@@ -58,31 +69,20 @@ class BusAnnotationView: MKAnnotationView {
 
         return renderer.image { ctx in
             let context = ctx.cgContext
-
-            // White circle background
             context.setFillColor(UIColor.white.cgColor)
             context.fillEllipse(in: CGRect(origin: .zero, size: size))
-
-            // Blue border
             context.setStrokeColor(UIColor.systemBlue.cgColor)
             context.setLineWidth(2)
-            context.strokeEllipse(in: CGRect(
-                x: 1, y: 1,
-                width : size.width  - 2,
-                height: size.height - 2
-            ))
+            context.strokeEllipse(in: CGRect(x: 1, y: 1, width: size.width - 2, height: size.height - 2))
 
-            // Draw bus SF Symbol
             let config = UIImage.SymbolConfiguration(pointSize: 24, weight: .bold)
             let busIcon = UIImage(systemName: "bus.fill", withConfiguration: config)?
                 .withTintColor(.systemBlue, renderingMode: .alwaysOriginal)
 
             if let busIcon = busIcon {
                 let iconSize = CGSize(width: 26, height: 26)
-                let origin   = CGPoint(
-                    x: (size.width  - iconSize.width)  / 2,
-                    y: (size.height - iconSize.height) / 2
-                )
+                let origin   = CGPoint(x: (size.width - iconSize.width) / 2,
+                                       y: (size.height - iconSize.height) / 2)
                 busIcon.draw(in: CGRect(origin: origin, size: iconSize))
             }
         }
