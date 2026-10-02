@@ -37,11 +37,39 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
         iv.translatesAutoresizingMaskIntoConstraints = false
         return iv
     }()
+    
+    // MARK: - Figma ETA UI (Info Icon + ETA Text)
+    private let etaStackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.spacing = 6
+        stack.alignment = .center
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.isHidden = true
+        return stack
+    }()
+
+    private let etaIconImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.image = UIImage(systemName: "info.circle")
+        iv.tintColor = UIColor(red: 0/255, green: 92/255, blue: 170/255, alpha: 1) // Primary Blue
+        iv.contentMode = .scaleAspectFit
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        return iv
+    }()
+
+    private let etaLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 11, weight: .medium)
+        label.textColor = UIColor(red: 0/255, green: 92/255, blue: 170/255, alpha: 1) // Primary Blue
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
 
     // MARK: - Programmatic status badge fallback
     private let fallbackStatusBadge: UILabel = {
         let label = UILabel()
-        label.font = .hankenBold(size: 9)
+        label.font = .systemFont(ofSize: 9, weight: .bold)
         label.textAlignment = .center
         label.layer.cornerRadius = 4
         label.clipsToBounds = true
@@ -96,20 +124,44 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
     private func setupHighlightCard() {
         contentView.insertSubview(highlightCardView, at: 0)
         contentView.addSubview(mapIconImageView)
+        
+        etaStackView.addArrangedSubview(etaIconImageView)
+        etaStackView.addArrangedSubview(etaLabel)
+        contentView.addSubview(etaStackView)
 
-        guard let circleView = imagebackgroundview else { return }
+        guard let circleView = imagebackgroundview,
+              let stopName = StopnameLabel,
+              let timeLabel = PickupandDroptimelabel else { return }
 
+        // Dynamic constraint wrapping the labels and ETA seamlessly
         NSLayoutConstraint.activate([
             highlightCardView.leadingAnchor.constraint(equalTo: circleView.trailingAnchor, constant: 12),
             highlightCardView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            highlightCardView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            highlightCardView.heightAnchor.constraint(greaterThanOrEqualToConstant: 60),
+            highlightCardView.topAnchor.constraint(equalTo: stopName.topAnchor, constant: -12),
+            highlightCardView.bottomAnchor.constraint(greaterThanOrEqualTo: timeLabel.bottomAnchor, constant: 12),
 
+            // Map icon to Top Right of the card
             mapIconImageView.trailingAnchor.constraint(equalTo: highlightCardView.trailingAnchor, constant: -12),
-            mapIconImageView.centerYAnchor.constraint(equalTo: highlightCardView.centerYAnchor),
+            mapIconImageView.topAnchor.constraint(equalTo: highlightCardView.topAnchor, constant: 12),
             mapIconImageView.widthAnchor.constraint(equalToConstant: 20),
-            mapIconImageView.heightAnchor.constraint(equalToConstant: 20)
+            mapIconImageView.heightAnchor.constraint(equalToConstant: 20),
+            
+            // ETA Stack view immediately below the Time label
+            etaStackView.leadingAnchor.constraint(equalTo: timeLabel.leadingAnchor),
+            etaStackView.topAnchor.constraint(equalTo: timeLabel.bottomAnchor, constant: 6),
+            
+            // Ensure card expands downwards to include ETA when visible
+            highlightCardView.bottomAnchor.constraint(greaterThanOrEqualTo: etaStackView.bottomAnchor, constant: 12),
+            
+            // ETA Icon dimensions
+            etaIconImageView.widthAnchor.constraint(equalToConstant: 14),
+            etaIconImageView.heightAnchor.constraint(equalToConstant: 14)
         ])
+        
+        // Push the cell boundaries down if the card expands
+        let cellBottom = contentView.bottomAnchor.constraint(greaterThanOrEqualTo: highlightCardView.bottomAnchor, constant: 8)
+        cellBottom.priority = .defaultHigh // Prevents layout crashes with strict XIB constraints
+        cellBottom.isActive = true
     }
 
     private func setupFallbackBadgeIfNeeded() {
@@ -124,9 +176,7 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
         ])
     }
 
-    /// Vertical line through the circle center — Figma style
     private func setupFallbackTimelineIfNeeded() {
-        // Only create if XIB outlets missing
         let needTop = (timelineTopLine == nil)
         let needBottom = (timelineBottomLine == nil)
         guard needTop || needBottom else { return }
@@ -156,9 +206,10 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
     }
 
     private func setupFonts() {
-        StopnameLabel?.font = .hankenBold(size: 16)
-        PickupandDroptimelabel?.font = .hankenRegular(size: 13)
-        statusBadgeLabel?.font = .hankenBold(size: 9)
+        // Fallback standard fonts if Hanken not found natively
+        StopnameLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        PickupandDroptimelabel?.font = UIFont.systemFont(ofSize: 13, weight: .regular)
+        statusBadgeLabel?.font = UIFont.systemFont(ofSize: 9, weight: .bold)
     }
 
     override func prepareForReuse() {
@@ -181,6 +232,9 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
 
         highlightCardView.isHidden = true
         mapIconImageView.isHidden = true
+        
+        etaStackView.isHidden = true
+        etaLabel.text = nil
 
         activeTopLine?.isHidden = true
         activeBottomLine?.isHidden = true
@@ -203,7 +257,8 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
         stopOrder: Int? = nil,
         isDrop: Bool = false,
         isPassed: Bool = false,
-        isLive: Bool = false
+        isLive: Bool = false,
+        estimatedTravelTime: Int? = nil
     ) {
         let name = stopName?.trimmingCharacters(in: .whitespacesAndNewlines)
         StopnameLabel.text = (name?.isEmpty == false) ? name : "N/A"
@@ -213,37 +268,24 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
         let grayColor   = UIColor(red: 196/255, green: 197/255, blue: 216/255, alpha: 1) // #C4C5D8 Figma
         let lightGray   = UIColor.systemGray3
 
-        // ═══════════════════════════════════════
-        // TIMELINE LINES (Figma exact)
-        // ───────────────────────────────────────
-        // Top line  → blue if this stop is PASSED or LIVE
-        //             (bus already came from above / is here)
-        // Bottom line → blue ONLY if PASSED
-        //             (bus has left this stop going down)
-        // First stop → hide top
-        // Last stop  → hide bottom
-        // ═══════════════════════════════════════
         let topLine = activeTopLine
         let bottomLine = activeBottomLine
 
         topLine?.isHidden = isFirst
         bottomLine?.isHidden = isLast
 
-        // Colour: grey by default, blue after reach
         topLine?.backgroundColor = (isPassed || isLive) ? primaryBlue : grayColor
         bottomLine?.backgroundColor = isPassed ? primaryBlue : grayColor
 
-        // Keep lines behind circle
         if let top = topLine { contentView.insertSubview(top, at: 0) }
         if let bottom = bottomLine { contentView.insertSubview(bottom, at: 0) }
         if let circle = imagebackgroundview { contentView.bringSubviewToFront(circle) }
         if let icon = Ckeckmarkimageview { contentView.bringSubviewToFront(icon) }
 
-        // Reset
         imagebackgroundview?.layer.borderWidth = 0
         imagebackgroundview?.layer.borderColor = nil
         imagebackgroundview?.backgroundColor = .clear
-        StopnameLabel.font = .hankenRegular(size: 15)
+        StopnameLabel.font = UIFont.systemFont(ofSize: 15, weight: .regular)
         StopnameLabel.textColor = .black
         PickupandDroptimelabel.textColor = .darkGray
 
@@ -251,30 +293,17 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
         fallbackStatusBadge.isHidden = true
         highlightCardView.isHidden = true
         mapIconImageView.isHidden = true
+        etaStackView.isHidden = true
         Ckeckmarkimageview?.contentMode = .scaleAspectFit
 
         let badge = activeBadgeLabel
-
-        // ─────────────────────────────────────────
-        // STATE PRIORITY (Figma):
-        // 1. LIVE
-        // 2. YOUR STOP  ← never PASSED badge
-        // 3. PASSED
-        // 4. UPCOMING
-        // ─────────────────────────────────────────
 
         if isLive {
             // 🚌 LIVE
             imagebackgroundview?.backgroundColor = primaryBlue
             imagebackgroundview?.layer.borderWidth = 0
 
-            let busImg = UIImage(named: "Icon 30")
-                ?? UIImage(named: "Icon30")
-                ?? UIImage(named: "icon 30")
-                ?? UIImage(named: "icon30")
-                ?? UIImage(named: "busicon")
-                ?? UIImage(named: "school_bus")
-
+            let busImg = UIImage(named: "Icon 30") ?? UIImage(named: "school_bus")
             if let bImg = busImg {
                 Ckeckmarkimageview?.image = bImg.withRenderingMode(.alwaysTemplate)
                 Ckeckmarkimageview?.tintColor = .white
@@ -283,7 +312,7 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
                 Ckeckmarkimageview?.tintColor = .white
             }
 
-            StopnameLabel.font = .hankenBold(size: 15)
+            StopnameLabel.font = UIFont.systemFont(ofSize: 15, weight: .bold)
             StopnameLabel.textColor = primaryBlue
 
             badge?.isHidden = false
@@ -295,13 +324,10 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
             // 📍 YOUR STOP
             imagebackgroundview?.backgroundColor = .white
             imagebackgroundview?.layer.borderWidth = 2.0
-            imagebackgroundview?.layer.borderColor = UIColor(red: 196/255, green: 197/255, blue: 216/255, alpha: 1).cgColor // #C4C5D8
+            imagebackgroundview?.layer.borderColor = UIColor(red: 196/255, green: 197/255, blue: 216/255, alpha: 1).cgColor
 
-            let pinColor = UIColor(red: 75/255, green: 85/255, blue: 99/255, alpha: 1) // #4B5563
-            let locImg = UIImage(named: "locationicon")
-                ?? UIImage(named: "Location")
-                ?? UIImage(named: "locatio")
-                ?? UIImage(named: "locationiconblue")
+            let pinColor = UIColor(red: 75/255, green: 85/255, blue: 99/255, alpha: 1)
+            let locImg = UIImage(named: "locationicon") ?? UIImage(named: "locationiconblue")
 
             if let lImg = locImg {
                 Ckeckmarkimageview?.image = lImg.withRenderingMode(.alwaysOriginal)
@@ -314,7 +340,13 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
             highlightCardView.isHidden = false
             mapIconImageView.isHidden = false
 
-            StopnameLabel.font = .hankenBold(size: 15)
+            // Determine if we show ETA
+            if let eta = estimatedTravelTime, eta > 0 {
+                etaStackView.isHidden = false
+                etaLabel.text = "ETA: \(eta) mins away"
+            }
+
+            StopnameLabel.font = UIFont.systemFont(ofSize: 15, weight: .bold)
             StopnameLabel.textColor = .black
             PickupandDroptimelabel.textColor = .darkGray
 
@@ -329,21 +361,21 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
             imagebackgroundview?.layer.borderWidth = 1.0
             imagebackgroundview?.layer.borderColor = lightGray.cgColor
 
-            let checkImg = UIImage(named: "Circle_checkbox")
-                ?? UIImage(named: "check-mark")
-                ?? UIImage(named: "GreenTick")
-                ?? UIImage(named: "tickmark")
-                ?? UIImage(named: "done_check")
-
-            if let cImg = checkImg {
-                Ckeckmarkimageview?.image = cImg.withRenderingMode(.alwaysOriginal)
-                Ckeckmarkimageview?.tintColor = nil
+            // ⚠️ MODIFICATION: Only show checkmark if NOT evening drop (isDrop == false)
+            if isDrop {
+                Ckeckmarkimageview?.image = nil
             } else {
-                Ckeckmarkimageview?.image = UIImage(systemName: "checkmark.circle.fill")
-                Ckeckmarkimageview?.tintColor = primaryBlue
+                let checkImg = UIImage(named: "Circle_checkbox") ?? UIImage(named: "GreenTick")
+                if let cImg = checkImg {
+                    Ckeckmarkimageview?.image = cImg.withRenderingMode(.alwaysOriginal)
+                    Ckeckmarkimageview?.tintColor = nil
+                } else {
+                    Ckeckmarkimageview?.image = UIImage(systemName: "checkmark.circle.fill")
+                    Ckeckmarkimageview?.tintColor = primaryBlue
+                }
             }
 
-            StopnameLabel.font = .hankenRegular(size: 15)
+            StopnameLabel.font = UIFont.systemFont(ofSize: 15, weight: .regular)
             StopnameLabel.textColor = .black
 
             badge?.isHidden = false
@@ -358,19 +390,18 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
             imagebackgroundview?.layer.borderColor = lightGray.cgColor
             Ckeckmarkimageview?.image = nil
 
-            StopnameLabel.font = .hankenRegular(size: 15)
+            StopnameLabel.font = UIFont.systemFont(ofSize: 15, weight: .regular)
             StopnameLabel.textColor = .darkGray
             PickupandDroptimelabel.textColor = .lightGray
         }
 
-        // Z-order
         if let activeBadge = badge { contentView.bringSubviewToFront(activeBadge) }
         if !highlightCardView.isHidden {
             contentView.insertSubview(highlightCardView, at: 0)
-            // lines stay at back
             if let top = topLine { contentView.insertSubview(top, at: 0) }
             if let bottom = bottomLine { contentView.insertSubview(bottom, at: 0) }
             contentView.bringSubviewToFront(mapIconImageView)
+            if !etaStackView.isHidden { contentView.bringSubviewToFront(etaStackView) }
             if let activeBadge = badge { contentView.bringSubviewToFront(activeBadge) }
             if let circle = imagebackgroundview { contentView.bringSubviewToFront(circle) }
             if let icon = Ckeckmarkimageview { contentView.bringSubviewToFront(icon) }

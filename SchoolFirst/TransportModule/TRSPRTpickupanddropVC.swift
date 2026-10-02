@@ -40,12 +40,11 @@ class TRSPRTpickupanddropVC: UIViewController {
         setupTableView()
         setupTopViewBottomShadowAndBorder()
         setupFonts()
-        // ✅ Call API only once when entering screen
         fetchBusDataIfNeeded()
     }
 
     private func setupFonts() {
-        PickupanddropLabel?.font = .hankenSemiBold(size: 20)
+        PickupanddropLabel?.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
     }
 
     private func setupTopViewBottomShadowAndBorder() {
@@ -90,9 +89,7 @@ class TRSPRTpickupanddropVC: UIViewController {
         tableview.estimatedRowHeight = 100
     }
 
-    // MARK: - ✅ Fetch ONLY once when entering screen
     private func fetchBusDataIfNeeded() {
-        // Already fetched OR currently loading → do nothing
         guard !hasFetchedOnce, !isLoading else { return }
         fetchBusData()
     }
@@ -102,7 +99,6 @@ class TRSPRTpickupanddropVC: UIViewController {
         let schoolId  = UserManager.shared.resolvedSchoolID
         guard !studentId.isEmpty, !schoolId.isEmpty, !isLoading else { return }
 
-        // ✅ Lock so it never fires again for this screen session
         isLoading = true
         hasFetchedOnce = true
 
@@ -132,11 +128,9 @@ class TRSPRTpickupanddropVC: UIViewController {
                         if let apiBusNo = data.bus?.vehicleNumber { self.busNumber = apiBusNo }
                         self.tableview.reloadData()
                     } else {
-                        // Allow retry only if response failed with no data
                         self.hasFetchedOnce = false
                     }
                 case .failure(let error):
-                    // Allow retry on failure (user can pull / re-enter)
                     self.hasFetchedOnce = false
                     print("❌ Error fetching bus details: \(error.localizedDescription)")
                 }
@@ -147,22 +141,14 @@ class TRSPRTpickupanddropVC: UIViewController {
     private var studentPickupStopId: String? { busData?.pickupStop?.id }
     private var studentDropStopId: String? { busData?.dropStop?.id }
 
-    // MARK: - Stop State (ALWAYS top → bottom in display order)
-    /// - trip_status == COMPLETED → all PASSED
-    /// - index < first PENDING  → PASSED
-    /// - index == first PENDING → LIVE (only if bus already started)
-    /// - index > first PENDING  → Upcoming
     private func determineStopState(stopIndex: Int, stops: [RouteStop]) -> (isPassed: Bool, isLive: Bool) {
         guard stopIndex >= 0 && stopIndex < stops.count else { return (false, false) }
-
         let tripStatus = (busData?.tripStatus ?? "").uppercased()
 
-        // Entire trip finished → every stop is PASSED
         if tripStatus == "COMPLETED" {
             return (true, false)
         }
 
-        // First PENDING stop in the *currently displayed* list (top → bottom)
         let firstPendingIdx = stops.firstIndex {
             ($0.status ?? "").uppercased() == "PENDING"
         }
@@ -183,7 +169,6 @@ class TRSPRTpickupanddropVC: UIViewController {
             }
         }
 
-        // No PENDING left → all REACHED → PASSED
         let currentStatus = (stops[stopIndex].status ?? "").uppercased()
         if currentStatus == "REACHED" {
             return (true, false)
@@ -217,7 +202,6 @@ extension TRSPRTpickupanddropVC: UITableViewDelegate, UITableViewDataSource {
             cell.configureStudentImage(urlString: UserManager.shared.resolvedStudentPhotoURL)
             cell.configureGrade()
             cell.onSegmentChange = { [weak self] index in
-                // ✅ Segment change → local reload ONLY (NO API call)
                 self?.selectedSegmentIndex = index
                 self?.tableview.reloadData()
             }
@@ -264,7 +248,6 @@ extension TRSPRTpickupanddropVC: UITableViewDelegate, UITableViewDataSource {
         let isDrop = (selectedSegmentIndex == 1)
         let isSchool = (stop.stopType ?? "").uppercased() == "SCHOOL"
 
-        // Time selection
         let time: String?
         if isSchool {
             if isDrop {
@@ -297,7 +280,8 @@ extension TRSPRTpickupanddropVC: UITableViewDelegate, UITableViewDataSource {
             stopOrder: stop.stopOrder,
             isDrop: isDrop,
             isPassed: state.isPassed,
-            isLive: state.isLive
+            isLive: state.isLive,
+            estimatedTravelTime: stop.estimatedTravelTime
         )
         return cell
     }
@@ -306,6 +290,6 @@ extension TRSPRTpickupanddropVC: UITableViewDelegate, UITableViewDataSource {
         let stopsCount = displayStops.count
         if indexPath.row == 0 { return 280 }
         else if indexPath.row == stopsCount + 1 { return 200 }
-        else { return 90 }
+        else { return UITableView.automaticDimension }
     }
 }

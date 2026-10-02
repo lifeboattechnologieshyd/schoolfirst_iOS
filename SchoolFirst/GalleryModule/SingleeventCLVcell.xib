@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" restorationIdentifier="SingleeventCLVcell" id="gTV-IL-0wX" customClass="SingleeventCLVcell" customModule="SF_Dev" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="409" height="237"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="409" height="237"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eTT-gq-dOp">
+                        <rect key="frame" x="0.0" y="0.0" width="409" height="237"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="image cover" translatesAutoresizingMaskIntoConstraints="NO" id="4ek-Fw-kcW">
+                                <rect key="frame" x="0.0" y="0.0" width="409" height="150"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="150" id="Eu2-CP-2de"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Annual Sports Day 2026" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3mk-4u-3WQ">
+                                <rect key="frame" x="16" y="162" width="377" height="18"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="18" id="pWU-Gu-RlP"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
+                                <color key="textColor" red="0.1253662109" green="0.1602783203" blue="0.22668458520000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Track, field and trophy ceremony highlights." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6hT-bK-AeG">
+                                <rect key="frame" x="16" y="185" width="377" height="15"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="15" id="j7F-G0-SMJ"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                <color key="textColor" red="0.4028320312" green="0.4538574219" blue="0.5361328125" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon 74" translatesAutoresizingMaskIntoConstraints="NO" id="1gD-Ir-5xc">
+                                <rect key="frame" x="16" y="205" width="13" height="13"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="13" id="30P-0w-VTN"/>
+                                    <constraint firstAttribute="height" constant="13" id="Idt-6M-U04"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="48 photos · 15 Feb 2026" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dxU-9q-yWt">
+                                <rect key="frame" x="35" y="204.66666666666666" width="150" height="14"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="150" id="amb-H5-0es"/>
+                                    <constraint firstAttribute="height" constant="14" id="ue7-Ia-zrE"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                <color key="textColor" red="0.4028320312" green="0.4538574219" blue="0.5361328125" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Events" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Cn9-JJ-INh">
+                                <rect key="frame" x="319" y="10" width="80" height="24"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="24" id="alX-qS-gZs"/>
+                                    <constraint firstAttribute="width" constant="80" id="oQB-ML-0bT"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="11"/>
+                                <color key="textColor" red="0.1292724609" green="0.2071532905" blue="0.3911132812" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <nil key="highlightedColor"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="3mk-4u-3WQ" firstAttribute="leading" secondItem="eTT-gq-dOp" secondAttribute="leading" constant="16" id="Dqg-bK-ARv"/>
+                            <constraint firstItem="Cn9-JJ-INh" firstAttribute="top" secondItem="eTT-gq-dOp" secondAttribute="top" constant="10" id="HUr-Q5-R0l"/>
+                            <constraint firstAttribute="trailing" secondItem="4ek-Fw-kcW" secondAttribute="trailing" id="J1v-li-UaV"/>
+                            <constraint firstItem="dxU-9q-yWt" firstAttribute="centerY" secondItem="1gD-Ir-5xc" secondAttribute="centerY" id="NGL-Fd-XBB"/>
+                            <constraint firstAttribute="trailing" secondItem="Cn9-JJ-INh" secondAttribute="trailing" constant="10" id="Sje-bO-UuA"/>
+                            <constraint firstItem="3mk-4u-3WQ" firstAttribute="top" secondItem="4ek-Fw-kcW" secondAttribute="bottom" constant="12" id="SzI-Fk-xYd"/>
+                            <constraint firstAttribute="trailing" secondItem="6hT-bK-AeG" secondAttribute="trailing" constant="16" id="UyV-gh-rsX"/>
+                            <constraint firstItem="1gD-Ir-5xc" firstAttribute="leading" secondItem="eTT-gq-dOp" secondAttribute="leading" constant="16" id="WV8-nP-rSx"/>
+                            <constraint firstItem="4ek-Fw-kcW" firstAttribute="leading" secondItem="eTT-gq-dOp" secondAttribute="leading" id="Xbi-nl-lgQ"/>
+                            <constraint firstItem="4ek-Fw-kcW" firstAttribute="top" secondItem="eTT-gq-dOp" secondAttribute="top" id="XrM-Gy-KV8"/>
+                            <constraint firstAttribute="trailing" secondItem="3mk-4u-3WQ" secondAttribute="trailing" constant="16" id="Ymn-ZJ-CXa"/>
+                            <constraint firstItem="6hT-bK-AeG" firstAttribute="leading" secondItem="eTT-gq-dOp" secondAttribute="leading" constant="16" id="a5z-Cv-i1H"/>
+                            <constraint firstItem="1gD-Ir-5xc" firstAttribute="top" secondItem="6hT-bK-AeG" secondAttribute="bottom" constant="5" id="dqM-Hf-wl8"/>
+                            <constraint firstItem="dxU-9q-yWt" firstAttribute="leading" secondItem="1gD-Ir-5xc" secondAttribute="trailing" constant="6" id="ho9-vX-HfX"/>
+                            <constraint firstItem="6hT-bK-AeG" firstAttribute="top" secondItem="3mk-4u-3WQ" secondAttribute="bottom" constant="5" id="pcn-hR-sXm"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="16"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </view>
+                </subviews>
+            </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="eTT-gq-dOp" secondAttribute="trailing" id="4UX-Fq-FU8"/>
+                <constraint firstItem="eTT-gq-dOp" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="Ceu-Ed-pyO"/>
+                <constraint firstAttribute="bottom" secondItem="eTT-gq-dOp" secondAttribute="bottom" id="Irm-T8-gia"/>
+                <constraint firstItem="eTT-gq-dOp" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="eZ1-Ro-UOK"/>
+            </constraints>
+            <size key="customSize" width="409" height="237"/>
+            <connections>
+                <outlet property="badgeLabel" destination="Cn9-JJ-INh" id="0IO-it-Fmu"/>
+                <outlet property="containerView" destination="eTT-gq-dOp" id="k6k-q8-hIK"/>
+                <outlet property="eventImageView" destination="4ek-Fw-kcW" id="nDj-EI-gzh"/>
+                <outlet property="metaLabel" destination="dxU-9q-yWt" id="N6W-Kv-iZH"/>
+                <outlet property="subtitleLabel" destination="6hT-bK-AeG" id="EOp-c1-lnZ"/>
+                <outlet property="titleLabel" destination="3mk-4u-3WQ" id="iBS-WE-HHR"/>
+            </connections>
+            <point key="canvasLocation" x="267.93893129770993" y="145.42253521126761"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <image name="icon 74" width="13" height="13"/>
+        <image name="image cover" width="358" height="150"/>
+    </resources>
+</document>

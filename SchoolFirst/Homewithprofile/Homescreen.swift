@@ -210,6 +210,7 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
         case "Fee": navigateToParentfeeVC()
         case "Homework": navigateToHomework()
         case "Portofolio": navigateToPortofolio()
+        case "Gallery": navigateToGallery()   // ✅ NEW: Gallery navigation added
         case "Transport":
             print("🔥 Transport module selected")
             navigateToTransport()
@@ -299,11 +300,6 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
         pushNotOptedVC(vc)
     }
 
-    // ✅ THE FIX:
-    // NetworkManager presents an "Error" alert when the API returns 400.
-    // UIKit SILENTLY IGNORES pushViewController while an alert is presenting
-    // on the top VC — that is why your previous push never landed.
-    // So: wait for the alert to appear, dismiss it, then push.
     private func pushNotOptedVC(_ vc: TransportnotoptedVC) {
         vc.hidesBottomBarWhenPushed = true
 
@@ -323,7 +319,6 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
                 }
             }
 
-            // Dismiss the blocking "Error" alert (on self OR on the nav controller)
             let blocker = self.presentedViewController
                 ?? self.navigationController?.presentedViewController
 
@@ -483,6 +478,21 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
             } else {
                 paymentVC.modalPresentationStyle = .fullScreen
                 present(paymentVC, animated: true)
+            }
+        }
+    }
+
+    // ✅ NEW: GALLERY NAVIGATION
+    private func navigateToGallery() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let galleryVC = storyboard.instantiateViewController(withIdentifier: "GalleryhomeVC") as? GalleryhomeVC {
+            galleryVC.hidesBottomBarWhenPushed = true
+            if let nav = navigationController {
+                nav.setNavigationBarHidden(true, animated: false)
+                nav.pushViewController(galleryVC, animated: true)
+            } else {
+                galleryVC.modalPresentationStyle = .fullScreen
+                present(galleryVC, animated: true)
             }
         }
     }
