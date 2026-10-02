@@ -276,20 +276,65 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
     }
 
     func configureBusDetails(_ busData: StudentBusData?) {
-        DrivernameLabel.text = busData?.driver?.name?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false ? busData?.driver?.name : "N/A"
-        BusnumberLabel.text = busData?.bus?.vehicleNumber?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false ? busData?.bus?.vehicleNumber : "N/A"
-        AttendantnameLabel.text = busData?.attendant?.name?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false ? busData?.attendant?.name : "N/A"
+        
+        DrivernameLabel.text = busData?.driver?.name?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+            ? busData?.driver?.name
+            : "N/A"
+        
+        AttendantnameLabel.text = busData?.attendant?.name?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+            ? busData?.attendant?.name
+            : "N/A"
 
-        loadImage(urlString: busData?.driver?.profileImage, into: DriverImageview, placeholder: { [weak self] in self?.setDriverPlaceholder() }, taskStore: &driverImageTask, isBusImage: false)
-        loadImage(urlString: busData?.attendant?.profileImage, into: AttendantImageview, placeholder: { [weak self] in self?.setAttendantPlaceholder() }, taskStore: &attendantImageTask, isBusImage: false)
+        // ✅ Bus Number + Registration Number configure
+        let vehicleNumber = busData?.bus?.vehicleNumber?
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        
+        let registrationNumber = busData?.bus?.registrationNumber?
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
 
-        let busImageURL = busData?.bus?.image ?? busData?.bus?.busImage ?? busData?.bus?.vehicleImage ?? busData?.bus?.vehiclePhoto ?? busData?.bus?.busPhoto ?? busData?.bus?.photo
-        loadImage(urlString: busImageURL, into: Busimageview, placeholder: { [weak self] in self?.setBusPlaceholder() }, taskStore: &busImageTask, isBusImage: true)
+        BusnumberLabel.text = registrationNumber.isEmpty ? (vehicleNumber.isEmpty ? "N/A" : vehicleNumber) : registrationNumber
+
+        loadImage(
+            urlString: busData?.driver?.profileImage,
+            into: DriverImageview,
+            placeholder: { [weak self] in self?.setDriverPlaceholder() },
+            taskStore: &driverImageTask,
+            isBusImage: false
+        )
+        
+        loadImage(
+            urlString: busData?.attendant?.profileImage,
+            into: AttendantImageview,
+            placeholder: { [weak self] in self?.setAttendantPlaceholder() },
+            taskStore: &attendantImageTask,
+            isBusImage: false
+        )
+
+        let busImageURL = busData?.bus?.image
+            ?? busData?.bus?.busImage
+            ?? busData?.bus?.vehicleImage
+            ?? busData?.bus?.vehiclePhoto
+            ?? busData?.bus?.busPhoto
+            ?? busData?.bus?.photo
+        
+        loadImage(
+            urlString: busImageURL,
+            into: Busimageview,
+            placeholder: { [weak self] in self?.setBusPlaceholder() },
+            taskStore: &busImageTask,
+            isBusImage: true
+        )
 
         let studentPhotoURL = UserManager.shared.resolvedStudentPhotoURL
-        loadImage(urlString: studentPhotoURL.isEmpty ? nil : studentPhotoURL, into: Studentprofileimageview, placeholder: { [weak self] in self?.setStudentPlaceholder() }, taskStore: &studentImageTask, isBusImage: false)
+        
+        loadImage(
+            urlString: studentPhotoURL.isEmpty ? nil : studentPhotoURL,
+            into: Studentprofileimageview,
+            placeholder: { [weak self] in self?.setStudentPlaceholder() },
+            taskStore: &studentImageTask,
+            isBusImage: false
+        )
     }
-
     // ✅ UPDATED: Configures Pickup and Drop labels safely matching MORNING or EVENING shifts
     func configureRouteDetails(_ busData: StudentBusData?) {
         let shift = (busData?.route?.shift ?? "MORNING").uppercased()

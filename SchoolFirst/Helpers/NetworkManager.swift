@@ -441,7 +441,11 @@ struct StudentBusData: Codable {
     let dropStop: StopDetails?
     let routeStops: [RouteStop]?
     let tripType: String?
-    let tripStatus: String? // <-- Added: For tracking trip status (e.g., "COMPLETED")
+    let tripStatus: String?
+    
+    // ✅ NEW — Added from updated API response
+    let tripId: String?
+    let tripShift: String?
 
     enum CodingKeys: String, CodingKey {
         case student
@@ -449,11 +453,15 @@ struct StudentBusData: Codable {
         case driver
         case attendant
         case route
-        case pickupStop = "pickup_stop"
-        case dropStop = "drop_stop"
-        case routeStops = "route_stops"
-        case tripType = "trip_type"
-        case tripStatus = "trip_status" // <-- Added
+        case pickupStop   = "pickup_stop"
+        case dropStop     = "drop_stop"
+        case routeStops   = "route_stops"
+        case tripType     = "trip_type"
+        case tripStatus   = "trip_status"
+        
+        // ✅ NEW
+        case tripId       = "trip_id"
+        case tripShift    = "trip_shift"
     }
 }
 
@@ -476,19 +484,27 @@ struct BusInfo: Codable {
     let vehiclePhoto: String?
     let busPhoto: String?
     let photo: String?
+    
+    // ✅ NEW — Added from updated API response
+    let registrationNumber: String?
+    let model: String?
 
     enum CodingKeys: String, CodingKey {
         case id
-        case vehicleNumber = "vehicle_number"
-        case vehicleType   = "vehicle_type"
+        case vehicleNumber    = "vehicle_number"
+        case vehicleType      = "vehicle_type"
         case capacity
         case status
         case image
-        case busImage     = "bus_image"
-        case vehicleImage = "vehicle_image"
-        case vehiclePhoto = "vehicle_photo"
-        case busPhoto     = "bus_photo"
+        case busImage         = "bus_image"
+        case vehicleImage     = "vehicle_image"
+        case vehiclePhoto     = "vehicle_photo"
+        case busPhoto         = "bus_photo"
         case photo
+        
+        // ✅ NEW
+        case registrationNumber = "registration_number"
+        case model
     }
 }
 
@@ -523,11 +539,11 @@ struct RouteDetails: Codable {
 
     enum CodingKeys: String, CodingKey {
         case id
-        case routeCode = "route_code"
-        case routeName = "route_name"
+        case routeCode         = "route_code"
+        case routeName         = "route_name"
         case source
         case destination
-        case totalDistance = "total_distance"
+        case totalDistance     = "total_distance"
         case estimatedDuration = "estimated_duration"
         case shift
         case status
@@ -548,14 +564,14 @@ struct StopDetails: Codable {
 
     enum CodingKeys: String, CodingKey {
         case id
-        case stopName = "stop_name"
-        case stopCode = "stop_code"
+        case stopName   = "stop_name"
+        case stopCode   = "stop_code"
         case landmark
         case address
         case latitude
         case longitude
         case pickupTime = "pickup_time"
-        case dropTime = "drop_time"
+        case dropTime   = "drop_time"
     }
 }
 
@@ -574,25 +590,25 @@ struct RouteStop: Codable {
     let dropTime: String?
     let distanceFromPreviousStop: Double?
     let estimatedTravelTime: Int?
-    let status: String?        // <-- Added: Tracking if stop is "REACHED" or "PENDING"
-    let reachedTime: String?   // <-- Added: Arrival timestamp
+    let status: String?
+    let reachedTime: String?
 
     enum CodingKeys: String, CodingKey {
         case id
-        case stopName = "stop_name"
-        case stopCode = "stop_code"
-        case stopType = "stop_type"
-        case stopOrder = "stop_order"
+        case stopName                  = "stop_name"
+        case stopCode                  = "stop_code"
+        case stopType                  = "stop_type"
+        case stopOrder                 = "stop_order"
         case landmark
         case address
         case latitude
         case longitude
-        case pickupTime = "pickup_time"
-        case dropTime = "drop_time"
-        case distanceFromPreviousStop = "distance_from_previous_stop"
-        case estimatedTravelTime = "estimated_travel_time"
-        case status              // <-- Added
-        case reachedTime = "reached_time" // <-- Added
+        case pickupTime                = "pickup_time"
+        case dropTime                  = "drop_time"
+        case distanceFromPreviousStop  = "distance_from_previous_stop"
+        case estimatedTravelTime       = "estimated_travel_time"
+        case status
+        case reachedTime               = "reached_time"
     }
 }
 //*** - Student Profile API Response Struct

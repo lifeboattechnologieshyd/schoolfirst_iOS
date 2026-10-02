@@ -56,15 +56,20 @@ final class RouteProgressView: UIView {
     required init?(coder: NSCoder) { super.init(coder: coder); setup() }
 
     private func setup() {
-        line.backgroundColor = UIColor.systemGray4
+        line.backgroundColor = .systemGray4
         activeLine.backgroundColor = blue
         line.translatesAutoresizingMaskIntoConstraints = false
         activeLine.translatesAutoresizingMaskIntoConstraints = false
+        
         stack.axis = .horizontal
         stack.distribution = .fillEqually
         stack.alignment = .top
         stack.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(line); addSubview(activeLine); addSubview(stack)
+        
+        addSubview(line)
+        addSubview(activeLine)
+        addSubview(stack)
+        
         NSLayoutConstraint.activate([
             stack.topAnchor.constraint(equalTo: topAnchor),
             stack.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -79,62 +84,108 @@ final class RouteProgressView: UIView {
         line.constraints.forEach { line.removeConstraint($0) }
         NSLayoutConstraint.deactivate(line.superview?.constraints.filter { $0.firstItem === line || $0.secondItem === line || $0.firstItem === activeLine || $0.secondItem === activeLine } ?? [])
 
-        let icons = ["building.2.fill", "bus.fill", "figure.wave", "house.fill"]
         for (i, s) in steps.enumerated() {
             let col = UIStackView()
-            col.axis = .vertical; col.alignment = .center; col.spacing = 4
+            col.axis = .vertical
+            col.alignment = .center
+            col.spacing = 6 // Figma spacing
 
-            let circle = UIView()
-            circle.translatesAutoresizingMaskIntoConstraints = false
-            circle.layer.cornerRadius = 12
-            let icon = UIImageView(image: UIImage(systemName: i < icons.count ? icons[i] : "circle.fill"))
-            icon.contentMode = .scaleAspectFit
-            icon.translatesAutoresizingMaskIntoConstraints = false
-            circle.addSubview(icon)
+            let iconContainer = UIView()
+            iconContainer.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
-                circle.widthAnchor.constraint(equalToConstant: 24),
-                circle.heightAnchor.constraint(equalToConstant: 24),
-                icon.centerXAnchor.constraint(equalTo: circle.centerXAnchor),
-                icon.centerYAnchor.constraint(equalTo: circle.centerYAnchor),
-                icon.widthAnchor.constraint(equalToConstant: 13),
-                icon.heightAnchor.constraint(equalToConstant: 13)
+                iconContainer.widthAnchor.constraint(equalToConstant: 28),
+                iconContainer.heightAnchor.constraint(equalToConstant: 28)
             ])
 
+            let iconView = UIImageView()
+            iconView.contentMode = .scaleAspectFit
+            iconView.translatesAutoresizingMaskIntoConstraints = false
+            iconContainer.addSubview(iconView)
+            
+            // ✅ Figma డిజైన్ ప్రకారం 3 వేరు వేరు స్టైల్స్
+            if i == 0 {
+                // 1. School (Green Checkmark)
+                iconContainer.layer.cornerRadius = 14
+                iconContainer.backgroundColor = s.state == .pending ? .systemGray4 : .systemGreen
+                iconView.image = UIImage(systemName: "checkmark")
+                iconView.tintColor = .white
+                iconView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(weight: .bold)
+                
+                NSLayoutConstraint.activate([
+                    iconView.centerXAnchor.constraint(equalTo: iconContainer.centerXAnchor),
+                    iconView.centerYAnchor.constraint(equalTo: iconContainer.centerYAnchor),
+                    iconView.widthAnchor.constraint(equalToConstant: 14),
+                    iconView.heightAnchor.constraint(equalToConstant: 14)
+                ])
+                
+            } else if i == 1 {
+                // 2. On Route (Bus Icon on White background)
+                iconContainer.layer.cornerRadius = 14
+                iconContainer.backgroundColor = .white // బ్లూ లైన్ ని కవర్ చేయడానికి
+                
+                // custom asset "busicon 1" ఉంటే వాడండి, లేదంటే డీఫాల్ట్ బస్సు
+                iconView.image = UIImage(named: "Bus vehicle icon") ?? UIImage(systemName: "bus.fill")
+                if iconView.image == UIImage(systemName: "bus.fill") { iconView.tintColor = .systemYellow }
+                
+                NSLayoutConstraint.activate([
+                    iconView.centerXAnchor.constraint(equalTo: iconContainer.centerXAnchor),
+                    iconView.centerYAnchor.constraint(equalTo: iconContainer.centerYAnchor),
+                    iconView.widthAnchor.constraint(equalToConstant: 26),
+                    iconView.heightAnchor.constraint(equalToConstant: 26)
+                ])
+                
+            } else {
+                // 3. Arjun's Stop (Target/Bullseye icon)
+                iconContainer.backgroundColor = .white
+                iconView.image = UIImage(systemName: "record.circle")
+                iconView.tintColor = .systemGray3
+                iconView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 28, weight: .regular)
+                
+                NSLayoutConstraint.activate([
+                    iconView.centerXAnchor.constraint(equalTo: iconContainer.centerXAnchor),
+                    iconView.centerYAnchor.constraint(equalTo: iconContainer.centerYAnchor),
+                    iconView.widthAnchor.constraint(equalToConstant: 28),
+                    iconView.heightAnchor.constraint(equalToConstant: 28)
+                ])
+            }
+
+            // టెక్స్ట్ లేబుల్స్
             let title = UILabel()
-            title.font = .hankenSemiBold(size: 10)
+            title.font = .hankenBold(size: 12)
             title.textAlignment = .center
             title.text = s.title
             title.numberOfLines = 1
             title.adjustsFontSizeToFitWidth = true
-            title.minimumScaleFactor = 0.7
 
             let sub = UILabel()
-            sub.font = .hankenMedium(size: 9)
+            sub.font = .hankenMedium(size: 10)
             sub.textAlignment = .center
             sub.text = s.subtitle
-            sub.textColor = .systemGray
 
+            // కలర్ అప్లై చేయడం
             switch s.state {
             case .done:
-                circle.backgroundColor = .systemGreen; icon.tintColor = .white
-                title.textColor = .darkGray
+                title.textColor = .black
+                sub.textColor = .systemGray
             case .current:
-                circle.backgroundColor = blue; icon.tintColor = .white
-                title.textColor = blue; sub.textColor = blue
+                title.textColor = blue
+                sub.textColor = blue
             case .pending:
-                circle.backgroundColor = .systemGray5; icon.tintColor = .systemGray
                 title.textColor = .darkGray
+                sub.textColor = .systemGray
             }
 
-            col.addArrangedSubview(circle)
+            col.addArrangedSubview(iconContainer)
             col.addArrangedSubview(title)
             col.addArrangedSubview(sub)
             stack.addArrangedSubview(col)
-            circles.append(circle)
+            circles.append(iconContainer)
         }
 
+        // లైన్ డ్రా చేయడం
         guard let first = circles.first, let last = circles.last else { return }
-        sendSubviewToBack(activeLine); sendSubviewToBack(line)
+        sendSubviewToBack(activeLine)
+        sendSubviewToBack(line)
 
         let currentIndex = steps.firstIndex { $0.state == .current } ?? (steps.lastIndex { $0.state == .done } ?? 0)
         let target = circles[min(currentIndex, circles.count - 1)]
@@ -143,15 +194,15 @@ final class RouteProgressView: UIView {
             line.centerYAnchor.constraint(equalTo: first.centerYAnchor),
             line.leadingAnchor.constraint(equalTo: first.centerXAnchor),
             line.trailingAnchor.constraint(equalTo: last.centerXAnchor),
-            line.heightAnchor.constraint(equalToConstant: 2),
+            line.heightAnchor.constraint(equalToConstant: 3), // Figma లో లైన్ కొంచెం మందంగా ఉంది
+            
             activeLine.centerYAnchor.constraint(equalTo: first.centerYAnchor),
             activeLine.leadingAnchor.constraint(equalTo: first.centerXAnchor),
             activeLine.trailingAnchor.constraint(equalTo: target.centerXAnchor),
-            activeLine.heightAnchor.constraint(equalToConstant: 2)
+            activeLine.heightAnchor.constraint(equalToConstant: 3)
         ])
     }
 }
-
 class BuslivetrackingVC: UIViewController {
 
     // MARK: - Outlets
@@ -181,9 +232,9 @@ class BuslivetrackingVC: UIViewController {
     private var visualCoordinate: CLLocationCoordinate2D?
 
     /// Speed settings — animation should finish just before next GPS update (5s)
-    private let targetAnimationDuration: CFTimeInterval = 4.0
-    private let minAnimationDuration: CFTimeInterval = 1.2
-    private let maxAnimationDuration: CFTimeInterval = 4.6
+    private let targetAnimationDuration: CFTimeInterval = 2.2
+       private let minAnimationDuration: CFTimeInterval = 0.6
+       private let maxAnimationDuration: CFTimeInterval = 2.8
 
     // MARK: - Route Properties
     private var routeStopCoordinates: [CLLocationCoordinate2D] = []
@@ -510,7 +561,7 @@ class BuslivetrackingVC: UIViewController {
     private func sectionTitle(_ text: String) -> UILabel {
         let l = UILabel()
         l.text = text
-        l.font = .hankenBold(size: 12)
+        l.font = .hankenBold(size: 15)
         l.textAlignment = .center
         l.textColor = .black
         return l
@@ -531,8 +582,8 @@ class BuslivetrackingVC: UIViewController {
         studentImage.tintColor = .systemGray3
         studentImage.translatesAutoresizingMaskIntoConstraints = false
 
-        studentName.font = .hankenBold(size: 13)
-        studentStatus.font = .hankenSemiBold(size: 11); studentStatus.textColor = appBlue
+        studentName.font = .hankenBold(size: 15)
+        studentStatus.font = .hankenSemiBold(size: 11); studentStatus.textColor = UIColor(red: 8/255, green: 120/255, blue: 249/255, alpha: 1.0)
         studentExpected.font = .hankenMedium(size: 10); studentExpected.textColor = .systemGray
         studentStatus.text = "Waiting for trip to start"
         studentExpected.text = "--"
@@ -573,87 +624,125 @@ class BuslivetrackingVC: UIViewController {
     }
 
     private func buildDriverRow() -> UIView {
-        let row = UIView()
+            let container = UIView()
 
-        driverImage.contentMode = .scaleAspectFill
-        driverImage.clipsToBounds = true
-        driverImage.layer.cornerRadius = 22
-        driverImage.backgroundColor = .systemGray5
-        driverImage.image = UIImage(systemName: "person.crop.circle.fill")
-        driverImage.tintColor = .systemGray3
-        driverImage.translatesAutoresizingMaskIntoConstraints = false
+            driverImage.contentMode = .scaleAspectFill
+            driverImage.clipsToBounds = true
+            driverImage.layer.cornerRadius = 22
+            driverImage.backgroundColor = .systemGray5
+            driverImage.image = UIImage(systemName: "person.crop.circle.fill")
+            driverImage.tintColor = .systemGray3
+            driverImage.translatesAutoresizingMaskIntoConstraints = false
 
-        driverName.font = .hankenBold(size: 13)
-        driverMeta.font = .hankenMedium(size: 10); driverMeta.textColor = .systemGray
-        let text = UIStackView(arrangedSubviews: [driverName, driverMeta])
-        text.axis = .vertical; text.spacing = 2
-        text.translatesAutoresizingMaskIntoConstraints = false
+            driverName.font = .hankenBold(size: 15)
+            driverMeta.font = .hankenMedium(size: 12); driverMeta.textColor = .systemGray
+            let text = UIStackView(arrangedSubviews: [driverName, driverMeta])
+            text.axis = .vertical; text.spacing = 2
+            text.translatesAutoresizingMaskIntoConstraints = false
 
-        let msgBtn = UIButton(type: .system)
-        if let image = UIImage(named: "icon 33") {
-            msgBtn.setImage(image.withRenderingMode(.alwaysOriginal), for: .normal)
+            let msgBtn = UIButton(type: .system)
+            if let image = UIImage(named: "icon 33") {
+                msgBtn.setImage(image.withRenderingMode(.alwaysOriginal), for: .normal)
+            }
+            msgBtn.backgroundColor = UIColor(red: 230/255, green: 240/255, blue: 250/255, alpha: 1)
+            msgBtn.layer.cornerRadius = 18
+            msgBtn.clipsToBounds = true
+            msgBtn.translatesAutoresizingMaskIntoConstraints = false
+            msgBtn.addTarget(self, action: #selector(messageDriverTapped), for: .touchUpInside)
+
+            let callBtn = UIButton(type: .system)
+            callBtn.setTitle(" Call", for: .normal)
+            callBtn.setImage(UIImage(systemName: "phone.fill"), for: .normal)
+            callBtn.tintColor = .white
+            callBtn.titleLabel?.font = .hankenBold(size: 12)
+            callBtn.backgroundColor = UIColor(red: 8/255, green: 120/255, blue: 249/255, alpha: 1.0)
+            callBtn.layer.cornerRadius = 10
+            callBtn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 14)
+            callBtn.translatesAutoresizingMaskIntoConstraints = false
+            callBtn.addTarget(self, action: #selector(callDriverTapped), for: .touchUpInside)
+
+            // ✅ Ash colored separator line added here
+            let separatorLine = UIView()
+            separatorLine.backgroundColor = UIColor.systemGray5 // Ash/Light Gray color
+            separatorLine.translatesAutoresizingMaskIntoConstraints = false
+
+            container.addSubview(driverImage)
+            container.addSubview(text)
+            container.addSubview(msgBtn)
+            container.addSubview(callBtn)
+            container.addSubview(separatorLine)
+            
+            NSLayoutConstraint.activate([
+                driverImage.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+                driverImage.topAnchor.constraint(equalTo: container.topAnchor),
+                driverImage.widthAnchor.constraint(equalToConstant: 44),
+                driverImage.heightAnchor.constraint(equalToConstant: 44),
+                
+                text.leadingAnchor.constraint(equalTo: driverImage.trailingAnchor, constant: 10),
+                text.centerYAnchor.constraint(equalTo: driverImage.centerYAnchor),
+                text.trailingAnchor.constraint(lessThanOrEqualTo: msgBtn.leadingAnchor, constant: -8),
+                
+                callBtn.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+                callBtn.centerYAnchor.constraint(equalTo: driverImage.centerYAnchor),
+                
+                msgBtn.trailingAnchor.constraint(equalTo: callBtn.leadingAnchor, constant: -10),
+                msgBtn.centerYAnchor.constraint(equalTo: driverImage.centerYAnchor),
+                msgBtn.widthAnchor.constraint(equalToConstant: 36),
+                msgBtn.heightAnchor.constraint(equalToConstant: 36),
+                
+                // ✅ Positioning the separator line at the bottom
+                separatorLine.topAnchor.constraint(equalTo: driverImage.bottomAnchor, constant: 16),
+                separatorLine.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+                separatorLine.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+                separatorLine.heightAnchor.constraint(equalToConstant: 1),
+                separatorLine.bottomAnchor.constraint(equalTo: container.bottomAnchor) // Seals the container height
+            ])
+            
+            return container
         }
-        msgBtn.backgroundColor = UIColor(red: 230/255, green: 240/255, blue: 250/255, alpha: 1)
-        msgBtn.layer.cornerRadius = 18
-        msgBtn.clipsToBounds = true
-        msgBtn.translatesAutoresizingMaskIntoConstraints = false
-        msgBtn.addTarget(self, action: #selector(messageDriverTapped), for: .touchUpInside)
 
-        let callBtn = UIButton(type: .system)
-        callBtn.setTitle(" Call", for: .normal)
-        callBtn.setImage(UIImage(systemName: "phone.fill"), for: .normal)
-        callBtn.tintColor = .white
-        callBtn.titleLabel?.font = .hankenBold(size: 12)
-        callBtn.backgroundColor = appBlue
-        callBtn.layer.cornerRadius = 10
-        callBtn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 14)
-        callBtn.translatesAutoresizingMaskIntoConstraints = false
-        callBtn.addTarget(self, action: #selector(callDriverTapped), for: .touchUpInside)
+        // ✅ Updated to accept `UIImage?` so it works with custom assets
+        private func statColumn(iconImage: UIImage?, value: UILabel, sub: UILabel) -> UIView {
+            // .alwaysTemplate allows the icon to take on the `appBlue` tint color like Figma
+            let iv = UIImageView(image: iconImage?.withRenderingMode(.alwaysTemplate))
+            iv.tintColor = appBlue
+            iv.contentMode = .scaleAspectFit
+            iv.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                   iv.widthAnchor.constraint(equalToConstant: 24),
+                   iv.heightAnchor.constraint(equalToConstant: 24)
+               ])
+            
+            value.font = .hankenBold(size: 11); value.textAlignment = .center
+            value.adjustsFontSizeToFitWidth = true; value.minimumScaleFactor = 0.7
+            sub.font = .hankenMedium(size: 9); sub.textColor = .systemGray; sub.textAlignment = .center
+            sub.adjustsFontSizeToFitWidth = true; sub.minimumScaleFactor = 0.7
+            
+            let col = UIStackView(arrangedSubviews: [iv, value, sub])
+            col.axis = .vertical; col.spacing = 4; col.alignment = .center
+            return col
+        }
 
-        row.addSubview(driverImage); row.addSubview(text); row.addSubview(msgBtn); row.addSubview(callBtn)
-        NSLayoutConstraint.activate([
-            driverImage.leadingAnchor.constraint(equalTo: row.leadingAnchor),
-            driverImage.topAnchor.constraint(equalTo: row.topAnchor),
-            driverImage.bottomAnchor.constraint(equalTo: row.bottomAnchor),
-            driverImage.widthAnchor.constraint(equalToConstant: 44),
-            driverImage.heightAnchor.constraint(equalToConstant: 44),
-            text.leadingAnchor.constraint(equalTo: driverImage.trailingAnchor, constant: 10),
-            text.centerYAnchor.constraint(equalTo: row.centerYAnchor),
-            text.trailingAnchor.constraint(lessThanOrEqualTo: msgBtn.leadingAnchor, constant: -8),
-            callBtn.trailingAnchor.constraint(equalTo: row.trailingAnchor),
-            callBtn.centerYAnchor.constraint(equalTo: row.centerYAnchor),
-            msgBtn.trailingAnchor.constraint(equalTo: callBtn.leadingAnchor, constant: -10),
-            msgBtn.centerYAnchor.constraint(equalTo: row.centerYAnchor),
-            msgBtn.widthAnchor.constraint(equalToConstant: 36),
-            msgBtn.heightAnchor.constraint(equalToConstant: 36)
-        ])
-        return row
-    }
-
-    private func statColumn(icon: String, value: UILabel, sub: UILabel) -> UIView {
-        let iv = UIImageView(image: UIImage(systemName: icon))
-        iv.tintColor = appBlue; iv.contentMode = .scaleAspectFit
-        iv.translatesAutoresizingMaskIntoConstraints = false
-        iv.heightAnchor.constraint(equalToConstant: 18).isActive = true
-        value.font = .hankenBold(size: 11); value.textAlignment = .center
-        value.adjustsFontSizeToFitWidth = true; value.minimumScaleFactor = 0.7
-        sub.font = .hankenMedium(size: 9); sub.textColor = .systemGray; sub.textAlignment = .center
-        sub.adjustsFontSizeToFitWidth = true; sub.minimumScaleFactor = 0.7
-        let col = UIStackView(arrangedSubviews: [iv, value, sub])
-        col.axis = .vertical; col.spacing = 3; col.alignment = .center
-        return col
-    }
-
+        // ✅ Updated to pass the custom "busicon 1" asset
     private func buildStatsRow() -> UIView {
+        // Asset bus icon fallback to SF Symbol
+        let busIcon = UIImage(named: "busicon 1") ?? UIImage(systemName: "bus.fill")
+        
+        // ✅ Asset image use UIImage(named:)
+        let capacityIcon = UIImage(named: "person 1") ?? UIImage(systemName: "person.fill")
+        
         let row = UIStackView(arrangedSubviews: [
-            statColumn(icon: "bus", value: statBusValue, sub: statBusSub),
-            statColumn(icon: "bus", value: statModelValue, sub: statModelSub),
-            statColumn(icon: "person.2", value: statCapValue, sub: statCapSub)
+            statColumn(iconImage: busIcon, value: statBusValue, sub: statBusSub),
+            statColumn(iconImage: busIcon, value: statModelValue, sub: statModelSub),
+            statColumn(iconImage: capacityIcon, value: statCapValue, sub: statCapSub)
         ])
-        row.axis = .horizontal; row.distribution = .fillEqually; row.alignment = .top
+        
+        row.axis = .horizontal
+        row.distribution = .fillEqually
+        row.alignment = .top
+        
         return row
     }
-
     private func buildProgressHeader() -> UIView {
         let title = UILabel()
         title.text = "Route Progress"
@@ -670,71 +759,101 @@ class BuslivetrackingVC: UIViewController {
         let data = busData
         self.currentTripStatus = data?.tripStatus?.lowercased() ?? ""
 
+        // 1. Route Name & Shift setup (Top Header)
         let routeName = data?.route?.routeName ?? data?.route?.routeCode ?? "Route"
-        let shiftRaw = (data?.route?.shift ?? data?.tripType ?? "").capitalized
+        let shiftRaw = (data?.tripShift ?? data?.route?.shift ?? data?.tripType ?? "").capitalized
         routeSubtitleLabel.text = shiftRaw.isEmpty ? routeName : "\(routeName) · \(shiftRaw)"
 
-        let vehicle = data?.bus?.vehicleNumber ?? "School Bus"
-        cardBusNumber.text = vehicle
-        cardBusModel.text = data?.bus?.vehicleType ?? ""
+        // 2. Info Card setup (Top Floating Card)
+        let vehicleNumber = data?.bus?.vehicleNumber ?? "School Bus"
+        cardBusNumber.text = vehicleNumber
+        cardBusModel.text = data?.bus?.model ?? data?.bus?.vehicleType ?? ""
         let busImageURL = data?.bus?.image ?? data?.bus?.busImage ?? data?.bus?.vehicleImage ?? data?.bus?.vehiclePhoto ?? data?.bus?.busPhoto ?? data?.bus?.photo
         if let u = busImageURL, !u.isEmpty { cardBusImage.loadImage(url: u) }
 
+        // 3. Student Details Setup (Bottom Panel)
         let sName = UserManager.shared.resolvedStudentName
         studentName.text = sName.isEmpty ? (data?.student?.name ?? "Student") : sName
         let photo = UserManager.shared.resolvedStudentPhotoURL
         if !photo.isEmpty { studentImage.loadImage(url: photo) }
 
+        // 4. Driver Details Setup (Bottom Panel)
         driverName.text = data?.driver?.name ?? "Driver"
         if let exp = data?.driver?.experience, exp > 0 {
-            driverMeta.text = "⭐ \(String(format: "%.0f", exp))+ yrs experience"
+            driverMeta.text = "\(String(format: "%.0f", exp))+ yrs experience"
         } else {
             driverMeta.text = data?.driver?.mobile ?? "Driver"
         }
         if let u = data?.driver?.profileImage, !u.isEmpty { driverImage.loadImage(url: u) }
 
-        statBusValue.text = data?.route?.routeCode.map { "Bus \($0)" } ?? "Bus"
-        statBusSub.text = vehicle
-        statModelValue.text = data?.bus?.vehicleType ?? "N/A"
-        statModelSub.text = data?.bus?.status?.capitalized ?? "Vehicle"
+        // ==========================================
+        // ✅ 5. BUS STATS ROW — Figma mapping only
+        // ==========================================
+
+        // Column 1: Bus Number (top) + Registration Number (bottom)
+        // Figma example: "Bus 09" / "TS-08-H-9905"
+        statBusValue.text = vehicleNumber
+        statBusSub.text = data?.bus?.registrationNumber ?? "N/A"
+
+        // Column 2: Model (top) + Vehicle Type (bottom)
+        statModelValue.text = data?.bus?.model ?? data?.bus?.vehicleType ?? "N/A"
+        statModelSub.text = data?.bus?.vehicleType?.capitalized ?? "Vehicle"
+
+        // Column 3: Capacity
         statCapValue.text = data?.bus?.capacity.map { "\($0)" } ?? "N/A"
         statCapSub.text = "Seating Capacity"
 
+        // ==========================================
+
         updateProgress(currentStopIndex: nil)
     }
-
     private func studentFirstName() -> String {
         let n = UserManager.shared.resolvedStudentName
         return n.components(separatedBy: " ").first ?? "Student"
     }
 
     private func updateProgress(currentStopIndex: Int?) {
-        let data = busData
-        let stops = routeStopCoordinates.count
-        let isActive = ["active", "started", "live", "running", "on_route"].contains(currentTripStatus)
+           let data = busData
+           let stops = routeStopCoordinates.count
+           let isActive = ["active", "started", "live", "running", "on_route"].contains(currentTripStatus)
 
-        let done = currentStopIndex ?? 0
-        progressCount.text = stops > 0 ? "\(min(done, stops)) of \(stops) stops completed" : ""
+           let done = currentStopIndex ?? 0
+           progressCount.text = stops > 0 ? "\(min(done, stops)) of \(stops) stops completed" : ""
 
-        let pickupIdx = pickupStopIndex()
-        let passedPickup = isActive && pickupIdx != nil && done > pickupIdx!
+           let pickupIdx = pickupStopIndex()
+           let passedPickup = isActive && pickupIdx != nil && done > pickupIdx!
 
-        let steps: [RouteProgressView.Step] = [
-            .init(title: data?.route?.source ?? "School",
-                  subtitle: formatTime(data?.routeStops?.first?.pickupTime ?? data?.pickupStop?.pickupTime ?? ""),
-                  state: isActive ? .done : .pending),
-            .init(title: "On Route",
-                  subtitle: isActive ? "Current" : "",
-                  state: isActive && !passedPickup ? .current : (passedPickup ? .done : .pending)),
-            .init(title: "\(studentFirstName())'s Stop",
-                  subtitle: formatTime(data?.pickupStop?.pickupTime ?? ""),
-                  state: passedPickup ? .current : .pending),
-            .init(title: data?.route?.destination ?? "Home",
-                  subtitle: formatTime(data?.dropStop?.dropTime ?? ""),
-                  state: .pending)
-        ]
-        progressView.configure(steps: steps)
-    }
+          
+           var studentStopSubtitle = formatTime(data?.pickupStop?.pickupTime ?? "")
+           
+           
+           if isActive && !passedPickup {
+               if let eta = cachedETASeconds, eta > 0 {
+                   let mins = max(1, Int(ceil(eta / 60)))
+                   studentStopSubtitle = "≈ \(mins) min"
+               }
+           }
+
+         
+           let steps: [RouteProgressView.Step] = [
+               // 1. School (Source)
+               .init(title: data?.route?.source ?? "School",
+                     subtitle: formatTime(data?.routeStops?.first?.pickupTime ?? data?.pickupStop?.pickupTime ?? ""),
+                     state: isActive ? .done : .pending),
+               
+               // 2. On Route (Bus)
+               .init(title: "On Route",
+                     subtitle: isActive ? "Current" : "",
+                     state: isActive && !passedPickup ? .current : (passedPickup ? .done : .pending)),
+               
+               // 3. Student's Stop
+               .init(title: "\(studentFirstName())'s Stop",
+                     subtitle: studentStopSubtitle,
+                     state: passedPickup ? .current : .pending)
+           ]
+           
+           progressView.configure(steps: steps)
+       }
 
     private func pickupStopIndex() -> Int? {
         guard let p = busData?.pickupStop, let lat = p.latitude, let lng = p.longitude else { return nil }
@@ -924,8 +1043,8 @@ class BuslivetrackingVC: UIViewController {
 
             iconView.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 30),
             iconView.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
-            iconView.widthAnchor.constraint(equalToConstant: 50),
-            iconView.heightAnchor.constraint(equalToConstant: 50),
+            iconView.widthAnchor.constraint(equalToConstant: 60),
+            iconView.heightAnchor.constraint(equalToConstant: 60),
 
             titleLabel.topAnchor.constraint(equalTo: iconView.bottomAnchor, constant: 16),
             titleLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 20),
@@ -1407,11 +1526,11 @@ class BuslivetrackingVC: UIViewController {
 
     /// Finish the move just before next GPS update → bus never looks slow/stuck
     private func animationDurationForDistance(_ meters: CLLocationDistance) -> CFTimeInterval {
-        if meters < 8  { return minAnimationDuration }
-        if meters < 25 { return 2.0 }
-        if meters < 60 { return 3.0 }
-        return min(max(targetAnimationDuration, minAnimationDuration), maxAnimationDuration)
-    }
+          if meters < 8  { return minAnimationDuration }   // 0.6s
+          if meters < 25 { return 1.0 }                    // 1.0s
+          if meters < 60 { return 1.6 }                    // 1.6s
+          return min(max(targetAnimationDuration, minAnimationDuration), maxAnimationDuration) // ~2.2s
+      }
 
     // MARK: - CADisplayLink Smooth Interpolation
     private func startSmoothAnimation(from startRaw: CLLocationCoordinate2D,
