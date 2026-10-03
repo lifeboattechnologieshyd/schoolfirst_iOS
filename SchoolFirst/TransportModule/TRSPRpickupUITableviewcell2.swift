@@ -206,7 +206,6 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
     }
 
     private func setupFonts() {
-        // Fallback standard fonts if Hanken not found natively
         StopnameLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         PickupandDroptimelabel?.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         statusBadgeLabel?.font = UIFont.systemFont(ofSize: 9, weight: .bold)
@@ -299,7 +298,7 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
         let badge = activeBadgeLabel
 
         if isLive {
-            // 🚌 LIVE
+            // 🚌 LIVE STATE
             imagebackgroundview?.backgroundColor = primaryBlue
             imagebackgroundview?.layer.borderWidth = 0
 
@@ -321,7 +320,7 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
             badge?.textColor = .white
 
         } else if isYourStop {
-            // 📍 YOUR STOP
+            // 📍 YOUR STOP STATE
             imagebackgroundview?.backgroundColor = .white
             imagebackgroundview?.layer.borderWidth = 2.0
             imagebackgroundview?.layer.borderColor = UIColor(red: 196/255, green: 197/255, blue: 216/255, alpha: 1).cgColor
@@ -340,7 +339,7 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
             highlightCardView.isHidden = false
             mapIconImageView.isHidden = false
 
-            // Determine if we show ETA
+            // ETA Render
             if let eta = estimatedTravelTime, eta > 0 {
                 etaStackView.isHidden = false
                 etaLabel.text = "ETA: \(eta) mins away"
@@ -356,12 +355,11 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
             badge?.textColor = .white
 
         } else if isPassed {
-            // ✅ PASSED
+            // ✅ PASSED STATE (Green ticks inside the blue round circle)
             imagebackgroundview?.backgroundColor = .white
             imagebackgroundview?.layer.borderWidth = 1.0
             imagebackgroundview?.layer.borderColor = lightGray.cgColor
 
-            // ⚠️ MODIFICATION: Only show checkmark if NOT evening drop (isDrop == false)
             if isDrop {
                 Ckeckmarkimageview?.image = nil
             } else {
@@ -384,7 +382,7 @@ class TRSPRpickupUITableviewcell2: UITableViewCell {
             badge?.textColor = primaryBlue
 
         } else {
-            // ⚪ UPCOMING
+            // ⚪ UPCOMING STATE
             imagebackgroundview?.backgroundColor = .white
             imagebackgroundview?.layer.borderWidth = 1.0
             imagebackgroundview?.layer.borderColor = lightGray.cgColor

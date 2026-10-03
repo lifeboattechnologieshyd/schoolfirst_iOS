@@ -20,9 +20,11 @@ class TRSPRTpickupanddropVC: UIViewController {
 
     private var busData: StudentBusData?
     private var isLoading = false
-
-    /// ✅ API only once per screen entry
     private var hasFetchedOnce = false
+
+    // MARK: - Live Update Polling Properties
+    private var updateTimer: Timer?
+    private let pollInterval: TimeInterval = 5.0 // Refresh every 5 seconds
 
     /// Morning  → ascending (home → school)
     /// Evening  → reversed  (school → home)  ← matches Figma
@@ -35,12 +37,23 @@ class TRSPRTpickupanddropVC: UIViewController {
         return ascending
     }
 
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
         setupTopViewBottomShadowAndBorder()
         setupFonts()
         fetchBusDataIfNeeded()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        startStopUpdatesPolling()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        stopStopUpdatesPolling()
     }
 
     private func setupFonts() {
@@ -89,6 +102,7 @@ class TRSPRTpickupanddropVC: UIViewController {
         tableview.estimatedRowHeight = 100
     }
 
+    // MARK: - Initial Fetch with Loader
     private func fetchBusDataIfNeeded() {
         guard !hasFetchedOnce, !isLoading else { return }
         fetchBusData()
@@ -138,9 +152,50 @@ class TRSPRTpickupanddropVC: UIViewController {
         }
     }
 
+    // MARK: - Background Silent Refresh Polling
+    private func startStopUpdatesPolling() {
+        updateTimer?.invalidate()
+        updateTimer = Timer.scheduledTimer(withTimeInterval: pollInterval, repeats: true) { [weak self] _ in
+            self?.fetchBusDataSilently()
+        }
+    }
+
+    private func stopStopUpdatesPolling() {
+        updateTimer?.invalidate()
+        updateTimer = nil
+    }
+
+    private func fetchBusDataSilently() {
+        let studentId = UserManager.shared.resolvedStudentID
+        let schoolId  = UserManager.shared.resolvedSchoolID
+        guard !studentId.isEmpty, !schoolId.isEmpty, !isLoading else { return }
+
+        NetworkManager.shared.request(
+            urlString: API.TRANSPORT_BUS,
+            method: .GET,
+            requiresAuth: true,
+            parameters: ["student_id": studentId],
+            headers: ["X-School-Id": schoolId]
+        ) { [weak self] (result: Result<APIResponse<StudentBusData>, NetworkError>) in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                if case .success(let apiResponse) = result, apiResponse.success, let data = apiResponse.data {
+                    self.busData = data
+                    
+                    // Save scroll offset to prevent jerky jumping behavior when driver marks achieved
+                    let savedOffset = self.tableview.contentOffset
+                    self.tableview.reloadData()
+                    self.tableview.layoutIfNeeded()
+                    self.tableview.setContentOffset(savedOffset, animated: false)
+                }
+            }
+        }
+    }
+
     private var studentPickupStopId: String? { busData?.pickupStop?.id }
     private var studentDropStopId: String? { busData?.dropStop?.id }
 
+    // MARK: - Stop Status Determination Engine
     private func determineStopState(stopIndex: Int, stops: [RouteStop]) -> (isPassed: Bool, isLive: Bool) {
         guard stopIndex >= 0 && stopIndex < stops.count else { return (false, false) }
         let tripStatus = (busData?.tripStatus ?? "").uppercased()
@@ -149,6 +204,17 @@ class TRSPRTpickupanddropVC: UIViewController {
             return (true, false)
         }
 
+        let stop = stops[stopIndex]
+        let currentStatus = (stop.status ?? "").uppercased()
+
+        // 1. Direct API Status Check (Driver triggered)
+        if currentStatus == "REACHED" {
+            return (true, false)
+        } else if currentStatus == "LIVE" || currentStatus == "ON_ROUTE" || currentStatus == "ARRIVING" {
+            return (false, true)
+        }
+
+        // 2. Sequential fallback computation based on active run sequence
         let firstPendingIdx = stops.firstIndex {
             ($0.status ?? "").uppercased() == "PENDING"
         }
@@ -164,14 +230,7 @@ class TRSPRTpickupanddropVC: UIViewController {
                     return (false, true)
                 }
                 return (false, false)
-            } else {
-                return (false, false)
             }
-        }
-
-        let currentStatus = (stops[stopIndex].status ?? "").uppercased()
-        if currentStatus == "REACHED" {
-            return (true, false)
         }
 
         return (false, false)
@@ -188,7 +247,7 @@ extension TRSPRTpickupanddropVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let stopsCount = displayStops.count
 
-        // MARK: Header cell
+        // Header cell
         if indexPath.row == 0 {
             let cell = tableView.dequeueReusableCell(
                 withIdentifier: "TRSPRTpickupanddropUITableviewcell",
@@ -208,7 +267,7 @@ extension TRSPRTpickupanddropVC: UITableViewDelegate, UITableViewDataSource {
             return cell
         }
 
-        // MARK: Driver cell
+        // Driver cell
         if indexPath.row == stopsCount + 1 {
             let cell = tableView.dequeueReusableCell(
                 withIdentifier: "TRSPRpickupUITableviewcell3",
@@ -236,7 +295,7 @@ extension TRSPRTpickupanddropVC: UITableViewDelegate, UITableViewDataSource {
             return cell
         }
 
-        // MARK: Stop cell
+        // Stop cell
         let stopIndex = indexPath.row - 1
         let stop = displayStops[stopIndex]
         let cell = tableView.dequeueReusableCell(
