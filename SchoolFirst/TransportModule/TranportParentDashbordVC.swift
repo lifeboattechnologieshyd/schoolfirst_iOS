@@ -24,21 +24,17 @@ class TranportParentDashbordVC: UIViewController {
         setupTableView()
         setupFonts()
 
-        guard let data = busData,
-              let bus = data.bus,
-              !(bus.vehicleNumber ?? "").isEmpty else {
-            print("⚠️ No valid bus data found. ➡️ Redirecting to TransportnotoptedVC")
-            redirectToNotOptedVC()
-            return
+        if let data = busData, let bus = data.bus, !(bus.vehicleNumber ?? "").isEmpty {
+            print("✅ Initial bus data found 🚌 \(bus.vehicleNumber ?? "N/A")")
+            Tableview.reloadData()
         }
-
-        print("✅ Valid bus data found 🚌 \(bus.vehicleNumber ?? "N/A")")
-        Tableview.reloadData()
     }
 
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
+        fetchBusDetails()
     }
 
     @IBAction func BackButtonTapped(_ sender: UIButton) {
@@ -55,20 +51,25 @@ class TranportParentDashbordVC: UIViewController {
         Tableview.separatorStyle = .none
         Tableview.showsVerticalScrollIndicator = false
     }
+    
     private func setupFonts() {
         GoodmornigparentLabel?.font = .hankenBold(size: 20)
-        
     }
-    
 
+    // ✅ UPDATED: API Call logic to fetch latest status whenever screen is active
     private func fetchBusDetails() {
         let studentId = UserManager.shared.resolvedStudentID
         let schoolId = UserManager.shared.resolvedSchoolID
         guard !studentId.isEmpty else { print("❌ Student ID is empty"); redirectToNotOptedVC(); return }
         guard !schoolId.isEmpty else { print("❌ School ID is empty"); redirectToNotOptedVC(); return }
         guard !isLoading else { return }
+        
         isLoading = true
-        showLoader()
+        
+        
+        if busData == nil {
+            showLoader()
+        }
 
         NetworkManager.shared.request(
             urlString: API.TRANSPORT_BUS,
@@ -81,25 +82,29 @@ class TranportParentDashbordVC: UIViewController {
             DispatchQueue.main.async {
                 self.isLoading = false
                 self.hideLoader()
+                
                 switch result {
                 case .success(let response):
                     if response.success, let data = response.data, let bus = data.bus, !(bus.vehicleNumber ?? "").isEmpty {
                         self.busData = data
-                        print("✅ Bus details retrieved 🚌 \(bus.vehicleNumber ?? "N/A")")
+                        print("✅ Bus details updated 🚌 \(bus.vehicleNumber ?? "N/A")")
                         self.Tableview.reloadData()
                     } else {
                         print("❌ No bus data: \(response.description ?? "") ➡️ NotOpted")
-                        self.redirectToNotOptedVC()
+                        if self.busData == nil {
+                            self.redirectToNotOptedVC()
+                        }
                     }
                 case .failure(let error):
                     print("❌ Bus API error: \(error.localizedDescription) ➡️ NotOpted")
-                    self.redirectToNotOptedVC()
+                    if self.busData == nil {
+                        self.redirectToNotOptedVC()
+                    }
                 }
             }
         }
     }
 
-    // ✅ THE FIX: dismiss any blocking "Error" alert first, then replace/push.
     private func redirectToNotOptedVC() {
         print("🚫 redirectToNotOptedVC() called")
 
@@ -173,7 +178,7 @@ class TranportParentDashbordVC: UIViewController {
     private func navigateToLiveTracking() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let vc = storyboard.instantiateViewController(withIdentifier: "BuslivetrackingVC") as? BuslivetrackingVC else { return }
-        vc.busData = busData          // ✅ pass stops so the route can be drawn
+        vc.busData = busData
         navigationController?.pushViewController(vc, animated: true)
     }
 
@@ -201,14 +206,19 @@ class TranportParentDashbordVC: UIViewController {
 extension TranportParentDashbordVC: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int { return 1 }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { return 1 }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TRNSPTdashbordUITableViewCell1", for: indexPath) as! TRNSPTdashbordUITableViewCell1
         cell.selectionStyle = .none
         cell.delegate = self
+        
         cell.configureBusDetails(busData)
         cell.configureRouteDetails(busData)
+        cell.configureTripStatus(status: busData?.tripStatus)
+        
         return cell
     }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat { return 940 }
 }
 

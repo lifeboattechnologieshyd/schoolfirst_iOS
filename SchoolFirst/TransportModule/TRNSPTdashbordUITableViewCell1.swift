@@ -1,3 +1,4 @@
+//
 //  TRNSPTdashbordUITableViewCell1.swift
 //  SchoolFirst
 //
@@ -18,7 +19,18 @@ protocol TRNSPTdashbordCell1Delegate: AnyObject {
 private let dashImageCache = NSCache<NSString, UIImage>()
 
 class TRNSPTdashbordUITableViewCell1: UITableViewCell {
-
+    @IBOutlet weak var Pickupimageview: UIImageView!
+    
+    // ⚠️ IMPORTANT: Changed from NSLayoutConstraint to UIView to apply background color.
+    // Please reconnect this in your Storyboard/XIB to the actual Line View.
+    @IBOutlet weak var DropStatusview: UIView!
+    @IBOutlet weak var PickupstatusView: UIView!
+    
+    @IBOutlet weak var pickupimage: UIImageView!
+    @IBOutlet weak var DropbackroundView: UIView!
+    @IBOutlet weak var OnroutbackroundView: UIView!
+    @IBOutlet weak var PickupbackgroundView: UIView!
+   
     @IBOutlet weak var AttendantnameLabel: UILabel!
     @IBOutlet weak var AttendantImageview: UIImageView!
     @IBOutlet weak var DriverImageview: UIImageView!
@@ -161,6 +173,12 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
         if let iv = AttendantImageview, iv.bounds.height > 0 { iv.layer.cornerRadius = iv.bounds.height / 2 }
         if let iv = Busimageview { iv.layer.cornerRadius = 16; iv.clipsToBounds = true; iv.contentMode = .scaleAspectFill }
         if let iv = Studentprofileimageview, iv.bounds.height > 0 { iv.layer.cornerRadius = iv.bounds.height / 2 }
+        
+        // Circular backgrounds for timeline
+        PickupbackgroundView?.layer.cornerRadius = (PickupbackgroundView?.bounds.height ?? 32) / 2
+        OnroutbackroundView?.layer.cornerRadius = (OnroutbackroundView?.bounds.height ?? 32) / 2
+        DropbackroundView?.layer.cornerRadius = (DropbackroundView?.bounds.height ?? 32) / 2
+        
         CollectionView?.collectionViewLayout.invalidateLayout()
         CollectionView2?.collectionViewLayout.invalidateLayout()
     }
@@ -274,6 +292,59 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
         }
         return "N/A"
     }
+    
+    // ✅ NEW: Updates the UI status lines, checkmarks and background circles based on trip Status
+    func configureTripStatus(status: String?) {
+        let rawStatus = (status ?? "").lowercased()
+        let isActive = ["active", "started", "live", "running", "on_route"].contains(rawStatus)
+        let isCompleted = ["completed", "complete", "finished", "ended", "done"].contains(rawStatus)
+        
+        // Figma Colors
+        let greenColor = UIColor(red: 34/255, green: 197/255, blue: 94/255, alpha: 1.0)
+        let grayColor = UIColor(red: 226/255, green: 232/255, blue: 240/255, alpha: 1.0) // Slate-200
+        
+        // Setup icons
+        let checkmarkConfig = UIImage.SymbolConfiguration(weight: .bold)
+        let checkmarkImage = UIImage(systemName: "checkmark", withConfiguration: checkmarkConfig)
+        let pinImage = UIImage(systemName: "mappin.and.ellipse")
+        
+        if isCompleted {
+            // 🟢 Trip Completed: Everything Green
+            pickupimage?.image = checkmarkImage
+            pickupimage?.tintColor = .white
+            
+            PickupbackgroundView?.backgroundColor = greenColor
+            OnroutbackroundView?.backgroundColor = greenColor
+            DropbackroundView?.backgroundColor = greenColor
+            
+            PickupstatusView?.backgroundColor = greenColor
+            DropStatusview?.backgroundColor = greenColor
+            
+        } else if isActive {
+            // 🟡 Trip Started/Active: Pickup & OnRoute Green, Drop is Gray
+            pickupimage?.image = checkmarkImage
+            pickupimage?.tintColor = .white
+            
+            PickupbackgroundView?.backgroundColor = greenColor
+            OnroutbackroundView?.backgroundColor = greenColor
+            DropbackroundView?.backgroundColor = grayColor
+            
+            PickupstatusView?.backgroundColor = greenColor
+            DropStatusview?.backgroundColor = grayColor
+            
+        } else {
+            // ⚪ Trip Not Started: Reset to Default Gray State
+            pickupimage?.image = pinImage
+            pickupimage?.tintColor = .systemGray
+            
+            PickupbackgroundView?.backgroundColor = grayColor
+            OnroutbackroundView?.backgroundColor = grayColor
+            DropbackroundView?.backgroundColor = grayColor
+            
+            PickupstatusView?.backgroundColor = grayColor
+            DropStatusview?.backgroundColor = grayColor
+        }
+    }
 
     func configureBusDetails(_ busData: StudentBusData?) {
         
@@ -335,6 +406,7 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
             isBusImage: false
         )
     }
+    
     // ✅ UPDATED: Configures Pickup and Drop labels safely matching MORNING or EVENING shifts
     func configureRouteDetails(_ busData: StudentBusData?) {
         let shift = (busData?.route?.shift ?? "MORNING").uppercased()
@@ -503,3 +575,4 @@ extension TRNSPTdashbordUITableViewCell1: UICollectionViewDataSource, UICollecti
         }
     }
 }
+
