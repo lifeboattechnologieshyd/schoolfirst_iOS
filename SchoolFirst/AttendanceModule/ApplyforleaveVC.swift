@@ -15,7 +15,6 @@ class ApplyforleaveVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupTopViewShadow()
         setupTableView()
     }
