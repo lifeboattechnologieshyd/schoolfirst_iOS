@@ -13,7 +13,7 @@ class BusAnnotationView: MKAnnotationView {
 
     // Overall annotation frame size (large enough to show pulse rings)
     private let containerSize: CGFloat = 90
-    private let busSize = CGSize(width: 34, height: 30)
+    private let busSize = CGSize(width: 34, height: 40)
 
     /// ✅ FIX: Asset bus image faces RIGHT (east) by default.
     /// Heading 0° = North, so we subtract 90° to align the nose with travel direction.

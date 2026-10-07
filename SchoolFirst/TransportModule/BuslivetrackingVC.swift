@@ -527,7 +527,7 @@ class BuslivetrackingVC: UIViewController {
         cardNextStopTitle.text = "Next stop"
 
         cardNextStopName.font = .hankenBold(size: 14)
-        cardNextStopName.numberOfLines = 2
+        cardNextStopName.numberOfLines = 1
 
         cardUpdated.font = .hankenBold(size: 10)
         cardUpdated.textColor = .systemGray
@@ -603,7 +603,7 @@ class BuslivetrackingVC: UIViewController {
 
         locateBusButton.imageView?.contentMode = .scaleAspectFit
 
-        locateBusButton.imageEdgeInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
+        locateBusButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 
         locateBusButton.addTarget(self, action: #selector(locateBusTapped), for: .touchUpInside)
         mapControlsContainer.addSubview(locateBusButton)
@@ -799,7 +799,7 @@ class BuslivetrackingVC: UIViewController {
                panelScroll.addSubview(panelStack)
 
                // ✅ CHANGED: Use constant height constraint instead of multiplier (for drag)
-               panelHeightConstraint = panel.heightAnchor.constraint(equalToConstant: 320)
+               panelHeightConstraint = panel.heightAnchor.constraint(equalToConstant: 310)
                panelHeightConstraint.isActive = true
 
                NSLayoutConstraint.activate([
@@ -816,10 +816,10 @@ class BuslivetrackingVC: UIViewController {
                    panelScroll.topAnchor.constraint(equalTo: grabber.bottomAnchor, constant: 8),
                    panelScroll.leadingAnchor.constraint(equalTo: panel.leadingAnchor),
                    panelScroll.trailingAnchor.constraint(equalTo: panel.trailingAnchor),
-                   panelScroll.bottomAnchor.constraint(equalTo: panel.safeAreaLayoutGuide.bottomAnchor, constant: -8),
+                   panelScroll.bottomAnchor.constraint(equalTo: panel.safeAreaLayoutGuide.bottomAnchor, constant: -2),
 
                    panelStack.topAnchor.constraint(equalTo: panelScroll.contentLayoutGuide.topAnchor),
-                   panelStack.bottomAnchor.constraint(equalTo: panelScroll.contentLayoutGuide.bottomAnchor, constant: -12),
+                   panelStack.bottomAnchor.constraint(equalTo: panelScroll.contentLayoutGuide.bottomAnchor, constant: -4),
                    panelStack.leadingAnchor.constraint(equalTo: panelScroll.contentLayoutGuide.leadingAnchor, constant: 16),
                    panelStack.trailingAnchor.constraint(equalTo: panelScroll.contentLayoutGuide.trailingAnchor, constant: -16),
                    panelStack.widthAnchor.constraint(equalTo: panelScroll.frameLayoutGuide.widthAnchor, constant: -32)
@@ -842,7 +842,7 @@ class BuslivetrackingVC: UIViewController {
                panelStack.addArrangedSubview(buildStatsRow())
                panelStack.addArrangedSubview(buildProgressHeader())
                progressView.translatesAutoresizingMaskIntoConstraints = false
-               progressView.heightAnchor.constraint(equalToConstant: 62).isActive = true
+               progressView.heightAnchor.constraint(equalToConstant: 66).isActive = true
                panelStack.addArrangedSubview(progressView)
                
                // ✅ CHANGED: Add drag gesture to panel for pull down/up functionality
@@ -1212,11 +1212,17 @@ class BuslivetrackingVC: UIViewController {
 
     // MARK: - Distance & Time Formatting Helpers
     private func formatDistanceText(_ meters: CLLocationDistance) -> String {
-        if meters >= 100 {
-            return String(format: "%.1f km", meters / 100.0)
-        } else {
-            return "\(max(0, Int(round(meters)))) m"
+        let kilometers = meters / 1000.0
+
+        if kilometers < 0.01 {
+            return "0 km"
         }
+
+        if kilometers.truncatingRemainder(dividingBy: 1) == 0 {
+            return String(format: "%.0f km", kilometers)
+        }
+
+        return String(format: "%.1f km", kilometers)
     }
 
     private func formatETAText(_ seconds: TimeInterval?) -> String {
@@ -1480,7 +1486,7 @@ class BuslivetrackingVC: UIViewController {
         let destinationName = getDestinationName(isEvening: isEveningOrDropTrip)
 
         // 1. TOP INFO CARD: Always shows Next Stop Distance and Time
-        if nDist < 60 && nDist > 0 {
+        if nDist < 10 && nDist > 0 {
             cardETA.text = "Arrived"
             cardDistance.text = "At Stop"
         } else {
