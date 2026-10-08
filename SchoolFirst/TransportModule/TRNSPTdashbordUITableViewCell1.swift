@@ -26,6 +26,7 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
     @IBOutlet weak var DropStatusview: UIView!
     @IBOutlet weak var PickupstatusView: UIView!
     
+    @IBOutlet weak var OnroutestatusLabel: UILabel!
     @IBOutlet weak var pickupimage: UIImageView!
     @IBOutlet weak var DropbackroundView: UIView!
     @IBOutlet weak var OnroutbackroundView: UIView!
@@ -37,7 +38,7 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
     @IBOutlet weak var DroplocationView: UIView!
     @IBOutlet weak var DropTime: UILabel!
     
-    @IBOutlet weak var PickupTime: UILabel!
+    @IBOutlet weak var ETA: UILabel!
     @IBOutlet weak var OnrouteView: UIView!
     @IBOutlet weak var DurationLabel: UILabel!
     @IBOutlet weak var PickuplocationView: UIView!
@@ -145,10 +146,11 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
         PickuplocationLabel?.font = .hankenSemiBold(size: 11)
         DroplocationLabel?.font = .hankenSemiBold(size: 11)
         PickuptimeLabel?.font = .hankenMedium(size: 10)
-        PickupTime?.font = .hankenMedium(size: 18)
+        ETA?.font = .hankenMedium(size: 18)
         DropTime?.font = .hankenMedium(size: 10)
         DurationLabel?.font = .hankenMedium(size: 10)
         TodaysjourneyLabel?.font = .hankenBold(size: 12)
+        OnroutestatusLabel?.font = .hankenBold(size: 14) // Applied proper Hanken font
     }
 
     override func prepareForReuse() {
@@ -293,59 +295,178 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
         return "N/A"
     }
     
-    // ✅ NEW: Updates the UI status lines, checkmarks and background circles based on trip Status
-    func configureTripStatus(status: String?) {
-        let rawStatus = (status ?? "").lowercased()
+    // ✅ UPDATED: Configures the UI status lines, checkmarks, background circles, AND OnroutestatusLabel based on API response
+    // ✅ UPDATED: Configures UI lines, checkmarks, backgrounds and statuses dynamically based on the student's actual stop arrival status
+    func configureTripStatus(_ busData: StudentBusData?) {
+        guard let busData = busData else {
+            resetTimelineToGray(message: "Bus Not Started")
+            return
+        }
+
+        let rawStatus = (busData.tripStatus ?? "").lowercased()
         let isActive = ["active", "started", "live", "running", "on_route"].contains(rawStatus)
         let isCompleted = ["completed", "complete", "finished", "ended", "done"].contains(rawStatus)
-        
-        // Figma Colors
-        let greenColor = UIColor(red: 34/255, green: 197/255, blue: 94/255, alpha: 1.0)
-        let grayColor = UIColor(red: 226/255, green: 232/255, blue: 240/255, alpha: 1.0) // Slate-200
-        
-        // Setup icons
-        let checkmarkConfig = UIImage.SymbolConfiguration(weight: .bold)
-        let checkmarkImage = UIImage(systemName: "checkmark", withConfiguration: checkmarkConfig)
-        let pinImage = UIImage(systemName: "mappin.and.ellipse")
-        
+
+        let shift = (busData.tripShift ?? busData.route?.shift ?? "MORNING").uppercased()
+        let tripType = (busData.tripType ?? "").uppercased()
+        let isEvening = shift == "EVENING" || shift == "AFTERNOON" || tripType == "DROP"
+
+        let green = UIColor(red: 34/255, green: 197/255, blue: 94/255, alpha: 1.0)
+        let gray  = UIColor(red: 226/255, green: 232/255, blue: 240/255, alpha: 1.0)
+
+        let checkCfg = UIImage.SymbolConfiguration(pointSize: 12, weight: .bold)
+        let checkImg = UIImage(systemName: "checkmark", withConfiguration: checkCfg)
+        let pinImg   = UIImage(systemName: "mappin.and.ellipse")
+
+        func isStopReached(_ stop: RouteStop?) -> Bool {
+            guard let stop = stop else { return false }
+            let s = (stop.status ?? "").lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+            let reachedTime = (stop.reachedTime ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            if !reachedTime.isEmpty { return true }
+            let keywords = ["reach", "complete", "done", "arriv", "pick", "drop", "finish", "success", "visited", "passed"]
+            return keywords.contains { s.contains($0) } && s != "pending" && s != "scheduled"
+        }
+
+        func findStop(id: String?, name: String?, code: String? = nil) -> RouteStop? {
+            busData.routeStops?.first(where: { stop in
+                if let id, let sid = stop.id, id == sid { return true }
+                if let code, let sc = stop.stopCode, code == sc { return true }
+                if let name, let sn = stop.stopName, sn.lowercased() == name.lowercased() { return true }
+                return false
+            })
+        }
+
+        func isPassedByOrder(_ target: RouteStop?) -> Bool {
+            guard let targetOrder = target?.stopOrder else { return false }
+            return busData.routeStops?.contains(where: { stop in
+                guard let order = stop.stopOrder, order >= targetOrder else { return false }
+                return isStopReached(stop)
+            }) ?? false
+        }
+
+        func applyPickupIcon(reached: Bool) {
+            let img = reached ? checkImg : pinImg
+            let tint: UIColor = reached ? .white : .systemGray
+            pickupimage?.image = img
+            pickupimage?.tintColor = tint
+            Pickupimageview?.image = img
+            Pickupimageview?.tintColor = tint
+        }
+
+        func setCircle(_ v: UIView?, _ color: UIColor) {
+            v?.backgroundColor = color
+            v?.clipsToBounds = true
+        }
+
+        func setLine(_ v: UIView?, _ color: UIColor) {
+            v?.backgroundColor = color
+            v?.layer.backgroundColor = color.cgColor
+        }
+
+        // CASE 1: Trip completed
         if isCompleted {
-            // 🟢 Trip Completed: Everything Green
-            pickupimage?.image = checkmarkImage
-            pickupimage?.tintColor = .white
-            
-            PickupbackgroundView?.backgroundColor = greenColor
-            OnroutbackroundView?.backgroundColor = greenColor
-            DropbackroundView?.backgroundColor = greenColor
-            
-            PickupstatusView?.backgroundColor = greenColor
-            DropStatusview?.backgroundColor = greenColor
-            
-        } else if isActive {
-            // 🟡 Trip Started/Active: Pickup & OnRoute Green, Drop is Gray
-            pickupimage?.image = checkmarkImage
-            pickupimage?.tintColor = .white
-            
-            PickupbackgroundView?.backgroundColor = greenColor
-            OnroutbackroundView?.backgroundColor = greenColor
-            DropbackroundView?.backgroundColor = grayColor
-            
-            PickupstatusView?.backgroundColor = greenColor
-            DropStatusview?.backgroundColor = grayColor
-            
+            OnroutestatusLabel?.text = "Completed"
+            applyPickupIcon(reached: true)
+            setCircle(PickupbackgroundView, green)
+            setCircle(OnroutbackroundView, green)
+            setCircle(DropbackroundView, green)
+            setLine(PickupstatusView, green)
+            setLine(DropStatusview, green)
+            return
+        }
+
+        // CASE 2: Bus not started
+        guard isActive else {
+            resetTimelineToGray(message: "Bus Not Started")
+            return
+        }
+
+        // CASE 3: Active trip
+        OnroutestatusLabel?.text = "On Route"
+
+        let schoolStop = busData.routeStops?.first(where: { $0.stopType?.uppercased() == "SCHOOL" })
+        let schoolName = schoolStop?.stopName ?? busData.route?.destination ?? "School"
+
+        let startStop: RouteStop?
+        if isEvening {
+            startStop = schoolStop
         } else {
-            // ⚪ Trip Not Started: Reset to Default Gray State
-            pickupimage?.image = pinImage
-            pickupimage?.tintColor = .systemGray
-            
-            PickupbackgroundView?.backgroundColor = grayColor
-            OnroutbackroundView?.backgroundColor = grayColor
-            DropbackroundView?.backgroundColor = grayColor
-            
-            PickupstatusView?.backgroundColor = grayColor
-            DropStatusview?.backgroundColor = grayColor
+            startStop = findStop(
+                id: busData.pickupStop?.id,
+                name: busData.pickupStop?.stopName,
+                code: busData.pickupStop?.stopCode
+            ) ?? findStop(id: nil, name: busData.pickupStop?.stopName)
+        }
+
+        let endStop: RouteStop?
+        if isEvening {
+            endStop = findStop(
+                id: busData.dropStop?.id,
+                name: busData.dropStop?.stopName,
+                code: busData.dropStop?.stopCode
+            )
+        } else {
+            endStop = schoolStop
+        }
+
+        let startReached = isStopReached(startStop) || isPassedByOrder(startStop)
+        let endReached   = isStopReached(endStop)   || isPassedByOrder(endStop)
+
+        #if DEBUG
+        print("""
+        🚌 Timeline Debug
+          start: \(startStop?.stopName ?? "nil") status=\(startStop?.status ?? "nil")
+          startReached: \(startReached) endReached: \(endReached)
+        """)
+        #endif
+
+        if endReached {
+            applyPickupIcon(reached: true)
+            setCircle(PickupbackgroundView, green)
+            setCircle(OnroutbackroundView, green)
+            setCircle(DropbackroundView, green)
+            setLine(PickupstatusView, green)
+            setLine(DropStatusview, green)
+
+        } else if startReached {
+            // Student stop reached → Pickup + On Route green
+            applyPickupIcon(reached: true)
+            setCircle(PickupbackgroundView, green)
+            setLine(PickupstatusView, green)
+            setCircle(OnroutbackroundView, green)
+            setLine(DropStatusview, gray)
+            setCircle(DropbackroundView, gray)
+
+        } else {
+            // Bus running, student stop NOT reached → everything gray (including On Route)
+            applyPickupIcon(reached: false)
+            setCircle(PickupbackgroundView, gray)
+            setLine(PickupstatusView, gray)
+            setCircle(OnroutbackroundView, gray)   // ✅ On Route green only after stop reached
+            setLine(DropStatusview, gray)
+            setCircle(DropbackroundView, gray)
         }
     }
 
+    private func resetTimelineToGray(message: String = "Bus Not Started") {
+        let gray = UIColor(red: 226/255, green: 232/255, blue: 240/255, alpha: 1.0)
+        let pin  = UIImage(systemName: "mappin.and.ellipse")
+
+        OnroutestatusLabel?.text = message
+
+        pickupimage?.image = pin
+        pickupimage?.tintColor = .systemGray
+        Pickupimageview?.image = pin
+        Pickupimageview?.tintColor = .systemGray
+
+        PickupbackgroundView?.backgroundColor = gray
+        OnroutbackroundView?.backgroundColor = gray
+        DropbackroundView?.backgroundColor = gray
+        PickupstatusView?.backgroundColor = gray
+        DropStatusview?.backgroundColor = gray
+        PickupstatusView?.layer.backgroundColor = gray.cgColor
+        DropStatusview?.layer.backgroundColor = gray.cgColor
+    }
     func configureBusDetails(_ busData: StudentBusData?) {
         
         DrivernameLabel.text = busData?.driver?.name?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
@@ -408,52 +529,87 @@ class TRNSPTdashbordUITableViewCell1: UITableViewCell {
     }
     
     // ✅ UPDATED: Configures Pickup and Drop labels safely matching MORNING or EVENING shifts
-    func configureRouteDetails(_ busData: StudentBusData?) {
+    // ✅ UPDATED: Calculates dynamic ETA and shows "Reached" when stop is completed
+    // ✅ UPDATED: DurationLabel → ETA only | PickuptimeLabel → Pickup TIME | DropTime → Drop TIME
+    // ✅ UPDATED: PickuptimeLabel → Scheduled API time ONLY | DurationLabel → ETA
+    // ✅ UPDATED: Accepts liveETASeconds. Maps ETA directly to UI
+    func configureRouteDetails(_ busData: StudentBusData?, liveETASeconds: TimeInterval? = nil) {
         let shift = (busData?.route?.shift ?? "MORNING").uppercased()
         let isEvening = shift == "EVENING"
         
-        // Find the designated school stop from the routeStops list
+        // 1. Identify School and Student Stops
         let schoolStop = busData?.routeStops?.first(where: { $0.stopType?.uppercased() == "SCHOOL" })
         let schoolName = schoolStop?.stopName ?? "School"
         
-        if isEvening {
-            // Evening Trip: School is Pickup Stop -> Home Stop is Drop Stop
-            let pickupStopName = schoolName
-            let pickupTimeValue = schoolStop?.pickupTime ?? "05:50:00"
-            
-            let dropStopName = busData?.dropStop?.stopName ?? "Home"
-            let dropTimeValue = busData?.dropStop?.dropTime ?? "18:20:00"
-            
-            PickuplocationLabel.text = pickupStopName.isEmpty == false ? pickupStopName : "School"
-            let formattedPickupTime = formatTimeTo12Hour(pickupTimeValue)
-            PickupTime.text = formattedPickupTime
-            PickuptimeLabel.text = formattedPickupTime
-            
-            DroplocationLabel.text = dropStopName.isEmpty == false ? dropStopName : "Home"
-            DropTime.text = formatTimeTo12Hour(dropTimeValue)
+        let pickupStopName = isEvening ? schoolName : (busData?.pickupStop?.stopName ?? "Home Stop")
+        let pickupTimeValue = isEvening ? (schoolStop?.pickupTime ?? "05:50:00") : (busData?.pickupStop?.pickupTime ?? "07:50:00")
+        
+        let dropStopName = isEvening ? (busData?.dropStop?.stopName ?? "Home") : schoolName
+        let dropTimeValue = isEvening ? (busData?.dropStop?.dropTime ?? "18:20:00") : (schoolStop?.dropTime ?? "08:30:00")
+        
+        PickuplocationLabel.text = pickupStopName.isEmpty == false ? pickupStopName : (isEvening ? "School" : "Home Stop")
+        DroplocationLabel.text = dropStopName.isEmpty == false ? dropStopName : (isEvening ? "Home" : "School")
+        PickuptimeLabel.text = formatTimeTo12Hour(pickupTimeValue)
+        DropTime.text = formatTimeTo12Hour(dropTimeValue)
+        
+        // 2. Find Student's Target Stop
+        let targetStopId = isEvening ? busData?.dropStop?.id : busData?.pickupStop?.id
+        let studentRouteStop = busData?.routeStops?.first(where: {
+            ($0.id != nil && $0.id == targetStopId) ||
+            ($0.stopName?.lowercased() == (isEvening ? dropStopName : pickupStopName).lowercased())
+        })
+        
+        let stopStatus = (studentRouteStop?.status ?? "").lowercased()
+        let hasReachedTime = !(studentRouteStop?.reachedTime ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        let isStopReached = stopStatus == "reached" || stopStatus == "completed" || hasReachedTime
+        
+        // 3. Configure ETA & DurationLabel
+        if isStopReached {
+            // 🟢 Stop REACHED
+            ETA.text = "Reached"
+            DurationLabel.text = "Reached"
+            DurationLabel.textColor = .label
         } else {
-            // Morning Trip: Home Stop is Pickup Stop -> School is Drop Stop
-            let pickupStopName = busData?.pickupStop?.stopName ?? "Home"
-            let pickupTimeValue = busData?.pickupStop?.pickupTime ?? "07:50:00"
-            
-            let dropStopName = schoolName
-            let dropTimeValue = schoolStop?.dropTime ?? "08:30:00"
-            
-            PickuplocationLabel.text = pickupStopName.isEmpty == false ? pickupStopName : "Home Stop"
-            let formattedPickupTime = formatTimeTo12Hour(pickupTimeValue)
-            PickupTime.text = formattedPickupTime
-            PickuptimeLabel.text = formattedPickupTime
-            
-            DroplocationLabel.text = dropStopName.isEmpty == false ? dropStopName : "School"
-            DropTime.text = formatTimeTo12Hour(dropTimeValue)
+            // 🟡 Check if we have LIVE MapKit ETA
+            if let liveSeconds = liveETASeconds {
+                // Live location available!
+                let minutes = max(1, Int(liveSeconds / 60))
+                let etaDate = Date().addingTimeInterval(liveSeconds)
+                
+                let formatter = DateFormatter()
+                formatter.dateFormat = "hh:mm a"
+                formatter.locale = Locale(identifier: "en_US_POSIX")
+                
+                ETA.text = formatter.string(from: etaDate)
+                DurationLabel.text = "\(minutes) Min (Live)"
+                
+                // Color it Green to indicate it's real-time
+                DurationLabel.textColor = UIColor(red: 34/255, green: 197/255, blue: 94/255, alpha: 1.0)
+                
+            } else {
+                // Static API fallback ETA
+                DurationLabel.textColor = .label
+                let travelMinutes = studentRouteStop?.estimatedTravelTime ?? busData?.route?.estimatedDuration
+                
+                if let minutes = travelMinutes, minutes > 0 {
+                    let etaDate = Date().addingTimeInterval(TimeInterval(minutes * 60))
+                    let formatter = DateFormatter()
+                    formatter.dateFormat = "hh:mm a"
+                    formatter.locale = Locale(identifier: "en_US_POSIX")
+                    
+                    ETA.text = formatter.string(from: etaDate)
+                    DurationLabel.text = "\(minutes) Min"
+                } else {
+                    ETA.text = formatTimeTo12Hour(pickupTimeValue)
+                    DurationLabel.text = "N/A"
+                }
+            }
         }
         
-        DurationLabel.text = busData?.route?.estimatedDuration != nil ? "\(busData!.route!.estimatedDuration!) Min" : "N/A"
-        
+        // 4. Reload Timeline
         buildJourneyItems(busData, isEvening: isEvening, schoolStop: schoolStop)
         CollectionView2.reloadData()
     }
-
     // ✅ UPDATED: Rebuilds Journey timeline points based on MORNING / EVENING logic
     private func buildJourneyItems(_ busData: StudentBusData?, isEvening: Bool, schoolStop: RouteStop?) {
         journeyItems.removeAll()
@@ -575,4 +731,3 @@ extension TRNSPTdashbordUITableViewCell1: UICollectionViewDataSource, UICollecti
         }
     }
 }
-

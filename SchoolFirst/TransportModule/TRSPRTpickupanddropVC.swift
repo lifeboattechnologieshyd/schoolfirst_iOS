@@ -25,6 +25,13 @@ class TRSPRTpickupanddropVC: UIViewController {
     // MARK: - Live Update Polling Properties
     private var updateTimer: Timer?
     private let pollInterval: TimeInterval = 5.0 // Refresh every 5 seconds
+    
+    private var isEveningShift: Bool {
+        let tripShift  = (busData?.tripShift ?? "").trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        let routeShift = (busData?.route?.shift ?? "").trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        let shift = tripShift.isEmpty ? routeShift : tripShift   // Prefers trip_shift, falls back to route.shift
+        return shift == "EVENING"
+    }
 
     /// Morning  → ascending (home → school)
     /// Evening  → reversed  (school → home)  ← matches Figma
@@ -195,8 +202,27 @@ class TRSPRTpickupanddropVC: UIViewController {
     private var studentPickupStopId: String? { busData?.pickupStop?.id }
     private var studentDropStopId: String? { busData?.dropStop?.id }
 
-    // MARK: - Stop Status Determination Engine
+    // MARK: - ✅ Trip Shift → Segment Matching (ADD THIS)
+    private var currentTripSegmentIndex: Int {
+        let tripShift  = (busData?.tripShift ?? "").trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        let routeShift = (busData?.route?.shift ?? "").trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        let shift = tripShift.isEmpty ? routeShift : tripShift
+        return (shift == "EVENING") ? 1 : 0
+    }
+
+    private var isLiveTrackingEnabled: Bool {
+        return selectedSegmentIndex == currentTripSegmentIndex
+    }
+
+    // MARK: - Stop Status Determination Engine  ← Ee function LO first line update cheyandi
     private func determineStopState(stopIndex: Int, stops: [RouteStop]) -> (isPassed: Bool, isLive: Bool) {
+
+        // 🔒 Gate: LIVE UI only in the segment matching the CURRENT trip
+        if !isLiveTrackingEnabled {
+            return (false, false)
+        }
+
+        // ... baaki existing logic same untundi ...
         guard stopIndex >= 0 && stopIndex < stops.count else { return (false, false) }
         let tripStatus = (busData?.tripStatus ?? "").uppercased()
 
@@ -246,7 +272,7 @@ extension TRSPRTpickupanddropVC: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let stopsCount = displayStops.count
-
+        
         // Header cell
         if indexPath.row == 0 {
             let cell = tableView.dequeueReusableCell(
@@ -266,7 +292,7 @@ extension TRSPRTpickupanddropVC: UITableViewDelegate, UITableViewDataSource {
             }
             return cell
         }
-
+        
         // Driver cell
         if indexPath.row == stopsCount + 1 {
             let cell = tableView.dequeueReusableCell(
@@ -294,7 +320,7 @@ extension TRSPRTpickupanddropVC: UITableViewDelegate, UITableViewDataSource {
             }
             return cell
         }
-
+        
         // Stop cell
         let stopIndex = indexPath.row - 1
         let stop = displayStops[stopIndex]
@@ -303,10 +329,10 @@ extension TRSPRTpickupanddropVC: UITableViewDelegate, UITableViewDataSource {
             for: indexPath
         ) as! TRSPRpickupUITableviewcell2
         cell.selectionStyle = .none
-
+        
         let isDrop = (selectedSegmentIndex == 1)
         let isSchool = (stop.stopType ?? "").uppercased() == "SCHOOL"
-
+        
         let time: String?
         if isSchool {
             if isDrop {
@@ -320,16 +346,19 @@ extension TRSPRTpickupanddropVC: UITableViewDelegate, UITableViewDataSource {
             let drop = stop.dropTime?.trimmingCharacters(in: .whitespacesAndNewlines)
             time = (drop?.isEmpty == false) ? stop.dropTime : stop.pickupTime
         }
-
+        
         let isYourStop: Bool
         if !isDrop {
             isYourStop = (stop.id != nil && stop.id == studentPickupStopId)
         } else {
             isYourStop = (stop.id != nil && stop.id == studentDropStopId)
         }
-
+        
         let state = determineStopState(stopIndex: stopIndex, stops: displayStops)
-
+        
+        // ⚪ EVENING SHIFT → ETA is a live-tracking indicator, so hide it (static schedule only)
+        let etaForStop = isEveningShift ? nil : stop.estimatedTravelTime
+        
         cell.configure(
             stopName: stop.stopName,
             time: time,
@@ -340,7 +369,7 @@ extension TRSPRTpickupanddropVC: UITableViewDelegate, UITableViewDataSource {
             isDrop: isDrop,
             isPassed: state.isPassed,
             isLive: state.isLive,
-            estimatedTravelTime: stop.estimatedTravelTime
+            estimatedTravelTime: etaForStop
         )
         return cell
     }

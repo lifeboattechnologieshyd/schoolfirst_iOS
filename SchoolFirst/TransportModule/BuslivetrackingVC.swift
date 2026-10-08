@@ -16,13 +16,18 @@ final class StopAnnotation: NSObject, MKAnnotation {
     let kind: Kind
     let stopId: String?
     var isReached: Bool
-    private let timeText: String?
+    var etaText: String?
 
     var subtitle: String? {
-        var parts: [String] = []
-        if let t = timeText, !t.isEmpty { parts.append(t) }
-        parts.append(isReached ? "Reached" : "Upcoming")
-        return parts.joined(separator: " • ")
+        if isReached {
+            return "Reached"
+        }
+
+        if let eta = etaText, !eta.isEmpty {
+            return eta
+        }
+
+        return "Upcoming"
     }
 
     init(coordinate: CLLocationCoordinate2D,
@@ -33,7 +38,7 @@ final class StopAnnotation: NSObject, MKAnnotation {
          isReached: Bool = false) {
         self.coordinate = coordinate
         self.title = title
-        self.timeText = subtitle
+        self.etaText = subtitle
         self.kind = kind
         self.stopId = stopId
         self.isReached = isReached
@@ -376,12 +381,12 @@ class BuslivetrackingVC: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         // ✅ CHANGED: Calculate dynamic panel heights based on screen size
-               let expanded = view.bounds.height * 0.46
+               let expanded = view.bounds.height * 0.40
                panelExpandedHeight = expanded
                panelCollapsedHeight = 130  // Shows only student card + grabber
                
                // First layout → start expanded
-               if panelHeightConstraint.constant == 320 || panelHeightConstraint.constant <= 0 {
+               if panelHeightConstraint.constant == 280 || panelHeightConstraint.constant <= 0 {
                    panelHeightConstraint.constant = expanded
                    isPanelExpanded = true
                }
@@ -602,9 +607,12 @@ class BuslivetrackingVC: UIViewController {
         locateBusButton.tintColor = appBlue
 
         locateBusButton.imageView?.contentMode = .scaleAspectFit
+        locateBusButton.imageView?.translatesAutoresizingMaskIntoConstraints = false
 
-        locateBusButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-
+        NSLayoutConstraint.activate([
+            locateBusButton.imageView!.widthAnchor.constraint(equalToConstant: 28),
+            locateBusButton.imageView!.heightAnchor.constraint(equalToConstant: 28)
+        ])
         locateBusButton.addTarget(self, action: #selector(locateBusTapped), for: .touchUpInside)
         mapControlsContainer.addSubview(locateBusButton)
 
@@ -799,7 +807,7 @@ class BuslivetrackingVC: UIViewController {
                panelScroll.addSubview(panelStack)
 
                // ✅ CHANGED: Use constant height constraint instead of multiplier (for drag)
-               panelHeightConstraint = panel.heightAnchor.constraint(equalToConstant: 310)
+               panelHeightConstraint = panel.heightAnchor.constraint(equalToConstant: 300)
                panelHeightConstraint.isActive = true
 
                NSLayoutConstraint.activate([
@@ -1114,71 +1122,100 @@ class BuslivetrackingVC: UIViewController {
 
     private func updateProgress(currentStopIndex: Int?) {
         let data = busData
-        let stops = routeStopCoordinates.count
+        let routeStops = (data?.routeStops ?? []).sorted { ($0.stopOrder ?? 0) < ($1.stopOrder ?? 0) }
+        let stops = routeStops.count
         let isActive = ["active", "started", "live", "running", "on_route"].contains(currentTripStatus)
 
-        let done = currentStopIndex ?? 0
-        progressCount.text = stops > 0 ? "\(min(done, stops)) of \(stops) stops completed" : ""
-
-        // 1. Detect Shift Type (MORNING vs EVENING / AFTERNOON / DROP)
         let shiftRaw = (data?.tripShift ?? data?.route?.shift ?? "").uppercased()
         let tripTypeRaw = (data?.tripType ?? "").uppercased()
         let isEveningOrDrop = shiftRaw == "EVENING" || shiftRaw == "AFTERNOON" || tripTypeRaw == "DROP"
 
-        // 2. Configure Start (Step 1) and Drop (Step 3) titles and times based on shift
+        let schoolStop = routeStops.first(where: {
+            ($0.stopType?.uppercased() == "SCHOOL") ||
+            ($0.stopName?.localizedCaseInsensitiveContains("School") == true)
+        })
+
+        // Boarding side: Morning = student's pickup stop, Evening = school.
+        let boardingStopID = isEveningOrDrop ? schoolStop?.id : data?.pickupStop?.id
+        let boardingReached = boardingStopID != nil && routeStops.contains { stop in
+            stop.id == boardingStopID && (stop.status ?? "").uppercased() == "REACHED"
+        }
+
+        // Destination side: Morning = school, Evening = student's drop stop.
+        let destinationStopID = isEveningOrDrop ? data?.dropStop?.id : schoolStop?.id
+        let destinationReached = destinationStopID != nil && routeStops.contains { stop in
+            stop.id == destinationStopID && (stop.status ?? "").uppercased() == "REACHED"
+        }
+
+        // Count actual REACHED stops. This keeps the existing progress count but
+        // prevents the student's boarding step from being marked complete early.
+        let reachedCount = routeStops.filter {
+            ($0.status ?? "").uppercased() == "REACHED"
+        }.count
+        progressCount.text = stops > 0 ? "\(min(reachedCount, stops)) of \(stops) stops completed" : ""
+
         let startTitle: String
         let startTimeRaw: String
         let dropTitle: String
         let dropTimeRaw: String
-        let targetIdx: Int?
 
         if isEveningOrDrop {
-            // Evening / Drop Shift: Route Source -> Drop Stop
-            startTitle = data?.route?.source ?? data?.routeStops?.first?.stopName ?? "School"
-            startTimeRaw = data?.routeStops?.first?.pickupTime ?? data?.routeStops?.first?.dropTime ?? ""
-            
-            dropTitle = data?.dropStop?.stopName ?? data?.route?.destination ?? "Drop Stop"
-            dropTimeRaw = data?.dropStop?.dropTime ?? data?.routeStops?.last?.dropTime ?? ""
-            targetIdx = dropStopIndex()
+            // Evening: School pickup -> Student drop.
+            startTitle = schoolStop?.stopName ?? data?.route?.destination ?? "School"
+            startTimeRaw = schoolStop?.pickupTime ?? ""
+            dropTitle = data?.dropStop?.stopName ?? "Drop Stop"
+            dropTimeRaw = data?.dropStop?.dropTime ?? ""
         } else {
-            // Morning / Pickup Shift: Pickup Stop -> Drop Location / School
-            startTitle = data?.pickupStop?.stopName ?? data?.route?.source ?? "Pickup Stop"
-            startTimeRaw = data?.pickupStop?.pickupTime ?? data?.routeStops?.first?.pickupTime ?? ""
-            
-            dropTitle = data?.dropStop?.stopName ?? data?.route?.destination ?? "Drop Location"
-            dropTimeRaw = data?.dropStop?.dropTime ?? data?.routeStops?.last?.dropTime ?? ""
-            targetIdx = dropStopIndex()
+            // Morning: Student pickup -> School drop.
+            startTitle = data?.pickupStop?.stopName ?? "Pickup Stop"
+            startTimeRaw = data?.pickupStop?.pickupTime ?? ""
+            dropTitle = schoolStop?.stopName ?? data?.route?.destination ?? "School"
+            dropTimeRaw = schoolStop?.dropTime ?? ""
         }
 
-        // 3. Check if Drop target has been reached
-        let passedTarget = isActive && targetIdx != nil && done >= targetIdx!
+        // Progress states:
+        // - Before boarding stop is reached: Start is current.
+        // - After boarding stop is reached: Start becomes green/done and On Route is current.
+        // - After final destination is reached: Destination becomes done.
+        let startState: RouteProgressView.State
+        let routeState: RouteProgressView.State
+        let destinationState: RouteProgressView.State
 
-        // 4. Format Drop Subtitle (Live ETA when active and approaching)
-        var dropSubtitle = formatTime(dropTimeRaw)
-        if isActive && !passedTarget {
-            if let eta = cachedETASeconds, eta > 0 {
-                dropSubtitle = "≈ \(formatETAText(eta))"
-            }
+        if destinationReached {
+            startState = .done
+            routeState = .done
+            destinationState = .done
+        } else if boardingReached {
+            startState = .done
+            routeState = isActive ? .current : .done
+            destinationState = .pending
+        } else {
+            startState = isActive ? .current : .pending
+            routeState = .pending
+            destinationState = .pending
         }
 
-        // 5. Build 3-Step Progress
+        let dropSubtitle: String
+        if destinationReached {
+            dropSubtitle = formatTime(dropTimeRaw)
+        } else if let eta = cachedETASeconds, eta > 0, boardingReached {
+            dropSubtitle = "≈ \(formatETAText(eta))"
+        } else {
+            dropSubtitle = formatTime(dropTimeRaw)
+        }
+
         let steps: [RouteProgressView.Step] = [
-            // Step 1: Pickup Location (e.g. DMart Madhapur - 03:55 AM)
             .init(title: startTitle,
                   subtitle: formatTime(startTimeRaw),
-                  state: isActive ? .done : .pending),
-            
-            // Step 2: On Route (Bus)
+                  state: startState),
             .init(title: "On Route",
-                  subtitle: isActive ? "Current" : "",
-                  state: isActive && !passedTarget ? .current : (passedTarget ? .done : .pending)),
-            
-            // Step 3: Drop Location (e.g. Charging Station - 04:45 AM or ≈ 2 min)
+                  subtitle: boardingReached ? "Current" : "",
+                  state: routeState),
             .init(title: dropTitle,
                   subtitle: dropSubtitle,
-                  state: passedTarget ? .current : .pending)
+                  state: destinationState)
         ]
-        
+
         progressView.configure(steps: steps)
     }
     private func dropStopIndex() -> Int? {
@@ -1353,28 +1390,32 @@ class BuslivetrackingVC: UIViewController {
             nextUpcomingStop = sortedStops.first(where: { ($0.status ?? "").uppercased() != "REACHED" }) ?? sortedStops.last
         }
 
-        // Student boarded check for morning trip
-        if !isEveningOrDropTrip {
-            let isPickupMarkedReached = sortedStops.first(where: { $0.id == targetStudentStop?.id })?.status?.uppercased() == "REACHED"
-            if isPickupMarkedReached {
-                isStudentBoarded = true
-            } else if let pId = targetStudentStop?.id,
-                      let pIdx = sortedStops.firstIndex(where: { $0.id == pId }),
-                      let nextId = nextUpcomingStop?.id,
-                      let nextIdx = sortedStops.firstIndex(where: { $0.id == nextId }),
-                      nextIdx > pIdx {
-                isStudentBoarded = true
-            } else if let sLat = targetStudentStop?.latitude, let sLng = targetStudentStop?.longitude, !(sLat == 0 && sLng == 0) {
-                let distToPickup = busLoc.distance(from: CLLocation(latitude: sLat, longitude: sLng))
-                if distToPickup < 70 {
-                    isStudentBoarded = true
-                }
-            }
+        // Student boarding state must change ONLY when the boarding-side stop
+        // has actually received REACHED from the API.
+        // Morning: student's pickup stop (MFN mobiles) must be REACHED.
+        // Evening: school pickup stop (Oasis Public School) must be REACHED.
+        let boardingStopID: String? = isEveningOrDropTrip
+            ? schoolStop?.id
+            : busData?.pickupStop?.id
+
+        let boardingStopReached = boardingStopID != nil && sortedStops.contains { stop in
+            stop.id == boardingStopID &&
+            (stop.status ?? "").uppercased() == "REACHED"
         }
 
-        // Student Target coordinate: In morning: pickup stop before boarding; School stop after boarding
-        let studentTargetLat = (isStudentBoarded && !isEveningOrDropTrip) ? (schoolStop?.latitude ?? busData?.dropStop?.latitude) : targetStudentStop?.latitude
-        let studentTargetLng = (isStudentBoarded && !isEveningOrDropTrip) ? (schoolStop?.longitude ?? busData?.dropStop?.longitude) : targetStudentStop?.longitude
+        isStudentBoarded = boardingStopReached
+
+        // Student target: before boarding -> boarding stop; after boarding ->
+        // shift destination. Morning: pickup -> school. Evening: school -> student drop.
+        let studentTargetStop: RouteStop? = {
+            if isStudentBoarded {
+                return isEveningOrDropTrip ? sortedStops.first(where: { $0.id == busData?.dropStop?.id }) : schoolStop
+            }
+            return isEveningOrDropTrip ? schoolStop : sortedStops.first(where: { $0.id == busData?.pickupStop?.id })
+        }()
+
+        let studentTargetLat = studentTargetStop?.latitude
+        let studentTargetLng = studentTargetStop?.longitude
 
         let destCoord: CLLocationCoordinate2D
         if let sLat = studentTargetLat, let sLng = studentTargetLng, !(sLat == 0 && sLng == 0) {
@@ -1467,89 +1508,63 @@ class BuslivetrackingVC: UIViewController {
                            studentETA: TimeInterval? = nil,
                            isEveningOrDropTrip: Bool = false) {
 
-        let nDist = nextStopDist ?? 0
-        let nEta = nextStopETA
+        let nDist = max(0, nextStopDist ?? 0)
+        let nEta = max(0, nextStopETA ?? 0)
         let nDistText = formatDistanceText(nDist)
         let nTimeText = formatETAText(nEta)
 
-        let sDist = studentDist ?? cachedDistanceMeters ?? 0
-        let sEta = studentETA ?? cachedETASeconds
+        let sDist = max(0, studentDist ?? cachedDistanceMeters ?? 0)
+        let sEta = max(0, studentETA ?? cachedETASeconds ?? 0)
         let sDistText = formatDistanceText(sDist)
         let sTimeText = formatETAText(sEta)
 
         let sFirstName = studentFirstName()
-
-        // your existing remaining code...
-    
-        
-        // ✅ Dynamically get destination name (Morning -> "Charging Station", Evening -> "DMart Madhapur")
         let destinationName = getDestinationName(isEvening: isEveningOrDropTrip)
 
-        // 1. TOP INFO CARD: Always shows Next Stop Distance and Time
-        if nDist < 10 && nDist > 0 {
-            cardETA.text = "Arrived"
-            cardDistance.text = "At Stop"
+        // INFO CARD: Always represents the NEXT UPCOMING ROUTE STOP.
+        // When the bus is exactly at that stop, explicitly show 0 metres / 0 min.
+        if nDist <= 10 {
+            cardETA.text = "0 min"
+            cardDistance.text = "0 metres away"
         } else {
             cardETA.text = nTimeText
             cardDistance.text = "\(nDistText) away"
         }
 
-        // 2. STUDENT CARD: Shows Boarded Status & Dynamic Destination
-        if isEveningOrDropTrip {
-            // 🌆 EVENING TRIP
-            if isStudentBoarded {
-                if sDist < 60 && sDist > 0 {
-                    studentStatus.text = "\(sFirstName) • Reached \(destinationName)"
-                    studentExpected.text = "Trip Completed"
-                } else {
-                    studentStatus.text = "\(sFirstName) Boarded • Heading to \(destinationName)"
-                    studentExpected.text = "Expected in \(sTimeText) • \(sDistText) away"
-                }
+        // STUDENT CARD: Boarding is controlled only by the route-stop REACHED state.
+        // Before boarding: approaching the student's boarding stop.
+        // After boarding: heading to the shift destination.
+        if isStudentBoarded {
+            if sDist <= 10 {
+                studentStatus.text = "\(sFirstName) • Reached \(destinationName)"
+                studentExpected.text = "Trip Completed"
             } else {
-                if sDist < 60 && sDist > 0 {
-                    studentStatus.text = "\(sFirstName) • Reached Stop"
-                    studentExpected.text = "Reached Stop"
-                } else {
-                    studentStatus.text = "Bus approaching your stop"
-                    studentExpected.text = "Expected in \(sTimeText) • \(sDistText) away"
-                }
+                studentStatus.text = "\(sFirstName) Boarded • Heading to \(destinationName)"
+                studentExpected.text = "Expected in \(sTimeText) • \(sDistText) away"
             }
         } else {
-           
-            if isStudentBoarded {
-                if sDist < 60 && sDist > 0 {
-                    studentStatus.text = "\(sFirstName) • Reached \(destinationName)"
-                    studentExpected.text = "Trip Completed"
-                } else {
-                    // ✅ Shows: "Kabir Boarded • Heading to Charging Station"
-                    studentStatus.text = "\(sFirstName) Boarded • Heading to \(destinationName)"
-                    studentExpected.text = "Expected in \(sTimeText) • \(sDistText) away"
-                }
-            } else {
-                if sDist < 60 && sDist > 0 {
-                    studentStatus.text = "Bus reached your stop"
-                    studentExpected.text = "\(sFirstName) Boarding • Heading to \(destinationName)"
-                } else {
-                    studentStatus.text = "Bus approaching your stop"
-                    studentExpected.text = "Expected in \(sTimeText) • \(sDistText) away"
-                }
-            }
+            studentStatus.text = "Bus approaching your stop"
+            studentExpected.text = "Expected in \(sTimeText) • \(sDistText) away"
         }
     }
     private func getDestinationName(isEvening: Bool) -> String {
-        // ⚠️ Replace 'busData' with your actual property name (e.g. studentBusData, transportData, etc.)
-        guard let data = busData else { return isEvening ? "Home" : "School" }
-        
+        guard let data = busData else {
+            return isEvening ? "Home" : "School"
+        }
+
+        let schoolStop = data.routeStops?.first(where: {
+            ($0.stopType?.uppercased() == "SCHOOL") ||
+            ($0.stopName?.localizedCaseInsensitiveContains("School") == true)
+        })
+
         if isEvening {
-            // Evening trip → Destination is the drop/home stop (e.g. "DMart Madhapur")
-            return data.dropStop?.stopName
-                ?? data.pickupStop?.stopName
-                ?? "Home"
+            // Evening: School -> student's drop stop.
+            return data.dropStop?.stopName ?? "Home"
         } else {
-            // Morning trip → Destination is School / Charging Station
-            let schoolStop = data.routeStops?.first(where: { $0.stopType?.uppercased() == "SCHOOL" })
-            return data.dropStop?.stopName
-                ?? schoolStop?.stopName
+            // Morning: student's pickup stop -> school.
+            // Do NOT use dropStop here because BOTH trips can return the
+            // student's stop in drop_stop.
+            return schoolStop?.stopName
                 ?? data.route?.destination
                 ?? "School"
         }
@@ -2244,7 +2259,7 @@ class BuslivetrackingVC: UIViewController {
         let annotations: [StopAnnotation] = stops.map { stop in
             StopAnnotation(coordinate: stop.coord,
                            title: stop.name,
-                           subtitle: stop.time.map { formatTime($0) },
+                           subtitle: nil,
                            kind: stop.kind,
                            stopId: stop.id,
                            isReached: stop.reached)
@@ -3091,6 +3106,68 @@ class BuslivetrackingVC: UIViewController {
         }
     }
 
+    private func updateStopCalloutETA(for stop: StopAnnotation, busCoordinate: CLLocationCoordinate2D) {
+        guard !stop.isReached else {
+            stop.etaText = nil
+            return
+        }
+
+        let busLoc = CLLocation(latitude: busCoordinate.latitude, longitude: busCoordinate.longitude)
+        let stopLoc = CLLocation(latitude: stop.coordinate.latitude, longitude: stop.coordinate.longitude)
+
+        let distance: CLLocationDistance
+        if fullRouteCoordinates.count >= 2 {
+            distance = calculateRoadDistance(
+                points: fullRouteCoordinates,
+                from: busCoordinate,
+                to: stop.coordinate
+            )
+        } else {
+            distance = busLoc.distance(from: stopLoc) * 1.35
+        }
+
+        if distance < 10 {
+            stop.etaText = "0 min"
+        } else {
+            let etaSeconds = calculateETASeconds(
+                distance: distance,
+                currentSpeed: currentSpeed
+            )
+            stop.etaText = formatETAText(etaSeconds)
+        }
+    }
+
+    private func makeStopCalloutCard(for stop: StopAnnotation) -> UIView {
+        let callout = UIView()
+        callout.translatesAutoresizingMaskIntoConstraints = false
+
+        let titleLabel = UILabel()
+        titleLabel.text = stop.title ?? "Stop"
+        titleLabel.font = .hankenBold(size: 13)
+        titleLabel.textColor = UIColor(red: 20/255, green: 30/255, blue: 50/255, alpha: 1)
+
+        let subtitleLabel = UILabel()
+        subtitleLabel.text = stop.subtitle
+        subtitleLabel.font = .hankenBold(size: 10)
+        subtitleLabel.textColor = .systemGray
+
+        let stack = UIStackView(arrangedSubviews: [subtitleLabel])
+        stack.axis = .vertical
+        stack.alignment = .leading
+        stack.spacing = 0
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
+        callout.addSubview(stack)
+        NSLayoutConstraint.activate([
+            stack.topAnchor.constraint(equalTo: callout.topAnchor, constant: 4),
+            stack.bottomAnchor.constraint(equalTo: callout.bottomAnchor, constant: 4),
+            stack.leadingAnchor.constraint(equalTo: callout.leadingAnchor, constant: 4),
+            stack.trailingAnchor.constraint(equalTo: callout.trailingAnchor, constant: 4)
+        ])
+
+        return callout
+    }
+
     private func showErrorAlert(message: String) {
         let alert = UIAlertController(title: "Live Bus Tracking",
                                       message: message,
@@ -3110,21 +3187,59 @@ class BuslivetrackingVC: UIViewController {
 // MARK: - MKMapViewDelegate
 extension BuslivetrackingVC: MKMapViewDelegate {
 
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        guard let stop = view.annotation as? StopAnnotation else { return }
+
+        let busCoordinate = visualCoordinate ?? lastRawCoordinate ?? busAnnotation?.coordinate
+        guard let busCoordinate = busCoordinate else { return }
+
+        updateStopCalloutETA(for: stop, busCoordinate: busCoordinate)
+
+        // Refresh only the stop callout; no other map/UI state is changed.
+        view.detailCalloutAccessoryView = makeStopCalloutCard(for: stop)
+    }
+
     func mapView(_ mapView: MKMapView,
                  viewFor annotation: MKAnnotation) -> MKAnnotationView? {
 
         if annotation is BusAnnotation {
             let reuseID = "BusAnnotationView"
-            if let existing = mapView.dequeueReusableAnnotationView(withIdentifier: reuseID) as? BusAnnotationView {
+
+            if let existing = mapView.dequeueReusableAnnotationView(
+                withIdentifier: reuseID
+            ) as? BusAnnotationView {
+
                 existing.annotation = annotation
+                existing.canShowCallout = true
+
+                if let bus = annotation as? BusAnnotation {
+                    existing.detailCalloutAccessoryView = makeBusCalloutCard(
+                        busNumber: bus.title?
+                            .replacingOccurrences(of: "🚌 ", with: "") ?? "School Bus"
+                    )
+                }
+
                 return existing
             }
-            let v = BusAnnotationView(annotation: annotation, reuseIdentifier: reuseID)
+
+            let v = BusAnnotationView(
+                annotation: annotation,
+                reuseIdentifier: reuseID
+            )
+
             v.displayPriority = .required
             v.zPriority = .max
+            v.canShowCallout = true
+
+            if let bus = annotation as? BusAnnotation {
+                v.detailCalloutAccessoryView = makeBusCalloutCard(
+                    busNumber: bus.title?
+                        .replacingOccurrences(of: "🚌 ", with: "") ?? "School Bus"
+                )
+            }
+
             return v
         }
-
         if let stop = annotation as? StopAnnotation {
             let reuseId = "StopAnnotationView_\(stop.kind)"
             let view = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId)
@@ -3136,32 +3251,7 @@ extension BuslivetrackingVC: MKMapViewDelegate {
             view.collisionMode = .none
 
             // Setup custom callout card matching Figma
-            let callout = UIView()
-            callout.translatesAutoresizingMaskIntoConstraints = false
-
-            let titleLabel = UILabel()
-            titleLabel.text = stop.title ?? "Stop"
-            titleLabel.font = .hankenBold(size: 13)
-            titleLabel.textColor = UIColor(red: 20/255, green: 30/255, blue: 50/255, alpha: 1)
-
-            let subtitleLabel = UILabel()
-            subtitleLabel.text = stop.subtitle
-            subtitleLabel.font = .hankenBold(size: 10)
-            subtitleLabel.textColor = .systemGray
-
-            let stack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
-            stack.axis = .vertical
-            stack.spacing = 2
-            stack.translatesAutoresizingMaskIntoConstraints = false
-
-            callout.addSubview(stack)
-            NSLayoutConstraint.activate([
-                stack.topAnchor.constraint(equalTo: callout.topAnchor, constant: 4),
-                stack.bottomAnchor.constraint(equalTo: callout.bottomAnchor, constant: 4),
-                stack.leadingAnchor.constraint(equalTo: callout.leadingAnchor, constant: 4),
-                stack.trailingAnchor.constraint(equalTo: callout.trailingAnchor, constant: 4)
-            ])
-            view.detailCalloutAccessoryView = callout
+            view.detailCalloutAccessoryView = makeStopCalloutCard(for: stop)
 
             switch stop.kind {
             case .school, .drop:
@@ -3187,7 +3277,42 @@ extension BuslivetrackingVC: MKMapViewDelegate {
 
         return nil
     }
+    private func makeBusCalloutCard(busNumber: String) -> UIView {
 
+        let container = UIView()
+        container.backgroundColor = .white
+
+        let busNumberLabel = UILabel()
+        busNumberLabel.text = busNumber
+        busNumberLabel.font = .hankenBold(size: 14)
+        busNumberLabel.textColor = .black
+
+        let statusLabel = UILabel()
+        statusLabel.text = "On the way"
+        statusLabel.font = .hankenBold(size: 11)
+        statusLabel.textColor = .systemGray
+
+        let stack = UIStackView(arrangedSubviews: [
+            busNumberLabel,
+            statusLabel
+        ])
+
+        stack.axis = .vertical
+        stack.spacing = 3
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
+        container.addSubview(stack)
+
+        NSLayoutConstraint.activate([
+            stack.topAnchor.constraint(equalTo: container.topAnchor, constant: 8),
+            stack.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 10),
+            stack.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -10),
+            stack.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -8),
+            container.widthAnchor.constraint(equalToConstant: 130)
+        ])
+
+        return container
+    }
     // MARK: - Stop Annotation Images
     private func createSchoolAnnotationImage() -> UIImage {
         let size = CGSize(width: 36, height: 36)
