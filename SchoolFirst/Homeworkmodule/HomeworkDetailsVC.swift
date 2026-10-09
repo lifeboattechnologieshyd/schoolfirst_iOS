@@ -31,6 +31,9 @@ class HomeworkDetailsVC: UIViewController {
     // ✅ Tracks if the homework has been submitted successfully in this session
     private var didSubmitSuccessfully = false
 
+    // ✅ Keeps the submitted remark so it always shows in the text view
+    private var submittedRemarks: String?
+
     // MARK: - Optional Attachments
 
     var submissionAttachments: [HomeworkSubmissionAttachment] = []
@@ -38,7 +41,7 @@ class HomeworkDetailsVC: UIViewController {
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
-        super.viewDidLoad()
+        super.awakeFromNib() ?? super.viewDidLoad()
 
         setupTopViewShadow()
         setupTableView()
@@ -476,11 +479,13 @@ class HomeworkDetailsVC: UIViewController {
                         )
                     }
 
-                    // ✅ Mark as submitted so button shows "Submitted"
-                    // and remarks becomes uneditable permanently.
+                    // ✅ Save remark permanently (in-memory + UserDefaults)
+                    let finalRemark = trimmedRemarks.isEmpty ? nil : trimmedRemarks
+                    self.submittedRemarks = finalRemark
                     self.didSubmitSuccessfully = true
 
-                    // ✅ Lock the current cell immediately
+                    // ✅ Put remark into text view, persist it to disk, and lock button
+                    cell?.persistAndShowRemarks(finalRemark, homeworkId: homework.id)
                     cell?.lockAfterSubmission()
 
                     self.navigateToMarkedCompletedVC()
@@ -840,17 +845,32 @@ extension HomeworkDetailsVC:
             cell.configure(
                 with: homework
             )
+
+            // ✅ Restore submitted remark from local VC memory or persistent storage
+            let storedRemark = self.submittedRemarks ?? UserDefaults.standard.string(forKey: "homework_remark_\(homework.id)")
+            if let remarks = storedRemark, !remarks.isEmpty {
+                cell.persistAndShowRemarks(remarks, homeworkId: homework.id)
+            }
+
+            let normalizedStatus =
+                homework.submission.status
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                    .uppercased()
+
+            let isAlreadySubmitted =
+                self.didSubmitSuccessfully
+                || normalizedStatus == "SUBMITTED"
+                || normalizedStatus == "COMPLETED"
+                || normalizedStatus == "APPROVED"
+
+            if isAlreadySubmitted {
+                cell.lockAfterSubmission()
+            }
         }
 
         cell.setSubmitting(
             isSubmitting
         )
-
-        // ✅ If already submitted successfully this session,
-        // keep the cell locked even after reload/scroll.
-        if didSubmitSuccessfully {
-            cell.lockAfterSubmission()
-        }
 
         cell.onSubmitTapped = { [weak self, weak cell]
             remarks in
@@ -878,6 +898,6 @@ extension HomeworkDetailsVC:
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
 
-        return 1100
+        return 900
     }
 }

@@ -7,6 +7,15 @@
 
 import UIKit
 
+// MARK: - Local dummy model (no API required)
+struct DummyCalendarEvent {
+    let eventDate: String       // yyyy-MM-dd
+    let eventType: String       // FEE, EXAM, EVENT, etc.
+    let title: String
+    let formattedTimeRange: String?
+}
+
+
 class CalenderVC: UIViewController {
 
     @IBOutlet weak var NotificationButton: UIButton!
@@ -15,10 +24,8 @@ class CalenderVC: UIViewController {
     @IBOutlet weak var BackButton: UIButton!
     @IBOutlet weak var tableview: UITableView!
 
-    // MARK: - Data
-    private var allEvents: [CalendarEvent] = []
-    private var isLoading: Bool = true
-    private var loadedStudentId: String = ""
+    // MARK: - Dummy Data (no API call)
+    private var allEvents: [DummyCalendarEvent] = []
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -30,68 +37,37 @@ class CalenderVC: UIViewController {
                 height: 6
             )
         setupTableView()
-        fetchCalendarEvents()
+        loadDummyCalendarEvents()
     }
 
-    // MARK: - Reload on Student Switch
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        let currentStudentId = UserManager.shared.resolvedStudentID
-        if currentStudentId != loadedStudentId && !currentStudentId.isEmpty {
-            print("🔄 Calendar: Student changed to: \(currentStudentId)")
-            fetchCalendarEvents()
-        }
-    }
+    // MARK: - Dummy Events
+    private func loadDummyCalendarEvents() {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = Calendar.current.timeZone
+        formatter.dateFormat = "yyyy-MM-dd"
 
-    // MARK: - Fetch Calendar Events API
-    private func fetchCalendarEvents() {
-        isLoading = true
-
-        let studentId = UserManager.shared.resolvedStudentID
-        let schoolId   = UserManager.shared.resolvedSchoolID
-
-        print("📡 CalendarVC fetchEvents | schoolId: \(schoolId) | studentId: \(studentId)")
-
-        guard !schoolId.isEmpty else {
-            print("❌ CalendarVC: Missing schoolId")
-            isLoading = false
-            return
+        func dateString(daysFromToday days: Int) -> String {
+            let date = Calendar.current.date(byAdding: .day, value: days, to: Date()) ?? Date()
+            return formatter.string(from: date)
         }
 
-        var parameters: [String: Any] = [:]
-        if !studentId.isEmpty {
-            parameters["student_id"] = studentId
-        }
+        allEvents = [
+            DummyCalendarEvent(eventDate: dateString(daysFromToday: 0), eventType: "FEE", title: "Fee Payment Reminder", formattedTimeRange: "All Day"),
+            DummyCalendarEvent(eventDate: dateString(daysFromToday: 1), eventType: "EXAM", title: "Mathematics Exam", formattedTimeRange: "09:00 AM – 12:00 PM"),
+            DummyCalendarEvent(eventDate: dateString(daysFromToday: 2), eventType: "HOLIDAY", title: "School Holiday", formattedTimeRange: "All Day"),
+            DummyCalendarEvent(eventDate: dateString(daysFromToday: 3), eventType: "PTM", title: "Parent Teacher Meeting", formattedTimeRange: "03:30 PM – 04:30 PM"),
+            DummyCalendarEvent(eventDate: dateString(daysFromToday: 4), eventType: "HOMEWORK", title: "Science Homework", formattedTimeRange: "Submit by end of day"),
+            DummyCalendarEvent(eventDate: dateString(daysFromToday: 5), eventType: "ASSIGNMENT", title: "English Assignment", formattedTimeRange: "All Day"),
+            DummyCalendarEvent(eventDate: dateString(daysFromToday: 6), eventType: "TRANSPORT", title: "Transport Schedule Update", formattedTimeRange: "08:00 AM"),
+            DummyCalendarEvent(eventDate: dateString(daysFromToday: 7), eventType: "EVENT", title: "Annual Sports Day", formattedTimeRange: "10:00 AM – 02:00 PM"),
+            // Same date has multiple event types, so it appears multi-coloured.
+            DummyCalendarEvent(eventDate: dateString(daysFromToday: 3), eventType: "EVENT", title: "School Cultural Event", formattedTimeRange: "11:00 AM – 01:00 PM"),
+            DummyCalendarEvent(eventDate: dateString(daysFromToday: 3), eventType: "FEE", title: "Fee Counter Open", formattedTimeRange: "09:00 AM – 01:00 PM")
+        ]
 
-        NetworkManager.shared.request(
-            urlString: API.CALENDAR_EVENTS,
-            method: .GET,
-            requiresAuth: true,
-            parameters: parameters.isEmpty ? nil : parameters,
-            headers: ["X-School-Id": schoolId]
-        ) { [weak self] (result: Result<APIResponse<[CalendarEvent]>, NetworkError>) in
-            guard let self = self else { return }
-            DispatchQueue.main.async {
-                self.isLoading = false
-                switch result {
-                case .success(let response):
-                    if response.success, let data = response.data {
-                        self.allEvents = data
-                        self.loadedStudentId = studentId
-                        print("✅ Calendar events loaded: \(data.count)")
-                        for event in data {
-                            print("   📌 \(event.eventDate) | \(event.eventType) | \(event.title)")
-                        }
-                    } else {
-                        self.allEvents = []
-                    }
-                case .failure(let error):
-                    print("❌ Calendar events API failed: \(error)")
-                    self.allEvents = []
-                }
-                self.tableview.reloadData()
-            }
-        }
+        tableview.reloadData()
+        print("📅 Loaded \(allEvents.count) dummy calendar events")
     }
     
     @IBAction func NotificationButtonTapped(_ sender: UIButton) {
@@ -273,22 +249,22 @@ extension CalenderVC: UITableViewDelegate, UITableViewDataSource {
 
         // 🟠 Orange → Holiday
         cell.onHolidayTapped = { [weak self] in
-            print("🟠 Holiday tapped")
+            self?.navigateToMultipleEventsVC()
         }
 
         // 🟣 Purple → Homework
         cell.onHomeworkTapped = { [weak self] in
-            print("🟣 Homework tapped")
+            self?.navigateToMultipleEventsVC()
         }
 
         // 🩵 Sky-blue → Assignment
         cell.onAssignmentTapped = { [weak self] in
-            print("🩵 Assignment tapped")
+            self?.navigateToMultipleEventsVC()
         }
 
         // 🔵 Blue → Transport
         cell.onTransportTapped = { [weak self] in
-            print("🔵 Transport tapped")
+            self?.navigateToMultipleEventsVC()
         }
 
         // 📅 Any date selected (with its events)

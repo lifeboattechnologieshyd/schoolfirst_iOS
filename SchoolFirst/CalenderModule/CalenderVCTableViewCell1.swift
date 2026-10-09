@@ -10,6 +10,7 @@ import FSCalendar
 
 class CalenderVCTableViewCell1: UITableViewCell {
 
+    @IBOutlet weak var Goodmorningwithstudentnamelabel: UILabel!
     @IBOutlet weak var TodayeventsContainerview: UIView!
     @IBOutlet weak var calendarView: FSCalendar!
 
@@ -32,7 +33,7 @@ class CalenderVCTableViewCell1: UITableViewCell {
     var onAssignmentTapped: (() -> Void)?
     var onTransportTapped: (() -> Void)?
     var onEventTapped: (() -> Void)?
-    var onDateSelected: ((_ date: Date, _ events: [CalendarEvent]) -> Void)?
+    var onDateSelected: ((_ date: Date, _ events: [DummyCalendarEvent]) -> Void)?
 
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -43,10 +44,10 @@ class CalenderVCTableViewCell1: UITableViewCell {
     // MARK: - API Events Storage
 
     /// All events from API — set via configure(with:)
-    private var apiEvents: [CalendarEvent] = []
+    private var apiEvents: [DummyCalendarEvent] = []
 
-    /// Cached mapping: "yyyy-MM-dd" → [CalendarEvent]
-    private var eventsByDate: [String: [CalendarEvent]] = [:]
+    /// Cached mapping: "yyyy-MM-dd" → [DummyCalendarEvent]
+    private var eventsByDate: [String: [DummyCalendarEvent]] = [:]
 
     private let apiDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -89,20 +90,55 @@ class CalenderVCTableViewCell1: UITableViewCell {
         setupCustomHeader()
         updateMonthLabel()
         setupTodayFocusCards()
+
+        // ── Greeting Label Setup ─────────────────────────────────────
+        updateGreetingLabel()
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        // ✅ Refresh greeting on reuse so a student switch shows correct name
+        updateGreetingLabel()
     }
 
     // MARK: - Configure with API Events
 
-    func configure(with events: [CalendarEvent]) {
+    func configure(with events: [DummyCalendarEvent]) {
         self.apiEvents = events
         buildEventsByDateCache()
         calendarView.reloadData()
         updateTodayFocusCards()
+
+        // ✅ Refresh greeting every time cell is configured (handles student switch)
+        updateGreetingLabel()
     }
 
-    /// Build "yyyy-MM-dd" → [CalendarEvent] cache
+    // MARK: - Greeting Label (Student Name from UserManager)
+
+    /// Sets "Good Morning, {StudentName}" based on time of day + selected student
+    private func updateGreetingLabel() {
+        let studentName = UserManager.shared.resolvedStudentName
+        let greeting = greetingForCurrentTime()
+        Goodmorningwithstudentnamelabel.text = "\(greeting), \(studentName)"
+        print("👋 Greeting set → \(greeting), \(studentName)")
+    }
+
+    /// Time-aware greeting
+    private func greetingForCurrentTime() -> String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 5..<12:
+            return "Good Morning"
+        case 12..<17:
+            return "Good Afternoon"
+        default:
+            return "Good Evening"
+        }
+    }
+
+    /// Build "yyyy-MM-dd" → [DummyCalendarEvent] cache
     private func buildEventsByDateCache() {
-        var map: [String: [CalendarEvent]] = [:]
+        var map: [String: [DummyCalendarEvent]] = [:]
         for event in apiEvents {
             let key = event.eventDate // "yyyy-MM-dd" from API
             if map[key] != nil {
@@ -116,7 +152,7 @@ class CalenderVCTableViewCell1: UITableViewCell {
     }
 
     /// Get events for a given Date
-    private func events(for date: Date) -> [CalendarEvent] {
+    private func events(for date: Date) -> [DummyCalendarEvent] {
         let key = apiDateFormatter.string(from: date)
         return eventsByDate[key] ?? []
     }

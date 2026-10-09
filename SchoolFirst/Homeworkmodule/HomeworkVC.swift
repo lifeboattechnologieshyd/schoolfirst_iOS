@@ -501,18 +501,21 @@ extension HomeworkVC:
 
         if indexPath.row == 0 {
 
-            let cell =
-                tableView.dequeueReusableCell(
-                    withIdentifier:
-                        "HomeworkStudentTableViewCell1",
-                    for: indexPath
-                ) as! HomeworkStudentTableViewCell1
+                    let cell =
+                        tableView.dequeueReusableCell(
+                            withIdentifier:
+                                "HomeworkStudentTableViewCell1",
+                            for: indexPath
+                        ) as! HomeworkStudentTableViewCell1
 
-            cell.selectionStyle = .none
+                    cell.selectionStyle = .none
 
-            return cell
-        }
+                    // ✅ ADDED: Refresh profile photo so it stays correct
+                    // when the selected student changes (cell gets reused)
+                    cell.refreshProfileImage()
 
+                    return cell
+                }
         // MARK: Homework Cell
 
         let cell =
@@ -557,7 +560,7 @@ extension HomeworkVC:
             return 140
         }
 
-        return 290
+        return 200
     }
 
     func tableView(

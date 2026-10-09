@@ -69,18 +69,28 @@ class PTMpurposemeetTableViewCell4: UITableViewCell {
     private func handleExistingResponse(_ response: PTMMeetingResponse) {
         switch response.responseStatus {
         case "ATTENDING":
-            // Already confirmed
+            // Already confirmed — Disable interactions, Brand Blue #0B569A with WHITE title
             setConfirmButtonState(enabled: false, title: "✓ Confirmed")
-            setDeclineButtonState(enabled: true,  title: "Decline")
-            ConfirmButton.backgroundColor = .green
+            setDeclineButtonState(enabled: false, title: "Decline")
+            ConfirmButton.backgroundColor = UIColor(red: 11/255.0, green: 86/255.0, blue: 154/255.0, alpha: 1.0) // #0B569A
+            
+            // ✅ White title for ALL states (disabled state is required since button is untappable)
             ConfirmButton.setTitleColor(.white, for: .normal)
+            ConfirmButton.setTitleColor(.white, for: .disabled)
+            ConfirmButton.setTitleColor(.white, for: .highlighted)
+            ConfirmButton.alpha = 1.0 // Keep solid visibility
 
         case "NOT_ATTENDING":
             // Already declined
             setConfirmButtonState(enabled: true,  title: "Confirm")
             setDeclineButtonState(enabled: false, title: "✗ Declined")
             DeclineButton.backgroundColor = .red
+            
+            // ✅ White title for ALL states
             DeclineButton.setTitleColor(.white, for: .normal)
+            DeclineButton.setTitleColor(.white, for: .disabled)
+            DeclineButton.setTitleColor(.white, for: .highlighted)
+            DeclineButton.alpha = 1.0
 
         case "MAYBE":
             // Pending — show both enabled

@@ -375,8 +375,7 @@ extension PTMmeetingdetailsVC: UITableViewDelegate, UITableViewDataSource {
                 for: indexPath
             ) as! PTMpurposemeetTableViewCell4
             cell.selectionStyle = .none
-            cell.configure(with: meeting)
-            cell.ConfirmButton.isEnabled = true
+            cell.configure(with: meeting) // Respect state logic defined in cell
 
             // Confirm: Navigate to MeetingConfirmationVC
             cell.onConfirmTap = { [weak self] in

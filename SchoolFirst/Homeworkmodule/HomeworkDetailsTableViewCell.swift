@@ -11,6 +11,7 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
 
     // MARK: - Outlets
 
+    @IBOutlet weak var Descriptionbackgroundview: UIView!
     @IBOutlet weak var SubmitButton: UIButton!
     @IBOutlet weak var Addremarkstextview: UITextView!
     @IBOutlet weak var StatusLbl: UILabel!
@@ -32,6 +33,13 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
     // MARK: - Data
 
     private var homework: StudentHomework?
+
+    /// Bottom pin: Description → Descriptionbackgroundview (removes empty space)
+    private var descriptionBottomConstraint: NSLayoutConstraint?
+    private var didSetupDynamicHeight = false
+
+    /// ✅ Keeps submitted remark so it always stays visible in text view
+    private var savedRemarks: String?
 
     // MARK: - Date Formatters
 
@@ -103,6 +111,9 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
         setupStatusLabel()
         setupRemarksTextView()
         setupSubmitButton()
+
+        // ✅ Dynamic height — empty space remove cheyadaniki
+        setupDynamicHeightForDescription()
     }
 
     override func layoutSubviews() {
@@ -123,6 +134,31 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
         updateShadowPath(
             for: Containerview4
         )
+
+        // Accurate multiline height calculation
+        if Description.bounds.width > 0 {
+            Description.preferredMaxLayoutWidth = Description.bounds.width
+        }
+    }
+
+    override func systemLayoutSizeFitting(
+        _ targetSize: CGSize,
+        withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority,
+        verticalFittingPriority: UILayoutPriority
+    ) -> CGSize {
+
+        if Description.bounds.width > 0 {
+            Description.preferredMaxLayoutWidth = Description.bounds.width
+        } else {
+            let horizontalPadding: CGFloat = 32
+            Description.preferredMaxLayoutWidth = targetSize.width - horizontalPadding
+        }
+
+        return super.systemLayoutSizeFitting(
+            targetSize,
+            withHorizontalFittingPriority: horizontalFittingPriority,
+            verticalFittingPriority: verticalFittingPriority
+        )
     }
 
     override func prepareForReuse() {
@@ -130,6 +166,7 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
 
         homework = nil
         onSubmitTapped = nil
+        savedRemarks = nil
 
         Homeworktitle.text = nil
         Description.text = nil
@@ -152,6 +189,12 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
         Addremarkstextview.isEditable =
             true
 
+        Addremarkstextview.isSelectable =
+            true
+
+        Addremarkstextview.isUserInteractionEnabled =
+            true
+
         SubmitButton.isEnabled =
             true
 
@@ -167,7 +210,102 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
         accessibilityValue = nil
     }
 
+    // MARK: - Remarks Persistence & Display
+
+    func persistAndShowRemarks(_ remarks: String?, homeworkId: String? = nil) {
+        let id = homeworkId ?? homework?.id
+        let trimmed = remarks?.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if let trimmed = trimmed, !trimmed.isEmpty {
+            savedRemarks = trimmed
+            Addremarkstextview.text = trimmed
+            if let id = id, !id.isEmpty {
+                UserDefaults.standard.set(trimmed, forKey: "homework_remark_\(id)")
+            }
+        } else if let id = id, !id.isEmpty,
+                  let storedRemark = UserDefaults.standard.string(forKey: "homework_remark_\(id)"),
+                  !storedRemark.isEmpty {
+            savedRemarks = storedRemark
+            Addremarkstextview.text = storedRemark
+        }
+    }
+
     // MARK: - UI Setup
+
+    /// ✅ FIX: Description + Descriptionbackgroundview dynamic height
+    /// Empty space completely remove avuthundi — text size ki thagga height vastundi
+    private func setupDynamicHeightForDescription() {
+        guard !didSetupDynamicHeight else { return }
+        didSetupDynamicHeight = true
+
+        // 1. Multiline label
+        Description.numberOfLines = 0
+        Description.lineBreakMode = .byWordWrapping
+
+        // 2. Content hugging — view ni content size ki shrink cheyadaniki
+        Description.setContentHuggingPriority(.required, for: .vertical)
+        Description.setContentCompressionResistancePriority(.required, for: .vertical)
+
+        Descriptionbackgroundview.setContentHuggingPriority(UILayoutPriority(999), for: .vertical)
+        Descriptionbackgroundview.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
+
+        if let title = Homeworktitle {
+            title.numberOfLines = 0
+            title.setContentHuggingPriority(.required, for: .vertical)
+        }
+
+        // 3. Storyboard fixed HEIGHT constraints ni fully deactivate cheyandi
+        deactivateHeightConstraints(for: Description)
+        deactivateHeightConstraints(for: Descriptionbackgroundview)
+
+        // Superview lo unna height constraints kuda remove
+        if let parent = Descriptionbackgroundview.superview {
+            parent.constraints.forEach { constraint in
+                let isBGHeight =
+                    (constraint.firstItem as? UIView == Descriptionbackgroundview && constraint.firstAttribute == .height) ||
+                    (constraint.secondItem as? UIView == Descriptionbackgroundview && constraint.secondAttribute == .height)
+
+                let isDescHeight =
+                    (constraint.firstItem as? UIView == Description && constraint.firstAttribute == .height) ||
+                    (constraint.secondItem as? UIView == Description && constraint.secondAttribute == .height)
+
+                if isBGHeight || isDescHeight {
+                    constraint.isActive = false
+                }
+            }
+        }
+
+        contentView.constraints.forEach { constraint in
+            let isBGHeight =
+                (constraint.firstItem as? UIView == Descriptionbackgroundview && constraint.firstAttribute == .height) ||
+                (constraint.secondItem as? UIView == Descriptionbackgroundview && constraint.secondAttribute == .height)
+            if isBGHeight {
+                constraint.isActive = false
+            }
+        }
+
+        // 4. Description bottom ni background view bottom ki pin cheyandi
+        //    → container content tharwatha ne end avuthundi (no empty space)
+        if descriptionBottomConstraint == nil {
+            let bottomPin = Description.bottomAnchor.constraint(
+                equalTo: Descriptionbackgroundview.bottomAnchor,
+                constant: -16
+            )
+            bottomPin.priority = UILayoutPriority(999)
+            bottomPin.isActive = true
+            descriptionBottomConstraint = bottomPin
+        }
+    }
+
+    private func deactivateHeightConstraints(for view: UIView) {
+        view.constraints.forEach { constraint in
+            // Only constant height constraints (not aspect ratio etc.)
+            if constraint.firstAttribute == .height &&
+                constraint.secondItem == nil {
+                constraint.isActive = false
+            }
+        }
+    }
 
     private func setupShadow(
         for view: UIView
@@ -304,6 +442,12 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
                 nil
         }
 
+        // ✅ Save remark locally BEFORE callback so it never disappears
+        savedRemarks = optionalRemarks
+        if let optionalRemarks = optionalRemarks {
+            persistAndShowRemarks(optionalRemarks)
+        }
+
         onSubmitTapped?(
             optionalRemarks
         )
@@ -323,19 +467,31 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
             ? 0.65
             : 1
 
-        SubmitButton.setTitle(
-            submitting
-            ? "Submitting..."
-            : "Submit",
-            for: .normal
-        )
+        // While submitting keep "Submitting..."; when done VC should call lockAfterSubmission()
+        if submitting {
+            SubmitButton.setTitle(
+                "Submitting...",
+                for: .normal
+            )
+        }
 
         Addremarkstextview.isEditable =
             !submitting
     }
 
-    // ✅ Lock the cell after a successful submission
+    // ✅ Call this from ViewController AFTER submit API success
+    // Button title → "Submitted"
+    // Remark stays visible forever in text view (read-only)
     func lockAfterSubmission() {
+
+        let remarksToShow =
+            savedRemarks
+            ?? Addremarkstextview.text?
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if let remarksToShow = remarksToShow, !remarksToShow.isEmpty {
+            persistAndShowRemarks(remarksToShow)
+        }
 
         SubmitButton.isEnabled =
             false
@@ -348,15 +504,15 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
             for: .normal
         )
 
-        // Make remarks text view uneditable and non-interactive
+        // Remark always visible, but not editable
         Addremarkstextview.isEditable =
             false
 
         Addremarkstextview.isSelectable =
-            false
+            true
 
         Addremarkstextview.isUserInteractionEnabled =
-            false
+            true
     }
 
     // MARK: - Configure API Data
@@ -371,8 +527,15 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
         Homeworktitle.text =
             homework.title
 
+        // ✅ Description text + relayout for dynamic height
         Description.text =
             homework.description
+
+        Description.invalidateIntrinsicContentSize()
+        Descriptionbackgroundview.invalidateIntrinsicContentSize()
+
+        contentView.setNeedsLayout()
+        contentView.layoutIfNeeded()
 
         Subject.text =
             homework.subject.name
@@ -395,52 +558,11 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
             status: homework.submission.status
         )
 
+        // ✅ Restore saved remarks from disk/memory if exists
+        persistAndShowRemarks(nil, homeworkId: homework.id)
+
         configureAccessibility(
             with: homework
-        )
-
-        print(
-            "✅ Homework details cell configured"
-        )
-
-        print(
-            "Title: \(homework.title)"
-        )
-
-        print(
-            "Description: \(homework.description)"
-        )
-
-        print(
-            "Assigned date: \(homework.assignedDate)"
-        )
-
-        print(
-            "Due date: \(homework.dueDate)"
-        )
-
-        print(
-            "Subject: \(homework.subject.name)"
-        )
-
-        print(
-            "Teacher: \(homework.teacher.name)"
-        )
-
-        print(
-            "Publish status: \(homework.status)"
-        )
-
-        print(
-            "Submission status: \(homework.submission.status)"
-        )
-
-        print(
-            "Submitted at: \(homework.submission.submittedAt ?? "N/A")"
-        )
-
-        print(
-            "Teacher remarks: \(homework.submission.teacherRemarks ?? "N/A")"
         )
     }
 
@@ -477,15 +599,15 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
             for: .normal
         )
 
-        // ✅ Make remarks uneditable & non-interactive if already submitted
+        // ✅ Remarks always visible; editable only if NOT submitted
         Addremarkstextview.isEditable =
             !isAlreadySubmitted
 
         Addremarkstextview.isSelectable =
-            !isAlreadySubmitted
+            true
 
         Addremarkstextview.isUserInteractionEnabled =
-            !isAlreadySubmitted
+            true
     }
 
     // MARK: - Configure Status
