@@ -1,4 +1,3 @@
-//
 //  PhonePeManager.swift
 //  SchoolFirst
 //
@@ -32,8 +31,9 @@ class PhonePePaymentManager {
         return isDevBuild ? .sandbox : .production
     }
 
+    // ✅ Full Sandbox Merchant ID provided by Charan
     var defaultMerchantId: String {
-        return isDevBuild ? "PGTESTPAYUAT86" : "M232O4UX2AXM7"
+        return isDevBuild ? "M232O4UX2AXM7_2604211147" : "M232O4UX2AXM7"
     }
 
     #if canImport(PhonePePayment)
@@ -92,16 +92,16 @@ class PhonePePaymentManager {
             return
         }
 
-        // ✅ Determine merchantId and environment dynamically from token
-        let activeMerchantId = extractMerchantId(from: paymentData.token) ?? defaultMerchantId
-        let isSandbox: Bool
-        if activeMerchantId.hasPrefix("PGTEST") {
-            isSandbox = true
-        } else if activeMerchantId.hasPrefix("M") {
-            isSandbox = false
-        } else {
-            isSandbox = isDevBuild
+        // ✅ Determine merchantId dynamically
+        var activeMerchantId = extractMerchantId(from: paymentData.token) ?? defaultMerchantId
+
+        // Safety fix: If backend sent the half ID "M232O4UX2AXM7", complete it with full suffix
+        if activeMerchantId == "M232O4UX2AXM7" && isDevBuild {
+            activeMerchantId = "M232O4UX2AXM7_2604211147"
         }
+
+        // Sandbox for DEV, Production for Release
+        let isSandbox: Bool = isDevBuild
         let env: PhonePePayment.Environment = isSandbox ? .sandbox : .production
 
         print("🔍 PhonePe target merchantId: \(activeMerchantId) | env: \(isSandbox ? "SANDBOX" : "PRODUCTION")")

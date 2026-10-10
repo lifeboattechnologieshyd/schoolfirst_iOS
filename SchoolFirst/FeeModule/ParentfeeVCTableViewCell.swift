@@ -23,26 +23,20 @@ class ParentfeeVCTableViewCell: UITableViewCell {
     }
 
     func configure(totalPayableAmount: Double?, totalAmount: Double?) {
-        guard let payable = totalPayableAmount else {
-            TermtotalpayableamountLbl.text = "₹0"
-            TotalamountLbl.text = "₹0"
-            return
-        }
+        // Uses totalAmount for both labels
+        let displayAmount = totalAmount ?? totalPayableAmount ?? 0.0
+        let formattedText = "₹\(formatAmount(displayAmount))"
 
-        TermtotalpayableamountLbl.text = "₹\(formatAmount(payable))"
-        
-        if let total = totalAmount {
-            TotalamountLbl.text = "₹\(formatAmount(total))"
-        } else {
-            TotalamountLbl.text = "₹\(formatAmount(payable))"
-        }
+        TermtotalpayableamountLbl.text = formattedText
+        TotalamountLbl.text = formattedText
     }
 
     private func formatAmount(_ value: Double) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
+        formatter.locale = Locale(identifier: "en_IN")
         formatter.minimumFractionDigits = 0
         formatter.maximumFractionDigits = 2
-        return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
+        return formatter.string(from: NSNumber(value: value)) ?? String(format: "%.0f", value)
     }
 }
