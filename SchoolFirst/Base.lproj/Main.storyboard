@@ -6721,7 +6721,7 @@ The school admin will review it soon.</string>
                                             <backgroundConfiguration key="background" image="arrowwithblack"/>
                                         </buttonConfiguration>
                                         <connections>
-                                            <action selector="BackButtonTapped:" destination="xl8-Gi-yve" eventType="touchUpInside" id="ohW-gn-4Bp"/>
+                                            <action selector="BackButtonTapped:" destination="xl8-Gi-yve" eventType="touchUpInside" id="2dF-3L-wuH"/>
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SchoolFirst Calender" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4GL-mR-ljR">
@@ -6745,9 +6745,6 @@ The school admin will review it soon.</string>
                                         <buttonConfiguration key="configuration" style="plain">
                                             <backgroundConfiguration key="background" image="notificationicon"/>
                                         </buttonConfiguration>
-                                        <connections>
-                                            <action selector="NotificationButtonTapped:" destination="xl8-Gi-yve" eventType="touchUpInside" id="URD-sX-4Rt"/>
-                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cQb-MZ-Z6d">
                                         <rect key="frame" x="294" y="56" width="24" height="24"/>
@@ -6810,10 +6807,8 @@ The school admin will review it soon.</string>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="BackButton" destination="yiR-Tl-YYd" id="tRH-2G-mSl"/>
-                        <outlet property="NotificationButton" destination="KFL-dn-nBC" id="4c8-1L-zrk"/>
-                        <outlet property="TopView" destination="dTX-4I-Jy4" id="up4-ir-CCQ"/>
-                        <outlet property="tableview" destination="Pbs-SV-U30" id="uCX-Sd-gOp"/>
+                        <outlet property="backButton" destination="yiR-Tl-YYd" id="0yI-qa-0UI"/>
+                        <outlet property="tableView" destination="Pbs-SV-U30" id="R8R-SM-YLO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="N3Y-Z9-qyz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

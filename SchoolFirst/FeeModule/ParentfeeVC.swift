@@ -1,4 +1,3 @@
-
 //
 //  ParentfeeVC.swift
 //  SchoolFirst
@@ -62,11 +61,6 @@ class ParentfeeVC: UIViewController {
 
     /// Transaction Cell 5 — always shown at the end
     private var transaction5Row: Int {
-
-        // Summary(1)
-        // + Pending Fee rows / No Pending Fees row
-        // + Completed Cell + Transaction Cell 4 if payments exist
-
         return pendingFeesRowCount + 1 + (hasCompletedPayments ? 2 : 0)
     }
 
@@ -96,9 +90,7 @@ class ParentfeeVC: UIViewController {
         let currentStudentId = UserManager.shared.resolvedStudentID
 
         if currentStudentId != loadedStudentId && !currentStudentId.isEmpty {
-
             print("🔄 Student changed to: \(currentStudentId)")
-
             fetchPendingFees()
             fetchCompletedFees()
         }
@@ -107,7 +99,6 @@ class ParentfeeVC: UIViewController {
     // MARK: - Fetch Completed Fees API
 
     private func fetchCompletedFees() {
-
         isLoadingCompleted = true
 
         let studentId = UserManager.shared.resolvedStudentID
@@ -128,47 +119,29 @@ class ParentfeeVC: UIViewController {
             result: Result<APIResponse<CompletedFeeResponse>, NetworkError>
         ) in
 
-            guard let self = self else {
-                return
-            }
+            guard let self = self else { return }
 
             DispatchQueue.main.async {
-
                 self.isLoadingCompleted = false
 
                 switch result {
-
                 case .success(let response):
-
-                    if response.success,
-                       let data = response.data {
-
+                    if response.success, let data = response.data {
                         self.completedFeeData = data
+                        print("✅ Completed fees loaded | payments: \(data.payments.count)")
 
-                        print(
-                            "✅ Completed fees loaded | payments: \(data.payments.count)"
-                        )
-
-                        // Debug: log last transaction for Cell4
                         if let lastTxn = data.payments.first {
-
                             print("💰 Last transaction for Cell4:")
                             print("   ref    : \(lastTxn.referenceNumber)")
                             print("   amount : \(lastTxn.formattedTotalAmount)")
                             print("   date   : \(lastTxn.formattedPaymentDate)")
                         }
-
                     } else {
-
                         self.completedFeeData = nil
                     }
 
                 case .failure(let error):
-
-                    print(
-                        "❌ Completed fee API failed: \(error)"
-                    )
-
+                    print("❌ Completed fee API failed: \(error)")
                     self.completedFeeData = nil
                 }
 
@@ -180,16 +153,13 @@ class ParentfeeVC: UIViewController {
     // MARK: - Fetch Pending Fees API
 
     private func fetchPendingFees() {
-
         isLoading = true
-
         tableview.reloadData()
 
         let studentId = UserManager.shared.resolvedStudentID
         let schoolId = UserManager.shared.resolvedSchoolID
 
         guard !studentId.isEmpty, !schoolId.isEmpty else {
-
             isLoading = false
             return
         }
@@ -204,39 +174,23 @@ class ParentfeeVC: UIViewController {
             result: Result<APIResponse<PendingFeeResponse>, NetworkError>
         ) in
 
-            guard let self = self else {
-                return
-            }
+            guard let self = self else { return }
 
             DispatchQueue.main.async {
-
                 self.isLoading = false
 
                 switch result {
-
                 case .success(let response):
-
-                    if response.success,
-                       let data = response.data {
-
+                    if response.success, let data = response.data {
                         self.pendingFeeData = data
                         self.loadedStudentId = studentId
-
-                        print(
-                            "✅ Pending fees loaded | fees: \(data.fees.count)"
-                        )
-
+                        print("✅ Pending fees loaded | fees: \(data.fees.count)")
                     } else {
-
                         self.pendingFeeData = nil
                     }
 
                 case .failure(let error):
-
-                    print(
-                        "❌ Pending fee API failed: \(error)"
-                    )
-
+                    print("❌ Pending fee API failed: \(error)")
                     self.pendingFeeData = nil
                 }
 
@@ -248,12 +202,19 @@ class ParentfeeVC: UIViewController {
     // MARK: - Initiate Payment
 
     private func initiatePayment(for feeItem: PendingFeeItem) {
+        print("🔘 [ParentfeeVC] initiatePayment tapped for: \(feeItem.feeType) | payable: \(feeItem.payableAmount) | id: \(feeItem.studentFeeId)")
 
         let studentId = UserManager.shared.resolvedStudentID
         let schoolId = UserManager.shared.resolvedSchoolID
 
-        guard !studentId.isEmpty,
-              !schoolId.isEmpty else {
+        print("🔍 studentId: '\(studentId)' | schoolId: '\(schoolId)'")
+
+        guard !studentId.isEmpty, !schoolId.isEmpty else {
+            print("❌ studentId or schoolId is empty!")
+            AlertManager.shared.showAlert(
+                title: "Error",
+                message: "Student or School information missing."
+            )
             return
         }
 
@@ -271,12 +232,13 @@ class ParentfeeVC: UIViewController {
         schoolId: String,
         feeItem: PendingFeeItem
     ) {
-
         let parameters: [String: Any] = [
             "student_id": studentId,
             "student_fee_ids": [feeItem.studentFeeId],
             "amount": feeItem.payableAmount
         ]
+
+        print("📤 Sending create payment order params: \(parameters)")
 
         NetworkManager.shared.request(
             urlString: API.FEE_CREATE_PAYMENT_PHONEPE,
@@ -285,40 +247,33 @@ class ParentfeeVC: UIViewController {
             parameters: parameters,
             headers: ["X-School-Id": schoolId]
         ) { [weak self] (
-            result: Result<
-                APIResponse<FeePaymentCreationResponse>,
-                NetworkError
-            >
+            result: Result<APIResponse<FeePaymentCreationResponse>, NetworkError>
         ) in
 
-            guard let self = self else {
-                return
-            }
+            guard let self = self else { return }
 
             DispatchQueue.main.async {
-
                 switch result {
-
                 case .success(let response):
-
-                    if response.success,
-                       let paymentData = response.data {
-
+                    if response.success, let paymentData = response.data {
+                        print("✅ Payment order created successfully: \(paymentData.transactionId)")
                         self.startPhonePeCheckout(
                             with: paymentData,
                             feeItem: feeItem
                         )
+                    } else {
+                        print("❌ Payment order creation failed: \(response.description)")
+                        AlertManager.shared.showAlert(
+                            title: "Payment Error",
+                            message: response.description.isEmpty ? "Failed to initiate payment." : response.description
+                        )
                     }
 
                 case .failure(let error):
-
-                    print(
-                        "❌ Failed to create payment: \(error)"
-                    )
-
+                    print("❌ Failed to create payment: \(error)")
                     AlertManager.shared.showAlert(
                         title: "Error",
-                        message: "Failed to initiate payment."
+                        message: "Failed to initiate payment: \(error.localizedDescription)"
                     )
                 }
             }
@@ -331,20 +286,12 @@ class ParentfeeVC: UIViewController {
         with paymentData: FeePaymentCreationResponse,
         feeItem: PendingFeeItem
     ) {
-
         PhonePePaymentManager.shared.initiatePhonePePayment(
             with: paymentData,
             from: self
         ) { [weak self] paymentResult in
-
-            guard let self = self else {
-                return
-            }
-
-            self.handlePaymentResult(
-                paymentResult,
-                feeItem: feeItem
-            )
+            guard let self = self else { return }
+            self.handlePaymentResult(paymentResult, feeItem: feeItem)
         }
     }
 
@@ -354,22 +301,13 @@ class ParentfeeVC: UIViewController {
         _ result: PaymentResultStatus,
         feeItem: PendingFeeItem
     ) {
-
         switch result {
-
         case .success(let paymentInfo):
-
-            print(
-                "✅ Payment SUCCESS | txn: \(paymentInfo.transactionId)"
-            )
-
-            // Refresh lists so ParentfeeVC is fresh when user returns
+            print("✅ Payment SUCCESS | txn: \(paymentInfo.transactionId)")
             loadedStudentId = ""
-
             fetchPendingFees()
             fetchCompletedFees()
 
-            // Navigate to Success Receipt Screen
             navigateToPaymentSuccess(
                 transactionId: paymentInfo.transactionId,
                 amount: feeItem.payableAmount,
@@ -377,27 +315,17 @@ class ParentfeeVC: UIViewController {
             )
 
         case .pending(let paymentInfo):
-
-            print(
-                "⏳ Payment PENDING | txn: \(paymentInfo.transactionId)"
-            )
-
+            print("⏳ Payment PENDING | txn: \(paymentInfo.transactionId)")
             AlertManager.shared.showAlert(
                 title: "Payment Pending",
                 message: "Transaction ID: \(paymentInfo.transactionId)"
             )
-
             loadedStudentId = ""
-
             fetchPendingFees()
             fetchCompletedFees()
 
         case .failure(let error):
-
-            print(
-                "❌ Payment FAILED: \(error.localizedDescription)"
-            )
-
+            print("❌ Payment FAILED: \(error.localizedDescription)")
             AlertManager.shared.showAlert(
                 title: "Payment Failed",
                 message: error.localizedDescription
@@ -412,52 +340,26 @@ class ParentfeeVC: UIViewController {
         amount: Double,
         feeType: String
     ) {
-
-        let storyboard = UIStoryboard(
-            name: "Main",
-            bundle: nil
-        )
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
         guard let vc = storyboard.instantiateViewController(
             withIdentifier: "PaymentsuccessRecieptVC"
         ) as? PaymentsuccessRecieptVC else {
-
-            print(
-                "❌ PaymentsuccessRecieptVC not found. Check Storyboard ID."
-            )
-
+            print("❌ PaymentsuccessRecieptVC not found. Check Storyboard ID.")
             return
         }
 
-        // Inject payment details
         vc.paidTransactionId = transactionId
         vc.paidAmount = amount
         vc.paidFeeType = feeType
 
-        // Small delay so PhonePe SDK fully dismisses first
-        DispatchQueue.main.asyncAfter(
-            deadline: .now() + 0.35
-        ) { [weak self] in
-
-            guard let self = self else {
-                return
-            }
-
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { [weak self] in
+            guard let self = self else { return }
             if let nav = self.navigationController {
-
-                nav.pushViewController(
-                    vc,
-                    animated: true
-                )
-
+                nav.pushViewController(vc, animated: true)
             } else {
-
                 vc.modalPresentationStyle = .fullScreen
-
-                self.present(
-                    vc,
-                    animated: true
-                )
+                self.present(vc, animated: true)
             }
         }
     }
@@ -465,47 +367,27 @@ class ParentfeeVC: UIViewController {
     // MARK: - Setup TableView
 
     private func setupTableView() {
-
         tableview.delegate = self
         tableview.dataSource = self
 
         tableview.register(
-            UINib(
-                nibName: "ParentfeeVCTableViewCell",
-                bundle: nil
-            ),
+            UINib(nibName: "ParentfeeVCTableViewCell", bundle: nil),
             forCellReuseIdentifier: "ParentfeeVCTableViewCell"
         )
-
         tableview.register(
-            UINib(
-                nibName: "ParentVCfeetypeTableViewCell2",
-                bundle: nil
-            ),
+            UINib(nibName: "ParentVCfeetypeTableViewCell2", bundle: nil),
             forCellReuseIdentifier: "ParentVCfeetypeTableViewCell2"
         )
-
         tableview.register(
-            UINib(
-                nibName: "ParentVCPaymentcompletedTableViewCell3",
-                bundle: nil
-            ),
+            UINib(nibName: "ParentVCPaymentcompletedTableViewCell3", bundle: nil),
             forCellReuseIdentifier: "ParentVCPaymentcompletedTableViewCell3"
         )
-
         tableview.register(
-            UINib(
-                nibName: "ParentVCTransactionTableViewCell4",
-                bundle: nil
-            ),
+            UINib(nibName: "ParentVCTransactionTableViewCell4", bundle: nil),
             forCellReuseIdentifier: "ParentVCTransactionTableViewCell4"
         )
-
         tableview.register(
-            UINib(
-                nibName: "ParentVCTransactionTableViewCell5",
-                bundle: nil
-            ),
+            UINib(nibName: "ParentVCTransactionTableViewCell5", bundle: nil),
             forCellReuseIdentifier: "ParentVCTransactionTableViewCell5"
         )
 
@@ -516,13 +398,9 @@ class ParentfeeVC: UIViewController {
     // MARK: - Top Shadow
 
     private func setupTopViewShadow() {
-
         TopView.layer.shadowColor = UIColor.lightGray.cgColor
         TopView.layer.shadowOpacity = 0.4
-        TopView.layer.shadowOffset = CGSize(
-            width: 0,
-            height: 4
-        )
+        TopView.layer.shadowOffset = CGSize(width: 0, height: 4)
         TopView.layer.shadowRadius = 2
         TopView.layer.masksToBounds = false
     }
@@ -530,58 +408,32 @@ class ParentfeeVC: UIViewController {
     // MARK: - Navigate to FeealltransactionVC
 
     private func navigateToAllTransactions() {
-
-        let storyboard = UIStoryboard(
-            name: "Main",
-            bundle: nil
-        )
-
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
         if let vc = storyboard.instantiateViewController(
             withIdentifier: "FeealltransactionVC"
         ) as? FeealltransactionVC {
-
-            navigationController?.pushViewController(
-                vc,
-                animated: true
-            )
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 
     // MARK: - Navigate to CalenderVC
 
     private func navigateToCalender() {
-
-        let storyboard = UIStoryboard(
-            name: "Main",
-            bundle: nil
-        )
-
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
         if let vc = storyboard.instantiateViewController(
             withIdentifier: "CalenderVC"
         ) as? CalenderVC {
-
-            navigationController?.pushViewController(
-                vc,
-                animated: true
-            )
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 
     // MARK: - Back Button
 
     @IBAction func BackButtonTapped(_ sender: UIButton) {
-
         if let nav = navigationController {
-
-            nav.popViewController(
-                animated: true
-            )
-
+            nav.popViewController(animated: true)
         } else {
-
-            dismiss(
-                animated: true
-            )
+            dismiss(animated: true)
         }
     }
 }
@@ -594,14 +446,9 @@ extension ParentfeeVC: UITableViewDelegate, UITableViewDataSource {
         _ tableView: UITableView,
         numberOfRowsInSection section: Int
     ) -> Int {
-
         if isLoading {
             return 4
         }
-
-        // Summary + Pending Fees / No Pending Fees
-        // + Completed/Transaction rows when available
-        // + Transaction Cell 5
         return totalRows
     }
 
@@ -609,13 +456,10 @@ extension ParentfeeVC: UITableViewDelegate, UITableViewDataSource {
         _ tableView: UITableView,
         cellForRowAt indexPath: IndexPath
     ) -> UITableViewCell {
-
         let row = indexPath.row
 
         // MARK: - Row 0: Summary Cell
-
         if row == 0 {
-
             let cell = tableView.dequeueReusableCell(
                 withIdentifier: "ParentfeeVCTableViewCell",
                 for: indexPath
@@ -623,15 +467,16 @@ extension ParentfeeVC: UITableViewDelegate, UITableViewDataSource {
 
             cell.selectionStyle = .none
 
-            // Sum all raw base amounts from pending list
-            // to populate Total Amount
             let calculatedTotalAmount =
-                pendingFeeData?.fees.reduce(0.0) {
-                    $0 + $1.amount
-                }
+                pendingFeeData?.feeSummary?.totalFee ??
+                pendingFeeData?.fees.reduce(0.0) { $0 + $1.amount }
+
+            let totalPayable =
+                pendingFeeData?.feeSummary?.outstandingAmount ??
+                pendingFeeData?.totalPayableAmount
 
             cell.configure(
-                totalPayableAmount: pendingFeeData?.totalPayableAmount,
+                totalPayableAmount: totalPayable,
                 totalAmount: calculatedTotalAmount
             )
 
@@ -639,102 +484,66 @@ extension ParentfeeVC: UITableViewDelegate, UITableViewDataSource {
         }
 
         // MARK: - Rows 1...: Pending Fee Cells
-
-        if feesCount > 0 &&
-            row >= 1 &&
-            row <= feesCount {
-
+        if feesCount > 0 && row >= 1 && row <= feesCount {
             let cell = tableView.dequeueReusableCell(
                 withIdentifier: "ParentVCfeetypeTableViewCell2",
                 for: indexPath
             ) as! ParentVCfeetypeTableViewCell2
 
             cell.selectionStyle = .none
-
             let feeItem = pendingFeeData!.fees[row - 1]
 
             cell.configure(
-                with: feeItem
+                with: feeItem,
+                academicYear: pendingFeeData?.student.academicYear?.name
             )
 
             cell.onPayTapped = { [weak self] _ in
-
-                self?.initiatePayment(
-                    for: feeItem
-                )
+                self?.initiatePayment(for: feeItem)
             }
 
             return cell
         }
 
         // MARK: - No Pending Fees
-
         if feesCount == 0 && row == 1 {
-
-            let cell = UITableViewCell(
-                style: .default,
-                reuseIdentifier: nil
-            )
-
+            let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
             cell.selectionStyle = .none
             cell.backgroundColor = .clear
 
             let label = UILabel()
-
             label.text = "No Pending Fees"
             label.textColor = .black
-            label.font = UIFont.boldSystemFont(
-                ofSize: 16
-            )
+            label.font = UIFont.boldSystemFont(ofSize: 16)
             label.textAlignment = .center
             label.numberOfLines = 1
-
             label.translatesAutoresizingMaskIntoConstraints = false
 
             cell.contentView.addSubview(label)
 
             NSLayoutConstraint.activate([
-
-                label.centerXAnchor.constraint(
-                    equalTo: cell.contentView.centerXAnchor
-                ),
-
-                label.centerYAnchor.constraint(
-                    equalTo: cell.contentView.centerYAnchor
-                )
+                label.centerXAnchor.constraint(equalTo: cell.contentView.centerXAnchor),
+                label.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor)
             ])
 
             return cell
         }
 
         // MARK: - Completed Payments Cell (Cell 3)
-
-        if let completedRow = completedPaymentsRow,
-           row == completedRow {
-
+        if let completedRow = completedPaymentsRow, row == completedRow {
             let cell = tableView.dequeueReusableCell(
-                withIdentifier:
-                    "ParentVCPaymentcompletedTableViewCell3",
+                withIdentifier: "ParentVCPaymentcompletedTableViewCell3",
                 for: indexPath
             ) as! ParentVCPaymentcompletedTableViewCell3
 
             cell.selectionStyle = .none
 
             if isLoadingCompleted {
-
                 cell.configureLoading()
-
-            } else if let firstTransaction =
-                        completedFeeData?.payments.first,
-                      let firstFee =
-                        firstTransaction.fees.first {
-
-                cell.configure(
-                    with: firstFee
-                )
-
+            } else if let firstTransaction = completedFeeData?.payments.first,
+                      let firstFee = firstTransaction.fees.first {
+                cell.configure(with: firstFee)
             } else {
-
                 cell.configureEmpty()
             }
 
@@ -742,53 +551,37 @@ extension ParentfeeVC: UITableViewDelegate, UITableViewDataSource {
         }
 
         // MARK: - Transaction Cell 4
-
-        if let txnRow = transactionRow,
-           row == txnRow {
-
+        if let txnRow = transactionRow, row == txnRow {
             let cell = tableView.dequeueReusableCell(
-                withIdentifier:
-                    "ParentVCTransactionTableViewCell4",
+                withIdentifier: "ParentVCTransactionTableViewCell4",
                 for: indexPath
             ) as! ParentVCTransactionTableViewCell4
 
             cell.selectionStyle = .none
 
             if isLoadingCompleted {
-
                 cell.configureLoading()
-
-            } else if let lastTransaction =
-                        completedFeeData?.payments.first {
-
-                // payments.first = most recent transaction
-                cell.configure(
-                    with: lastTransaction
-                )
+            } else if let lastTransaction = completedFeeData?.payments.first {
+                cell.configure(with: lastTransaction)
             }
 
             return cell
         }
 
         // MARK: - Transaction Cell 5
-
         if row == transaction5Row {
-
             let cell = tableView.dequeueReusableCell(
-                withIdentifier:
-                    "ParentVCTransactionTableViewCell5",
+                withIdentifier: "ParentVCTransactionTableViewCell5",
                 for: indexPath
             ) as! ParentVCTransactionTableViewCell5
 
             cell.selectionStyle = .none
 
             cell.onViewAllTransactionsTapped = { [weak self] in
-
                 self?.navigateToAllTransactions()
             }
 
             cell.onViewFullScheduleTapped = { [weak self] in
-
                 self?.navigateToCalender()
             }
 
@@ -802,43 +595,15 @@ extension ParentfeeVC: UITableViewDelegate, UITableViewDataSource {
         _ tableView: UITableView,
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
-
         let row = indexPath.row
 
-        // Summary
-        if row == 0 {
-            return 136
-        }
-
-        // No Pending Fees label
-        if feesCount == 0 && row == 1 {
-            return 80
-        }
-
-        // Pending Fee Cells
-        if row >= 1 && row <= feesCount {
-            return 306
-        }
-
-        // Completed Payments Cell
-        if let completedRow = completedPaymentsRow,
-           row == completedRow {
-            return 156
-        }
-
-        // Transaction Cell 4
-        if let txnRow = transactionRow,
-           row == txnRow {
-            return 140
-        }
-
-        // Transaction Cell 5
-        if row == transaction5Row {
-            return 140
-        }
+        if row == 0 { return 136 }
+        if feesCount == 0 && row == 1 { return 80 }
+        if row >= 1 && row <= feesCount { return 306 }
+        if let completedRow = completedPaymentsRow, row == completedRow { return 156 }
+        if let txnRow = transactionRow, row == txnRow { return 140 }
+        if row == transaction5Row { return 140 }
 
         return UITableView.automaticDimension
     }
 }
-
-

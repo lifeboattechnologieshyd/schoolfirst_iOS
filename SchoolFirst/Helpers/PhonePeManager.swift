@@ -15,28 +15,59 @@ class PhonePePaymentManager {
 
     private init() {}
 
-    // MARK: - Configuration
+    // MARK: - Environment Configuration (Auto Dev vs Prod)
 
-    private let merchantId = "PGTESTPAYUAT86"
+    var isDevBuild: Bool {
+        #if DEV
+        return true
+        #else
+        if let bundleId = Bundle.main.bundleIdentifier, bundleId.contains(".dev") {
+            return true
+        }
+        return false
+        #endif
+    }
+
+    var defaultEnvironment: PhonePePayment.Environment {
+        return isDevBuild ? .sandbox : .production
+    }
+
+    var defaultMerchantId: String {
+        return isDevBuild ? "PGTESTPAYUAT86" : "M232O4UX2AXM7"
+    }
 
     #if canImport(PhonePePayment)
     private var ppPayment: PPPayment?
     #endif
 
-    // MARK: - Initialize SDK (Call in AppDelegate)
+    // MARK: - Initialize SDK (Called in AppDelegate)
 
     func initializeSDK() {
         #if canImport(PhonePePayment)
-        ppPayment = PPPayment(
-            environment: .sandbox,       // ✅ Change to .production for live
-            flowId: "schoolfirst_fee",
-            merchantId: merchantId,
-            enableLogging: true
-        )
-        print("✅ PhonePe SDK initialized | merchantId: \(merchantId)")
+        print("✅ PhonePe SDK Manager initialized (ready for lazy configuration on checkout)")
         #else
         print("⚠️ PhonePe SDK not available at compile time. Skipping initialization.")
         #endif
+    }
+
+    // MARK: - Extract Merchant ID from JWT Token
+
+    private func extractMerchantId(from token: String) -> String? {
+        let parts = token.components(separatedBy: ".")
+        guard parts.count > 1 else { return nil }
+        var base64 = parts[1]
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+        while base64.count % 4 != 0 {
+            base64.append("=")
+        }
+        guard let data = Data(base64Encoded: base64),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let mId = json["merchantId"] as? String,
+              !mId.isEmpty else {
+            return nil
+        }
+        return mId
     }
 
     // MARK: - Start Checkout Payment
@@ -47,23 +78,6 @@ class PhonePePaymentManager {
         completion: @escaping (PaymentResultStatus) -> Void
     ) {
         #if canImport(PhonePePayment)
-        // ✅ Check SDK initialized
-        guard let ppPayment = ppPayment else {
-            print("❌ PhonePe SDK not initialized")
-            initializeSDK()
-            guard let pp = self.ppPayment else {
-                completion(.failure(PaymentError.invalidResponse))
-                return
-            }
-            startCheckout(
-                pp: pp,
-                paymentData: paymentData,
-                viewController: viewController,
-                completion: completion
-            )
-            return
-        }
-
         // ✅ Check token
         guard !paymentData.token.isEmpty else {
             print("❌ PhonePe token is empty")
@@ -78,8 +92,31 @@ class PhonePePaymentManager {
             return
         }
 
+        // ✅ Determine merchantId and environment dynamically from token
+        let activeMerchantId = extractMerchantId(from: paymentData.token) ?? defaultMerchantId
+        let isSandbox: Bool
+        if activeMerchantId.hasPrefix("PGTEST") {
+            isSandbox = true
+        } else if activeMerchantId.hasPrefix("M") {
+            isSandbox = false
+        } else {
+            isSandbox = isDevBuild
+        }
+        let env: PhonePePayment.Environment = isSandbox ? .sandbox : .production
+
+        print("🔍 PhonePe target merchantId: \(activeMerchantId) | env: \(isSandbox ? "SANDBOX" : "PRODUCTION")")
+
+        let pp = PPPayment(
+            environment: env,
+            flowId: "schoolfirst_fee",
+            merchantId: activeMerchantId,
+            enableLogging: isDevBuild
+        )
+        self.ppPayment = pp
+
         startCheckout(
-            pp: ppPayment,
+            pp: pp,
+            merchantId: activeMerchantId,
             paymentData: paymentData,
             viewController: viewController,
             completion: completion
@@ -95,6 +132,7 @@ class PhonePePaymentManager {
     #if canImport(PhonePePayment)
     private func startCheckout(
         pp: PPPayment,
+        merchantId: String,
         paymentData: FeePaymentCreationResponse,
         viewController: UIViewController,
         completion: @escaping (PaymentResultStatus) -> Void
@@ -106,12 +144,11 @@ class PhonePePaymentManager {
         print("📌 Token: \(paymentData.token.prefix(40))...")
         print("📌 Amount: \(paymentData.amount)")
 
-        // ✅ startCheckoutFlow — correct method for v5.4.0
         pp.startCheckoutFlow(
             merchantId: merchantId,
             orderId: paymentData.orderId,
             token: paymentData.token,
-            appSchema: "schoolfirst",
+            appSchema: "schoolfirst.phonepe",
             on: viewController
         ) { [weak self] request, result in
             guard let _ = self else { return }
@@ -153,6 +190,10 @@ class PhonePePaymentManager {
                         status: "PENDING"
                     )
                     completion(.pending(info))
+
+                @unknown default:
+                    print("⚠️ PhonePe Payment unknown result state")
+                    completion(.failure(PaymentError.paymentFailed))
                 }
             }
         }
@@ -169,7 +210,7 @@ class PhonePePaymentManager {
         #endif
     }
 
-    // MARK: - Handle Deeplink (Call in AppDelegate/SceneDelegate)
+    // MARK: - Deeplink Handling
 
     func handleDeeplink(_ url: URL) -> Bool {
         #if canImport(PhonePePayment)

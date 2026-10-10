@@ -285,6 +285,203 @@ struct APIResponse<T: Decodable>: Decodable {
         data = try? container.decodeIfPresent(T.self, forKey: .data)
     }
 }
+
+// ****MARK: - Calendar Events Response
+import UIKit
+
+// MARK: - School Calendar Event Model
+struct SchoolCalendarEvent: Codable {
+    let id: String
+    let title: String?
+    let description: String?
+    let eventType: String?
+    let eventDate: String?
+    let startTime: String?
+    let endTime: String?
+    let isAllDay: Bool?
+    let status: String?
+    let color: String?
+    let referenceId: String?
+    let targets: [SchoolCalendarTarget]?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case title
+        case description
+        case eventType = "event_type"
+        case eventDate = "event_date"
+        case startTime = "start_time"
+        case endTime = "end_time"
+        case isAllDay = "is_all_day"
+        case status
+        case color
+        case referenceId = "reference_id"
+        case targets
+    }
+}
+
+// MARK: - Target Details
+struct SchoolCalendarTarget: Codable {
+    let id: String?
+    let targetType: String?
+    let academicYear: SchoolCalendarAcademicYear?
+    let branch: SchoolCalendarBranch?
+    let grade: SchoolCalendarGrade?
+    let section: SchoolCalendarSection?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case targetType = "target_type"
+        case academicYear = "academic_year"
+        case branch
+        case grade
+        case section
+    }
+}
+
+struct SchoolCalendarAcademicYear: Codable {
+    let id: String?
+    let name: String?
+}
+
+struct SchoolCalendarBranch: Codable {
+    let id: String?
+    let name: String?
+}
+
+struct SchoolCalendarGrade: Codable {
+    let id: String?
+    let name: String?
+}
+
+struct SchoolCalendarSection: Codable {
+    let id: String?
+    let name: String?
+}
+
+// MARK: - Helper Extensions for UI
+extension SchoolCalendarEvent {
+
+    var parsedEventDate: Date? {
+        guard let dateString = eventDate, !dateString.isEmpty else { return nil }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone.current
+        return formatter.date(from: dateString)
+    }
+
+    var displayFormattedDate: String {
+        guard let date = parsedEventDate else { return eventDate ?? "" }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd MMM yyyy"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        return formatter.string(from: date)
+    }
+
+    var formattedTimeRange: String {
+        let isAllDayEvent = isAllDay ?? false
+        if isAllDayEvent { return "All Day" }
+
+        let start = formatTimeString(startTime)
+        let end = formatTimeString(endTime)
+
+        if !start.isEmpty && !end.isEmpty {
+            return "\(start) - \(end)"
+        } else if !start.isEmpty {
+            return start
+        } else if !end.isEmpty {
+            return end
+        }
+        return ""
+    }
+
+    var timeRangeDisplayText: String {
+        let time = formattedTimeRange
+        let date = displayFormattedDate
+        if !time.isEmpty && !date.isEmpty {
+            return "\(date) • \(time)"
+        }
+        return date.isEmpty ? time : date
+    }
+
+    var uiColor: UIColor {
+        if let hex = color, !hex.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return UIColor(hexString: hex)
+        }
+        return fallbackColor(for: eventType)
+    }
+
+    private func formatTimeString(_ time: String?) -> String {
+        guard let time = time, !time.isEmpty else { return "" }
+        let inFormatter = DateFormatter()
+        inFormatter.dateFormat = "HH:mm:ss"
+        inFormatter.locale = Locale(identifier: "en_US_POSIX")
+        if let date = inFormatter.date(from: time) {
+            let outFormatter = DateFormatter()
+            outFormatter.dateFormat = "hh:mm a"
+            outFormatter.locale = Locale(identifier: "en_US_POSIX")
+            return outFormatter.string(from: date)
+        }
+        return time
+    }
+
+    private func fallbackColor(for type: String?) -> UIColor {
+        guard let type = type?.uppercased() else {
+            return UIColor.systemBlue
+        }
+        switch type {
+        case "PTM", "FEE":
+            return UIColor(red: 234/255, green: 179/255, blue: 8/255, alpha: 1.0)
+        case "EXAM":
+            return UIColor(red: 239/255, green: 68/255, blue: 68/255, alpha: 1.0)
+        case "HOLIDAY":
+            return UIColor(red: 249/255, green: 115/255, blue: 22/255, alpha: 1.0)
+        case "EVENT":
+            return UIColor(red: 34/255, green: 197/255, blue: 94/255, alpha: 1.0)
+        case "HOMEWORK":
+            return UIColor(red: 168/255, green: 85/255, blue: 247/255, alpha: 1.0)
+        case "ASSIGNMENT":
+            return UIColor(red: 20/255, green: 184/255, blue: 166/255, alpha: 1.0)
+        case "TRANSPORT":
+            return UIColor(red: 59/255, green: 130/255, blue: 246/255, alpha: 1.0)
+        default:
+            return UIColor.systemBlue
+        }
+    }
+}
+
+// MARK: - Hex Color Helper
+extension UIColor {
+    convenience init(hexString: String) {
+        var hexSanitized = hexString.trimmingCharacters(in: .whitespacesAndNewlines)
+        hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
+
+        var rgb: UInt64 = 0
+        Scanner(string: hexSanitized).scanHexInt64(&rgb)
+
+        let length = hexSanitized.count
+        let r, g, b, a: CGFloat
+        if length == 6 {
+            r = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
+            g = CGFloat((rgb & 0x00FF00) >> 8) / 255.0
+            b = CGFloat(rgb & 0x0000FF) / 255.0
+            a = 1.0
+        } else if length == 8 {
+            r = CGFloat((rgb & 0xFF000000) >> 24) / 255.0
+            g = CGFloat((rgb & 0x00FF0000) >> 16) / 255.0
+            b = CGFloat((rgb & 0x0000FF00) >> 8) / 255.0
+            a = CGFloat(rgb & 0x000000FF) / 255.0
+        } else {
+            r = 0.5
+            g = 0.5
+            b = 0.5
+            a = 1.0
+        }
+
+        self.init(red: r, green: g, blue: b, alpha: a)
+    }
+}
 ///**** Transport module live location API response model
 struct TransportLiveLocationResponse: Codable {
     let success: Bool?
@@ -611,6 +808,7 @@ struct RouteStop: Codable {
         case reachedTime               = "reached_time"
     }
 }
+
 //*** - Student Profile API Response Struct
 struct StudentProfileResponse: Decodable {
     let success: Bool
@@ -996,26 +1194,47 @@ struct FeePaymentCreationResponse: Decodable {
     let expireAt: Int64
 
     enum CodingKeys: String, CodingKey {
-        case transactionId = "transaction_id"
+        case transactionId     = "transaction_id"
         case transactionNumber = "transaction_number"
         case amount
         case token
-        case orderId = "order_id"
+        case orderId           = "order_id"
         case state
-        case expireAt = "expire_at"
+        case expireAt          = "expire_at"
     }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        transactionId = try container.decodeIfPresent(String.self, forKey: .transactionId) ?? ""
+        transactionId     = try container.decodeIfPresent(String.self, forKey: .transactionId) ?? ""
         transactionNumber = try container.decodeIfPresent(String.self, forKey: .transactionNumber) ?? ""
-        amount = try container.decodeIfPresent(Double.self, forKey: .amount) ?? 0.0
-        token = try container.decodeIfPresent(String.self, forKey: .token) ?? ""
+        
+        // Handle amount as String ("2000") or Double (2000.0)
+        if let d = try? container.decode(Double.self, forKey: .amount) {
+            amount = d
+        } else if let s = try? container.decode(String.self, forKey: .amount), let d = Double(s) {
+            amount = d
+        } else {
+            amount = 0.0
+        }
+        
+        token   = try container.decodeIfPresent(String.self, forKey: .token) ?? ""
         orderId = try container.decodeIfPresent(String.self, forKey: .orderId) ?? ""
-        state = try container.decodeIfPresent(String.self, forKey: .state) ?? ""
-        expireAt = try container.decodeIfPresent(Int64.self, forKey: .expireAt) ?? 0
+        state   = try container.decodeIfPresent(String.self, forKey: .state) ?? ""
+        
+        // Handle expireAt as Int64 or String or Double
+        if let i = try? container.decode(Int64.self, forKey: .expireAt) {
+            expireAt = i
+        } else if let s = try? container.decode(String.self, forKey: .expireAt), let i = Int64(s) {
+            expireAt = i
+        } else if let d = try? container.decode(Double.self, forKey: .expireAt) {
+            expireAt = Int64(d)
+        } else {
+            expireAt = 0
+        }
     }
+    
+
 
     // MARK: - Helpers
 
@@ -1028,11 +1247,7 @@ struct FeePaymentCreationResponse: Decodable {
     }
 
     var expiresAtDate: Date {
-        return Date(timeIntervalSince1970: TimeInterval(expireAt / 1000))
-    }
-
-    var isExpired: Bool {
-        return Date() > expiresAtDate
+        return Date(timeIntervalSince1970: Double(expireAt) / 1000.0)
     }
 }
 
@@ -1460,22 +1675,79 @@ struct CalendarStudent: Codable {
 // MARK: - Parent Fee Models
 // Endpoint: /fee/student-fee/pending
 
+struct PendingFeeSummary: Decodable {
+    let totalFee: Double
+    let totalConcession: Double
+    let totalLateFee: Double
+    let totalPaid: Double
+    let outstandingAmount: Double
+
+    enum CodingKeys: String, CodingKey {
+        case totalFee          = "total_fee"
+        case totalConcession   = "total_concession"
+        case totalLateFee      = "total_late_fee"
+        case totalPaid         = "total_paid"
+        case outstandingAmount = "outstanding_amount"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container     = try decoder.container(keyedBy: CodingKeys.self)
+        totalFee          = Self.decodeDouble(from: container, forKey: .totalFee)
+        totalConcession   = Self.decodeDouble(from: container, forKey: .totalConcession)
+        totalLateFee      = Self.decodeDouble(from: container, forKey: .totalLateFee)
+        totalPaid         = Self.decodeDouble(from: container, forKey: .totalPaid)
+        outstandingAmount = Self.decodeDouble(from: container, forKey: .outstandingAmount)
+    }
+
+    private static func decodeDouble(from container: KeyedDecodingContainer<CodingKeys>, forKey key: CodingKeys) -> Double {
+        if let doubleVal = try? container.decode(Double.self, forKey: key) {
+            return doubleVal
+        }
+        if let stringVal = try? container.decode(String.self, forKey: key), let doubleVal = Double(stringVal) {
+            return doubleVal
+        }
+        return 0.0
+    }
+}
+
 struct PendingFeeResponse: Decodable {
     let student: PendingFeeStudent
+    let feeSummary: PendingFeeSummary?
     let fees: [PendingFeeItem]
     let totalPayableAmount: Double
 
     enum CodingKeys: String, CodingKey {
         case student
+        case feeSummary          = "fee_summary"
         case fees
-        case totalPayableAmount = "total_payable_amount"
+        case feeTypes            = "fee_types"
+        case totalPayableAmount  = "total_payable_amount"
     }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        student             = try container.decode(PendingFeeStudent.self, forKey: .student)
-        fees                = try container.decodeIfPresent([PendingFeeItem].self, forKey: .fees) ?? []
-        totalPayableAmount  = try container.decodeIfPresent(Double.self, forKey: .totalPayableAmount) ?? 0.0
+        student = try container.decode(PendingFeeStudent.self, forKey: .student)
+        feeSummary = try? container.decodeIfPresent(PendingFeeSummary.self, forKey: .feeSummary)
+
+        // Try fee_types first (new format), fallback to fees (old format)
+        if let newItems = try? container.decodeIfPresent([PendingFeeItem].self, forKey: .feeTypes), !newItems.isEmpty {
+            fees = newItems
+        } else if let oldItems = try? container.decodeIfPresent([PendingFeeItem].self, forKey: .fees) {
+            fees = oldItems
+        } else {
+            fees = []
+        }
+
+        // Total payable amount: prefer fee_summary.outstandingAmount, then totalPayableAmount
+        if let summary = feeSummary {
+            totalPayableAmount = summary.outstandingAmount
+        } else if let legacyPayable = try? container.decodeIfPresent(Double.self, forKey: .totalPayableAmount) {
+            totalPayableAmount = legacyPayable
+        } else if let legacyStr = try? container.decodeIfPresent(String.self, forKey: .totalPayableAmount), let val = Double(legacyStr) {
+            totalPayableAmount = val
+        } else {
+            totalPayableAmount = 0.0
+        }
     }
 }
 
@@ -1483,11 +1755,13 @@ struct PendingFeeStudent: Decodable {
     let id: String
     let name: String
     let admissionNumber: String
+    let academicYear: PendingFeeAcademicYear?
 
     enum CodingKeys: String, CodingKey {
         case id
         case name
         case admissionNumber = "admission_number"
+        case academicYear    = "academic_year"
     }
 
     init(from decoder: Decoder) throws {
@@ -1495,12 +1769,13 @@ struct PendingFeeStudent: Decodable {
         id               = try container.decodeIfPresent(String.self, forKey: .id)              ?? ""
         name             = try container.decodeIfPresent(String.self, forKey: .name)            ?? ""
         admissionNumber  = try container.decodeIfPresent(String.self, forKey: .admissionNumber) ?? ""
+        academicYear     = try? container.decodeIfPresent(PendingFeeAcademicYear.self, forKey: .academicYear)
     }
 }
 
 struct PendingFeeItem: Decodable {
     let studentFeeId: String
-    let academicYear: PendingFeeAcademicYear
+    let academicYear: PendingFeeAcademicYear?
     let feeType: String
     let installment: String
     let amount: Double
@@ -1508,42 +1783,80 @@ struct PendingFeeItem: Decodable {
     let lateFee: Double
     let paidAmount: Double
     let payableAmount: Double
+    let outstandingAmount: Double
     let dueDate: String
     let status: String
 
     enum CodingKeys: String, CodingKey {
-        case studentFeeId   = "student_fee_id"
-        case academicYear   = "academic_year"
-        case feeType        = "fee_type"
+        case studentFeeId       = "student_fee_id"
+        case feeTypeId          = "fee_type_id"
+        case academicYear       = "academic_year"
+        case feeType            = "fee_type"
         case installment
         case amount
+        case totalAmount        = "total_amount"
         case concession
-        case lateFee        = "late_fee"
-        case paidAmount     = "paid_amount"
-        case payableAmount  = "payable_amount"
-        case dueDate        = "due_date"
+        case concessionAmount   = "concession_amount"
+        case lateFee            = "late_fee"
+        case paidAmount         = "paid_amount"
+        case payableAmount      = "payable_amount"
+        case outstandingAmount  = "outstanding_amount"
+        case dueDate            = "due_date"
         case status
     }
 
     init(from decoder: Decoder) throws {
-        let container   = try decoder.container(keyedBy: CodingKeys.self)
-        studentFeeId    = try container.decodeIfPresent(String.self, forKey: .studentFeeId)             ?? ""
-        academicYear    = try container.decode(PendingFeeAcademicYear.self, forKey: .academicYear)
-        feeType         = try container.decodeIfPresent(String.self, forKey: .feeType)                  ?? ""
-        installment     = try container.decodeIfPresent(String.self, forKey: .installment)              ?? ""
-        amount          = try container.decodeIfPresent(Double.self, forKey: .amount)                   ?? 0.0
-        concession      = try container.decodeIfPresent(Double.self, forKey: .concession)               ?? 0.0
-        lateFee         = try container.decodeIfPresent(Double.self, forKey: .lateFee)                  ?? 0.0
-        paidAmount      = try container.decodeIfPresent(Double.self, forKey: .paidAmount)               ?? 0.0
-        payableAmount   = try container.decodeIfPresent(Double.self, forKey: .payableAmount)            ?? 0.0
-        dueDate         = try container.decodeIfPresent(String.self, forKey: .dueDate)                  ?? ""
-        status          = try container.decodeIfPresent(String.self, forKey: .status)                   ?? ""
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        // ID: fee_type_id or student_fee_id
+        if let feeTypeId = try? container.decodeIfPresent(String.self, forKey: .feeTypeId), !feeTypeId.isEmpty {
+            studentFeeId = feeTypeId
+        } else {
+            studentFeeId = (try? container.decodeIfPresent(String.self, forKey: .studentFeeId)) ?? ""
+        }
+
+        academicYear = try? container.decodeIfPresent(PendingFeeAcademicYear.self, forKey: .academicYear)
+        feeType      = (try? container.decodeIfPresent(String.self, forKey: .feeType)) ?? ""
+        installment  = (try? container.decodeIfPresent(String.self, forKey: .installment)) ?? ""
+        dueDate      = (try? container.decodeIfPresent(String.self, forKey: .dueDate)) ?? ""
+        status       = (try? container.decodeIfPresent(String.self, forKey: .status)) ?? ""
+
+        // Amount: total_amount or amount
+        amount = Self.decodeDouble(from: container, keys: [.totalAmount, .amount])
+
+        // Concession: concession_amount or concession
+        concession = Self.decodeDouble(from: container, keys: [.concessionAmount, .concession])
+
+        // Late fee
+        lateFee = Self.decodeDouble(from: container, keys: [.lateFee])
+
+        // Paid amount
+        paidAmount = Self.decodeDouble(from: container, keys: [.paidAmount])
+
+        // Payable amount
+        let payAmount = Self.decodeDouble(from: container, keys: [.payableAmount])
+        let outAmount = Self.decodeDouble(from: container, keys: [.outstandingAmount])
+        outstandingAmount = outAmount > 0 ? outAmount : payAmount
+        payableAmount = payAmount > 0 ? payAmount : outstandingAmount
+    }
+
+    private static func decodeDouble(from container: KeyedDecodingContainer<CodingKeys>, keys: [CodingKeys]) -> Double {
+        for key in keys {
+            if let d = try? container.decode(Double.self, forKey: key) {
+                return d
+            }
+            if let s = try? container.decode(String.self, forKey: key), let d = Double(s) {
+                return d
+            }
+        }
+        return 0.0
     }
 
     // MARK: - Helpers
 
     /// Formatted due date: "10 Jun 2026"
     var formattedDueDate: String {
+        guard !dueDate.isEmpty else { return "" }
         let inputFormatter        = DateFormatter()
         inputFormatter.dateFormat = "yyyy-MM-dd"
         let outputFormatter       = DateFormatter()
