@@ -286,6 +286,145 @@ struct APIResponse<T: Decodable>: Decodable {
     }
 }
 
+//****gallery API Resposnse model
+
+struct GalleryAlbum: Decodable {
+    let id: String
+    let title: String
+    let description: String?
+    let academicYear: GalleryAcademicYear?
+    let category: GalleryCategoryInfo?
+    let eventDate: String?
+    let allowDownloads: Bool
+    let isPublished: Bool
+    let imageCount: Int
+    let videoCount: Int
+    let images: [GalleryImage]
+    let videos: [GalleryVideo]
+
+    enum CodingKeys: String, CodingKey {
+        case id, title, description
+        case academicYear     = "academic_year"
+        case category
+        case eventDate        = "event_date"
+        case allowDownloads   = "allow_downloads"
+        case isPublished      = "is_published"
+        case imageCount       = "image_count"
+        case videoCount       = "video_count"
+        case images, videos
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id              = try c.decodeIfPresent(String.self, forKey: .id) ?? ""
+        title           = try c.decodeIfPresent(String.self, forKey: .title) ?? ""
+        description     = try c.decodeIfPresent(String.self, forKey: .description)
+        academicYear    = try c.decodeIfPresent(GalleryAcademicYear.self, forKey: .academicYear)
+        category        = try c.decodeIfPresent(GalleryCategoryInfo.self, forKey: .category)
+        eventDate       = try c.decodeIfPresent(String.self, forKey: .eventDate)
+        allowDownloads  = try c.decodeIfPresent(Bool.self, forKey: .allowDownloads) ?? false
+        isPublished     = try c.decodeIfPresent(Bool.self, forKey: .isPublished) ?? false
+        imageCount      = try c.decodeIfPresent(Int.self, forKey: .imageCount) ?? 0
+        videoCount      = try c.decodeIfPresent(Int.self, forKey: .videoCount) ?? 0
+        images          = try c.decodeIfPresent([GalleryImage].self, forKey: .images) ?? []
+        videos          = try c.decodeIfPresent([GalleryVideo].self, forKey: .videos) ?? []
+    }
+
+    // MARK: - Display helpers
+    var coverImageURL: String? {
+        images.sorted { $0.displayOrder < $1.displayOrder }.first?.image
+    }
+
+    var formattedEventDate: String {
+        guard let eventDate = eventDate, !eventDate.isEmpty else { return "" }
+        let inFmt = DateFormatter()
+        inFmt.dateFormat = "yyyy-MM-dd"
+        let outFmt = DateFormatter()
+        outFmt.dateFormat = "dd MMM yyyy"
+        if let d = inFmt.date(from: eventDate) {
+            return outFmt.string(from: d)
+        }
+        return eventDate
+    }
+
+    var metaText: String {
+        var parts: [String] = []
+        if imageCount > 0 { parts.append("\(imageCount) photos") }
+        if videoCount > 0 { parts.append("\(videoCount) videos") }
+        if !formattedEventDate.isEmpty { parts.append(formattedEventDate) }
+        return parts.joined(separator: " • ")
+    }
+
+    var categoryName: String {
+        category?.name ?? ""
+    }
+}
+
+// MARK: - Nested
+struct GalleryAcademicYear: Decodable {
+    let id: String
+    let name: String
+}
+
+struct GalleryCategoryInfo: Decodable {
+    let id: String
+    let name: String
+}
+
+struct GalleryImage: Decodable {
+    let id: String
+    let image: String
+    let caption: String?
+    let displayOrder: Int
+
+    enum CodingKeys: String, CodingKey {
+        case id, image, caption
+        case displayOrder = "display_order"
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id           = try c.decodeIfPresent(String.self, forKey: .id) ?? ""
+        image        = try c.decodeIfPresent(String.self, forKey: .image) ?? ""
+        caption      = try c.decodeIfPresent(String.self, forKey: .caption)
+        displayOrder = try c.decodeIfPresent(Int.self, forKey: .displayOrder) ?? 0
+    }
+}
+
+struct GalleryVideo: Decodable {
+    let id: String
+    let video: String
+    let caption: String?
+    let displayOrder: Int
+
+    enum CodingKeys: String, CodingKey {
+        case id, video, caption
+        case displayOrder = "display_order"
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id           = try c.decodeIfPresent(String.self, forKey: .id) ?? ""
+        video        = try c.decodeIfPresent(String.self, forKey: .video) ?? ""
+        caption      = try c.decodeIfPresent(String.self, forKey: .caption)
+        displayOrder = try c.decodeIfPresent(Int.self, forKey: .displayOrder) ?? 0
+    }
+}
+//****gallery catogories API Model
+
+
+struct GalleryCategory: Decodable, Identifiable {
+    let id: String
+    let name: String
+    let description: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case description
+    }
+}
+
 // ****MARK: - Calendar Events Response
 import UIKit
 

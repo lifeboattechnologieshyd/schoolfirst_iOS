@@ -1,98 +1,79 @@
-//
-//  ALLEventTableViewCell.swift
-//  SchoolFirst
-//
-//  Created by vamshi krishna on 30/09/26.
-//
-
 import UIKit
 
 class ALLEventTableViewCell: UITableViewCell {
-
     @IBOutlet weak var Allimagesgridcollectionview: UICollectionView!
-
-    // Callback to GalleryhomeVC
     var onAlbumTapped: ((Int) -> Void)?
-
-    private var albums: [(title: String, type: String, meta: String, imageName: String)] = [
-        ("Science Exhibition 2026", "Academic", "62 photos • 08 Mar", "placeholder"),
-        ("Annual Day 2025", "Events", "94 photos • 10 Dec", "placeholder"),
-        ("Science Exhibition 2026", "Academic", "62 photos • 08 Mar", "placeholder"),
-        ("Annual Day 2025", "Events", "94 photos • 10 Dec", "placeholder"),
-        ("Sports Day 2026", "Sports", "48 photos • 15 Feb", "placeholder"),
-        ("Campus Tour", "Campus", "30 photos • 01 Jan", "placeholder")
-    ]
+    
+    @IBOutlet weak var ImagecountLabel: UILabel!
+    @IBOutlet weak var ImagedescriptionLabel: UILabel!
+    @IBOutlet weak var ImagetitleLabel: UILabel!
+    @IBOutlet weak var Latestimageview: UIImageView!
+    
+    private var albums: [GalleryAlbum] = [] // API Model
 
     override func awakeFromNib() {
         super.awakeFromNib()
         selectionStyle = .none
         setupCollectionView()
+        Latestimageview.contentMode = .scaleAspectFill
+        Latestimageview.clipsToBounds = true
     }
-
+    
     private func setupCollectionView() {
         Allimagesgridcollectionview.delegate = self
         Allimagesgridcollectionview.dataSource = self
-        Allimagesgridcollectionview.backgroundColor = .clear
-        Allimagesgridcollectionview.isScrollEnabled = false
-        Allimagesgridcollectionview.showsVerticalScrollIndicator = false
-
-        Allimagesgridcollectionview.register(
-            UINib(nibName: "AllimagesCLVCell", bundle: nil),
-            forCellWithReuseIdentifier: "AllimagesCLVCell"
-        )
-
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        layout.minimumInteritemSpacing = 12
-        layout.minimumLineSpacing = 16
-        layout.sectionInset = UIEdgeInsets(top: 8, left: 16, bottom: 16, right: 16)
-        Allimagesgridcollectionview.collectionViewLayout = layout
+        Allimagesgridcollectionview.register(UINib(nibName: "AllimagesCLVCell", bundle: nil), forCellWithReuseIdentifier: "AllimagesCLVCell")
     }
-
-    func configure(with data: [(title: String, type: String, meta: String, imageName: String)]) {
+    
+    func configure(with data: [GalleryAlbum]) {
         self.albums = data
         Allimagesgridcollectionview.reloadData()
+        
+        guard let firstAlbum = data.first else {
+            ImagetitleLabel.text = ""
+            ImagedescriptionLabel.text = ""
+            ImagecountLabel.text = ""
+            
+            Latestimageview.image = nil
+            return
+        }
+        
+        ImagetitleLabel.text = firstAlbum.title
+        ImagedescriptionLabel.text = firstAlbum.description ?? ""
+        ImagecountLabel.text = firstAlbum.metaText
+       
+        
+        if let coverURLString = firstAlbum.coverImageURL,
+           let url = URL(string: coverURLString) {
+            DispatchQueue.global().async {
+                if let imageData = try? Data(contentsOf: url) {
+                    DispatchQueue.main.async { [weak self] in
+                        self?.Latestimageview.image = UIImage(data: imageData)
+                    }
+                } else {
+                    DispatchQueue.main.async { [weak self] in
+                        self?.Latestimageview.image = nil
+                    }
+                }
+            }
+        } else {
+            Latestimageview.image = nil
+        }
     }
 }
 
-// MARK: - UICollectionView
-extension ALLEventTableViewCell: UICollectionViewDelegate,
-                                 UICollectionViewDataSource,
-                                 UICollectionViewDelegateFlowLayout {
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return albums.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView,
-                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: "AllimagesCLVCell",
-            for: indexPath
-        ) as! AllimagesCLVCell
-
+extension ALLEventTableViewCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int { return albums.count }
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "AllimagesCLVCell", for: indexPath) as! AllimagesCLVCell
         let item = albums[indexPath.item]
-        cell.configure(
-            title: item.title,
-            eventType: item.type,
-            dateText: item.meta,
-            imageName: item.imageName
-        )
+        // Passing API Data
+        cell.configure(title: item.title, eventType: item.category?.name ?? "", dateText: item.metaText, imageURL: item.coverImageURL)
         return cell
     }
-
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let sectionInset: CGFloat = 16
-        let interItemSpacing: CGFloat = 12
-        let availableWidth = collectionView.bounds.width - (sectionInset * 2) - interItemSpacing
-        let cellWidth = floor(availableWidth / 2)
-        return CGSize(width: cellWidth, height: 172)
-    }
-
-    // ✅ TAP → Navigate
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        onAlbumTapped?(indexPath.item)
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) { onAlbumTapped?(indexPath.item) }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = floor((collectionView.bounds.width - 32 - 12) / 2)
+        return CGSize(width: width, height: 172)
     }
 }

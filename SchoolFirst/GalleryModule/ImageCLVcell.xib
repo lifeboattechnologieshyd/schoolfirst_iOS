@@ -5,6 +5,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -17,23 +18,54 @@
                 <rect key="frame" x="0.0" y="0.0" width="147" height="123"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="GCp-ME-3iL">
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="peT-Oe-eST">
                         <rect key="frame" x="0.0" y="0.0" width="147" height="123"/>
-                    </imageView>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ZAl-su-a7G">
+                                <rect key="frame" x="0.0" y="0.0" width="147" height="123"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="ZAl-su-a7G" secondAttribute="bottom" id="I4k-JZ-q3e"/>
+                            <constraint firstAttribute="trailing" secondItem="ZAl-su-a7G" secondAttribute="trailing" id="Jgi-xh-6R5"/>
+                            <constraint firstItem="ZAl-su-a7G" firstAttribute="top" secondItem="peT-Oe-eST" secondAttribute="top" id="nIg-9K-rVZ"/>
+                            <constraint firstItem="ZAl-su-a7G" firstAttribute="leading" secondItem="peT-Oe-eST" secondAttribute="leading" id="psa-UK-meE"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="12"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                <real key="value" value="1"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                <color key="value" systemColor="systemGray5Color"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </view>
                 </subviews>
             </view>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
-                <constraint firstItem="GCp-ME-3iL" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="8iK-Eb-J6H"/>
-                <constraint firstAttribute="trailing" secondItem="GCp-ME-3iL" secondAttribute="trailing" id="Iod-8d-Fah"/>
-                <constraint firstAttribute="bottom" secondItem="GCp-ME-3iL" secondAttribute="bottom" id="uf2-jR-ZVl"/>
-                <constraint firstItem="GCp-ME-3iL" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="v5V-Id-CBF"/>
+                <constraint firstItem="peT-Oe-eST" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="7nf-nC-xQU"/>
+                <constraint firstAttribute="trailing" secondItem="peT-Oe-eST" secondAttribute="trailing" id="GEv-gL-0UL"/>
+                <constraint firstItem="peT-Oe-eST" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="Ihc-Ai-Z8O"/>
+                <constraint firstAttribute="bottom" secondItem="peT-Oe-eST" secondAttribute="bottom" id="K10-QM-wwm"/>
             </constraints>
             <size key="customSize" width="147" height="123"/>
             <connections>
-                <outlet property="imageview" destination="GCp-ME-3iL" id="UHR-d7-8fG"/>
+                <outlet property="imageview" destination="ZAl-su-a7G" id="HVU-7z-wlh"/>
             </connections>
             <point key="canvasLocation" x="-5.343511450381679" y="105.98591549295776"/>
         </collectionViewCell>
     </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGray5Color">
+            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
 </document>

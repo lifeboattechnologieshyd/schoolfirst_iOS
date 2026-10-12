@@ -215,6 +215,10 @@ struct API {
       }
     // Append profile path URL structure
     static let STUDENT_PROFILE = BASE_URL + "user/profile/"
+    
+    static let GALLERY_CATEGORIES = BASE_URL + "gallery/categories"
+    
+    static let GALLERY_LIST = BASE_URL + "gallery/gallery/list"
   
 }
 

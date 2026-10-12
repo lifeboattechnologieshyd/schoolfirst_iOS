@@ -70,10 +70,10 @@
                                     <constraint firstAttribute="width" constant="13" id="wh6-FO-IsT"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="48 photos · 15 Feb 2026" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ifG-0e-Dab">
-                                <rect key="frame" x="35" y="202.66666666666669" width="150" height="14"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="48 photos" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ifG-0e-Dab">
+                                <rect key="frame" x="35" y="202.66666666666669" width="200" height="14"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="150" id="6Mq-Px-EuI"/>
+                                    <constraint firstAttribute="width" constant="200" id="6Mq-Px-EuI"/>
                                     <constraint firstAttribute="height" constant="14" id="ah8-SX-npX"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="11"/>
@@ -106,7 +106,7 @@
                                 <real key="value" value="1"/>
                             </userDefinedRuntimeAttribute>
                             <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                <color key="value" red="0.9443359375" green="0.9638671875" blue="0.9951171875" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <color key="value" systemColor="systemGray5Color"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </view>
@@ -132,7 +132,7 @@
                         </buttonConfiguration>
                     </button>
                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="YfP-2K-oTF">
-                        <rect key="frame" x="0.0" y="330" width="373" height="319"/>
+                        <rect key="frame" x="16" y="330" width="341" height="319"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="zVB-Lm-Lub">
                             <size key="itemSize" width="128" height="128"/>
@@ -153,9 +153,9 @@
                     <constraint firstItem="Ueu-Od-aDV" firstAttribute="top" secondItem="XzT-78-p5G" secondAttribute="bottom" constant="12" id="OHM-LN-Wea"/>
                     <constraint firstItem="YfP-2K-oTF" firstAttribute="top" secondItem="p3t-NJ-EQw" secondAttribute="bottom" constant="12" id="axp-JX-Vke"/>
                     <constraint firstItem="Rd0-e9-wGZ" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="4" id="fvc-vh-j1L"/>
-                    <constraint firstAttribute="trailing" secondItem="YfP-2K-oTF" secondAttribute="trailing" id="iH6-fw-dXB"/>
+                    <constraint firstAttribute="trailing" secondItem="YfP-2K-oTF" secondAttribute="trailing" constant="16" id="iH6-fw-dXB"/>
                     <constraint firstItem="Ueu-Od-aDV" firstAttribute="trailing" secondItem="XzT-78-p5G" secondAttribute="trailing" id="kvc-n9-frk"/>
-                    <constraint firstItem="YfP-2K-oTF" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="nfu-2r-Eg4"/>
+                    <constraint firstItem="YfP-2K-oTF" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="nfu-2r-Eg4"/>
                     <constraint firstItem="p3t-NJ-EQw" firstAttribute="top" secondItem="XzT-78-p5G" secondAttribute="bottom" constant="12" id="ogK-Uh-jl6"/>
                     <constraint firstItem="dyG-Yt-evk" firstAttribute="top" secondItem="Rd0-e9-wGZ" secondAttribute="bottom" constant="3" id="qZz-4h-e07"/>
                     <constraint firstItem="XzT-78-p5G" firstAttribute="trailing" secondItem="dyG-Yt-evk" secondAttribute="trailing" id="wPT-qu-ydQ"/>
@@ -165,6 +165,10 @@
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
                 <outlet property="Allimagesgridcollectionview" destination="YfP-2K-oTF" id="H5x-BI-wjF"/>
+                <outlet property="ImagecountLabel" destination="ifG-0e-Dab" id="FE0-Ye-khJ"/>
+                <outlet property="ImagedescriptionLabel" destination="GvH-MG-Pa2" id="AaI-n0-q10"/>
+                <outlet property="ImagetitleLabel" destination="v6t-l9-heF" id="GmO-9i-yJL"/>
+                <outlet property="Latestimageview" destination="MIY-LO-JDS" id="tkG-dV-3lN"/>
             </connections>
             <point key="canvasLocation" x="34.351145038167935" y="297.53521126760563"/>
         </tableViewCell>
@@ -174,6 +178,9 @@
         <image name="image cover" width="358" height="150"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGray5Color">
+            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

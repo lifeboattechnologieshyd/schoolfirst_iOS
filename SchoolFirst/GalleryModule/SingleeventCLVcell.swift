@@ -67,16 +67,15 @@ class SingleeventCLVcell: UICollectionViewCell {
         metaLabel.textColor = UIColor(red: 0.45, green: 0.53, blue: 0.60, alpha: 1)
     }
 
-    func configure(title: String, subtitle: String, meta: String, badge: String) {
+    // ✅ Updated configure function to include imageURL: String?
+    func configure(title: String, subtitle: String, meta: String, badge: String, imageURL: String?) {
         titleLabel.text = title
         subtitleLabel.text = subtitle
         metaLabel.text = meta
         badgeLabel.text = "  \(badge)  "
 
-        // Placeholder until you set real images
-        eventImageView.image = UIImage(systemName: "image cover")
-        eventImageView.tintColor = .lightGray
-        eventImageView.contentMode = .scaleAspectFit
+        // Load image asynchronously from API URL
+        eventImageView.loadAsync(from: imageURL)
     }
 
     override func layoutSubviews() {

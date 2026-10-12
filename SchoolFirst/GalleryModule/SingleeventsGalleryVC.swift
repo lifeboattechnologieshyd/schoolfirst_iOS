@@ -1,162 +1,122 @@
-//
-//  SingleeventsGalleryVC.swift
-//  SchoolFirst
-//
-//  Created by vamshi krishna on 30/09/26.
-//
-
 import UIKit
 
-// MARK: - Simple model (replace with API model later)
-enum MediaType {
-    case image
-    case video
-}
-
+enum MediaType { case image, video }
 struct GalleryItem {
-    let id: Int
-    let imageName: String
+    let id: String
+    let url: String
     let type: MediaType
+    let order: Int
+    let caption: String?
 }
 
 class SingleeventsGalleryVC: UIViewController {
 
-    // MARK: - IBOutlets
+    @IBOutlet weak var ImagetitleLabel: UILabel!
     @IBOutlet weak var Collectionview: UICollectionView!
+    @IBOutlet weak var ImagedateandnumberofimagesandphotosLabel: UILabel!
     @IBOutlet weak var backButton: UIButton!
 
-    // MARK: - Data (pass from previous screen)
-    var albumTitle: String = "Annual Sports Day 2026"
-    var albumIndex: Int = 0
-    var categoryBadge: String = "SPORTS"
+    // MARK: - Incoming Data from API
+    var album: GalleryAlbum?
+    private var items: [GalleryItem] = []
 
-    // Dummy data using your Assets image "Media"
-    private var items: [GalleryItem] = [
-        GalleryItem(id: 1,  imageName: "Media", type: .image),
-        GalleryItem(id: 2,  imageName: "Media", type: .image),
-        GalleryItem(id: 3,  imageName: "Media", type: .image),
-        GalleryItem(id: 4,  imageName: "Media", type: .video),
-        GalleryItem(id: 5,  imageName: "Media", type: .image),
-        GalleryItem(id: 6,  imageName: "Media", type: .image),
-        GalleryItem(id: 7,  imageName: "Media", type: .video),
-        GalleryItem(id: 8,  imageName: "Media", type: .image),
-        GalleryItem(id: 9,  imageName: "Media", type: .image),
-        GalleryItem(id: 10, imageName: "Media", type: .image),
-        GalleryItem(id: 11, imageName: "Media", type: .image),
-        GalleryItem(id: 12, imageName: "Media", type: .video)
-    ]
-
-    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
         setupCollectionView()
+        parseAlbumMedia()
     }
 
-    // MARK: - CollectionView Setup
+    private func parseAlbumMedia() {
+        guard let album = album else { return }
+        var temp: [GalleryItem] = []
+        
+        album.images.forEach {
+            temp.append(GalleryItem(id: $0.id, url: $0.image, type: .image, order: $0.displayOrder, caption: $0.caption))
+        }
+        album.videos.forEach {
+            temp.append(GalleryItem(id: $0.id, url: $0.video, type: .video, order: $0.displayOrder, caption: $0.caption))
+        }
+        
+        items = temp.sorted { $0.order < $1.order }
+        
+        ImagetitleLabel.text = album.title
+        ImagedateandnumberofimagesandphotosLabel.text = album.metaText
+        
+        Collectionview.reloadData()
+    }
+
     private func setupCollectionView() {
         Collectionview.delegate = self
         Collectionview.dataSource = self
-        Collectionview.backgroundColor = .white
-        Collectionview.showsVerticalScrollIndicator = false
-        Collectionview.alwaysBounceVertical = true
-
-        // Register your XIB cell
-        Collectionview.register(
-            UINib(nibName: "ImageCLVcell", bundle: nil),
-            forCellWithReuseIdentifier: "ImageCLVcell"
-        )
-
-        // 3-column grid layout (Figma style)
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        layout.minimumInteritemSpacing = 8
-        layout.minimumLineSpacing = 8
-        layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 24, right: 16)
-        Collectionview.collectionViewLayout = layout
-    }
-
-    // MARK: - Back Button
-    @IBAction func backBtnTapped(_ sender: UIButton) {
-        popBack()
-    }
-
-    @objc private func backButtonTapped() {
-        popBack()
-    }
-
-    private func popBack() {
-        if let nav = navigationController {
-            nav.popViewController(animated: true)
-        } else {
-            dismiss(animated: true, completion: nil)
+        Collectionview.register(UINib(nibName: "ImageCLVcell", bundle: nil), forCellWithReuseIdentifier: "ImageCLVcell")
+        
+        if let layout = Collectionview.collectionViewLayout as? UICollectionViewFlowLayout {
+            layout.scrollDirection = .vertical
+            layout.minimumInteritemSpacing = 12
+            layout.minimumLineSpacing = 12
+            layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+            layout.estimatedItemSize = .zero
         }
+        
+        Collectionview.showsVerticalScrollIndicator = false
+        Collectionview.contentInsetAdjustmentBehavior = .always
     }
 
-    // MARK: - Navigation to Full Image
-    private func openFullImage(item: GalleryItem, index: Int) {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    @IBAction func backBtnTapped(_ sender: UIButton) { navigationController?.popViewController(animated: true) }
 
-        // Prefer Storyboard ID if you set it
+    private func openFullImage(index: Int) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "FullimageVC") as? FullimageVC {
-            vc.imageName = item.imageName
-            vc.albumTitle = albumTitle
-            vc.selectedIndex = index
+            vc.items = items
+            vc.currentIndex = index
+            vc.album = album
             navigationController?.pushViewController(vc, animated: true)
             return
         }
-
-        // Fallback pure code
         let vc = FullimageVC()
-        vc.imageName = item.imageName
-        vc.albumTitle = albumTitle
-        vc.selectedIndex = index
+        vc.items = items
+        vc.currentIndex = index
+        vc.album = album
         navigationController?.pushViewController(vc, animated: true)
     }
 }
 
-// MARK: - UICollectionView
-extension SingleeventsGalleryVC: UICollectionViewDelegate,
-                                 UICollectionViewDataSource,
-                                 UICollectionViewDelegateFlowLayout {
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return items.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView,
-                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: "ImageCLVcell",
-            for: indexPath
-        ) as! ImageCLVcell
-
+extension SingleeventsGalleryVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int { return items.count }
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ImageCLVcell", for: indexPath) as! ImageCLVcell
         let item = items[indexPath.item]
-        cell.configure(imageName: item.imageName, isVideo: item.type == .video)
+        cell.configure(imageURL: item.url, isVideo: item.type == .video)
         return cell
     }
-
-    // 3 equal columns (like Figma)
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let inset: CGFloat = 16
-        let spacing: CGFloat = 8
-        let totalSpacing = (inset * 2) + (spacing * 2)   // left + right + 2 gaps
-        let width = (collectionView.bounds.width - totalSpacing) / 3
-        return CGSize(width: floor(width), height: floor(width)) // square cells
-    }
-
-    // TAP → FullimageVC
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let item = items[indexPath.item]
-
         if item.type == .video {
-            // Later: navigate to VideoPlayerVC
-            // For now also open FullimageVC or your video screen
-            openFullImage(item: item, index: indexPath.item)
+            openVideoPlayer(index: indexPath.item)
         } else {
-            openFullImage(item: item, index: indexPath.item)
+            openFullImage(index: indexPath.item)
         }
+    }
+
+    private func openVideoPlayer(index: Int) {
+        let vc = VedioplayerviewVC()
+        vc.items = items
+        vc.currentIndex = index
+        vc.album = album
+        vc.videoURLString = items[index].url
+        vc.videoTitle = items[index].caption ?? album?.title ?? "Video"
+        vc.videoDescription = album?.description ?? ""
+        vc.albumTitle = album?.title ?? ""
+        vc.subtitleText = "\(index + 1) of \(items.filter { $0.type == .video }.count) videos"
+        vc.videoDate = album?.formattedEventDate ?? ""
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let padding: CGFloat = 16
+        let spacing: CGFloat = 12
+        let numberOfColumns: CGFloat = 2
+        let totalSpacing = (padding * 2) + (spacing * (numberOfColumns - 1))
+        let width = floor((collectionView.bounds.width - totalSpacing) / numberOfColumns)
+        return CGSize(width: width, height: width)
     }
 }
