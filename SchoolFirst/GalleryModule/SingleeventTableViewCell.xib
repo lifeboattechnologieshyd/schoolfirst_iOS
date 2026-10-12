@@ -39,9 +39,9 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2025–26" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NdM-10-y6P">
-                        <rect key="frame" x="244" y="32.666666666666664" width="60" height="16"/>
+                        <rect key="frame" x="204" y="32.666666666666664" width="100" height="16"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="60" id="5bp-nU-RFp"/>
+                            <constraint firstAttribute="width" constant="100" id="5bp-nU-RFp"/>
                             <constraint firstAttribute="height" constant="16" id="ldt-CD-uFb"/>
                         </constraints>
                         <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="11"/>
@@ -75,8 +75,11 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="AcadamicyearLabel" destination="NdM-10-y6P" id="p07-7T-wjo"/>
+                <outlet property="CategorytypeLabel" destination="Ynh-Yk-fQ7" id="zqM-HW-de0"/>
                 <outlet property="Imagegridcollectionview" destination="GD1-RE-8vH" id="ycg-J9-TDa"/>
                 <outlet property="NumberofAlbumsLabel" destination="f9z-Dn-7EB" id="aQw-Q0-6Ua"/>
+                <outlet property="NumberofalbumsandmomentsLabel" destination="f9z-Dn-7EB" id="fFd-Pz-sdV"/>
                 <outlet property="TypeofEventLabel" destination="Ynh-Yk-fQ7" id="epF-pP-2sp"/>
                 <outlet property="YearLabel" destination="NdM-10-y6P" id="KWh-9c-OY9"/>
             </connections>

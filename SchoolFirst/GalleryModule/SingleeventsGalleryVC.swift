@@ -11,6 +11,9 @@ struct GalleryItem {
 
 class SingleeventsGalleryVC: UIViewController {
 
+    @IBOutlet weak var CatogeryLabel: UILabel!
+    @IBOutlet weak var EventcatoryandacadamicyearLabel: UILabel!
+    @IBOutlet weak var NumberofimagesLabel: UILabel!
     @IBOutlet weak var ImagetitleLabel: UILabel!
     @IBOutlet weak var Collectionview: UICollectionView!
     @IBOutlet weak var ImagedateandnumberofimagesandphotosLabel: UILabel!
@@ -42,6 +45,18 @@ class SingleeventsGalleryVC: UIViewController {
         ImagetitleLabel.text = album.title
         ImagedateandnumberofimagesandphotosLabel.text = album.metaText
         
+        // MARK: - API Data Configuration
+        CatogeryLabel.text = album.category?.name
+        
+        if let categoryName = album.category?.name, !categoryName.isEmpty {
+            EventcatoryandacadamicyearLabel.text = "\(categoryName) album"
+        } else {
+            EventcatoryandacadamicyearLabel.text = album.academicYear?.name ?? ""
+        }
+        
+        // Configure moments count label (Figma style: "52 moments")
+        NumberofimagesLabel.text = "\(items.count) moments"
+        
         Collectionview.reloadData()
     }
 
@@ -52,9 +67,10 @@ class SingleeventsGalleryVC: UIViewController {
         
         if let layout = Collectionview.collectionViewLayout as? UICollectionViewFlowLayout {
             layout.scrollDirection = .vertical
-            layout.minimumInteritemSpacing = 12
-            layout.minimumLineSpacing = 12
-            layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+            // Figma: 3 columns, tighter spacing
+            layout.minimumInteritemSpacing = 8
+            layout.minimumLineSpacing = 8
+            layout.sectionInset = UIEdgeInsets(top: 12, left: 16, bottom: 16, right: 16)
             layout.estimatedItemSize = .zero
         }
         
@@ -82,13 +98,18 @@ class SingleeventsGalleryVC: UIViewController {
 }
 
 extension SingleeventsGalleryVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int { return items.count }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return items.count
+    }
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ImageCLVcell", for: indexPath) as! ImageCLVcell
         let item = items[indexPath.item]
         cell.configure(imageURL: item.url, isVideo: item.type == .video)
         return cell
     }
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let item = items[indexPath.item]
         if item.type == .video {
@@ -107,16 +128,33 @@ extension SingleeventsGalleryVC: UICollectionViewDelegate, UICollectionViewDataS
         vc.videoTitle = items[index].caption ?? album?.title ?? "Video"
         vc.videoDescription = album?.description ?? ""
         vc.albumTitle = album?.title ?? ""
-        vc.subtitleText = "\(index + 1) of \(items.filter { $0.type == .video }.count) videos"
+        
+        let videoItems = items.filter { $0.type == .video }
+        let videoIndex = videoItems.firstIndex(where: { $0.id == items[index].id }) ?? 0
+        vc.subtitleText = "\(videoIndex + 1) of \(videoItems.count) videos"
+        
         vc.videoDate = album?.formattedEventDate ?? ""
         navigationController?.pushViewController(vc, animated: true)
     }
+    
+    // MARK: - 3 columns grid (Figma) + dynamic square height
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let padding: CGFloat = 16
-        let spacing: CGFloat = 12
-        let numberOfColumns: CGFloat = 2
+        let padding: CGFloat = 16          // left/right inset
+        let spacing: CGFloat = 8           // space between cells
+        let numberOfColumns: CGFloat = 3   // Figma: 3 per row
+        
         let totalSpacing = (padding * 2) + (spacing * (numberOfColumns - 1))
         let width = floor((collectionView.bounds.width - totalSpacing) / numberOfColumns)
+        
+        // Dynamic square height based on width
         return CGSize(width: width, height: width)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 8
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 8
     }
 }

@@ -1,3 +1,4 @@
+//
 //  SceneDelegate.swift
 //  SchoolFirst
 //
@@ -13,7 +14,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         willConnectTo session: UISceneSession,
         options connectionOptions: UIScene.ConnectionOptions
     ) {
-        // Initialize reacha bility
+        // Initialize reachability
         _ = ReachabilityManager.shared
 
         guard let windowScene = (scene as? UIWindowScene) else {
@@ -25,26 +26,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.overrideUserInterfaceStyle = .light
         self.window = window
 
-        // 2. Check login state
-        let isLoggedIn = UserDefaults.standard.bool(forKey: "LOGGEDIN")
-        print("📱 SceneDelegate launch - LOGGEDIN status:", isLoggedIn)
-
-        if isLoggedIn {
-            self.setHomeScreen(targetWindow: window)
-        } else {
-            self.setLoginScreen(targetWindow: window)
-        }
+        // 2. Always follow the Storyboard's Initial View Controller
+        self.setInitialScreen(targetWindow: window)
 
         window.makeKeyAndVisible()
     }
 
-    // MARK: - Set Initial Screen (Fallback entry)
+    // MARK: - Set Initial Screen (Follows Storyboard Initial View Controller)
     func setInitialScreen(targetWindow: UIWindow? = nil) {
         DispatchQueue.main.async { [weak self] in
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             guard let initialVC = storyboard.instantiateInitialViewController() else {
                 print("❌ Could not find Initial View Controller in Main.storyboard")
-                self?.setLoginScreen(targetWindow: targetWindow)
                 return
             }
 
@@ -54,7 +47,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
 
-    // MARK: - Set Home Screen (MainTabBarController)
+    // MARK: - Set Home Screen (MainTabBarController - Callable post-login)
     func setHomeScreen(targetWindow: UIWindow? = nil) {
         DispatchQueue.main.async { [weak self] in
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -78,18 +71,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
 
-    // MARK: - Set Login Screen (Preserves Storyboard & OTP flow)
+    // MARK: - Set Login Screen (Callable on logout)
     func setLoginScreen(targetWindow: UIWindow? = nil) {
         DispatchQueue.main.async { [weak self] in
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let win = targetWindow ?? self?.window
 
-            // 1. Prefer Initial View Controller to preserve navigation flow to OTP
             if let initialVC = storyboard.instantiateInitialViewController() {
                 win?.rootViewController = initialVC
                 print("🔑 Set Storyboard Initial VC as Login rootViewController")
             } else if let loginVC = storyboard.instantiateViewController(withIdentifier: "LoginVC") as? UIViewController {
-                // 2. Fallback to LoginVC identifier inside navigation controller
                 let nav = UINavigationController(rootViewController: loginVC)
                 win?.rootViewController = nav
                 print("🔑 Set LoginVC in NavigationController as rootViewController")

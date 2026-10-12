@@ -23,6 +23,13 @@ class ALLEventTableViewCell: UITableViewCell {
         Allimagesgridcollectionview.delegate = self
         Allimagesgridcollectionview.dataSource = self
         Allimagesgridcollectionview.register(UINib(nibName: "AllimagesCLVCell", bundle: nil), forCellWithReuseIdentifier: "AllimagesCLVCell")
+        
+        // Configured flow layout for exact Figma spacing
+        if let layout = Allimagesgridcollectionview.collectionViewLayout as? UICollectionViewFlowLayout {
+            layout.minimumInteritemSpacing = 12
+            layout.minimumLineSpacing = 12
+            layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 16, right: 16)
+        }
     }
     
     func configure(with data: [GalleryAlbum]) {
@@ -42,7 +49,6 @@ class ALLEventTableViewCell: UITableViewCell {
         ImagedescriptionLabel.text = firstAlbum.description ?? ""
         ImagecountLabel.text = firstAlbum.metaText
        
-        
         if let coverURLString = firstAlbum.coverImageURL,
            let url = URL(string: coverURLString) {
             DispatchQueue.global().async {
@@ -64,6 +70,7 @@ class ALLEventTableViewCell: UITableViewCell {
 
 extension ALLEventTableViewCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int { return albums.count }
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "AllimagesCLVCell", for: indexPath) as! AllimagesCLVCell
         let item = albums[indexPath.item]
@@ -71,9 +78,21 @@ extension ALLEventTableViewCell: UICollectionViewDelegate, UICollectionViewDataS
         cell.configure(title: item.title, eventType: item.category?.name ?? "", dateText: item.metaText, imageURL: item.coverImageURL)
         return cell
     }
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) { onAlbumTapped?(indexPath.item) }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = floor((collectionView.bounds.width - 32 - 12) / 2)
+        let sidePadding: CGFloat = 32 // 16 left + 16 right
+        let interItemSpacing: CGFloat = 12
+        let width = floor((collectionView.bounds.width - sidePadding - interItemSpacing) / 2)
         return CGSize(width: width, height: 172)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 12
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 12
     }
 }
