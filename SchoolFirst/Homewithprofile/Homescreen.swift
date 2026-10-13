@@ -34,7 +34,8 @@ class Homescreen: UIViewController {
         ["title": "Contact us", "image": "communicate"],
         ["title": "Events", "image": "event"],
         ["title": "PTM", "image": "PTMimage"],
-        ["title": "Portofolio", "image": "Portofolioimg"]
+        ["title": "Portofolio", "image": "Portofolioimg"],
+        ["title": "Feedback", "image": "feedbackimage"]
     ]
 
     // MARK: - CARD DATA
@@ -210,6 +211,7 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
         case "Fee": navigateToParentfeeVC()
         case "Homework": navigateToHomework()
         case "Portofolio": navigateToPortofolio()
+        case "Feedback": navigateToFeedback()
         case "Gallery": navigateToGallery()   // ✅ NEW: Gallery navigation added
         case "Transport":
             print("🔥 Transport module selected")
@@ -422,6 +424,20 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
             } else {
                 homeworkVC.modalPresentationStyle = .fullScreen
                 present(homeworkVC, animated: true)
+            }
+        }
+    }
+    
+    private func navigateToFeedback() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let FeedbackVC = storyboard.instantiateViewController(withIdentifier: "FeedbackoverviewVC") as? FeedbackoverviewVC {
+            FeedbackVC.hidesBottomBarWhenPushed = true
+            if let nav = navigationController {
+                nav.setNavigationBarHidden(true, animated: false)
+                nav.pushViewController(FeedbackVC, animated: true)
+            } else {
+                FeedbackVC.modalPresentationStyle = .fullScreen
+                present(FeedbackVC, animated: true)
             }
         }
     }

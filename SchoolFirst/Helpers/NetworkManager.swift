@@ -286,6 +286,117 @@ struct APIResponse<T: Decodable>: Decodable {
     }
 }
 
+struct FeedbackCategoryOption {
+    let id: String
+    let name: String
+}
+
+//***feedback submit API response
+struct FeedbackSubmitResponse: Codable {
+    let success: Bool
+    let description: String
+    let data: FeedbackCreateData
+}
+
+// MARK: - Feedback Create Data
+struct FeedbackCreateData: Codable {
+    let id: String
+    let student: FeedbackCreateStudent
+    let category: FeedbackCreateCategory
+    let subject: String
+    let message: String
+    let status: String
+    let createdAt: String
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case student
+        case category
+        case subject
+        case message
+        case status
+        case createdAt = "created_at"
+    }
+}
+
+// MARK: - Student
+struct FeedbackCreateStudent: Codable {
+    let id: String
+    let name: String
+}
+
+// MARK: - Category
+struct FeedbackCreateCategory: Codable {
+    let id: String
+    let name: String
+}
+
+//*** feedback response model
+struct FeedbackListResponse: Codable {
+    let success: Bool
+    let description: String
+    let total: Int
+    let data: [Feedback]
+}
+
+// MARK: - Feedback
+struct Feedback: Codable {
+    let id: String
+    let student: FeedbackStudent
+    let category: FeedbackCategory
+    let subject: String
+    let message: String
+    let status: String
+    let createdAt: String
+    let updatedAt: String
+    let responses: [FeedbackReply]
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case student
+        case category
+        case subject
+        case message
+        case status
+        case responses
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+    }
+}
+
+// MARK: - Student
+struct FeedbackStudent: Codable {
+    let id: String
+    let name: String
+}
+
+// MARK: - Category
+struct FeedbackCategory: Codable {
+    let id: String
+    let name: String
+}
+
+// MARK: - Feedback Reply / Response
+struct FeedbackReply: Codable {
+    let id: String
+    let message: String
+    let respondedBy: FeedbackRespondedBy
+    let createdAt: String
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case message
+        case respondedBy = "responded_by"
+        case createdAt = "created_at"
+    }
+}
+
+// MARK: - Reply Author
+struct FeedbackRespondedBy: Codable {
+    let id: String
+    let name: String? // API can return null, so it must be optional
+}
+
 //****gallery API Resposnse model
 
 struct GalleryAlbum: Decodable {
@@ -410,6 +521,7 @@ struct GalleryVideo: Decodable {
         displayOrder = try c.decodeIfPresent(Int.self, forKey: .displayOrder) ?? 0
     }
 }
+
 //****gallery catogories API Model
 
 

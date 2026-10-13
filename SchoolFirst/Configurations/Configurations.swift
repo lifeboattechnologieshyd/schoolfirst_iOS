@@ -203,6 +203,10 @@ struct API {
     static let TRANSPORT_ROUTEDETAILS = BASE_URL + "transport/route"
     static let TRANSPORT_LIVELOCATION = BASE_URL + "transport/live-location"
     
+    static let FEEDBACK_LIST = BASE_URL + "feedback/feedbacks"
+    
+    static let FEEDBACK_CREATE = BASE_URL + "feedback/create/feedback"
+    
     static let CALENDAR_EVENTS = BASE_URL + "calendar/event"
     
     static func HOMEWORK_SUBMISSION(
@@ -219,6 +223,11 @@ struct API {
     static let GALLERY_CATEGORIES = BASE_URL + "gallery/categories"
     
     static let GALLERY_LIST = BASE_URL + "gallery/gallery/list"
+    
+   
+    
+    
+    
   
 }
 

@@ -5,6 +5,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -99,12 +100,18 @@
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="createddateandcatogeryandgradelabel" destination="86o-jD-AUU" id="rY1-de-gWq"/>
+                <outlet property="feedbackmessage" destination="Rcw-TC-Bag" id="isj-7L-15K"/>
+                <outlet property="feedbackstatus" destination="6Mw-2i-ekh" id="gAk-Le-gpG"/>
+                <outlet property="feedbacksubject" destination="4rb-UU-OxW" id="2m2-CP-j8O"/>
+            </connections>
             <point key="canvasLocation" x="112.97709923664122" y="102.46478873239437"/>
         </tableViewCell>
     </objects>
     <resources>
         <systemColor name="systemGray5Color">
-            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

@@ -11,6 +11,13 @@ class FeedbacksummuryTBLVWCell: UITableViewCell {
 
     @IBOutlet weak var Statuscontainerview: UIView!
 
+    @IBOutlet weak var FeedbacksumbitdategradeandparentnameLabel: UILabel!
+    @IBOutlet weak var CatogeryLabel: UILabel!
+    @IBOutlet weak var FeedbackSubjectLabel: UILabel!
+    @IBOutlet weak var FeedbackmessageLabel: UILabel!
+    @IBOutlet weak var FeedbackIdLabel: UILabel!
+    @IBOutlet weak var SubmitdateLabel: UILabel!
+
     // MARK: - Header labels (Figma: "Activity" + "Latest first")
     private let activityTitleLabel: UILabel = {
         let label = UILabel()
@@ -30,57 +37,55 @@ class FeedbacksummuryTBLVWCell: UITableViewCell {
         return label
     }()
 
-    // MARK: - Timeline items
-    private lazy var firstTimelineItem: TimelineItemView = {
-        let item = TimelineItemView(
-            title: "Feedback submitted",
-            subtitle: "16 Aug 2026 · 4:18 PM",
-            dotColor: UIColor(red: 0.23, green: 0.51, blue: 0.96, alpha: 1) // Blue
-        )
-        return item
-    }()
+    // MARK: - Dynamic Timeline Storage
+    private var timelineItemViews: [TimelineItemView] = []
+    private var connectorViews: [UIView] = []
 
-    private lazy var secondTimelineItem: TimelineItemView = {
-        let item = TimelineItemView(
-            title: "Waiting for school review",
-            subtitle: "Expected within 2 school days",
-            dotColor: UIColor(red: 0.96, green: 0.62, blue: 0.04, alpha: 1) // Orange
-        )
-        return item
-    }()
-
-    // Connecting vertical line between the two dots
-    private let connectorLineView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(red: 0.90, green: 0.91, blue: 0.93, alpha: 1) // #E5E7EB
-        view.layer.cornerRadius = 1
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
+    // MARK: - Timeline Colors
+    private let blueDotColor = UIColor(red: 0.23, green: 0.51, blue: 0.96, alpha: 1)
+    private let orangeDotColor = UIColor(red: 0.96, green: 0.62, blue: 0.04, alpha: 1)
+    private let greenDotColor = UIColor(red: 0.15, green: 0.65, blue: 0.30, alpha: 1)
+    private let grayLineColor = UIColor(red: 0.90, green: 0.91, blue: 0.93, alpha: 1) // #E5E7EB
 
     // MARK: - Lifecycle
     override func awakeFromNib() {
         super.awakeFromNib()
         setupStatusContainerView()
+        verifyOutlets()
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        clearTimeline()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
 
-    // MARK: - Setup (Figma: white card, radius 16, border 1px, padding 14, gap 11)
+    // MARK: - Debug — confirm all IBOutlets are connected in Storyboard/XIB
+    private func verifyOutlets() {
+        if Statuscontainerview == nil { print("❌ Statuscontainerview outlet is NOT connected") }
+        if FeedbacksumbitdategradeandparentnameLabel == nil { print("❌ FeedbacksumbitdategradeandparentnameLabel outlet is NOT connected") }
+        if CatogeryLabel == nil { print("❌ CatogeryLabel outlet is NOT connected") }
+        if FeedbackSubjectLabel == nil { print("❌ FeedbackSubjectLabel outlet is NOT connected") }
+        if FeedbackmessageLabel == nil { print("❌ FeedbackmessageLabel outlet is NOT connected") }
+        if FeedbackIdLabel == nil { print("❌ FeedbackIdLabel outlet is NOT connected") }
+        if SubmitdateLabel == nil { print("❌ SubmitdateLabel outlet is NOT connected") }
+    }
+
+    // MARK: - Setup (Figma: white card, radius 16, border 1px, padding 14)
+    // NOTE: Only header ("Activity" + "Latest first") is set up here.
+    // Timeline items are now built dynamically in rebuildTimeline(with:) based on API data.
     private func setupStatusContainerView() {
         Statuscontainerview.backgroundColor = .white
         Statuscontainerview.layer.cornerRadius = 16
         Statuscontainerview.layer.borderWidth = 1
-        Statuscontainerview.layer.borderColor = UIColor(red: 0.90, green: 0.91, blue: 0.93, alpha: 1).cgColor
+        Statuscontainerview.layer.borderColor = grayLineColor.cgColor
         Statuscontainerview.clipsToBounds = true
 
         Statuscontainerview.addSubview(activityTitleLabel)
         Statuscontainerview.addSubview(latestFirstLabel)
-        Statuscontainerview.addSubview(firstTimelineItem)
-        Statuscontainerview.addSubview(secondTimelineItem)
-        Statuscontainerview.addSubview(connectorLineView)
 
         NSLayoutConstraint.activate([
             // Header row
@@ -88,33 +93,236 @@ class FeedbacksummuryTBLVWCell: UITableViewCell {
             activityTitleLabel.leadingAnchor.constraint(equalTo: Statuscontainerview.leadingAnchor, constant: 14),
 
             latestFirstLabel.centerYAnchor.constraint(equalTo: activityTitleLabel.centerYAnchor),
-            latestFirstLabel.trailingAnchor.constraint(equalTo: Statuscontainerview.trailingAnchor, constant: -14),
-
-            // First timeline item
-            firstTimelineItem.topAnchor.constraint(equalTo: activityTitleLabel.bottomAnchor, constant: 16),
-            firstTimelineItem.leadingAnchor.constraint(equalTo: Statuscontainerview.leadingAnchor, constant: 14),
-            firstTimelineItem.trailingAnchor.constraint(equalTo: Statuscontainerview.trailingAnchor, constant: -14),
-
-            // Second timeline item (gap 11 per Figma)
-            secondTimelineItem.topAnchor.constraint(equalTo: firstTimelineItem.bottomAnchor, constant: 11),
-            secondTimelineItem.leadingAnchor.constraint(equalTo: Statuscontainerview.leadingAnchor, constant: 14),
-            secondTimelineItem.trailingAnchor.constraint(equalTo: Statuscontainerview.trailingAnchor, constant: -14),
-
-            // Connector line: joins blue dot -> orange dot
-            connectorLineView.centerXAnchor.constraint(equalTo: firstTimelineItem.dotCenterXAnchor),
-            connectorLineView.widthAnchor.constraint(equalToConstant: 2),
-            connectorLineView.topAnchor.constraint(equalTo: firstTimelineItem.dotBottomAnchor, constant: 4),
-            connectorLineView.bottomAnchor.constraint(equalTo: secondTimelineItem.dotTopAnchor, constant: -4)
+            latestFirstLabel.trailingAnchor.constraint(equalTo: Statuscontainerview.trailingAnchor, constant: -14)
         ])
     }
 
-    // MARK: - Public update (for API later)
+    // MARK: - Clear existing timeline views (used on reuse + before rebuild)
+    private func clearTimeline() {
+        timelineItemViews.forEach { $0.removeFromSuperview() }
+        connectorViews.forEach { $0.removeFromSuperview() }
+        timelineItemViews.removeAll()
+        connectorViews.removeAll()
+    }
+
+    // MARK: - Timeline Entry Model
+    private struct TimelineEntry {
+        let title: String
+        let subtitle: String
+        let dotColor: UIColor
+    }
+
+    // MARK: - Build Timeline Dynamically from Entries
+    private func rebuildTimeline(with entries: [TimelineEntry]) {
+
+        clearTimeline()
+
+        var previousTopAnchorView: UIView = activityTitleLabel
+        var previousItemView: TimelineItemView?
+
+        for (index, entry) in entries.enumerated() {
+
+            let itemView = TimelineItemView(
+                title: entry.title,
+                subtitle: entry.subtitle,
+                dotColor: entry.dotColor
+            )
+
+            Statuscontainerview.addSubview(itemView)
+            timelineItemViews.append(itemView)
+
+            NSLayoutConstraint.activate([
+                itemView.leadingAnchor.constraint(equalTo: Statuscontainerview.leadingAnchor, constant: 14),
+                itemView.trailingAnchor.constraint(equalTo: Statuscontainerview.trailingAnchor, constant: -14)
+            ])
+
+            if index == 0 {
+                itemView.topAnchor.constraint(
+                    equalTo: previousTopAnchorView.bottomAnchor,
+                    constant: 16
+                ).isActive = true
+            } else {
+                itemView.topAnchor.constraint(
+                    equalTo: previousTopAnchorView.bottomAnchor,
+                    constant: 11
+                ).isActive = true
+            }
+
+            // Connector line joining previous dot -> current dot
+            if let prevItem = previousItemView {
+                let connector = UIView()
+                connector.backgroundColor = grayLineColor
+                connector.layer.cornerRadius = 1
+                connector.translatesAutoresizingMaskIntoConstraints = false
+
+                Statuscontainerview.addSubview(connector)
+                connectorViews.append(connector)
+
+                NSLayoutConstraint.activate([
+                    connector.centerXAnchor.constraint(equalTo: prevItem.dotCenterXAnchor),
+                    connector.widthAnchor.constraint(equalToConstant: 2),
+                    connector.topAnchor.constraint(equalTo: prevItem.dotBottomAnchor, constant: 4),
+                    connector.bottomAnchor.constraint(equalTo: itemView.dotTopAnchor, constant: -4)
+                ])
+            }
+
+            previousTopAnchorView = itemView
+            previousItemView = itemView
+        }
+    }
+
+    // MARK: - Public update (manual / fallback)
     func configureActivity(
         firstTitle: String, firstSubtitle: String,
         secondTitle: String, secondSubtitle: String
     ) {
-        firstTimelineItem.update(title: firstTitle, subtitle: firstSubtitle)
-        secondTimelineItem.update(title: secondTitle, subtitle: secondSubtitle)
+        rebuildTimeline(with: [
+            TimelineEntry(title: firstTitle, subtitle: firstSubtitle, dotColor: blueDotColor),
+            TimelineEntry(title: secondTitle, subtitle: secondSubtitle, dotColor: orangeDotColor)
+        ])
+    }
+
+    // MARK: - ✅ Configure with API Feedback Data
+    func configure(with feedback: Feedback) {
+
+        print("🧩 Cell configure() called with subject:", feedback.subject)
+
+        // Feedback ID
+        FeedbackIdLabel.text = "#\(feedback.id)"
+
+        // Category
+        CatogeryLabel.text = feedback.category.name
+
+        // Subject
+        FeedbackSubjectLabel.text = feedback.subject
+
+        // Message
+        FeedbackmessageLabel.text = feedback.message
+
+        // Submitted date (short)
+        let shortDate = formatDate(feedback.createdAt)
+        SubmitdateLabel.text = "Submitted \(shortDate) · Awaiting initial review"
+        // Combined: Student name • Category • Date
+        FeedbacksumbitdategradeandparentnameLabel.text =
+            "\(feedback.student.name) • \(feedback.category.name) • \(shortDate)"
+
+        // ── Build full Activity timeline dynamically from API data ──
+        configureActivityTimeline(with: feedback)
+    }
+
+    // MARK: - ✅ Build Full Activity Timeline (submission + each response + current status)
+    private func configureActivityTimeline(with feedback: Feedback) {
+
+        var entries: [TimelineEntry] = []
+
+        // 1️⃣ Always first: Feedback submitted (real createdAt date)
+        entries.append(
+            TimelineEntry(
+                title: "Feedback submitted",
+                subtitle: formatDateTime(feedback.createdAt),
+                dotColor: blueDotColor
+            )
+        )
+
+        // 2️⃣ One entry per API response (school replies), sorted oldest → newest
+        let sortedResponses = feedback.responses.sorted { lhs, rhs in
+            (parseISODate(lhs.createdAt) ?? Date.distantPast) <
+            (parseISODate(rhs.createdAt) ?? Date.distantPast)
+        }
+
+        for response in sortedResponses {
+            let responderName = response.respondedBy.name ?? "School"
+            entries.append(
+                TimelineEntry(
+                    title: "\(responderName) replied: \(response.message)",
+                    subtitle: formatDateTime(response.createdAt),
+                    dotColor: greenDotColor
+                )
+            )
+        }
+
+        // 3️⃣ Final status-dependent entry (uses real updatedAt date)
+        entries.append(finalStatusEntry(status: feedback.status, updatedAt: feedback.updatedAt))
+
+        // Build timeline UI
+        rebuildTimeline(with: entries)
+    }
+
+    // MARK: - Final Status Timeline Entry (status aware, real date)
+    private func finalStatusEntry(status: String, updatedAt: String) -> TimelineEntry {
+
+        let statusValue = status.uppercased()
+
+        switch statusValue {
+
+        case "SUBMITTED", "PENDING":
+            return TimelineEntry(
+                title: "Waiting for school review",
+                subtitle: "Expected within 2 school days",
+                dotColor: orangeDotColor
+            )
+
+        case "IN_REVIEW", "IN REVIEW":
+            return TimelineEntry(
+                title: "Feedback is under review",
+                subtitle: formatDateTime(updatedAt),
+                dotColor: orangeDotColor
+            )
+
+        case "RESOLVED":
+            return TimelineEntry(
+                title: "Feedback resolved",
+                subtitle: formatDateTime(updatedAt),
+                dotColor: greenDotColor
+            )
+
+        default:
+            return TimelineEntry(
+                title: status.capitalized,
+                subtitle: formatDateTime(updatedAt),
+                dotColor: orangeDotColor
+            )
+        }
+    }
+
+    // MARK: - Date Formatting Helpers
+    private func formatDate(_ dateString: String) -> String {
+
+        guard let date = parseISODate(dateString) else { return dateString }
+
+        let outputFormatter = DateFormatter()
+        outputFormatter.locale = Locale(identifier: "en_US_POSIX")
+        outputFormatter.dateFormat = "dd MMM yyyy"
+
+        return outputFormatter.string(from: date)
+    }
+
+    private func formatDateTime(_ dateString: String) -> String {
+
+        guard let date = parseISODate(dateString) else { return dateString }
+
+        let outputFormatter = DateFormatter()
+        outputFormatter.locale = Locale(identifier: "en_US_POSIX")
+        outputFormatter.dateFormat = "dd MMM yyyy · h:mm a"
+
+        return outputFormatter.string(from: date)
+    }
+
+    private func parseISODate(_ dateString: String) -> Date? {
+
+        // Try with fractional seconds first
+        let formatterWithFraction = ISO8601DateFormatter()
+        formatterWithFraction.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+
+        if let date = formatterWithFraction.date(from: dateString) {
+            return date
+        }
+
+        // Fallback: without fractional seconds
+        let formatterPlain = ISO8601DateFormatter()
+        formatterPlain.formatOptions = [.withInternetDateTime]
+
+        return formatterPlain.date(from: dateString)
     }
 }
 

@@ -10,13 +10,17 @@ import SwiftUI
 
 class FeedbackSubmissionsuccessfulVC: UIViewController {
 
-    // MARK: - Properties (Data holders for future API response)
-    var parentName: String = "Ramesh"
-    var childName: String = "Aarav Patel"
-    var childGrade: String = "Grade 6A"
-    var category: String = "Academic"
-    var subject: String = "Homework load too high for Grade 6"
-    var feedbackId: String = "FB-2026-0816"
+    // MARK: - ✅ Passed-in API Data (from SubmitnewfeedbackVC after successful submission)
+    var feedbackData: FeedbackCreateData?
+
+    // MARK: - Properties (Data holders — populated dynamically from feedbackData if available)
+    var parentName: String = "Parent"
+    var childName: String = ""
+    var childGrade: String = ""
+    var category: String = ""
+    var subject: String = ""
+    var feedbackId: String = ""
+    var statusRawValue: String = "SUBMITTED"
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -25,7 +29,55 @@ class FeedbackSubmissionsuccessfulVC: UIViewController {
         // Hide native navigation bar to use custom header
         navigationController?.setNavigationBarHidden(true, animated: false)
         
+        populateFromAPIDataIfAvailable()
         setupSwiftUIView()
+    }
+
+    // MARK: - ✅ Populate static properties with real API response data
+    private func populateFromAPIDataIfAvailable() {
+
+        guard let data = feedbackData else {
+            print("⚠️ FeedbackSubmissionsuccessfulVC — feedbackData is nil, using default placeholder values")
+            return
+        }
+
+        print("📦 FeedbackSubmissionsuccessfulVC — configuring with feedbackId:", data.id)
+
+        // Child name from API
+        childName = data.student.name
+
+        // Grade — not returned by this API, fallback to locally resolved grade
+        let resolvedGrade = UserManager.shared.resolvedGradeSection
+        childGrade = resolvedGrade.isEmpty ? "" : "Grade \(resolvedGrade)"
+
+        // Category from API
+        category = data.category.name
+
+        // Subject from API
+        subject = data.subject
+
+        // Feedback ID — short readable format from UUID
+        feedbackId = "#" + String(data.id.prefix(8)).uppercased()
+
+        // Status from API (e.g. "SUBMITTED")
+        statusRawValue = data.status
+
+        // Parent name — not part of this API response; falls back to default "Parent"
+        parentName = "Parent"
+    }
+
+    // MARK: - Status Display Helpers
+    private func statusDisplayText() -> String {
+        switch statusRawValue.uppercased() {
+        case "SUBMITTED", "PENDING":
+            return "Pending"
+        case "IN_REVIEW", "IN REVIEW":
+            return "In Review"
+        case "RESOLVED":
+            return "Resolved"
+        default:
+            return statusRawValue.capitalized
+        }
     }
 
     // MARK: - Embed SwiftUI View
@@ -38,6 +90,7 @@ class FeedbackSubmissionsuccessfulVC: UIViewController {
             category: category,
             subject: subject,
             feedbackId: feedbackId,
+            statusText: statusDisplayText(),
             onBackTapped: { [weak self] in
                 self?.handleBack()
             },
@@ -91,6 +144,7 @@ struct FeedbackSuccessView: View {
     var category: String
     var subject: String
     var feedbackId: String
+    var statusText: String
     
     // Callbacks for UIKit Actions
     var onBackTapped: (() -> Void)?
@@ -102,6 +156,30 @@ struct FeedbackSuccessView: View {
     private let primaryBlue = Color(red: 43/255, green: 96/255, blue: 223/255)
     private let successGreen = Color(red: 76/255, green: 191/255, blue: 130/255)
     private let warningOrange = Color(red: 239/255, green: 143/255, blue: 50/255)
+    private let reviewBlue = Color(red: 61/255, green: 130/255, blue: 247/255)
+
+    // MARK: - Status Color (dynamic based on statusText)
+    private var statusColor: Color {
+        switch statusText {
+        case "In Review":
+            return reviewBlue
+        case "Resolved":
+            return successGreen
+        default:
+            return warningOrange
+        }
+    }
+
+    private var statusIcon: String {
+        switch statusText {
+        case "In Review":
+            return "hourglass"
+        case "Resolved":
+            return "checkmark.circle"
+        default:
+            return "clock"
+        }
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -197,15 +275,15 @@ extension FeedbackSuccessView {
             }
             
             HStack(spacing: 4) {
-                Image(systemName: "clock")
+                Image(systemName: statusIcon)
                     .font(.system(size: 12, weight: .medium))
-                Text("Pending")
+                Text(statusText)
                     .font(.system(size: 12, weight: .semibold))
             }
-            .foregroundColor(warningOrange)
+            .foregroundColor(statusColor)
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
-            .background(warningOrange.opacity(0.15))
+            .background(statusColor.opacity(0.15))
             .cornerRadius(12)
         }
     }
@@ -225,7 +303,7 @@ extension FeedbackSuccessView {
             }
             .padding(.bottom, 4)
             
-            SummaryRowView(title: "CHILD", value: "\(childName) • \(childGrade)")
+            SummaryRowView(title: "CHILD", value: childGrade.isEmpty ? childName : "\(childName) • \(childGrade)")
             SummaryRowView(title: "CATEGORY", value: category)
             SummaryRowView(title: "SUBJECT", value: subject)
         }
