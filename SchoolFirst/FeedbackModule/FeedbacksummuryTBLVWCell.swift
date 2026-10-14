@@ -9,6 +9,8 @@ import UIKit
 
 class FeedbacksummuryTBLVWCell: UITableViewCell {
 
+    @IBOutlet weak var Fathernamefirsttwoletterslabel: UILabel!
+    @IBOutlet weak var fathernameLabel: UILabel!
     @IBOutlet weak var Statuscontainerview: UIView!
 
     @IBOutlet weak var FeedbacksumbitdategradeandparentnameLabel: UILabel!
@@ -187,6 +189,12 @@ class FeedbacksummuryTBLVWCell: UITableViewCell {
 
         print("🧩 Cell configure() called with subject:", feedback.subject)
 
+        // ── ✅ Father Name from DBManager ────────────────────────────────
+        let fatherName = UserManager.shared.resolvedFatherName
+        let displayName = fatherName.isEmpty ? "Parent" : fatherName
+        fathernameLabel.text = displayName
+        Fathernamefirsttwoletterslabel.text = fatherInitials(from: displayName)
+
         // Feedback ID
         FeedbackIdLabel.text = "#\(feedback.id)"
 
@@ -208,6 +216,22 @@ class FeedbacksummuryTBLVWCell: UITableViewCell {
 
         // ── Build full Activity timeline dynamically from API data ──
         configureActivityTimeline(with: feedback)
+    }
+
+    // MARK: - ✅ Father Name Initials Helper
+    /// "Ravi Kumar" → "RK"  |  "Ravi" → "RA"  |  "" → "P"
+    private func fatherInitials(from name: String) -> String {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return "P" }
+
+        let parts = trimmed.split(separator: " ")
+        if parts.count >= 2 {
+            let first = String(parts[0].prefix(1))
+            let last  = String(parts[1].prefix(1))
+            return (first + last).uppercased()
+        } else {
+            return String(trimmed.prefix(2)).uppercased()
+        }
     }
 
     // MARK: - ✅ Build Full Activity Timeline (submission + each response + current status)

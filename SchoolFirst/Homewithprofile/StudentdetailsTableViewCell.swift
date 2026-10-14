@@ -116,6 +116,13 @@ class StudentdetailsTableViewCell: UITableViewCell {
             GuardiannameLbl.text         = parent.guardianName?.isEmpty == false ? parent.guardianName : "--"
             GuardianmobilenumberLbl.text = parent.guardianMobile.isEmpty ? "--" : parent.guardianMobile
             GuardianaccupationLbl.text   = parent.guardianOccupation?.isEmpty == false ? parent.guardianOccupation : "--"
+            
+            // ✅ Save Father & Mother names to UserDefaults for GLOBAL ACCESS across app
+            DBManager.shared.saveParentNames(
+                fatherName: parent.fatherName,
+                motherName: parent.motherName
+            )
+            
         } else {
             FatherNameLbl.text = "--"; FathermobilenumberLbl.text = "--"; FatheraccupationLbl.text = "--"
             MothernameLbl.text = "--"; MothermobilenumberLbl.text = "--"; MotherAccupationLbl.text = "--"

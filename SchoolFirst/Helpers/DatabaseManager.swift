@@ -78,6 +78,14 @@ class DBManager {
         }
     }
     
+    // MARK: - ✅ Save Father & Mother Names to UserDefaults (Global)
+    func saveParentNames(fatherName: String, motherName: String) {
+        UserDefaults.standard.set(fatherName, forKey: "FATHER_NAME")
+        UserDefaults.standard.set(motherName, forKey: "MOTHER_NAME")
+        print("💾 Saved FATHER_NAME:", fatherName)
+        print("💾 Saved MOTHER_NAME:", motherName)
+    }
+    
     // MARK: - ✅ Runtime-safe photo URL extractor
     /// Reads the photo field from Student model WITHOUT compile-time dependency.
     /// Works whatever the property is named: photoUrl, photo, profileImage, image, etc.
@@ -135,8 +143,12 @@ class DBManager {
         UserDefaults.standard.removeObject(forKey: "STUDENT_SECTION")
         UserDefaults.standard.removeObject(forKey: "STUDENT_GRADE_SECTION")
         
-        // ── ✅ NEW: Clear photo URL ──────────────────────────────────────
+        // ── Clear photo URL ──────────────────────────────────────────────
         UserDefaults.standard.removeObject(forKey: "STUDENT_PHOTO_URL")
+        
+        // ── ✅ NEW: Clear Father + Mother names ──────────────────────────
+        UserDefaults.standard.removeObject(forKey: "FATHER_NAME")
+        UserDefaults.standard.removeObject(forKey: "MOTHER_NAME")
     }
     
     func getuser() -> User? {
@@ -160,6 +172,8 @@ class DBManager {
         print("   STUDENT_SECTION       :", UserDefaults.standard.string(forKey: "STUDENT_SECTION")       ?? "nil")
         print("   STUDENT_GRADE_SECTION :", UserDefaults.standard.string(forKey: "STUDENT_GRADE_SECTION") ?? "nil")
         print("   STUDENT_PHOTO_URL     :", UserDefaults.standard.string(forKey: "STUDENT_PHOTO_URL")     ?? "nil")
+        print("   FATHER_NAME           :", UserDefaults.standard.string(forKey: "FATHER_NAME")           ?? "nil")
+        print("   MOTHER_NAME           :", UserDefaults.standard.string(forKey: "MOTHER_NAME")           ?? "nil")
         print("   SCHOOL_ID             :", UserDefaults.standard.string(forKey: "SCHOOL_ID")             ?? "nil")
         print("   SchoolID              :", UserDefaults.standard.string(forKey: "SchoolID")              ?? "nil")
         print("   school_id             :", UserDefaults.standard.string(forKey: "school_id")             ?? "nil")
@@ -320,6 +334,24 @@ class UserManager {
         return ""
     }
     
+    // MARK: - ✅ Resolved Father Name (Global Access)
+    var resolvedFatherName: String {
+        let fallback = UserDefaults.standard.string(forKey: "FATHER_NAME") ?? ""
+        if fallback.isEmpty {
+            print("⚠️ resolvedFatherName — no father name saved yet")
+        }
+        return fallback
+    }
+    
+    // MARK: - ✅ Resolved Mother Name (Global Access)
+    var resolvedMotherName: String {
+        let fallback = UserDefaults.standard.string(forKey: "MOTHER_NAME") ?? ""
+        if fallback.isEmpty {
+            print("⚠️ resolvedMotherName — no mother name saved yet")
+        }
+        return fallback
+    }
+    
     var user: User? {
         return getUser()
     }
@@ -376,6 +408,8 @@ class UserManager {
         print("   resolvedGradeSection    :", resolvedGradeSection)
         print("   resolvedSchoolID        :", resolvedSchoolID)
         print("   resolvedStudentPhotoURL :", resolvedStudentPhotoURL)
+        print("   resolvedFatherName      :", resolvedFatherName)
+        print("   resolvedMotherName      :", resolvedMotherName)
         DBManager.shared.debugPrintSavedKeys()
         print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     }

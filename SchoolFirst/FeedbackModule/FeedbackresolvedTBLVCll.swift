@@ -1,3 +1,4 @@
+//
 //  FeedbackresolvedTBLVCll.swift
 //  SchoolFirst
 //
@@ -8,6 +9,8 @@ import UIKit
 
 class FeedbackresolvedTBLVCll: UITableViewCell {
 
+    @IBOutlet weak var FathernamefirsttwolettersLabel: UILabel!
+    @IBOutlet weak var FathernameLabel: UILabel!
     @IBOutlet weak var AcadamicLabel: UILabel!
     @IBOutlet weak var feedbackmessageLabel: UILabel!
     @IBOutlet weak var Resposnemessagelabel: UILabel!
@@ -209,8 +212,47 @@ class FeedbackresolvedTBLVCll: UITableViewCell {
             Responsedatenadtimelabel.text = ""
         }
 
+        // ✅ Configure Father Name labels from UserManager
+        configureFatherNameLabels()
+
         // ── Build full Activity timeline dynamically from API data ──
         configureActivityTimeline(with: feedback)
+    }
+
+    // MARK: - ✅ Configure Father Name + First Two Letters Avatar
+    private func configureFatherNameLabels() {
+
+        let fatherName = UserManager.shared.resolvedFatherName
+        print("👨 Father:", fatherName)
+
+        // Full father name label
+        FathernameLabel.text = fatherName.isEmpty ? "--" : fatherName
+
+        // First two letters label (used as avatar initials)
+        let initials = extractFirstTwoLetters(from: fatherName)
+        FathernamefirsttwolettersLabel.text = initials
+    }
+
+    // MARK: - ✅ Extract First Two Letters Helper
+    private func extractFirstTwoLetters(from name: String) -> String {
+
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty else { return "--" }
+
+        // Split by spaces to try getting First + Last initials, else fallback to first 2 characters
+        let components = trimmedName
+            .components(separatedBy: .whitespaces)
+            .filter { !$0.isEmpty }
+
+        if components.count >= 2,
+           let first = components.first?.first,
+           let second = components.dropFirst().first?.first {
+            return "\(first)\(second)".uppercased()
+        }
+
+        // Single-word name → take first two letters
+        let firstTwo = trimmedName.prefix(2)
+        return String(firstTwo).uppercased()
     }
 
     // MARK: - ✅ Build Full Activity Timeline (submission + each response + resolved status)
