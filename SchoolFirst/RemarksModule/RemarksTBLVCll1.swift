@@ -2,8 +2,6 @@
 //  RemarksTBLVCll1.swift
 //  SchoolFirst
 //
-//  Created by vamshi krishna on 15/10/26.
-//
 
 import UIKit
 
@@ -11,20 +9,21 @@ class RemarksTBLVCll1: UITableViewCell {
 
     @IBOutlet weak var cantainerview: UIView!
     @IBOutlet weak var cantainerview2: UIView!
+    @IBOutlet weak var FilterButton: UIButton!
 
-    // MARK: - Cards
+    var onFilterButtonTapped: (() -> Void)?
+    var onCategorySelected: ((String) -> Void)?
+
     private let academicCard = RemarkSummaryCardView()
     private let behaviourCard = RemarkSummaryCardView()
     private let newCard = RemarkSummaryCardView()
     private let stackView = UIStackView()
 
-    // MARK: - Filter Buttons
+    private let scrollView = UIScrollView()
     private let filterStackView = UIStackView()
-    private let allButton = UIButton(type: .system)
-    private let appreciationButton = UIButton(type: .system)
-    private let academicButton = UIButton(type: .system)
-    private let behaviourButton = UIButton(type: .system)
-
+    private var filterButtons: [UIButton] = []
+    private var categories: [FeedbackCategoryOption] = []
+    private var totalCount: Int = 0
     private var selectedFilterButton: UIButton?
 
     override func awakeFromNib() {
@@ -32,31 +31,25 @@ class RemarksTBLVCll1: UITableViewCell {
         setupContainerView()
         setupCards()
         configureCards()
-        setupFilterButtons()
+        setupFilterScrollView()
+        FilterButton.addTarget(self, action: #selector(mainFilterButtonTapped), for: .touchUpInside)
     }
 
-    override func prepareForReuse() {
-        super.prepareForReuse()
+    @objc private func mainFilterButtonTapped() {
+        onFilterButtonTapped?()
     }
 
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-    }
-
-    // MARK: - Setup Container
     private func setupContainerView() {
         cantainerview.backgroundColor = .clear
         cantainerview2.backgroundColor = .clear
     }
 
-    // MARK: - Setup Cards Layout
     private func setupCards() {
         stackView.axis = .horizontal
         stackView.distribution = .fillEqually
         stackView.alignment = .fill
         stackView.spacing = 10
         stackView.translatesAutoresizingMaskIntoConstraints = false
-
         cantainerview.addSubview(stackView)
 
         NSLayoutConstraint.activate([
@@ -71,108 +64,116 @@ class RemarksTBLVCll1: UITableViewCell {
         stackView.addArrangedSubview(newCard)
     }
 
-    // MARK: - Configure Cards
     private func configureCards() {
         academicCard.configure(
-            title: "ACADEMIC",
-            count: "3",
+            title: "ACADEMIC", count: "0",
             dotColor: UIColor(red: 0.25, green: 0.47, blue: 0.95, alpha: 1.0),
-            progress: 0.35,
+            progress: 0,
             progressColor: UIColor(red: 0.25, green: 0.47, blue: 0.95, alpha: 1.0)
         )
-
         behaviourCard.configure(
-            title: "BEHAVIOUR",
-            count: "1",
+            title: "BEHAVIOUR", count: "0",
             dotColor: UIColor(red: 0.96, green: 0.65, blue: 0.10, alpha: 1.0),
-            progress: 0.18,
+            progress: 0,
             progressColor: UIColor(red: 0.96, green: 0.65, blue: 0.10, alpha: 1.0)
         )
-
         newCard.configure(
-            title: "NEW",
-            count: "2",
+            title: "NEW", count: "0",
             dotColor: UIColor(red: 0.18, green: 0.73, blue: 0.42, alpha: 1.0),
-            progress: 0.28,
+            progress: 0,
             progressColor: UIColor(red: 0.18, green: 0.73, blue: 0.42, alpha: 1.0)
         )
     }
 
-    // MARK: - Setup Filter Buttons like Figma
-    private func setupFilterButtons() {
+    private func setupFilterScrollView() {
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.showsVerticalScrollIndicator = false
+        cantainerview2.addSubview(scrollView)
+
         filterStackView.axis = .horizontal
-        filterStackView.alignment = .fill
+        filterStackView.alignment = .center
         filterStackView.distribution = .fill
         filterStackView.spacing = 8
         filterStackView.translatesAutoresizingMaskIntoConstraints = false
-
-        cantainerview2.addSubview(filterStackView)
-
-        NSLayoutConstraint.activate([
-            filterStackView.topAnchor.constraint(equalTo: cantainerview2.topAnchor),
-            filterStackView.leadingAnchor.constraint(equalTo: cantainerview2.leadingAnchor),
-            filterStackView.trailingAnchor.constraint(lessThanOrEqualTo: cantainerview2.trailingAnchor),
-            filterStackView.bottomAnchor.constraint(equalTo: cantainerview2.bottomAnchor),
-            filterStackView.heightAnchor.constraint(equalToConstant: 34)
-        ])
-
-        configureFilterButton(
-            allButton,
-            title: "All 9",
-            iconName: "line.3.horizontal.decrease",
-            selected: true
-        )
-
-        configureFilterButton(
-            appreciationButton,
-            title: "Appreciation",
-            iconName: nil,
-            selected: false
-        )
-
-        configureFilterButton(
-            academicButton,
-            title: "Academic",
-            iconName: nil,
-            selected: false
-        )
-
-        configureFilterButton(
-            behaviourButton,
-            title: "Behaviour",
-            iconName: nil,
-            selected: false
-        )
-
-        allButton.addTarget(self, action: #selector(filterButtonTapped(_:)), for: .touchUpInside)
-        appreciationButton.addTarget(self, action: #selector(filterButtonTapped(_:)), for: .touchUpInside)
-        academicButton.addTarget(self, action: #selector(filterButtonTapped(_:)), for: .touchUpInside)
-        behaviourButton.addTarget(self, action: #selector(filterButtonTapped(_:)), for: .touchUpInside)
-
-        filterStackView.addArrangedSubview(allButton)
-        filterStackView.addArrangedSubview(appreciationButton)
-        filterStackView.addArrangedSubview(academicButton)
-        filterStackView.addArrangedSubview(behaviourButton)
-
-        // Figma-like exact widths to fit one line
-        allButton.translatesAutoresizingMaskIntoConstraints = false
-        appreciationButton.translatesAutoresizingMaskIntoConstraints = false
-        academicButton.translatesAutoresizingMaskIntoConstraints = false
-        behaviourButton.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(filterStackView)
 
         NSLayoutConstraint.activate([
-            allButton.widthAnchor.constraint(equalToConstant: 56),
-            appreciationButton.widthAnchor.constraint(equalToConstant: 106),
-            academicButton.widthAnchor.constraint(equalToConstant: 84),
-            behaviourButton.widthAnchor.constraint(equalToConstant: 88),
+            scrollView.topAnchor.constraint(equalTo: cantainerview2.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: cantainerview2.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: cantainerview2.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: cantainerview2.bottomAnchor),
+            scrollView.heightAnchor.constraint(equalToConstant: 34),
 
-            allButton.heightAnchor.constraint(equalToConstant: 34),
-            appreciationButton.heightAnchor.constraint(equalToConstant: 34),
-            academicButton.heightAnchor.constraint(equalToConstant: 34),
-            behaviourButton.heightAnchor.constraint(equalToConstant: 34)
+            filterStackView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            filterStackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            filterStackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            filterStackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            filterStackView.heightAnchor.constraint(equalTo: scrollView.heightAnchor)
         ])
+    }
 
-        selectedFilterButton = allButton
+    func configureCategories(
+        _ categories: [FeedbackCategoryOption],
+        totalCount: Int,
+        selectedCategoryId: String
+    ) {
+        let currentIds = self.categories.map { $0.id }
+        let newIds = categories.map { $0.id }
+
+        // Same data → only update selection highlight (keeps scroll position)
+        if currentIds == newIds && self.totalCount == totalCount && !filterButtons.isEmpty {
+            for (index, button) in filterButtons.enumerated() {
+                if index < categories.count, categories[index].id == selectedCategoryId {
+                    updateSelectedFilter(button)
+                }
+            }
+            return
+        }
+
+        self.categories = categories
+        self.totalCount = totalCount
+        clearFilterButtons()
+
+        guard !categories.isEmpty else {
+            let allButton = UIButton(type: .system)
+            configureFilterButton(allButton, title: "All", iconName: "line.3.horizontal.decrease", selected: true)
+            allButton.tag = 0
+            allButton.addTarget(self, action: #selector(filterButtonTapped(_:)), for: .touchUpInside)
+            filterStackView.addArrangedSubview(allButton)
+            filterButtons.append(allButton)
+            selectedFilterButton = allButton
+            return
+        }
+
+        for (index, category) in categories.enumerated() {
+            let button = UIButton(type: .system)
+            let isAll = category.id == "all" || category.name.lowercased() == "all"
+            let title = isAll ? "All \(totalCount)" : category.name
+            let isSelected = (category.id == selectedCategoryId)
+
+            configureFilterButton(
+                button,
+                title: title,
+                iconName: isAll ? "line.3.horizontal.decrease" : nil,
+                selected: isSelected
+            )
+            button.tag = index
+            button.addTarget(self, action: #selector(filterButtonTapped(_:)), for: .touchUpInside)
+            filterStackView.addArrangedSubview(button)
+            filterButtons.append(button)
+
+            if isSelected { selectedFilterButton = button }
+        }
+    }
+
+    private func clearFilterButtons() {
+        for button in filterButtons {
+            filterStackView.removeArrangedSubview(button)
+            button.removeFromSuperview()
+        }
+        filterButtons.removeAll()
+        selectedFilterButton = nil
     }
 
     private func configureFilterButton(
@@ -182,10 +183,7 @@ class RemarksTBLVCll1: UITableViewCell {
         selected: Bool
     ) {
         button.setTitle(title, for: .normal)
-        button.setTitleColor(
-            UIColor(red: 0.31, green: 0.38, blue: 0.50, alpha: 1.0),
-            for: .normal
-        )
+        button.setTitleColor(UIColor(red: 0.31, green: 0.38, blue: 0.50, alpha: 1.0), for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 12, weight: .semibold)
         button.titleLabel?.lineBreakMode = .byClipping
         button.backgroundColor = selected
@@ -194,6 +192,8 @@ class RemarksTBLVCll1: UITableViewCell {
         button.layer.cornerRadius = 12
         button.clipsToBounds = true
         button.contentEdgeInsets = UIEdgeInsets(top: 7, left: 10, bottom: 7, right: 10)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.heightAnchor.constraint(equalToConstant: 34).isActive = true
 
         if selected {
             button.layer.borderWidth = 1
@@ -216,42 +216,29 @@ class RemarksTBLVCll1: UITableViewCell {
 
     @objc private func filterButtonTapped(_ sender: UIButton) {
         updateSelectedFilter(sender)
+        let idx = sender.tag
+        if idx >= 0 && idx < categories.count {
+            onCategorySelected?(categories[idx].id)
+        }
     }
 
     private func updateSelectedFilter(_ button: UIButton) {
-        let buttons = [allButton, appreciationButton, academicButton, behaviourButton]
-
-        for item in buttons {
+        for item in filterButtons {
             item.backgroundColor = .white
             item.layer.borderWidth = 0
             item.layer.borderColor = UIColor.clear.cgColor
         }
-
         button.backgroundColor = UIColor(red: 0.94, green: 0.96, blue: 0.99, alpha: 1.0)
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor(red: 0.82, green: 0.87, blue: 0.95, alpha: 1.0).cgColor
-
         selectedFilterButton = button
     }
 
-    // MARK: - Optional Dynamic Update
     func updateCounts(academic: Int, behaviour: Int, newCount: Int) {
         let total = max(academic + behaviour + newCount, 1)
-
-        academicCard.update(
-            count: "\(academic)",
-            progress: CGFloat(academic) / CGFloat(total)
-        )
-
-        behaviourCard.update(
-            count: "\(behaviour)",
-            progress: CGFloat(behaviour) / CGFloat(total)
-        )
-
-        newCard.update(
-            count: "\(newCount)",
-            progress: CGFloat(newCount) / CGFloat(total)
-        )
+        academicCard.update(count: "\(academic)", progress: CGFloat(academic) / CGFloat(total))
+        behaviourCard.update(count: "\(behaviour)", progress: CGFloat(behaviour) / CGFloat(total))
+        newCard.update(count: "\(newCount)", progress: CGFloat(newCount) / CGFloat(total))
     }
 }
 
@@ -263,7 +250,6 @@ private class RemarkSummaryCardView: UIView {
     private let countLabel = UILabel()
     private let progressTrack = UIView()
     private let progressBar = UIView()
-
     private var progressWidthConstraint: NSLayoutConstraint?
     private var currentProgress: CGFloat = 0
 
@@ -307,27 +293,22 @@ private class RemarkSummaryCardView: UIView {
         progressBar.layer.cornerRadius = 3
         progressBar.translatesAutoresizingMaskIntoConstraints = false
         progressTrack.addSubview(progressBar)
-
         progressWidthConstraint = progressBar.widthAnchor.constraint(equalToConstant: 0)
 
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 14),
             titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14),
-
             dotView.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
             dotView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14),
             dotView.widthAnchor.constraint(equalToConstant: 10),
             dotView.heightAnchor.constraint(equalToConstant: 10),
-
             countLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 6),
             countLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14),
             countLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14),
-
             progressTrack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14),
             progressTrack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14),
             progressTrack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -14),
             progressTrack.heightAnchor.constraint(equalToConstant: 6),
-
             progressBar.leadingAnchor.constraint(equalTo: progressTrack.leadingAnchor),
             progressBar.topAnchor.constraint(equalTo: progressTrack.topAnchor),
             progressBar.bottomAnchor.constraint(equalTo: progressTrack.bottomAnchor),
@@ -335,13 +316,7 @@ private class RemarkSummaryCardView: UIView {
         ])
     }
 
-    func configure(
-        title: String,
-        count: String,
-        dotColor: UIColor,
-        progress: CGFloat,
-        progressColor: UIColor
-    ) {
+    func configure(title: String, count: String, dotColor: UIColor, progress: CGFloat, progressColor: UIColor) {
         titleLabel.text = title
         countLabel.text = count
         dotView.backgroundColor = dotColor

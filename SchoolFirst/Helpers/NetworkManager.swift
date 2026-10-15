@@ -305,11 +305,49 @@ struct APIResponse<T: Decodable>: Decodable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         success = try container.decode(Bool.self, forKey: .success)
         errorCode = try container.decodeIfPresent(Int.self, forKey: .errorCode) ?? 0
+
         description = try container.decodeIfPresent(String.self, forKey: .description) ?? ""
         total = try? container.decode(Int.self, forKey: .total)
         // 👇 This safely handles {} or missing fields
         data = try? container.decodeIfPresent(T.self, forKey: .data)
     }
+}
+//*** Remarks API resposne model
+
+struct RemarkEntity: Decodable {
+    let id: String
+    let name: String
+}
+
+// MARK: - Single Remark
+struct RemarkItem: Decodable {
+    let id: String
+    let student: RemarkEntity
+    let grade: RemarkEntity
+    let section: RemarkEntity
+    let subject: RemarkEntity
+    let category: RemarkEntity
+    let teacher: RemarkEntity
+    let date: String
+    let title: String
+    let description: String
+    let context: String
+    let created_at: String
+}
+
+//***Remarkscatogories API response Model
+
+struct RemarkCategoriesResponse: Decodable {
+    let success: Bool
+    let description: String
+    let total: Int
+    let data: [RemarkCategory]
+}
+
+struct RemarkCategory: Decodable {
+    let id: String
+    let name: String
+    let description: String
 }
 
 struct FeedbackCategoryOption {

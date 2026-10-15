@@ -207,6 +207,11 @@ struct API {
     
     static let FEEDBACK_CREATE = BASE_URL + "feedback/create/feedback"
     
+    static let REMARKS_CATEGORIES = BASE_URL + "remarks/categories"
+    static let REMARKS_LIST = BASE_URL + "remarks/remarks"
+    
+    
+    
     static let CALENDAR_EVENTS = BASE_URL + "calendar/event"
     
     static func HOMEWORK_SUBMISSION(

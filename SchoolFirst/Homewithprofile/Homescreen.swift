@@ -212,7 +212,10 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
         case "Homework": navigateToHomework()
         case "Portofolio": navigateToPortofolio()
         case "Feedback": navigateToFeedback()
-        case "Gallery": navigateToGallery()   // ✅ NEW: Gallery navigation added
+        case "Gallery": navigateToGallery()
+        case "Remarks": navigateToRemarks()
+            
+            // ✅ NEW: Gallery navigation added
         case "Transport":
             print("🔥 Transport module selected")
             navigateToTransport()
@@ -509,6 +512,19 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
             } else {
                 galleryVC.modalPresentationStyle = .fullScreen
                 present(galleryVC, animated: true)
+            }
+        }
+    }
+    private func navigateToRemarks() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let RemarksVC = storyboard.instantiateViewController(withIdentifier: "RemarksVC") as? RemarksVC {
+            RemarksVC.hidesBottomBarWhenPushed = true
+            if let nav = navigationController {
+                nav.setNavigationBarHidden(true, animated: false)
+                nav.pushViewController(RemarksVC, animated: true)
+            } else {
+                RemarksVC.modalPresentationStyle = .fullScreen
+                present(RemarksVC, animated: true)
             }
         }
     }

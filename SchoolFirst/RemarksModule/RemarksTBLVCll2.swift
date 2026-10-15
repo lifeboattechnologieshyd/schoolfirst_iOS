@@ -2,22 +2,49 @@
 //  RemarksTBLVCll2.swift
 //  SchoolFirst
 //
-//  Created by vamshi krishna on 15/10/26.
-//
 
 import UIKit
 
 class RemarksTBLVCll2: UITableViewCell {
 
+    @IBOutlet weak var RemarkTitleLabel: UILabel!
+    @IBOutlet weak var CatogeryLabel: UILabel!
+    @IBOutlet weak var TeacherNameLabel: UILabel!
+    @IBOutlet weak var RemarkdateLabel: UILabel!
+    @IBOutlet weak var RemarkdescriptionLabel: UILabel!
+
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        // Allow description to wrap if the label supports multi-line in the XIB
+        RemarkdescriptionLabel?.numberOfLines = 0
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
-    
+
+    // MARK: - Configure with RemarkItem
+    func configure(with remark: RemarkItem) {
+        RemarkTitleLabel.text = remark.title
+        CatogeryLabel.text = remark.category.name
+        TeacherNameLabel.text = remark.teacher.name
+        RemarkdateLabel.text = formatDate(remark.date)
+        RemarkdescriptionLabel.text = remark.description
+    }
+
+    // MARK: - Date Formatting (yyyy-MM-dd -> d MMM yyyy)
+    private func formatDate(_ dateString: String) -> String {
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "yyyy-MM-dd"
+        inputFormatter.locale = Locale(identifier: "en_US_POSIX")
+
+        guard let date = inputFormatter.date(from: dateString) else {
+            return dateString
+        }
+
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "d MMM yyyy"
+        outputFormatter.locale = Locale(identifier: "en_US_POSIX")
+        return outputFormatter.string(from: date)
+    }
 }
