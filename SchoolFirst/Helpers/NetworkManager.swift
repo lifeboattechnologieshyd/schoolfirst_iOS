@@ -12,13 +12,30 @@ enum HTTPMethod: String {
     case DELETE
 }
 
-enum NetworkError: Error {
+enum NetworkError: LocalizedError {
     case invalidURL
     case noData
     case noaccess
     case noInternet
     case decodingError(String)
     case serverError(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidURL:
+            return "Invalid URL"
+        case .noData:
+            return "No data received"
+        case .noaccess:
+            return "Access denied"
+        case .noInternet:
+            return "No internet connection"
+        case .decodingError(let msg):
+            return msg
+        case .serverError(let msg):
+            return msg
+        }
+    }
 }
 class NetworkManager {
     static let shared = NetworkManager()
@@ -187,18 +204,27 @@ class NetworkManager {
                             completion(.failure(.serverError("500")))
 
                         default:
+                            var errorDescription = "Unexpected error occurred."
+                            if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                                if let desc = json["description"] as? String, !desc.isEmpty {
+                                    errorDescription = desc
+                                } else if let msg = json["message"] as? String, !msg.isEmpty {
+                                    errorDescription = msg
+                                }
+                            }
+
                             // Suppress popup for BASE_URL_2 public endpoints
                             if !urlString.contains(API.BASE_URL_2) {
                                 DispatchQueue.main.async {
                                     AlertManager.shared.showAlert(
                                         title: "Error",
-                                        message: "Unexpected error occurred."
+                                        message: errorDescription
                                     )
                                 }
                             } else {
                                 print("⚠️ BASE_URL_2 returned \(httpResponse.statusCode) for \(urlString)")
                             }
-                            completion(.failure(.serverError("Status Code: \(httpResponse.statusCode)")))
+                            completion(.failure(.serverError(errorDescription)))
                         }
                     }
                 }
@@ -1519,8 +1545,14 @@ struct CompletedFeeResponse: Decodable {
     init(from decoder: Decoder) throws {
         let container    = try decoder.container(keyedBy: CodingKeys.self)
         student          = try container.decode(CompletedFeeStudent.self, forKey: .student)
-        totalPaidAmount  = try container.decodeIfPresent(Double.self, forKey: .totalPaidAmount) ?? 0.0
+        totalPaidAmount  = Self.decodeDouble(from: container, forKey: .totalPaidAmount)
         payments         = try container.decodeIfPresent([CompletedFeeTransaction].self, forKey: .payments) ?? []
+    }
+
+    private static func decodeDouble(from container: KeyedDecodingContainer<CodingKeys>, forKey key: CodingKeys) -> Double {
+        if let d = try? container.decode(Double.self, forKey: key) { return d }
+        if let s = try? container.decode(String.self, forKey: key), let d = Double(s) { return d }
+        return 0.0
     }
 }
 
@@ -1544,7 +1576,7 @@ struct CompletedFeeStudent: Decodable {
         id               = try container.decodeIfPresent(String.self, forKey: .id)              ?? ""
         name             = try container.decodeIfPresent(String.self, forKey: .name)            ?? ""
         admissionNumber  = try container.decodeIfPresent(String.self, forKey: .admissionNumber) ?? ""
-        academicYear     = try container.decode(CompletedFeeAcademicYear.self, forKey: .academicYear)
+        academicYear     = (try? container.decodeIfPresent(CompletedFeeAcademicYear.self, forKey: .academicYear)) ?? CompletedFeeAcademicYear(id: "", name: "")
     }
 }
 
@@ -1556,6 +1588,11 @@ struct CompletedFeeAcademicYear: Decodable {
 
     enum CodingKeys: String, CodingKey {
         case id, name
+    }
+
+    init(id: String = "", name: String = "") {
+        self.id = id
+        self.name = name
     }
 
     init(from decoder: Decoder) throws {
@@ -1598,8 +1635,14 @@ struct CompletedFeeTransaction: Decodable {
         gatewayTransactionId  = try container.decodeIfPresent(String.self, forKey: .gatewayTransactionId) ?? ""
         paymentGateway        = try container.decodeIfPresent(String.self, forKey: .paymentGateway)       ?? ""
         paymentDate           = try container.decodeIfPresent(String.self, forKey: .paymentDate)          ?? ""
-        totalAmount           = try container.decodeIfPresent(Double.self, forKey: .totalAmount)          ?? 0.0
+        totalAmount           = Self.decodeDouble(from: container, forKey: .totalAmount)
         fees                  = try container.decodeIfPresent([CompletedFeeItem].self, forKey: .fees)     ?? []
+    }
+
+    private static func decodeDouble(from container: KeyedDecodingContainer<CodingKeys>, forKey key: CodingKeys) -> Double {
+        if let d = try? container.decode(Double.self, forKey: key) { return d }
+        if let s = try? container.decode(String.self, forKey: key), let d = Double(s) { return d }
+        return 0.0
     }
 
     // MARK: - Helpers
@@ -1671,14 +1714,20 @@ struct CompletedFeeItem: Decodable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         studentFeeId  = try container.decodeIfPresent(String.self, forKey: .studentFeeId) ?? ""
-        academicYear  = try container.decode(CompletedFeeAcademicYear.self, forKey: .academicYear)
+        academicYear  = (try? container.decodeIfPresent(CompletedFeeAcademicYear.self, forKey: .academicYear)) ?? CompletedFeeAcademicYear(id: "", name: "")
         feeType       = try container.decodeIfPresent(String.self, forKey: .feeType)      ?? ""
         installment   = try container.decodeIfPresent(String.self, forKey: .installment)  ?? ""
-        amount        = try container.decodeIfPresent(Double.self, forKey: .amount)       ?? 0.0
-        concession    = try container.decodeIfPresent(Double.self, forKey: .concession)   ?? 0.0
-        lateFee       = try container.decodeIfPresent(Double.self, forKey: .lateFee)      ?? 0.0
-        paidAmount    = try container.decodeIfPresent(Double.self, forKey: .paidAmount)   ?? 0.0
+        amount        = Self.decodeDouble(from: container, forKey: .amount)
+        concession    = Self.decodeDouble(from: container, forKey: .concession)
+        lateFee       = Self.decodeDouble(from: container, forKey: .lateFee)
+        paidAmount    = Self.decodeDouble(from: container, forKey: .paidAmount)
         status        = try container.decodeIfPresent(String.self, forKey: .status)       ?? ""
+    }
+
+    private static func decodeDouble(from container: KeyedDecodingContainer<CodingKeys>, forKey key: CodingKeys) -> Double {
+        if let d = try? container.decode(Double.self, forKey: key) { return d }
+        if let s = try? container.decode(String.self, forKey: key), let d = Double(s) { return d }
+        return 0.0
     }
 
     // MARK: - Helpers
@@ -1924,7 +1973,7 @@ struct CalendarStudent: Codable {
 }
 
 // MARK: - Parent Fee Models
-// Endpoint: /fee/student-fee/pending
+//**** Endpoint: /fee/student-fee/pending
 
 struct PendingFeeSummary: Decodable {
     let totalFee: Double
@@ -2084,11 +2133,77 @@ struct PendingFeeItem: Decodable {
         // Paid amount
         paidAmount = Self.decodeDouble(from: container, keys: [.paidAmount])
 
-        // Payable amount
-        let payAmount = Self.decodeDouble(from: container, keys: [.payableAmount])
+        // Payable and outstanding amount
+        let calculatedRemaining = max(0.0, amount - concession + lateFee - paidAmount)
         let outAmount = Self.decodeDouble(from: container, keys: [.outstandingAmount])
-        outstandingAmount = outAmount > 0 ? outAmount : payAmount
-        payableAmount = payAmount > 0 ? payAmount : outstandingAmount
+        let payAmount = Self.decodeDouble(from: container, keys: [.payableAmount])
+
+        if status.uppercased() == "PAID" || (paidAmount >= amount && amount > 0) {
+            outstandingAmount = 0.0
+            payableAmount = 0.0
+        } else if outAmount > 0 && outAmount < amount && amount > 0 {
+            // Server explicitly sent a reduced outstanding amount
+            outstandingAmount = outAmount
+            payableAmount = outAmount
+        } else if paidAmount > 0 {
+            // Partial payment made - use net remaining balance
+            outstandingAmount = calculatedRemaining
+            payableAmount = calculatedRemaining
+        } else if outAmount > 0 {
+            outstandingAmount = outAmount
+            payableAmount = outAmount
+        } else if payAmount > 0 {
+            outstandingAmount = payAmount
+            payableAmount = payAmount
+        } else {
+            outstandingAmount = calculatedRemaining
+            payableAmount = calculatedRemaining
+        }
+    }
+
+    init(
+        studentFeeId: String,
+        academicYear: PendingFeeAcademicYear?,
+        feeType: String,
+        installment: String,
+        amount: Double,
+        concession: Double,
+        lateFee: Double,
+        paidAmount: Double,
+        payableAmount: Double,
+        outstandingAmount: Double,
+        dueDate: String,
+        status: String
+    ) {
+        self.studentFeeId = studentFeeId
+        self.academicYear = academicYear
+        self.feeType = feeType
+        self.installment = installment
+        self.amount = amount
+        self.concession = concession
+        self.lateFee = lateFee
+        self.paidAmount = paidAmount
+        self.payableAmount = payableAmount
+        self.outstandingAmount = outstandingAmount
+        self.dueDate = dueDate
+        self.status = status
+    }
+
+    func updating(payableAmount: Double, paidAmount: Double) -> PendingFeeItem {
+        return PendingFeeItem(
+            studentFeeId: self.studentFeeId,
+            academicYear: self.academicYear,
+            feeType: self.feeType,
+            installment: self.installment,
+            amount: self.amount,
+            concession: self.concession,
+            lateFee: self.lateFee,
+            paidAmount: paidAmount,
+            payableAmount: payableAmount,
+            outstandingAmount: payableAmount,
+            dueDate: self.dueDate,
+            status: payableAmount <= 0 ? "PAID" : self.status
+        )
     }
 
     private static func decodeDouble(from container: KeyedDecodingContainer<CodingKeys>, keys: [CodingKeys]) -> Double {

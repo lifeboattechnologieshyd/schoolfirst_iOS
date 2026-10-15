@@ -23,12 +23,13 @@ class ParentfeeVCTableViewCell: UITableViewCell {
     }
 
     func configure(totalPayableAmount: Double?, totalAmount: Double?) {
-        // Uses totalAmount for both labels
-        let displayAmount = totalAmount ?? totalPayableAmount ?? 0.0
-        let formattedText = "₹\(formatAmount(displayAmount))"
+        // Outstanding amount from fee_summary.outstanding_amount
+        TermtotalpayableamountLbl.text =
+            "₹\(formatAmount(totalPayableAmount ?? 0.0))"
 
-        TermtotalpayableamountLbl.text = formattedText
-        TotalamountLbl.text = formattedText
+        // Total fee from fee_summary.total_fee
+        TotalamountLbl.text =
+            "₹\(formatAmount(totalAmount ?? 0.0))"
     }
 
     private func formatAmount(_ value: Double) -> String {

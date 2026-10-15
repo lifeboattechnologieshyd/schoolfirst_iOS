@@ -84,8 +84,8 @@ class PaymentsuccessRecieptVC: UIViewController {
             // Find ParentfeeVC in navigation stack
             if let feeVC = nav.viewControllers.first(
                 where: { $0 is ParentfeeVC }
-            ) {
-
+            ) as? ParentfeeVC {
+                feeVC.reloadFees()
                 nav.popToViewController(
                     feeVC,
                     animated: true

@@ -25,8 +25,50 @@ class ParentfeeVC: UIViewController {
 
     // MARK: - Helper Computed Properties
 
+    private func totalPaidFromCompletedPayments(for feeItem: PendingFeeItem) -> Double {
+        guard let payments = completedFeeData?.payments else { return 0.0 }
+        var total: Double = 0.0
+        for txn in payments {
+            for completedItem in txn.fees {
+                let matchesId = !feeItem.studentFeeId.isEmpty && completedItem.studentFeeId == feeItem.studentFeeId
+                let matchesType = !feeItem.feeType.isEmpty && completedItem.feeType.lowercased() == feeItem.feeType.lowercased()
+                if matchesId || matchesType {
+                    total += completedItem.paidAmount
+                }
+            }
+        }
+        return total
+    }
+
+    private func effectivePayableAmount(for feeItem: PendingFeeItem) -> Double {
+        let paidFromCompleted = totalPaidFromCompletedPayments(for: feeItem)
+        let effectivePaid = max(feeItem.paidAmount, paidFromCompleted)
+        let total = feeItem.amount > 0 ? feeItem.amount : feeItem.payableAmount
+        let netRemaining = max(0.0, total - feeItem.concession + feeItem.lateFee - effectivePaid)
+
+        if feeItem.status.uppercased() == "PAID" || (effectivePaid >= total && total > 0) {
+            return 0.0
+        }
+
+        if paidFromCompleted > 0 {
+            return netRemaining
+        }
+
+        return min(feeItem.payableAmount, netRemaining)
+    }
+
+    private var pendingFees: [PendingFeeItem] {
+        guard let items = pendingFeeData?.fees else { return [] }
+        return items.compactMap { item -> PendingFeeItem? in
+            let payable = effectivePayableAmount(for: item)
+            guard payable > 0 else { return nil }
+            let paid = max(item.paidAmount, totalPaidFromCompletedPayments(for: item))
+            return item.updating(payableAmount: payable, paidAmount: paid)
+        }
+    }
+
     private var feesCount: Int {
-        return pendingFeeData?.fees.count ?? 0
+        return pendingFees.count
     }
 
     private var hasCompletedPayments: Bool {
@@ -82,18 +124,18 @@ class ParentfeeVC: UIViewController {
         fetchCompletedFees()
     }
 
-    // MARK: - Reload on Student Switch
+    // MARK: - Reload on Appear
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        let currentStudentId = UserManager.shared.resolvedStudentID
+        fetchPendingFees()
+        fetchCompletedFees()
+    }
 
-        if currentStudentId != loadedStudentId && !currentStudentId.isEmpty {
-            print("🔄 Student changed to: \(currentStudentId)")
-            fetchPendingFees()
-            fetchCompletedFees()
-        }
+    func reloadFees() {
+        fetchPendingFees()
+        fetchCompletedFees()
     }
 
     // MARK: - Fetch Completed Fees API
@@ -214,6 +256,15 @@ class ParentfeeVC: UIViewController {
             AlertManager.shared.showAlert(
                 title: "Error",
                 message: "Student or School information missing."
+            )
+            return
+        }
+
+        guard feeItem.payableAmount > 0 else {
+            print("⚠️ Fee is already fully paid!")
+            AlertManager.shared.showAlert(
+                title: "Fee Paid",
+                message: "This fee has already been fully paid."
             )
             return
         }
@@ -471,9 +522,7 @@ extension ParentfeeVC: UITableViewDelegate, UITableViewDataSource {
                 pendingFeeData?.feeSummary?.totalFee ??
                 pendingFeeData?.fees.reduce(0.0) { $0 + $1.amount }
 
-            let totalPayable =
-                pendingFeeData?.feeSummary?.outstandingAmount ??
-                pendingFeeData?.totalPayableAmount
+            let totalPayable = pendingFees.reduce(0.0) { $0 + $1.payableAmount }
 
             cell.configure(
                 totalPayableAmount: totalPayable,
@@ -491,7 +540,7 @@ extension ParentfeeVC: UITableViewDelegate, UITableViewDataSource {
             ) as! ParentVCfeetypeTableViewCell2
 
             cell.selectionStyle = .none
-            let feeItem = pendingFeeData!.fees[row - 1]
+            let feeItem = pendingFees[row - 1]
 
             cell.configure(
                 with: feeItem,

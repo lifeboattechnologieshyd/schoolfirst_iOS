@@ -61,6 +61,16 @@ class ParentVCfeetypeTableViewCell2: UITableViewCell {
         }
         TermtotalpayableamountLbl.text = "₹\(formatAmount(item.payableAmount))"
         setupPayButtonAction()
+
+        if item.payableAmount <= 0 {
+            PayButton?.setTitle("Paid", for: .normal)
+            PayButton?.isEnabled = false
+            PayButton?.alpha = 0.5
+        } else {
+            PayButton?.setTitle("Pay", for: .normal)
+            PayButton?.isEnabled = true
+            PayButton?.alpha = 1.0
+        }
     }
 
     private func setupPayButtonAction() {
