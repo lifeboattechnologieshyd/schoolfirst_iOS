@@ -214,6 +214,8 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
         case "Feedback": navigateToFeedback()
         case "Gallery": navigateToGallery()
         case "Remarks": navigateToRemarks()
+        case "Contact us": navigateToContactus()
+            
             
             // ✅ NEW: Gallery navigation added
         case "Transport":
@@ -525,6 +527,19 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
             } else {
                 RemarksVC.modalPresentationStyle = .fullScreen
                 present(RemarksVC, animated: true)
+            }
+        }
+    }
+    private func navigateToContactus() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let Contactus = storyboard.instantiateViewController(withIdentifier: "ContactschooldashboardVC") as? ContactschooldashboardVC {
+            Contactus.hidesBottomBarWhenPushed = true
+            if let nav = navigationController {
+                nav.setNavigationBarHidden(true, animated: false)
+                nav.pushViewController(Contactus, animated: true)
+            } else {
+                Contactus.modalPresentationStyle = .fullScreen
+                present(Contactus, animated: true)
             }
         }
     }

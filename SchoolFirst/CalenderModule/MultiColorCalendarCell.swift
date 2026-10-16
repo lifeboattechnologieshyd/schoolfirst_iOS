@@ -7,6 +7,8 @@ class MultiColorCalendarCell: FSCalendarCell {
 
   private let multiColorContainer = UIView()
   private var colorViews: [UIView] = []
+  private var hasColors: Bool = false
+  private var isLightCurrentColor: Bool = false
 
   override init(frame: CGRect) {
       super.init(frame: frame)
@@ -21,9 +23,9 @@ class MultiColorCalendarCell: FSCalendarCell {
   private func setupMultiColorContainer() {
       multiColorContainer.translatesAutoresizingMaskIntoConstraints = false
       multiColorContainer.clipsToBounds = true
-      multiColorContainer.layer.cornerRadius = 8
+      multiColorContainer.layer.cornerRadius = 10
       multiColorContainer.isHidden = true
-      contentView.insertSubview(multiColorContainer, at: 0)
+      contentView.addSubview(multiColorContainer)
 
       NSLayoutConstraint.activate([
           multiColorContainer.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
@@ -35,8 +37,12 @@ class MultiColorCalendarCell: FSCalendarCell {
 
   override func layoutSubviews() {
       super.layoutSubviews()
+      contentView.bringSubviewToFront(multiColorContainer)
       if let titleLabel = titleLabel {
           contentView.bringSubviewToFront(titleLabel)
+          if hasColors {
+              titleLabel.textColor = isLightCurrentColor ? .black : .white
+          }
       }
   }
 
@@ -50,6 +56,8 @@ class MultiColorCalendarCell: FSCalendarCell {
       if show {
           showMultiColorWithColors([.systemOrange, .systemBlue])
       } else {
+          hasColors = false
+          isLightCurrentColor = false
           multiColorContainer.isHidden = true
           multiColorContainer.backgroundColor = .clear
           colorViews.forEach { $0.removeFromSuperview() }
@@ -63,15 +71,16 @@ class MultiColorCalendarCell: FSCalendarCell {
       colorViews.removeAll()
 
       guard !colors.isEmpty else {
-          multiColorContainer.isHidden = true
-          multiColorContainer.backgroundColor = .clear
+          showMultiColor(false)
           return
       }
 
+      hasColors = true
       multiColorContainer.isHidden = false
       multiColorContainer.backgroundColor = .clear
 
       let displayColors = Array(colors.prefix(4))
+      isLightCurrentColor = isLightColor(displayColors[0])
 
       switch displayColors.count {
       case 1:
@@ -187,5 +196,17 @@ class MultiColorCalendarCell: FSCalendarCell {
               bottomRight.heightAnchor.constraint(equalTo: multiColorContainer.heightAnchor, multiplier: 0.5)
           ])
       }
+
+      setNeedsLayout()
+      layoutIfNeeded()
+  }
+
+  private func isLightColor(_ color: UIColor) -> Bool {
+      var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+      if color.getRed(&r, green: &g, blue: &b, alpha: &a) {
+          let luminance = 0.299 * r + 0.587 * g + 0.114 * b
+          return luminance > 0.75
+      }
+      return false
   }
 }

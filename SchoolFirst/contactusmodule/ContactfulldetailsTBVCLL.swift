@@ -9,15 +9,21 @@ import UIKit
 
 class ContactfulldetailsTBVCLL: UITableViewCell {
 
+    @IBOutlet weak var ChatButton: UIButton!
+
+    // MARK: - Callback closure
+    var onChatButtonTapped: (() -> Void)?
+
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        ChatButton?.addTarget(self, action: #selector(chatButtonAction), for: .touchUpInside)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
-    
+
+    @objc private func chatButtonAction() {
+        onChatButtonTapped?()
+    }
 }

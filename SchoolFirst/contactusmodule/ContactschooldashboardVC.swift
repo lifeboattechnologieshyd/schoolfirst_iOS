@@ -9,6 +9,7 @@ import UIKit
 
 class ContactschooldashboardVC: UIViewController {
 
+    @IBOutlet weak var Backbutton: UIButton!
     @IBOutlet weak var Tableview: UITableView!
 
     override func viewDidLoad() {
@@ -24,6 +25,13 @@ class ContactschooldashboardVC: UIViewController {
 
         Tableview.separatorStyle = .none
         Tableview.showsVerticalScrollIndicator = false
+
+        // Add back button navigation
+        Backbutton.addTarget(self, action: #selector(backButtonTapped(_:)), for: .touchUpInside)
+    }
+
+    @objc func backButtonTapped(_ sender: UIButton) {
+        navigationController?.popViewController(animated: true)
     }
 }
 
@@ -43,9 +51,18 @@ extension ContactschooldashboardVC: UITableViewDelegate, UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(
             withIdentifier: "ContactdashboardTBLVCLL",
             for: indexPath
-        )
+        ) as! ContactdashboardTBLVCLL
 
         cell.selectionStyle = .none
+
+        // Handle card tap navigation to ContactslistVC
+        cell.onCardTapped = { [weak self] index in
+            guard let self = self else { return }
+            let storyboard = self.storyboard ?? UIStoryboard(name: "Main", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "ContactslistVC") as? ContactslistVC {
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+        }
 
         return cell
     }
@@ -54,6 +71,6 @@ extension ContactschooldashboardVC: UITableViewDelegate, UITableViewDataSource {
         _ tableView: UITableView,
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
-        return 1000
+        return 800
     }
 }

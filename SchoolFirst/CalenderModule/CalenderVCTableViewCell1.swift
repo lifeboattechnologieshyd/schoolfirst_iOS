@@ -53,24 +53,82 @@ class CalenderVCTableViewCell1: UITableViewCell {
 
     // MARK: - Event Color Resolution
     private func color(for event: SchoolCalendarEvent) -> UIColor {
-        if let hex = event.color, !hex.isEmpty {
-            return UIColor(hexString: hex)
+        if let colorStr = event.color?.trimmingCharacters(in: .whitespacesAndNewlines), !colorStr.isEmpty {
+            if let parsed = parseColorString(colorStr) {
+                return parsed
+            }
         }
         return colorByType(event.eventType ?? "")
     }
 
-    private func colorByType(_ eventType: String) -> UIColor {
-        switch eventType.uppercased() {
-        case "PTM":        return UIColor.systemYellow
-        case "FEE":        return UIColor.systemYellow
-        case "EXAM":       return UIColor.systemRed
-        case "HOLIDAY":    return UIColor.systemOrange
-        case "EVENT":      return UIColor.systemGreen
-        case "HOMEWORK":   return UIColor.systemPurple
-        case "ASSIGNMENT": return UIColor.systemTeal
-        case "TRANSPORT":  return UIColor.systemBlue
-        default:           return UIColor.systemGray
+    private func parseColorString(_ colorStr: String) -> UIColor? {
+        let lower = colorStr.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+
+        switch lower {
+        case "red":             return UIColor(red: 239/255, green: 68/255, blue: 68/255, alpha: 1.0)
+        case "green":           return UIColor(red: 34/255, green: 197/255, blue: 94/255, alpha: 1.0)
+        case "blue":            return UIColor(red: 59/255, green: 130/255, blue: 246/255, alpha: 1.0)
+        case "yellow":          return UIColor(red: 234/255, green: 179/255, blue: 8/255, alpha: 1.0)
+        case "orange":          return UIColor(red: 249/255, green: 115/255, blue: 22/255, alpha: 1.0)
+        case "purple":          return UIColor(red: 168/255, green: 85/255, blue: 247/255, alpha: 1.0)
+        case "teal":            return UIColor(red: 20/255, green: 184/255, blue: 166/255, alpha: 1.0)
+        case "pink":            return UIColor(red: 236/255, green: 72/255, blue: 153/255, alpha: 1.0)
+        case "cyan":            return UIColor(red: 6/255, green: 182/255, blue: 212/255, alpha: 1.0)
+        case "indigo":          return UIColor(red: 99/255, green: 102/255, blue: 241/255, alpha: 1.0)
+        case "amber":           return UIColor(red: 245/255, green: 158/255, blue: 11/255, alpha: 1.0)
+        case "gray", "grey":    return UIColor(red: 107/255, green: 114/255, blue: 128/255, alpha: 1.0)
+        default: break
         }
+
+        var hex = lower.replacingOccurrences(of: "#", with: "")
+        if hex.count == 3 {
+            let r = hex[hex.startIndex]
+            let g = hex[hex.index(hex.startIndex, offsetBy: 1)]
+            let b = hex[hex.index(hex.startIndex, offsetBy: 2)]
+            hex = "\(r)\(r)\(g)\(g)\(b)\(b)"
+        }
+
+        if hex.count == 6 || hex.count == 8 {
+            var rgb: UInt64 = 0
+            if Scanner(string: hex).scanHexInt64(&rgb) {
+                if hex.count == 6 {
+                    let r = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
+                    let g = CGFloat((rgb & 0x00FF00) >> 8) / 255.0
+                    let b = CGFloat(rgb & 0x0000FF) / 255.0
+                    return UIColor(red: r, green: g, blue: b, alpha: 1.0)
+                } else {
+                    let r = CGFloat((rgb & 0xFF000000) >> 24) / 255.0
+                    let g = CGFloat((rgb & 0x00FF0000) >> 16) / 255.0
+                    let b = CGFloat((rgb & 0x0000FF00) >> 8) / 255.0
+                    let a = CGFloat(rgb & 0x000000FF) / 255.0
+                    return UIColor(red: r, green: g, blue: b, alpha: a)
+                }
+            }
+        }
+
+        return nil
+    }
+
+    private func colorByType(_ eventType: String) -> UIColor {
+        let type = eventType.uppercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        if type.contains("PTM") || type.contains("PARENT") || type.contains("MEETING") {
+            return UIColor(red: 234/255, green: 179/255, blue: 8/255, alpha: 1.0)
+        } else if type.contains("FEE") {
+            return UIColor(red: 234/255, green: 179/255, blue: 8/255, alpha: 1.0)
+        } else if type.contains("EXAM") || type.contains("TEST") {
+            return UIColor(red: 239/255, green: 68/255, blue: 68/255, alpha: 1.0)
+        } else if type.contains("HOLIDAY") || type.contains("VACATION") {
+            return UIColor(red: 249/255, green: 115/255, blue: 22/255, alpha: 1.0)
+        } else if type.contains("EVENT") || type.contains("SPORTS") || type.contains("ANNUAL") {
+            return UIColor(red: 34/255, green: 197/255, blue: 94/255, alpha: 1.0)
+        } else if type.contains("HOMEWORK") {
+            return UIColor(red: 168/255, green: 85/255, blue: 247/255, alpha: 1.0)
+        } else if type.contains("ASSIGNMENT") {
+            return UIColor(red: 20/255, green: 184/255, blue: 166/255, alpha: 1.0)
+        } else if type.contains("TRANSPORT") || type.contains("BUS") {
+            return UIColor(red: 59/255, green: 130/255, blue: 246/255, alpha: 1.0)
+        }
+        return UIColor(red: 59/255, green: 130/255, blue: 246/255, alpha: 1.0)
     }
 
     // MARK: - Lifecycle
@@ -205,15 +263,50 @@ class CalenderVCTableViewCell1: UITableViewCell {
     }
 
     // MARK: - Build Date → Events Cache
+    private func dateKey(from dateString: String) -> String? {
+        let trimmed = dateString.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+
+        if trimmed.count >= 10 {
+            let candidate = String(trimmed.prefix(10))
+            let parts = candidate.split(separator: "-")
+            if parts.count == 3, parts[0].count == 4, parts[1].count == 2, parts[2].count == 2 {
+                return candidate
+            }
+        }
+
+        let isoFormatter = ISO8601DateFormatter()
+        isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let d = isoFormatter.date(from: trimmed) {
+            return apiDateFormatter.string(from: d)
+        }
+        isoFormatter.formatOptions = [.withInternetDateTime]
+        if let d = isoFormatter.date(from: trimmed) {
+            return apiDateFormatter.string(from: d)
+        }
+
+        let otherFormatter = DateFormatter()
+        otherFormatter.locale = Locale(identifier: "en_US_POSIX")
+        otherFormatter.timeZone = TimeZone.current
+        for fmt in ["yyyy-MM-dd", "dd-MM-yyyy", "yyyy/MM/dd", "dd/MM/yyyy"] {
+            otherFormatter.dateFormat = fmt
+            if let d = otherFormatter.date(from: trimmed) {
+                return apiDateFormatter.string(from: d)
+            }
+        }
+
+        return trimmed
+    }
+
     private func buildEventsByDateCache() {
         var map: [String: [SchoolCalendarEvent]] = [:]
         for event in apiEvents {
-            if let key = event.eventDate, !key.isEmpty {
+            if let rawDate = event.eventDate, let key = dateKey(from: rawDate) {
                 map[key, default: []].append(event)
             }
         }
         eventsByDate = map
-        print("📅 CalendarCell: cache \(map.count) dates from \(apiEvents.count) events")
+        print("📅 CalendarCell: cache \(map.count) dates from \(apiEvents.count) events: \(map.keys)")
     }
 
     private func events(for date: Date) -> [SchoolCalendarEvent] {
@@ -569,6 +662,7 @@ extension CalenderVCTableViewCell1: FSCalendarDelegate,
 
     func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
         updateMonthLabel()
+        calendar.reloadData()
     }
 
     func calendar(
@@ -587,11 +681,7 @@ extension CalenderVCTableViewCell1: FSCalendarDelegate,
         appearance: FSCalendarAppearance,
         fillDefaultColorFor date: Date
     ) -> UIColor? {
-        guard isCurrentMonth(date) else { return nil }
-        let dayEvents = events(for: date)
-        guard !dayEvents.isEmpty else { return nil }
-        if dayEvents.count > 1 { return .clear }
-        return color(for: dayEvents[0])
+        return .clear
     }
 
     func calendar(
@@ -607,9 +697,9 @@ extension CalenderVCTableViewCell1: FSCalendarDelegate,
         ) as! MultiColorCalendarCell
 
         let dayEvents = events(for: date)
-        let isInCurrentMonth = isCurrentMonth(date)
+        let isCurrent = (position == .current) || isCurrentMonth(date)
 
-        if dayEvents.count > 1 && isInCurrentMonth {
+        if !dayEvents.isEmpty && isCurrent {
             let colors = dayEvents.map { color(for: $0) }
             cell.showMultiColorWithColors(colors)
         } else {
@@ -630,16 +720,23 @@ extension CalenderVCTableViewCell1: FSCalendarDelegate,
         if dayEvents.count > 1 {
             onMultipleEventsTapped?()
         } else if let event = dayEvents.first {
-            switch (event.eventType ?? "").uppercased() {
-            case "FEE":        onFeeEventDateTapped?()
-            case "EVENT":      onEventTapped?()
-            case "EXAM":       onExamEventTapped?()
-            case "PTM":        onPTMeetingTapped?()
-            case "HOLIDAY":    onHolidayTapped?()
-            case "HOMEWORK":   onHomeworkTapped?()
-            case "ASSIGNMENT": onAssignmentTapped?()
-            case "TRANSPORT":  onTransportTapped?()
-            default:           break
+            let type = (event.eventType ?? "").uppercased()
+            if type.contains("FEE") {
+                onFeeEventDateTapped?()
+            } else if type.contains("PTM") || type.contains("MEETING") {
+                onPTMeetingTapped?()
+            } else if type.contains("EXAM") || type.contains("TEST") {
+                onExamEventTapped?()
+            } else if type.contains("HOLIDAY") || type.contains("VACATION") {
+                onHolidayTapped?()
+            } else if type.contains("HOMEWORK") {
+                onHomeworkTapped?()
+            } else if type.contains("ASSIGNMENT") {
+                onAssignmentTapped?()
+            } else if type.contains("TRANSPORT") || type.contains("BUS") {
+                onTransportTapped?()
+            } else {
+                onEventTapped?()
             }
         }
 

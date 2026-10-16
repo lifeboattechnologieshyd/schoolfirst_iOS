@@ -11,8 +11,11 @@ class ContactdashboardTBLVCLL: UITableViewCell {
 
     @IBOutlet weak var Needhelptitlelabel: UILabel!
     @IBOutlet weak var containerview: UIView!
-    
     @IBOutlet weak var EmergencycontacttextLabel: UILabel!
+
+    // MARK: - Callback Closure
+    var onCardTapped: ((Int) -> Void)?
+
     // MARK: - Data Model
     private struct ContactOption {
         let title: String
@@ -77,12 +80,12 @@ class ContactdashboardTBLVCLL: UITableViewCell {
             rowHStack.distribution = .fillEqually
             
             // Item 1 (Left Column)
-            let card1 = createCardView(for: contactOptions[i])
+            let card1 = createCardView(for: contactOptions[i], at: i)
             rowHStack.addArrangedSubview(card1)
             
             // Item 2 (Right Column) - Safely check if it exists
             if i + 1 < contactOptions.count {
-                let card2 = createCardView(for: contactOptions[i + 1])
+                let card2 = createCardView(for: contactOptions[i + 1], at: i + 1)
                 rowHStack.addArrangedSubview(card2)
             } else {
                 // Empty view to maintain grid structure if odd number of items
@@ -96,13 +99,19 @@ class ContactdashboardTBLVCLL: UITableViewCell {
     }
     
     // MARK: - Individual Card Builder
-    private func createCardView(for data: ContactOption) -> UIView {
+    private func createCardView(for data: ContactOption, at index: Int) -> UIView {
         let card = UIView()
         card.backgroundColor = .white
         card.layer.cornerRadius = 16
         card.layer.borderWidth = 1
         card.layer.borderColor = UIColor.systemGray5.cgColor
         card.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Enable Tap Gesture
+        card.isUserInteractionEnabled = true
+        card.tag = index
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(cardTapped(_:)))
+        card.addGestureRecognizer(tapGesture)
         
         // Strict Height Constraint (116 as requested)
         card.heightAnchor.constraint(equalToConstant: 116).isActive = true
@@ -180,5 +189,11 @@ class ContactdashboardTBLVCLL: UITableViewCell {
         ])
         
         return card
+    }
+
+    @objc private func cardTapped(_ sender: UITapGestureRecognizer) {
+        if let tappedView = sender.view {
+            onCardTapped?(tappedView.tag)
+        }
     }
 }

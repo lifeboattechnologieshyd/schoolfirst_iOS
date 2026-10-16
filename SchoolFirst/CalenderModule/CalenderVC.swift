@@ -201,6 +201,13 @@ extension CalenderVC: UITableViewDelegate, UITableViewDataSource {
         cell.onTransportTapped = { [weak self] in
             self?.navigateToTransport()
         }
+        cell.onMultipleEventsTapped = { [weak self] in
+            guard let self = self else { return }
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "MultipleeventsVC") as? MultipleeventsVC {
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+        }
         cell.onDateSelected = { [weak self] date, events in
             self?.selectedDate = date
             self?.selectedDateEvents = events

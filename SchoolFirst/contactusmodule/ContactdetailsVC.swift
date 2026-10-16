@@ -9,12 +9,20 @@ import UIKit
 
 class ContactdetailsVC: UIViewController {
 
+    @IBOutlet weak var Backbutton: UIButton!
     @IBOutlet weak var tableview: UITableView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupTableView()
+
+        // Add back button navigation
+        Backbutton.addTarget(self, action: #selector(backButtonTapped(_:)), for: .touchUpInside)
+    }
+
+    @objc func backButtonTapped(_ sender: UIButton) {
+        navigationController?.popViewController(animated: true)
     }
 
     // MARK: - TableView Setup
@@ -58,6 +66,15 @@ extension ContactdetailsVC: UITableViewDataSource {
             for: indexPath
         ) as? ContactfulldetailsTBVCLL else {
             return UITableViewCell()
+        }
+
+        // Handle navigation to ChatVC
+        cell.onChatButtonTapped = { [weak self] in
+            guard let self = self else { return }
+            let storyboard = self.storyboard ?? UIStoryboard(name: "Main", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "ChatVC") as? ChatVC {
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
         }
 
         return cell
