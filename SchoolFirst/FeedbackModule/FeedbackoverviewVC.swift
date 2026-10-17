@@ -27,6 +27,13 @@ class FeedbackoverviewVC: UIViewController {
         setupBackButton()
 
         Tableview.separatorStyle = .none
+        // ❌ Removed getFeedbackList() from here
+        // (viewDidLoad runs only once — not on back navigation)
+    }
+
+    // MARK: - ✅ Call API on EVERY screen entry (first open + back navigation)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         getFeedbackList()
     }
 

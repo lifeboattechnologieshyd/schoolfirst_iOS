@@ -204,6 +204,7 @@ struct API {
     static let TRANSPORT_LIVELOCATION = BASE_URL + "transport/live-location"
     
     static let FEEDBACK_LIST = BASE_URL + "feedback/feedbacks"
+    static let FEEDBACK_CATEGORIES = BASE_URL + "feedback/categories"
     
     static let FEEDBACK_CREATE = BASE_URL + "feedback/create/feedback"
     

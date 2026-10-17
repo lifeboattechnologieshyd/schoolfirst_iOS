@@ -9,6 +9,7 @@ import UIKit
 
 class AbsentdetailsTBLVCLL: UITableViewCell {
 
+    @IBOutlet weak var Attendancestatuslabel: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

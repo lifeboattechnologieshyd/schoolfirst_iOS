@@ -23,6 +23,7 @@ class FeedbackinreviewVC: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        Tableview.separatorStyle = .none
         
         setupTableView()
         
@@ -91,6 +92,6 @@ extension FeedbackinreviewVC: UITableViewDataSource, UITableViewDelegate {
     
     // MARK: - Cell Height (Set to 900)
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 900
+        return 800
     }
 }

@@ -23,19 +23,28 @@ class FeedbackstatusVC: UIViewController {
         }
     }
 
+    // MARK: - ✅ Feedback ID (used when navigating from Success screen)
+    var feedbackId: String?
+
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
         setupBackButton()
 
-        if feedback == nil {
-            print("⚠️ FeedbackstatusVC — viewDidLoad: feedback is nil. Make sure caller sets vc.feedback before pushing.")
+        if feedback == nil && (feedbackId == nil || feedbackId?.isEmpty == true) {
+            print("⚠️ FeedbackstatusVC — viewDidLoad: no feedback / feedbackId set yet.")
         } else {
-            print("✅ FeedbackstatusVC — viewDidLoad: feedback already set →", feedback?.subject ?? "")
+            print("✅ FeedbackstatusVC — viewDidLoad: feedbackId →", feedbackId ?? feedback?.id ?? "nil")
         }
 
         Tableview.reloadData()
+    }
+
+    // MARK: - ✅ Call API on EVERY screen entry (first open + back navigation)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        fetchFeedbackDetails()
     }
 
     // MARK: - Setup Methods
@@ -51,12 +60,80 @@ class FeedbackstatusVC: UIViewController {
         Backbutton.addTarget(self, action: #selector(backButtonTapped(_:)), for: .touchUpInside)
     }
 
-    // MARK: - Back Action (Pop / Dismiss)
+    // MARK: - ✅ API: Fetch feedback list and pick the matching feedback
+    private func fetchFeedbackDetails() {
+
+        // Prefer explicit feedbackId; fall back to already-assigned feedback.id
+        let targetId = feedbackId ?? feedback?.id
+
+        guard let targetId = targetId, !targetId.isEmpty else {
+            print("⚠️ fetchFeedbackDetails — no feedbackId available, showing existing data (if any)")
+            Tableview.reloadData()
+            return
+        }
+
+        let schoolId = UserManager.shared.resolvedSchoolID
+        let studentId = UserManager.shared.resolvedStudentID
+
+        guard !schoolId.isEmpty else {
+            print("❌ FeedbackstatusVC — schoolId is empty, skipping request")
+            return
+        }
+        guard !studentId.isEmpty else {
+            print("❌ FeedbackstatusVC — studentId is empty, skipping request")
+            return
+        }
+
+        print("📡 FeedbackstatusVC — fetching list to find id:", targetId)
+
+        NetworkManager.shared.request(
+            urlString: API.FEEDBACK_LIST,
+            method: .GET,
+            requiresAuth: true,
+            parameters: ["student_id": studentId],
+            headers: ["X-School-Id": schoolId]
+        ) { [weak self] (result: Result<APIResponse<[Feedback]>, NetworkError>) in
+
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+
+                switch result {
+                case .success(let response):
+                    let list = response.data ?? []
+                    if let match = list.first(where: { $0.id == targetId }) {
+                        print("✅ FeedbackstatusVC — found feedback:", match.subject)
+                        self.feedback = match   // didSet → reloads table
+                    } else {
+                        print("⚠️ FeedbackstatusVC — no feedback found for id:", targetId)
+                        // Keep previously set feedback (if any) so UI is not wiped
+                        self.Tableview.reloadData()
+                    }
+
+                case .failure(let error):
+                    print("❌ FeedbackstatusVC — fetch failed:", error)
+                    // Keep previously set feedback (if any)
+                    self.Tableview.reloadData()
+                }
+            }
+        }
+    }
+
+    // MARK: - ✅ Back Action → always land on FeedbackoverviewVC
     @IBAction func backButtonTapped(_ sender: UIButton) {
-        if let navigationController = self.navigationController {
-            navigationController.popViewController(animated: true)
-        } else {
+        guard let navigationController = self.navigationController else {
             self.dismiss(animated: true, completion: nil)
+            return
+        }
+
+        // Pop directly to FeedbackoverviewVC if it exists in the stack
+        // (covers: Overview → Status, and Overview → Submit → Success → Status)
+        if let overviewVC = navigationController.viewControllers.first(where: { $0 is FeedbackoverviewVC }) {
+            print("⬅️ Popping to FeedbackoverviewVC")
+            navigationController.popToViewController(overviewVC, animated: true)
+        } else {
+            // Fallback: normal single pop
+            print("⬅️ FeedbackoverviewVC not in stack — normal pop")
+            navigationController.popViewController(animated: true)
         }
     }
 }
@@ -85,6 +162,6 @@ extension FeedbackstatusVC: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 1000
+        return 800
     }
 }

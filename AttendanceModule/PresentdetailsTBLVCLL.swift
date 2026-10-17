@@ -1,5 +1,5 @@
 //
-//  LatearrivaldetailsTBLVCLL.swift
+//  PresentdetailsTBLVCLL.swift
 //  SchoolFirst
 //
 //  Created by vamshi krishna on 16/10/26.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class LatearrivaldetailsTBLVCLL: UITableViewCell {
+class PresentdetailsTBLVCLL: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()

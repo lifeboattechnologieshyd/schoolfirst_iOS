@@ -36,6 +36,11 @@ class FeedbackSubmissionsuccessfulVC: UIViewController {
     // MARK: - ✅ Populate static properties with real API response data
     private func populateFromAPIDataIfAvailable() {
 
+        // ✅ Parent name — dynamically pulled from UserDefaults via UserManager
+        let resolvedFather = UserManager.shared.resolvedFatherName
+        parentName = resolvedFather.isEmpty ? "Parent" : resolvedFather
+        print("👨 FeedbackSubmissionsuccessfulVC — parentName set to:", parentName)
+
         guard let data = feedbackData else {
             print("⚠️ FeedbackSubmissionsuccessfulVC — feedbackData is nil, using default placeholder values")
             return
@@ -61,9 +66,6 @@ class FeedbackSubmissionsuccessfulVC: UIViewController {
 
         // Status from API (e.g. "SUBMITTED")
         statusRawValue = data.status
-
-        // Parent name — not part of this API response; falls back to default "Parent"
-        parentName = "Parent"
     }
 
     // MARK: - Status Display Helpers
@@ -97,8 +99,9 @@ class FeedbackSubmissionsuccessfulVC: UIViewController {
             onNotificationTapped: {
                 print("🔔 Notification tapped")
             },
-            onViewDetailsTapped: {
-                print("📄 View Details tapped")
+            // ✅ Navigate to FeedbackstatusVC with this feedback
+            onViewDetailsTapped: { [weak self] in
+                self?.navigateToFeedbackDetails()
             },
             onBackToFeedbackTapped: { [weak self] in
                 self?.handleBack()
@@ -120,6 +123,34 @@ class FeedbackSubmissionsuccessfulVC: UIViewController {
         ])
 
         hostingController.didMove(toParent: self)
+    }
+
+    // MARK: - ✅ Navigate to FeedbackstatusVC (View feedback details)
+    private func navigateToFeedbackDetails() {
+
+        guard let data = feedbackData else {
+            print("⚠️ navigateToFeedbackDetails — feedbackData is nil")
+            AlertManager.shared.showAlert(
+                title: "Unavailable",
+                message: "Feedback details are not available."
+            )
+            return
+        }
+
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+        guard let statusVC = storyboard.instantiateViewController(
+            withIdentifier: "FeedbackstatusVC"
+        ) as? FeedbackstatusVC else {
+            print("❌ Could not instantiate FeedbackstatusVC")
+            return
+        }
+
+        // Pass feedback ID so FeedbackstatusVC can fetch & show this feedback
+        statusVC.feedbackId = data.id
+        print("➡️ Navigating to FeedbackstatusVC with feedbackId:", data.id)
+
+        navigationController?.pushViewController(statusVC, animated: true)
     }
 
     // MARK: - Navigation Action
@@ -197,14 +228,14 @@ struct FeedbackSuccessView: View {
                     // 4. Info Banner
                     infoBanner
                     
-                    Spacer(minLength: 20)
-                    
                     // 5. Action Buttons
                     actionButtons
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, 32)
-                .padding(.bottom, 20)
+                // ✅ Checkmark top space = 24
+                .padding(.top, 24)
+                // ✅ Back to feedback button bottom space = 165
+                .padding(.bottom, 165)
             }
         }
         .background(Color.white.ignoresSafeArea())
@@ -252,6 +283,11 @@ extension FeedbackSuccessView {
     private var successStatusSection: some View {
         VStack(spacing: 16) {
             ZStack {
+                // Light green halo/shadow behind the main circle (Figma)
+                Circle()
+                    .fill(successGreen.opacity(0.15))
+                    .frame(width: 88, height: 88)
+                
                 Circle()
                     .fill(successGreen)
                     .frame(width: 64, height: 64)
@@ -289,7 +325,7 @@ extension FeedbackSuccessView {
     }
     
     private var summaryCard: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("Submission summary")
                     .font(.system(size: 16, weight: .bold))
@@ -301,13 +337,15 @@ extension FeedbackSuccessView {
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(primaryBlue)
             }
-            .padding(.bottom, 4)
             
             SummaryRowView(title: "CHILD", value: childGrade.isEmpty ? childName : "\(childName) • \(childGrade)")
             SummaryRowView(title: "CATEGORY", value: category)
             SummaryRowView(title: "SUBJECT", value: subject)
         }
-        .padding(16)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        // ✅ Summary card height = 134
+        .frame(height: 134, alignment: .top)
         .background(Color.white)
         .cornerRadius(12)
         .overlay(
@@ -337,7 +375,8 @@ extension FeedbackSuccessView {
     }
     
     private var actionButtons: some View {
-        VStack(spacing: 12) {
+        // ✅ Space between buttons = 2
+        VStack(spacing: 2) {
             Button(action: {
                 onViewDetailsTapped?()
             }) {

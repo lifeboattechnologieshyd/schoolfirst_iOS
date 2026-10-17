@@ -70,13 +70,13 @@ class EmtyremarksTBLVCll: UITableViewCell {
 
     private func setupIconView() {
         iconBackgroundView.translatesAutoresizingMaskIntoConstraints = false
-        iconBackgroundView.backgroundColor = UIColor(red: 0.93, green: 0.96, blue: 1.0, alpha: 1.0)
+        iconBackgroundView.backgroundColor = UIColor(red: 16/255.0, green: 185/255.0, blue: 129/255.0, alpha: 1.0)
         iconBackgroundView.layer.cornerRadius = 32
         iconBackgroundView.clipsToBounds = true
 
         iconImageView.translatesAutoresizingMaskIntoConstraints = false
         iconImageView.contentMode = .scaleAspectFit
-        iconImageView.tintColor = UIColor(red: 0.25, green: 0.47, blue: 0.95, alpha: 1.0)
+        iconImageView.tintColor = UIColor(red: 0xFF/255.0, green: 0xFF/255.0, blue: 0xFF/255.0, alpha: 1.0)
         iconImageView.image = UIImage(systemName: "text.bubble")
 
         iconBackgroundView.addSubview(iconImageView)
@@ -147,12 +147,12 @@ class EmtyremarksTBLVCll: UITableViewCell {
 
     private func configureDefaultContent() {
         titleLabel.text = "No remarks yet"
-        subtitleLabel.text = "There are no remarks available right now. Check back later for updates from the school."
+        subtitleLabel.text = "There are no remarks available for your child atthe moment."
     }
 
     // MARK: - Optional Configure
     func configure(title: String = "No remarks yet",
-                   subtitle: String = "There are no remarks available right now. Check back later for updates from the school.") {
+                   subtitle: String = "There are no remarks available for your child at the moment.") {
         titleLabel.text = title
         subtitleLabel.text = subtitle
     }

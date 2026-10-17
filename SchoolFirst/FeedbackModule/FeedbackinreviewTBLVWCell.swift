@@ -247,11 +247,11 @@ class FeedbackinreviewTBLVWCell: UITableViewCell {
         configureActivityTimeline(with: feedback)
     }
 
-    // MARK: - ✅ Configure Father Name + First Two Letters Avatar
+    // MARK: - ✅ Configure Father Name + First Two Letters Avatar (from UserManager)
     private func configureFatherNameLabels() {
 
         let fatherName = UserManager.shared.resolvedFatherName
-        print("👨 Father:", fatherName)
+        print("👨 Father Name from UserManager:", fatherName)
 
         // Full father name label
         FathernameLabel.text = fatherName.isEmpty ? "--" : fatherName
@@ -259,6 +259,7 @@ class FeedbackinreviewTBLVWCell: UITableViewCell {
         // First two letters label (used as avatar initials)
         let initials = extractFirstTwoLetters(from: fatherName)
         FathernamefirsttwolettersLabel.text = initials
+        print("🔤 Father Initials:", initials)
     }
 
     // MARK: - ✅ Extract First Two Letters Helper

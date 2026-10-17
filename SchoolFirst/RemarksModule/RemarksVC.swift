@@ -1,4 +1,4 @@
-//
+
 //  RemarksVC.swift
 //  SchoolFirst
 //
@@ -273,6 +273,17 @@ extension RemarksVC: UITableViewDelegate, UITableViewDataSource {
             cell.selectionStyle = .none
             let remark = filteredRemarks[indexPath.row - 1]
             cell.configure(with: remark)
+            
+            // Navigate on "View details" button tap
+            cell.onViewDetailsTapped = { [weak self] in
+                guard let self = self else { return }
+                let storyboard = self.storyboard ?? UIStoryboard(name: "Main", bundle: nil)
+                if let vc = storyboard.instantiateViewController(withIdentifier: "RemarksdetailsVC") as? RemarksdetailsVC {
+                    vc.remark = remark
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
+            }
+            
             return cell
         }
     }
@@ -282,7 +293,7 @@ extension RemarksVC: UITableViewDelegate, UITableViewDataSource {
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
         if indexPath.row == 0 {
-            return 334
+            return 328
         } else if filteredRemarks.isEmpty {
             return 280
         } else {
@@ -295,7 +306,7 @@ extension RemarksVC: UITableViewDelegate, UITableViewDataSource {
         estimatedHeightForRowAt indexPath: IndexPath
     ) -> CGFloat {
         if indexPath.row == 0 {
-            return 334
+            return 328
         } else if filteredRemarks.isEmpty {
             return 280
         } else {

@@ -24,6 +24,7 @@ class FeedbackResolvedVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
+        Tableview.separatorStyle = .none
 
         if feedback == nil {
             print("⚠️ FeedbackResolvedVC — viewDidLoad: feedback is nil. Make sure caller sets vc.feedback before pushing.")
@@ -83,6 +84,6 @@ extension FeedbackResolvedVC: UITableViewDelegate, UITableViewDataSource {
     
     // MARK: - Height for row
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 900
+        return 800
     }
 }

@@ -12,21 +12,18 @@ class SubmitnewfeedbackVC: UIViewController {
     @IBOutlet weak var Tableview: UITableView!
     @IBOutlet weak var Backbutton: UIButton!
 
-    // MARK: - Category Options (replace placeholder IDs with real backend category IDs if available)
-    private let feedbackCategories: [FeedbackCategoryOption] = [
-        FeedbackCategoryOption(id: "ac7e90aa-dc24-4902-8898-6ae67fb56edf", name: "Transport"),
-        FeedbackCategoryOption(id: "b1e4b9f0-1234-4e56-8abc-9f1234567890", name: "Academic"),
-        FeedbackCategoryOption(id: "c2f5c0a1-2345-4f67-9bcd-0f2345678901", name: "Behavior"),
-        FeedbackCategoryOption(id: "d3g6d1b2-3456-4g78-0cde-1g3456789012", name: "Facilities"),
-        FeedbackCategoryOption(id: "e4h7e2c3-4567-4h89-1def-2h4567890123", name: "Other")
-    ]
-
+    // MARK: - Category Options (now loaded dynamically from API)
+    private var feedbackCategories: [FeedbackCategoryOption] = []
     private var selectedCategory: FeedbackCategoryOption?
+    private var isLoadingCategories: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
         setupBackButton()
+
+        // Fetch categories dynamically on load
+        fetchFeedbackCategories()
     }
 
     private func setupTableView() {
@@ -50,34 +47,78 @@ class SubmitnewfeedbackVC: UIViewController {
         }
     }
 
-    // MARK: - Show Category Dropdown (ActionSheet)
-    private func showCategoryPicker(sourceView: UIView) {
+    // MARK: - API Call: Fetch Feedback Categories
+    private func fetchFeedbackCategories() {
 
+        let schoolId = UserManager.shared.resolvedSchoolID
+
+        guard !schoolId.isEmpty else {
+            print("❌ Fetch Categories — schoolId is empty, skipping request")
+            return
+        }
+
+        isLoadingCategories = true
+        print("📡 Fetch Feedback Categories — schoolId: \(schoolId)")
+
+        NetworkManager.shared.request(
+            urlString: API.FEEDBACK_CATEGORIES,
+            method: .GET,
+            requiresAuth: true,
+            parameters: nil,
+            headers: ["X-School-Id": schoolId]
+        ) { [weak self] (result: Result<APIResponse<[FeedbackCategoryItem]>, NetworkError>) in
+
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                self.isLoadingCategories = false
+
+                switch result {
+                case .success(let response):
+                    print("✅ Categories Fetched:", response.description)
+
+                    guard let items = response.data, !items.isEmpty else {
+                        print("⚠️ No categories returned from API")
+                        self.feedbackCategories = []
+                        self.Tableview.reloadData()
+                        return
+                    }
+
+                    // Map API items → dropdown options (only active ones)
+                    self.feedbackCategories = items
+                        .filter { $0.is_active }
+                        .map { FeedbackCategoryOption(id: $0.id, name: $0.name) }
+
+                    print("📦 Loaded \(self.feedbackCategories.count) active categories")
+                    
+                    // ✅ Reload table so the cell builds the dropdown menu with the fetched data
+                    self.Tableview.reloadData()
+
+                case .failure(let error):
+                    print("❌ Fetch Categories Failed:", error)
+                    self.feedbackCategories = []
+                    self.Tableview.reloadData()
+                }
+            }
+        }
+    }
+
+    // MARK: - Fallback Dropdown (ActionSheet) for older iOS (< 14.0)
+    private func showCategoryPicker(sourceView: UIView) {
         let alert = UIAlertController(title: "Select Category", message: nil, preferredStyle: .actionSheet)
 
         for category in feedbackCategories {
             alert.addAction(UIAlertAction(title: category.name, style: .default, handler: { [weak self] _ in
                 guard let self = self else { return }
-
                 self.selectedCategory = category
-                print("✅ Category selected:", category.name, "| id:", category.id)
-
-                // ── Update label directly on the visible cell (avoids full reload,
-                // which would wipe out subject/message text already typed) ──
-                if let cell = self.Tableview.cellForRow(at: IndexPath(row: 0, section: 0)) as? FeedbacksubmitVCTBLVWCell1 {
-                    cell.updateCategoryLabel(category.name)
-                }
+                self.Tableview.reloadData()
             }))
         }
-
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
 
-        // iPad popover support (prevents crash on iPad)
         if let popover = alert.popoverPresentationController {
             popover.sourceView = sourceView
             popover.sourceRect = sourceView.bounds
         }
-
         present(alert, animated: true, completion: nil)
     }
 
@@ -108,21 +149,14 @@ class SubmitnewfeedbackVC: UIViewController {
         submitFeedback(categoryId: category.id, subject: subject, message: message)
     }
 
-    // MARK: - ✅ API Call: Submit New Feedback
+    // MARK: - API Call: Submit New Feedback
     private func submitFeedback(categoryId: String, subject: String, message: String) {
 
-        // ── Resolve IDs from UserManager (UserDefaults-backed) ──
         let schoolId = UserManager.shared.resolvedSchoolID
         let studentId = UserManager.shared.resolvedStudentID
 
-        guard !schoolId.isEmpty else {
-            print("❌ Submit Feedback — schoolId is empty, skipping request")
-            return
-        }
-        guard !studentId.isEmpty else {
-            print("❌ Submit Feedback — studentId is empty, skipping request")
-            return
-        }
+        guard !schoolId.isEmpty else { return }
+        guard !studentId.isEmpty else { return }
 
         let parameters: [String: Any] = [
             "student_id": studentId,
@@ -130,8 +164,6 @@ class SubmitnewfeedbackVC: UIViewController {
             "subject": subject,
             "message": message
         ]
-
-        print("📡 Submit Feedback — schoolId: \(schoolId), studentId: \(studentId), categoryId: \(categoryId)")
 
         NetworkManager.shared.request(
             urlString: API.FEEDBACK_CREATE,
@@ -146,32 +178,20 @@ class SubmitnewfeedbackVC: UIViewController {
 
                 switch result {
                 case .success(let response):
-                    print("✅ Feedback Submitted:", response.description)
-
                     guard let data = response.data else {
-                        print("⚠️ Feedback submitted but response.data is nil")
                         AlertManager.shared.showAlert(title: "Success", message: response.description)
                         return
                     }
-
-                    print("📝 New Feedback ID:", data.id)
-                    print("📌 Status:", data.status)
-
-                    // ── ✅ Navigate to Success Screen with real API data ──
                     self.navigateToSuccessScreen(with: data)
 
-                case .failure(let error):
-                    print("❌ Feedback Submission Failed:", error)
-                    AlertManager.shared.showAlert(
-                        title: "Error",
-                        message: "Failed to submit feedback. Please try again."
-                    )
+                case .failure:
+                    AlertManager.shared.showAlert(title: "Error", message: "Failed to submit feedback. Please try again.")
                 }
             }
         }
     }
 
-    // MARK: - ✅ Navigate to Submission Success Screen
+    // MARK: - Navigate to Submission Success Screen
     private func navigateToSuccessScreen(with data: FeedbackCreateData) {
         let successVC = FeedbackSubmissionsuccessfulVC()
         successVC.feedbackData = data
@@ -195,10 +215,36 @@ extension SubmitnewfeedbackVC: UITableViewDelegate, UITableViewDataSource {
         // Show current category selection (or placeholder)
         cell.updateCategoryLabel(selectedCategory?.name ?? "Select Category")
 
-        // Dropdown tap → show category picker
+        // ✅ 1. Attach native floating menu to the button (iOS 14+)
+        let menuOptions = feedbackCategories.map { (id: $0.id, name: $0.name) }
+        
+        cell.setupMenu(options: menuOptions, selectedId: selectedCategory?.id) { [weak self] id, name in
+            guard let self = self else { return }
+            
+            // User selected an option from floating menu
+            if let chosenCategory = self.feedbackCategories.first(where: { $0.id == id }) {
+                self.selectedCategory = chosenCategory
+                // Reload table to update label and checkmark in menu
+                self.Tableview.reloadData()
+            }
+        }
+
+        // ✅ 2. Handle taps BEFORE data is loaded, or fallback for iOS 13
+        // Note: If UIMenu is active, it intercepts the tap so this won't fire (which is perfect!)
         cell.onCategoryDropdownTapped = { [weak self, weak cell] in
             guard let self = self, let cell = cell else { return }
-            self.showCategoryPicker(sourceView: cell.catogerydropdownbutton)
+
+            if self.isLoadingCategories {
+                AlertManager.shared.showAlert(title: "Please Wait", message: "Loading categories...")
+            } else if self.feedbackCategories.isEmpty {
+                self.fetchFeedbackCategories()
+                AlertManager.shared.showAlert(title: "No Categories", message: "Categories are not available right now. Please try again.")
+            } else {
+                // Fallback for iOS 13 (since it doesn't support UIMenu attached natively)
+                if #unavailable(iOS 14.0) {
+                    self.showCategoryPicker(sourceView: cell.catogerydropdownbutton)
+                }
+            }
         }
 
         // Submit tap → validate + call API

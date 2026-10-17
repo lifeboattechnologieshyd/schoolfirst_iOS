@@ -312,6 +312,21 @@ struct APIResponse<T: Decodable>: Decodable {
         data = try? container.decodeIfPresent(T.self, forKey: .data)
     }
 }
+//*** Feedback catogeries API response
+struct FeedbackCategoryItem: Decodable {
+    let id: String
+    let name: String
+    let description: String
+    let is_active: Bool
+}
+
+// MARK: - Feedback Categories Response
+struct FeedbackCategoriesResponse: Decodable {
+    let success: Bool
+    let description: String
+    let total: Int?
+    let data: [FeedbackCategoryItem]?
+}
 //*** Remarks API resposne model
 
 struct RemarkEntity: Decodable {
