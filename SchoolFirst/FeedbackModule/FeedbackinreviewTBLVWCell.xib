@@ -21,20 +21,17 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Fbk-5E-pmd">
                         <rect key="frame" x="18" y="14" width="333" height="142"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Homework load too high for Grade 6" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UL7-Qg-TyF">
-                                <rect key="frame" x="16" y="50" width="301" height="50"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Homework load too high for Grade 6" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UL7-Qg-TyF">
+                                <rect key="frame" x="16" y="50" width="301" height="48"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="7ef-pX-ZGa"/>
+                                    <constraint firstAttribute="height" constant="48" id="PVX-WX-Acj"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The academic team is reviewing the concern" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xpo-XD-SBJ">
-                                <rect key="frame" x="16" y="111" width="301" height="15"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="15" id="wDI-It-O6v"/>
-                                </constraints>
+                                <rect key="frame" x="16" y="110.66666666666667" width="301" height="13.333333333333329"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="11"/>
                                 <color key="textColor" red="0.8588867188" green="0.8901367188" blue="0.8784179688" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <nil key="highlightedColor"/>
@@ -90,15 +87,15 @@
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="Odm-i3-dBW" secondAttribute="trailing" constant="16" id="92X-rF-1lx"/>
                             <constraint firstAttribute="height" constant="142" id="9ec-Ma-a3u"/>
-                            <constraint firstItem="xpo-XD-SBJ" firstAttribute="trailing" secondItem="UL7-Qg-TyF" secondAttribute="trailing" id="C6E-3p-QiQ"/>
+                            <constraint firstItem="xpo-XD-SBJ" firstAttribute="leading" secondItem="UL7-Qg-TyF" secondAttribute="leading" id="RYO-J3-LSR"/>
                             <constraint firstItem="UL7-Qg-TyF" firstAttribute="leading" secondItem="Fbk-5E-pmd" secondAttribute="leading" constant="16" id="Wff-mp-zFJ"/>
+                            <constraint firstItem="xpo-XD-SBJ" firstAttribute="trailing" secondItem="UL7-Qg-TyF" secondAttribute="trailing" id="Xxr-zc-19L"/>
                             <constraint firstItem="UL7-Qg-TyF" firstAttribute="top" secondItem="Fbk-5E-pmd" secondAttribute="top" constant="50" id="Y2s-sL-20e"/>
                             <constraint firstItem="SRK-ZR-O6Z" firstAttribute="leading" secondItem="Fbk-5E-pmd" secondAttribute="leading" constant="16" id="YPf-4l-yMk"/>
-                            <constraint firstItem="xpo-XD-SBJ" firstAttribute="top" secondItem="UL7-Qg-TyF" secondAttribute="bottom" constant="11" id="Z8T-dL-TAd"/>
                             <constraint firstItem="Odm-i3-dBW" firstAttribute="centerY" secondItem="SRK-ZR-O6Z" secondAttribute="centerY" id="at0-Dr-4OH"/>
                             <constraint firstItem="SRK-ZR-O6Z" firstAttribute="top" secondItem="Fbk-5E-pmd" secondAttribute="top" constant="16" id="cp5-vF-Ho9"/>
                             <constraint firstAttribute="trailing" secondItem="UL7-Qg-TyF" secondAttribute="trailing" constant="16" id="dqG-yf-vyl"/>
-                            <constraint firstItem="xpo-XD-SBJ" firstAttribute="leading" secondItem="UL7-Qg-TyF" secondAttribute="leading" id="vg6-ai-s7Y"/>
+                            <constraint firstAttribute="bottom" secondItem="xpo-XD-SBJ" secondAttribute="bottom" constant="18" id="nqo-H6-0hn"/>
                         </constraints>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
@@ -155,10 +152,10 @@
                                 <color key="textColor" red="0.1333007812" green="0.1685791016" blue="0.2313232422" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="9" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ron-1D-O4Z">
-                                <rect key="frame" x="14" y="60" width="305" height="92"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ron-1D-O4Z">
+                                <rect key="frame" x="14" y="60" width="305" height="60"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="92" id="V3H-rL-m7c"/>
+                                    <constraint firstAttribute="height" constant="60" id="DZ6-R3-UDH"/>
                                 </constraints>
                                 <string key="text">My child spends more than 3 hours every night on homework. This is affecting their sleep and health. I request the school to review the homework policy for Grade 6 students.</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="11"/>
@@ -176,10 +173,10 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Academic" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NgI-QR-VTb">
-                                <rect key="frame" x="251" y="10" width="68" height="23"/>
+                                <rect key="frame" x="239" y="10" width="80" height="23"/>
                                 <color key="backgroundColor" red="0.9331054688" green="0.95703125" blue="0.99609375" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="68" id="gTl-Nn-rIA"/>
+                                    <constraint firstAttribute="width" constant="80" id="gTl-Nn-rIA"/>
                                     <constraint firstAttribute="height" constant="23" id="ljd-Yx-x4h"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="10"/>
@@ -271,10 +268,10 @@
                                 <color key="textColor" red="0.1333007812" green="0.1685791016" blue="0.2313232422" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="9" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="x7e-Y7-iFf">
-                                <rect key="frame" x="14" y="60" width="305" height="92"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="x7e-Y7-iFf">
+                                <rect key="frame" x="14" y="60" width="305" height="60"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="92" id="oJh-Me-bbD"/>
+                                    <constraint firstAttribute="height" constant="60" id="ZuU-j4-wRL"/>
                                 </constraints>
                                 <string key="text">Thank you for sharing your concern. We have escalated this to the Grade 6 academic team and will review homework load for the next cycle. We will update you once the policy review is completed.</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="11"/>
@@ -371,9 +368,12 @@
                 <outlet property="Responsedatelabel" destination="2ej-Cj-4tK" id="CWL-dQ-ukP"/>
                 <outlet property="ResponsemessageLabel" destination="x7e-Y7-iFf" id="HXg-6y-dQg"/>
                 <outlet property="Statuscontainerview" destination="fpA-bs-IMx" id="xeg-0w-Syx"/>
+                <outlet property="View1" destination="Fbk-5E-pmd" id="LtR-sk-OA6"/>
                 <outlet property="feedbackIdlabel" destination="Odm-i3-dBW" id="zHE-s1-FM1"/>
                 <outlet property="feedbacksubjectLabel" destination="UL7-Qg-TyF" id="QyU-Hq-c8U"/>
                 <outlet property="submitparentandgradeanddatelabel" destination="CiY-ZX-MCH" id="4sB-Fe-dvF"/>
+                <outlet property="view2" destination="HYR-gV-L5U" id="sp2-eb-M9D"/>
+                <outlet property="view3" destination="mr3-eY-QfU" id="WbU-f7-VHj"/>
             </connections>
             <point key="canvasLocation" x="-5.343511450381679" y="345.07042253521126"/>
         </tableViewCell>
@@ -384,7 +384,7 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray5Color">
-            <color red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

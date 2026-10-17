@@ -13,9 +13,7 @@ class FeedbackstatusVC: UIViewController {
     @IBOutlet weak var Tableview: UITableView!
     @IBOutlet weak var Backbutton: UIButton!
 
-    // MARK: - ✅ Passed-in Feedback Data
-    // didSet ensures table reloads automatically whenever feedback is assigned,
-    // regardless of whether it's set before or after viewDidLoad.
+    // MARK: - Passed-in Feedback Data
     var feedback: Feedback? {
         didSet {
             print("📦 FeedbackstatusVC — feedback set:", feedback?.subject ?? "nil")
@@ -23,7 +21,6 @@ class FeedbackstatusVC: UIViewController {
         }
     }
 
-    // MARK: - ✅ Feedback ID (used when navigating from Success screen)
     var feedbackId: String?
 
     // MARK: - Lifecycle
@@ -41,29 +38,32 @@ class FeedbackstatusVC: UIViewController {
         Tableview.reloadData()
     }
 
-    // MARK: - ✅ Call API on EVERY screen entry (first open + back navigation)
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         fetchFeedbackDetails()
     }
 
-    // MARK: - Setup Methods
+    // MARK: - Setup
     private func setupTableView() {
         Tableview.delegate = self
         Tableview.dataSource = self
         Tableview.showsVerticalScrollIndicator = false
+        Tableview.separatorStyle = .none
+        Tableview.estimatedRowHeight = 700
 
-        Tableview.register(UINib(nibName: "FeedbacksummuryTBLVWCell", bundle: nil), forCellReuseIdentifier: "FeedbacksummuryTBLVWCell")
+        Tableview.register(
+            UINib(nibName: "FeedbacksummuryTBLVWCell", bundle: nil),
+            forCellReuseIdentifier: "FeedbacksummuryTBLVWCell"
+        )
     }
 
     private func setupBackButton() {
         Backbutton.addTarget(self, action: #selector(backButtonTapped(_:)), for: .touchUpInside)
     }
 
-    // MARK: - ✅ API: Fetch feedback list and pick the matching feedback
+    // MARK: - API
     private func fetchFeedbackDetails() {
 
-        // Prefer explicit feedbackId; fall back to already-assigned feedback.id
         let targetId = feedbackId ?? feedback?.id
 
         guard let targetId = targetId, !targetId.isEmpty else {
@@ -102,39 +102,84 @@ class FeedbackstatusVC: UIViewController {
                     let list = response.data ?? []
                     if let match = list.first(where: { $0.id == targetId }) {
                         print("✅ FeedbackstatusVC — found feedback:", match.subject)
-                        self.feedback = match   // didSet → reloads table
+                        self.feedback = match
                     } else {
                         print("⚠️ FeedbackstatusVC — no feedback found for id:", targetId)
-                        // Keep previously set feedback (if any) so UI is not wiped
                         self.Tableview.reloadData()
                     }
 
                 case .failure(let error):
                     print("❌ FeedbackstatusVC — fetch failed:", error)
-                    // Keep previously set feedback (if any)
                     self.Tableview.reloadData()
                 }
             }
         }
     }
 
-    // MARK: - ✅ Back Action → always land on FeedbackoverviewVC
+    // MARK: - Back
     @IBAction func backButtonTapped(_ sender: UIButton) {
         guard let navigationController = self.navigationController else {
             self.dismiss(animated: true, completion: nil)
             return
         }
 
-        // Pop directly to FeedbackoverviewVC if it exists in the stack
-        // (covers: Overview → Status, and Overview → Submit → Success → Status)
         if let overviewVC = navigationController.viewControllers.first(where: { $0 is FeedbackoverviewVC }) {
             print("⬅️ Popping to FeedbackoverviewVC")
             navigationController.popToViewController(overviewVC, animated: true)
         } else {
-            // Fallback: normal single pop
             print("⬅️ FeedbackoverviewVC not in stack — normal pop")
             navigationController.popViewController(animated: true)
         }
+    }
+
+    // MARK: - ✅ Dynamic row height (subject + message + view1/view2 + timeline)
+    private func textHeight(_ text: String, font: UIFont, width: CGFloat) -> CGFloat {
+        guard !text.isEmpty else { return 0 }
+        let rect = (text as NSString).boundingRect(
+            with: CGSize(width: width, height: .greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            attributes: [.font: font],
+            context: nil
+        )
+        return ceil(rect.height)
+    }
+
+    private func calculatedRowHeight(for feedback: Feedback, tableWidth: CGFloat) -> CGFloat {
+        let width = max(tableWidth - 72, UIScreen.main.bounds.width - 72)
+
+        // Subject (dark card)
+        let subjectH = textHeight(
+            feedback.subject,
+            font: UIFont.systemFont(ofSize: 22, weight: .bold),
+            width: width
+        )
+
+        // Message (inside view1)
+        let messageH = textHeight(
+            feedback.message,
+            font: UIFont.systemFont(ofSize: 15, weight: .regular),
+            width: width
+        )
+
+        // view1 grows with message (chrome ~70 + message + pad)
+        let view1H = max(70 + messageH + 24, 120)
+
+        // view2 — if used as extra label/container near subject
+        let view2H: CGFloat = 24
+
+        // Timeline: submit + responses + final status
+        let timelineCount = 1 + feedback.responses.count + 1
+        let timelineH = CGFloat(timelineCount) * 58.0 + 50.0
+
+        // Fixed chrome:
+        // dark card top (status/id) + padding  ~ 90
+        // gaps                                  ~ 36
+        // yellow banner                         ~ 72
+        // bottom pad                            ~ 28
+        let fixedChrome: CGFloat = 90 + 36 + 72 + 28
+
+        let total = fixedChrome + subjectH + view1H + view2H + timelineH
+        return max(total, 560)
     }
 }
 
@@ -151,7 +196,6 @@ extension FeedbackstatusVC: UITableViewDelegate, UITableViewDataSource {
             for: indexPath
         ) as! FeedbacksummuryTBLVWCell
 
-        // ── Populate cell with API feedback data ──
         if let feedback = feedback {
             cell.configure(with: feedback)
         } else {
@@ -161,7 +205,14 @@ extension FeedbackstatusVC: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
 
+    // ✅ Grows with view1, view2, subject, message
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 800
+        guard let feedback = feedback else { return 700 }
+        let w = tableView.bounds.width > 0 ? tableView.bounds.width : UIScreen.main.bounds.width
+        return calculatedRowHeight(for: feedback, tableWidth: w)
+    }
+
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 700
     }
 }

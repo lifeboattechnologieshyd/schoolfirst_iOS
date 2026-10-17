@@ -14,8 +14,8 @@ class FeedbackoverviewVC: UIViewController {
     @IBOutlet weak var Backbutton: UIButton!
 
     // MARK: - API Data
-    private var feedbackList: [Feedback] = []        // Full list from API
-    private var filteredFeedbackList: [Feedback] = [] // Filtered display list
+    private var feedbackList: [Feedback] = []
+    private var filteredFeedbackList: [Feedback] = []
     
     // MARK: - Current Filter
     private var currentFilter: FeedbackoverviewVCTBLVWCell.FeedbackFilter = .all
@@ -27,11 +27,8 @@ class FeedbackoverviewVC: UIViewController {
         setupBackButton()
 
         Tableview.separatorStyle = .none
-        // ❌ Removed getFeedbackList() from here
-        // (viewDidLoad runs only once — not on back navigation)
     }
 
-    // MARK: - ✅ Call API on EVERY screen entry (first open + back navigation)
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         getFeedbackList()
@@ -42,6 +39,9 @@ class FeedbackoverviewVC: UIViewController {
         Tableview.dataSource = self
         Tableview.showsVerticalScrollIndicator = false
         Tableview.allowsSelection = true
+        
+        // Setup initial estimated height
+        Tableview.estimatedRowHeight = 120
 
         Tableview.register(
             UINib(nibName: "FeedbackoverviewVCTBLVWCell", bundle: nil),
@@ -55,11 +55,7 @@ class FeedbackoverviewVC: UIViewController {
     }
 
     private func setupBackButton() {
-        Backbutton.addTarget(
-            self,
-            action: #selector(backButtonTapped(_:)),
-            for: .touchUpInside
-        )
+        Backbutton.addTarget(self, action: #selector(backButtonTapped(_:)), for: .touchUpInside)
     }
 
     // MARK: - API Call
@@ -67,16 +63,7 @@ class FeedbackoverviewVC: UIViewController {
         let schoolId = UserManager.shared.resolvedSchoolID
         let studentId = UserManager.shared.resolvedStudentID
 
-        guard !schoolId.isEmpty else {
-            print("❌ Feedback API — schoolId is empty, skipping request")
-            return
-        }
-        guard !studentId.isEmpty else {
-            print("❌ Feedback API — studentId is empty, skipping request")
-            return
-        }
-
-        print("📡 Feedback API — schoolId: \(schoolId), studentId: \(studentId)")
+        guard !schoolId.isEmpty, !studentId.isEmpty else { return }
 
         NetworkManager.shared.request(
             urlString: API.FEEDBACK_LIST,
@@ -88,15 +75,11 @@ class FeedbackoverviewVC: UIViewController {
 
             DispatchQueue.main.async {
                 guard let self = self else { return }
-
                 switch result {
                 case .success(let response):
-                    print("✅ Feedback API Success: \(response.success)")
                     self.feedbackList = response.data ?? []
                     self.applyCurrentFilter()
-
-                case .failure(let error):
-                    print("❌ Feedback API Failed: \(error)")
+                case .failure(_):
                     self.feedbackList = []
                     self.filteredFeedbackList = []
                     self.Tableview.reloadData()
@@ -110,30 +93,22 @@ class FeedbackoverviewVC: UIViewController {
         switch currentFilter {
         case .all:
             filteredFeedbackList = feedbackList
-            
         case .pending:
             filteredFeedbackList = feedbackList.filter {
                 let s = $0.status.uppercased()
                 return s == "SUBMITTED" || s == "PENDING"
             }
-            
         case .inReview:
             filteredFeedbackList = feedbackList.filter {
                 let s = $0.status.uppercased()
                 return s == "IN_REVIEW" || s == "IN REVIEW"
             }
-            
         case .resolved:
-            filteredFeedbackList = feedbackList.filter {
-                $0.status.uppercased() == "RESOLVED"
-            }
+            filteredFeedbackList = feedbackList.filter { $0.status.uppercased() == "RESOLVED" }
         }
-        
-        print("🔍 Filter applied: \(currentFilter.rawValue) — Count: \(filteredFeedbackList.count)")
         Tableview.reloadData()
     }
 
-    // MARK: - Back Navigation Action
     @IBAction func backButtonTapped(_ sender: UIButton) {
         if let navigationController = self.navigationController {
             navigationController.popViewController(animated: true)
@@ -142,65 +117,34 @@ class FeedbackoverviewVC: UIViewController {
         }
     }
 
-    // MARK: - Feedback Count Calculation (always based on FULL list)
     private func feedbackCounts() -> (pending: Int, inReview: Int, resolved: Int) {
-        let pendingCount = feedbackList.filter {
-            $0.status.uppercased() == "SUBMITTED" ||
-            $0.status.uppercased() == "PENDING"
-        }.count
-
-        let inReviewCount = feedbackList.filter {
-            $0.status.uppercased() == "IN_REVIEW" ||
-            $0.status.uppercased() == "IN REVIEW"
-        }.count
-
-        let resolvedCount = feedbackList.filter {
-            $0.status.uppercased() == "RESOLVED"
-        }.count
-
+        let pendingCount = feedbackList.filter { $0.status.uppercased() == "SUBMITTED" || $0.status.uppercased() == "PENDING" }.count
+        let inReviewCount = feedbackList.filter { $0.status.uppercased() == "IN_REVIEW" || $0.status.uppercased() == "IN REVIEW" }.count
+        let resolvedCount = feedbackList.filter { $0.status.uppercased() == "RESOLVED" }.count
         return (pendingCount, inReviewCount, resolvedCount)
     }
 
-    // MARK: - Navigate Based on Status
     private func navigateForStatus(_ statusText: String, feedback: Feedback) {
-
         let storyboard = self.storyboard ?? UIStoryboard(name: "Main", bundle: nil)
-
-        let normalized = statusText
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            .uppercased()
-            .replacingOccurrences(of: "_", with: " ")
-
-        print("📍 navigateForStatus — raw status: \(statusText), normalized: \(normalized), feedbackId: \(feedback.id), subject: \(feedback.subject)")
+        let normalized = statusText.trimmingCharacters(in: .whitespacesAndNewlines).uppercased().replacingOccurrences(of: "_", with: " ")
 
         switch normalized {
-
         case "SUBMITTED", "PENDING":
-            if let vc = storyboard.instantiateViewController(
-                withIdentifier: "FeedbackstatusVC"
-            ) as? FeedbackstatusVC {
+            if let vc = storyboard.instantiateViewController(withIdentifier: "FeedbackstatusVC") as? FeedbackstatusVC {
                 vc.feedback = feedback
                 navigationController?.pushViewController(vc, animated: true)
             }
-
         case "IN REVIEW":
-            if let vc = storyboard.instantiateViewController(
-                withIdentifier: "FeedbackinreviewVC"
-            ) as? FeedbackinreviewVC {
+            if let vc = storyboard.instantiateViewController(withIdentifier: "FeedbackinreviewVC") as? FeedbackinreviewVC {
                 vc.feedback = feedback
                 navigationController?.pushViewController(vc, animated: true)
             }
-
         case "RESOLVED":
-            if let vc = storyboard.instantiateViewController(
-                withIdentifier: "FeedbackResolvedVC"
-            ) as? FeedbackResolvedVC {
+            if let vc = storyboard.instantiateViewController(withIdentifier: "FeedbackResolvedVC") as? FeedbackResolvedVC {
                 vc.feedback = feedback
                 navigationController?.pushViewController(vc, animated: true)
             }
-
-        default:
-            print("⚠️ Unknown status tapped: \(statusText)")
+        default: break
         }
     }
 }
@@ -209,81 +153,88 @@ class FeedbackoverviewVC: UIViewController {
 extension FeedbackoverviewVC: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // Row 0 = Summary card
-        // Remaining = filtered feedback list
         return filteredFeedbackList.count + 1
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
-        // MARK: Summary Cell
         if indexPath.row == 0 {
-
-            let cell = tableView.dequeueReusableCell(
-                withIdentifier: "FeedbackoverviewVCTBLVWCell",
-                for: indexPath
-            ) as! FeedbackoverviewVCTBLVWCell
-
+            let cell = tableView.dequeueReusableCell(withIdentifier: "FeedbackoverviewVCTBLVWCell", for: indexPath) as! FeedbackoverviewVCTBLVWCell
             let counts = feedbackCounts()
 
-            cell.updateCounts(
-                pending: counts.pending,
-                inReview: counts.inReview,
-                resolved: counts.resolved
-            )
-            
-            // Keep selected filter highlighted on cell reuse
+            cell.updateCounts(pending: counts.pending, inReview: counts.inReview, resolved: counts.resolved)
             cell.setSelectedFilter(currentFilter)
 
-            // Create New Feedback button
             cell.onCreateNewFeedbackTapped = { [weak self] in
                 guard let self = self else { return }
                 let storyboard = self.storyboard ?? UIStoryboard(name: "Main", bundle: nil)
-                if let submitVC = storyboard.instantiateViewController(
-                    withIdentifier: "SubmitnewfeedbackVC"
-                ) as? SubmitnewfeedbackVC {
+                if let submitVC = storyboard.instantiateViewController(withIdentifier: "SubmitnewfeedbackVC") as? SubmitnewfeedbackVC {
                     self.navigationController?.pushViewController(submitVC, animated: true)
                 }
             }
             
-            // ✅ Handle filter selection (Pending/InReview/Resolved cards + filter buttons)
             cell.onFilterSelected = { [weak self] filter in
                 guard let self = self else { return }
                 self.currentFilter = filter
                 self.applyCurrentFilter()
             }
-
             return cell
         }
 
-        // MARK: Feedback List Cell
-        let cell = tableView.dequeueReusableCell(
-            withIdentifier: "FeedbackoverviewVCTBLVWCell2",
-            for: indexPath
-        ) as! FeedbackoverviewVCTBLVWCell2
-
+        let cell = tableView.dequeueReusableCell(withIdentifier: "FeedbackoverviewVCTBLVWCell2", for: indexPath) as! FeedbackoverviewVCTBLVWCell2
         let feedback = filteredFeedbackList[indexPath.row - 1]
+        
         cell.configure(with: feedback)
-
         cell.onStatusTapped = { [weak self] statusText in
             self?.navigateForStatus(statusText, feedback: feedback)
         }
-
         return cell
     }
 
+    // ✅ FULLY FIXED: Using precise calculations based on device width to avoid empty space and truncation.
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.row == 0 {
-            return 250
+            return 250 // Static height for the top header cell
         }
-        return 108
+        
+        let feedback = filteredFeedbackList[indexPath.row - 1]
+        
+        // 1. Get the actual width of the device screen to calculate exact wrap points.
+        // Assuming ~16 for outer margins + ~16 inner padding = 64pt deduction from total width.
+        let availableWidth = UIScreen.main.bounds.width - 64
+        
+        // 2. Measure exactly how tall the Subject text is.
+        let subjectHeight = feedback.subject.boundingRect(
+            with: CGSize(width: availableWidth, height: .greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            attributes: [.font: UIFont.systemFont(ofSize: 16, weight: .semibold)],
+            context: nil
+        ).height
+        
+        // 3. Measure exactly how tall the Message text is.
+        let messageHeight = feedback.message.boundingRect(
+            with: CGSize(width: availableWidth, height: .greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            attributes: [.font: UIFont.systemFont(ofSize: 14, weight: .regular)],
+            context: nil
+        ).height
+        
+        // 4. Calculate final dynamically perfect height.
+        // `75` accounts for standard padding (Top, bottom, category string layout gaps).
+        let calculatedHeight = ceil(subjectHeight) + ceil(messageHeight) + 75
+        
+        // Ensure it doesn't shrink below the design's minimum (108)
+        return max(calculatedHeight, 108)
+    }
+
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.row == 0 { return 250 }
+        return 120
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         guard indexPath.row > 0 else { return }
         let feedback = filteredFeedbackList[indexPath.row - 1]
-        print("👆 Row tapped — feedbackId: \(feedback.id), status: \(feedback.status)")
         navigateForStatus(feedback.status, feedback: feedback)
     }
 }

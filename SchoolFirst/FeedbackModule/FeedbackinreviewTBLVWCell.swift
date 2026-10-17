@@ -9,6 +9,9 @@ import UIKit
 
 class FeedbackinreviewTBLVWCell: UITableViewCell {
 
+    @IBOutlet weak var view3: UIView!
+    @IBOutlet weak var view2: UIView!
+    @IBOutlet weak var View1: UIView!
     @IBOutlet weak var FathernamefirsttwolettersLabel: UILabel!
     @IBOutlet weak var FathernameLabel: UILabel!   // ✅ FIXED: Must be UILabel (not NSLayoutConstraint)
     @IBOutlet weak var Feedbackmessagebackgroundview: UIView!
@@ -53,6 +56,9 @@ class FeedbackinreviewTBLVWCell: UITableViewCell {
     private var timelineItemViews: [TimelineItemView] = []
     private var connectorViews: [UIView] = []
 
+    // ✅ Dynamic height constraint for Statuscontainerview (replaces fixed XIB height)
+    private var statusHeightConstraint: NSLayoutConstraint?
+
     // MARK: - Timeline Colors
     private let blueDotColor = UIColor(red: 0.23, green: 0.51, blue: 0.96, alpha: 1)
     private let orangeDotColor = UIColor(red: 0.96, green: 0.62, blue: 0.04, alpha: 1)
@@ -91,6 +97,15 @@ class FeedbackinreviewTBLVWCell: UITableViewCell {
         Statuscontainerview.layer.borderColor = grayLineColor.cgColor
         Statuscontainerview.clipsToBounds = true
 
+        // ✅ REMOVE fixed height from XIB so timeline can grow freely
+        removeFixedHeightConstraints(from: Statuscontainerview)
+
+        // ✅ Add our own dynamic height constraint (updated after timeline rebuild)
+        let heightConstraint = Statuscontainerview.heightAnchor.constraint(equalToConstant: 50)
+        heightConstraint.priority = UILayoutPriority(999)
+        heightConstraint.isActive = true
+        statusHeightConstraint = heightConstraint
+
         Statuscontainerview.addSubview(activityTitleLabel)
         Statuscontainerview.addSubview(followingImageView)
         Statuscontainerview.addSubview(followingLabel)
@@ -109,6 +124,25 @@ class FeedbackinreviewTBLVWCell: UITableViewCell {
             followingImageView.widthAnchor.constraint(equalToConstant: 16),
             followingImageView.heightAnchor.constraint(equalToConstant: 16)
         ])
+    }
+
+    // ✅ Strip any height constraints that came from the XIB / storyboard
+    private func removeFixedHeightConstraints(from view: UIView) {
+        // Height constraints attached directly on the view
+        view.constraints
+            .filter { $0.firstAttribute == .height || $0.secondAttribute == .height }
+            .forEach { view.removeConstraint($0) }
+
+        // Height constraints from the superview targeting this view
+        if let superview = view.superview {
+            superview.constraints
+                .filter {
+                    let isHeight = $0.firstAttribute == .height || $0.secondAttribute == .height
+                    let involvesView = ($0.firstItem as? UIView) == view || ($0.secondItem as? UIView) == view
+                    return isHeight && involvesView
+                }
+                .forEach { superview.removeConstraint($0) }
+        }
     }
 
     // MARK: - Clear existing timeline views (used on reuse + before rebuild)
@@ -131,6 +165,11 @@ class FeedbackinreviewTBLVWCell: UITableViewCell {
 
         clearTimeline()
 
+        guard !entries.isEmpty else {
+            statusHeightConstraint?.constant = 50
+            return
+        }
+
         var previousTopAnchorView: UIView = activityTitleLabel
         var previousItemView: TimelineItemView?
 
@@ -145,30 +184,20 @@ class FeedbackinreviewTBLVWCell: UITableViewCell {
             Statuscontainerview.addSubview(itemView)
             timelineItemViews.append(itemView)
 
+            let topConstant: CGFloat = (index == 0) ? 14 : 9
+
             NSLayoutConstraint.activate([
                 itemView.leadingAnchor.constraint(equalTo: Statuscontainerview.leadingAnchor, constant: 13),
-                itemView.trailingAnchor.constraint(equalTo: Statuscontainerview.trailingAnchor, constant: -13)
+                itemView.trailingAnchor.constraint(equalTo: Statuscontainerview.trailingAnchor, constant: -13),
+                itemView.topAnchor.constraint(
+                    equalTo: previousTopAnchorView.bottomAnchor,
+                    constant: topConstant
+                )
             ])
 
-            if index == 0 {
-                itemView.topAnchor.constraint(
-                    equalTo: previousTopAnchorView.bottomAnchor,
-                    constant: 14
-                ).isActive = true
-            } else {
-                itemView.topAnchor.constraint(
-                    equalTo: previousTopAnchorView.bottomAnchor,
-                    constant: 9
-                ).isActive = true
-            }
-
-            // Last item pins to bottom of container
-            if index == entries.count - 1 {
-                itemView.bottomAnchor.constraint(
-                    equalTo: Statuscontainerview.bottomAnchor,
-                    constant: -13
-                ).isActive = true
-            }
+            // ❌ DO NOT pin last item to bottom of container anymore.
+            // That fought the fixed XIB height and crushed/overlapped the labels.
+            // Height is now driven by statusHeightConstraint (see updateStatusContainerHeight).
 
             // Connector line joining previous dot -> current dot
             if let prevItem = previousItemView {
@@ -191,6 +220,39 @@ class FeedbackinreviewTBLVWCell: UITableViewCell {
             previousTopAnchorView = itemView
             previousItemView = itemView
         }
+
+        // ✅ Resize Statuscontainerview so every title + subtitle is fully visible
+        updateStatusContainerHeight()
+    }
+
+    // ✅ Compute exact height needed by header + all timeline items and apply it
+    private func updateStatusContainerHeight() {
+        // Force layout so intrinsic sizes are valid
+        Statuscontainerview.layoutIfNeeded()
+
+        let contentWidth = max(Statuscontainerview.bounds.width - 26, UIScreen.main.bounds.width - 64)
+
+        // Top padding + header label height
+        var totalHeight: CGFloat = 13
+        totalHeight += activityTitleLabel.intrinsicContentSize.height
+        totalHeight += 14 // gap under header before first item
+
+        for (index, itemView) in timelineItemViews.enumerated() {
+            let size = itemView.systemLayoutSizeFitting(
+                CGSize(width: contentWidth, height: UIView.layoutFittingCompressedSize.height),
+                withHorizontalFittingPriority: .required,
+                verticalFittingPriority: .fittingSizeLevel
+            )
+            totalHeight += ceil(size.height)
+            if index < timelineItemViews.count - 1 {
+                totalHeight += 9 // spacing between items
+            }
+        }
+
+        totalHeight += 13 // bottom padding
+
+        statusHeightConstraint?.constant = totalHeight
+        Statuscontainerview.layoutIfNeeded()
     }
 
     // MARK: - Public update (manual / fallback)
@@ -416,6 +478,9 @@ private final class TimelineItemView: UIView {
         label.textColor = UIColor(red: 0.07, green: 0.09, blue: 0.15, alpha: 1) // #111827
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
+        // ✅ Never allow title to be vertically crushed / overlapped
+        label.setContentCompressionResistancePriority(.required, for: .vertical)
+        label.setContentHuggingPriority(.required, for: .vertical)
         return label
     }()
 
@@ -425,6 +490,9 @@ private final class TimelineItemView: UIView {
         label.textColor = UIColor(red: 0.42, green: 0.45, blue: 0.50, alpha: 1) // #6B7280
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
+        // ✅ Never allow subtitle to be vertically crushed / overlapped
+        label.setContentCompressionResistancePriority(.required, for: .vertical)
+        label.setContentHuggingPriority(.required, for: .vertical)
         return label
     }()
 
