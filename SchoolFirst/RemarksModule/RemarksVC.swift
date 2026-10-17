@@ -1,4 +1,4 @@
-
+//
 //  RemarksVC.swift
 //  SchoolFirst
 //
@@ -204,7 +204,11 @@ class RemarksVC: UIViewController {
 extension RemarksVC: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // If there are no remarks, return 2 (Row 0 for cards/header, Row 1 for Empty Cell)
+        // No remarks available for student → only empty cell
+        if allRemarks.isEmpty {
+            return 1
+        }
+        // Filter returned nothing → header + empty cell
         if filteredRemarks.isEmpty {
             return 2
         }
@@ -215,6 +219,17 @@ extension RemarksVC: UITableViewDelegate, UITableViewDataSource {
         _ tableView: UITableView,
         cellForRowAt indexPath: IndexPath
     ) -> UITableViewCell {
+
+        // MARK: No remarks at all — hide all other cells, show only empty cell
+        if allRemarks.isEmpty {
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: "EmtyremarksTBLVCll",
+                for: indexPath
+            ) as? EmtyremarksTBLVCll ?? EmtyremarksTBLVCll()
+            cell.selectionStyle = .none
+            cell.configure()
+            return cell
+        }
 
         if indexPath.row == 0 {
             let cell = tableView.dequeueReusableCell(
@@ -255,7 +270,7 @@ extension RemarksVC: UITableViewDelegate, UITableViewDataSource {
             return cell
 
         } else if filteredRemarks.isEmpty {
-            // MARK: Show empty cell when there are no remarks
+            // MARK: Show empty cell when filter has no matching remarks
             let cell = tableView.dequeueReusableCell(
                 withIdentifier: "EmtyremarksTBLVCll",
                 for: indexPath
@@ -273,7 +288,7 @@ extension RemarksVC: UITableViewDelegate, UITableViewDataSource {
             cell.selectionStyle = .none
             let remark = filteredRemarks[indexPath.row - 1]
             cell.configure(with: remark)
-            
+
             // Navigate on "View details" button tap
             cell.onViewDetailsTapped = { [weak self] in
                 guard let self = self else { return }
@@ -283,7 +298,7 @@ extension RemarksVC: UITableViewDelegate, UITableViewDataSource {
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
             }
-            
+
             return cell
         }
     }
@@ -292,10 +307,15 @@ extension RemarksVC: UITableViewDelegate, UITableViewDataSource {
         _ tableView: UITableView,
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
+        // No remarks available → only empty cell at 800
+        if allRemarks.isEmpty {
+            return 800
+        }
         if indexPath.row == 0 {
             return 328
         } else if filteredRemarks.isEmpty {
-            return 280
+            // Increased to prevent stack view items (green view/image) from being squashed
+            return 450
         } else {
             return 160
         }
@@ -305,10 +325,15 @@ extension RemarksVC: UITableViewDelegate, UITableViewDataSource {
         _ tableView: UITableView,
         estimatedHeightForRowAt indexPath: IndexPath
     ) -> CGFloat {
+        // No remarks available → only empty cell at 800
+        if allRemarks.isEmpty {
+            return 800
+        }
         if indexPath.row == 0 {
             return 328
         } else if filteredRemarks.isEmpty {
-            return 280
+            // Increased to prevent stack view items (green view/image) from being squashed
+            return 450
         } else {
             return 160
         }

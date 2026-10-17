@@ -9,6 +9,7 @@ import UIKit
 
 class RemarksdetailsTBLVCll1: UITableViewCell {
 
+    @IBOutlet weak var TeachernamefirsttwolettersLabel: UILabel!
     @IBOutlet weak var CatogeryLabel1: UILabel!
     @IBOutlet weak var RemarkIDLabel: UILabel!
     @IBOutlet weak var RemarktitleLabel: UILabel!
@@ -43,6 +44,9 @@ class RemarksdetailsTBLVCll1: UITableViewCell {
         RemarkSubjectLabel.text = remark.subject.name
         
         RemarkIDLabel.text = getInitials(from: remark.teacher.name)
+        
+        // Teacher name first two characters
+        TeachernamefirsttwolettersLabel.text = getInitials(from: remark.teacher.name)
         
         StudentnameandgradeLabel.text = "\(remark.student.name) • \(remark.grade.name) \(remark.section.name)"
         
