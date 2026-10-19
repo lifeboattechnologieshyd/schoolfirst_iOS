@@ -269,7 +269,7 @@ class FeedbackinreviewTBLVWCell: UITableViewCell {
     // MARK: - ✅ Configure with API Feedback Data
     func configure(with feedback: Feedback) {
 
-        print("🧩 FeedbackinreviewTBLVWCell configure() called with subject:", feedback.subject)
+        print("FeedbackinreviewTBLVWCell configure() called with subject:", feedback.subject)
 
         // Feedback ID
         feedbackIdlabel.text = "#\(feedback.id)"
