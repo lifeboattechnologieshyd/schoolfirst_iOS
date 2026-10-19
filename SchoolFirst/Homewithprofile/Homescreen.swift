@@ -389,22 +389,8 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
         }
     }
 
-    @IBAction func ProfileEditButtonTapped(_ sender: UIButton) { navigateToEditProfile() }
-
-    private func navigateToEditProfile() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        if let editVC = storyboard.instantiateViewController(withIdentifier: "EditProfileVC") as? EditProfileVC {
-            editVC.hidesBottomBarWhenPushed = true
-            if let nav = navigationController {
-                nav.setNavigationBarHidden(true, animated: false)
-                nav.pushViewController(editVC, animated: true)
-            } else {
-                editVC.modalPresentationStyle = .fullScreen
-                present(editVC, animated: true)
-            }
-        }
-    }
-
+    // ✅ ONLY CHANGE: ProfileEditButton now goes to StudentprofileVC (not EditProfileVC)
+   
     private func navigateToPTM() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         if let PTMVC = storyboard.instantiateViewController(withIdentifier: "PTMhomeVC") as? PTMhomeVC {

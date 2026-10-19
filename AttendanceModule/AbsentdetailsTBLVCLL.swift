@@ -2,13 +2,14 @@
 //  AbsentdetailsTBLVCLL.swift
 //  SchoolFirst
 //
-//  Created by vamshi krishna on 16/10/26.
+//  Created by vamshi krishna on 19/10/26.
 //
 
 import UIKit
 
 class AbsentdetailsTBLVCLL: UITableViewCell {
 
+    @IBOutlet weak var AbsentdateLabel: UILabel!
     @IBOutlet weak var Attendancestatuslabel: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()

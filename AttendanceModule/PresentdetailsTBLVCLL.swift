@@ -9,6 +9,7 @@ import UIKit
 
 class PresentdetailsTBLVCLL: UITableViewCell {
 
+    @IBOutlet weak var PresentdateLabel: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

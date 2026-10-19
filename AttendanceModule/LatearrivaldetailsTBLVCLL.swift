@@ -9,6 +9,7 @@ import UIKit
 
 class LatearrivaldetailsTBLVCLL: UITableViewCell {
 
+    @IBOutlet weak var LatearrivaldateLabel: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

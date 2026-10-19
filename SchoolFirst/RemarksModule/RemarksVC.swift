@@ -239,15 +239,40 @@ extension RemarksVC: UITableViewDelegate, UITableViewDataSource {
 
             cell.selectionStyle = .none
 
-            let academicCount = countForCategory(name: "academic")
-            let behaviourCount = countForCategory(name: "behaviour")
-            let newCount = allRemarks.count
+            // ✅ Extract actual categories ignoring the manual "All" tag
+            let actualCategories = remarkCategories.filter { $0.id != "all" }
+            let top3Categories = Array(actualCategories.prefix(3))
+            
+            // ✅ Defining the default UI colors for the Top 3 cards
+            let colors: [UIColor] = [
+                UIColor(red: 0.25, green: 0.47, blue: 0.95, alpha: 1.0), // Blue
+                UIColor(red: 0.96, green: 0.65, blue: 0.10, alpha: 1.0), // Orange
+                UIColor(red: 0.18, green: 0.73, blue: 0.42, alpha: 1.0)  // Green
+            ]
+            
+            var summaryData: [RemarksTBLVCll1.SummaryCardData] = []
+            
+            if top3Categories.isEmpty {
+                // Fallback struct layout if API categories haven't loaded yet
+                summaryData = [
+                    RemarksTBLVCll1.SummaryCardData(title: "ACADEMIC", count: 0, color: colors[0]),
+                    RemarksTBLVCll1.SummaryCardData(title: "BEHAVIOUR", count: 0, color: colors[1]),
+                    RemarksTBLVCll1.SummaryCardData(title: "NEW", count: 0, color: colors[2])
+                ]
+            } else {
+                // Construct dynamic data using API response
+                for (index, category) in top3Categories.enumerated() {
+                    let count = countForCategory(name: category.name)
+                    summaryData.append(RemarksTBLVCll1.SummaryCardData(
+                        title: category.name,
+                        count: count,
+                        color: colors[index % colors.count]
+                    ))
+                }
+            }
 
-            cell.updateCounts(
-                academic: academicCount,
-                behaviour: behaviourCount,
-                newCount: newCount
-            )
+            // ✅ Pass dynamic data to cell
+            cell.configureSummaryCards(with: summaryData, totalCount: allRemarks.count)
 
             cell.configureCategories(
                 remarkCategories,

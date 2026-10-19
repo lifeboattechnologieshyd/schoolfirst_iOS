@@ -14,9 +14,10 @@ class RemarksTBLVCll1: UITableViewCell {
     var onFilterButtonTapped: (() -> Void)?
     var onCategorySelected: ((String) -> Void)?
 
-    private let academicCard = RemarkSummaryCardView()
-    private let behaviourCard = RemarkSummaryCardView()
-    private let newCard = RemarkSummaryCardView()
+    // ✅ Replaced hardcoded cards with generic ones
+    private let card1 = RemarkSummaryCardView()
+    private let card2 = RemarkSummaryCardView()
+    private let card3 = RemarkSummaryCardView()
     private let stackView = UIStackView()
 
     private let scrollView = UIScrollView()
@@ -26,11 +27,17 @@ class RemarksTBLVCll1: UITableViewCell {
     private var totalCount: Int = 0
     private var selectedFilterButton: UIButton?
 
+    // ✅ Model for dynamic card data
+    struct SummaryCardData {
+        let title: String
+        let count: Int
+        let color: UIColor
+    }
+
     override func awakeFromNib() {
         super.awakeFromNib()
         setupContainerView()
         setupCards()
-        configureCards()
         setupFilterScrollView()
         FilterButton.addTarget(self, action: #selector(mainFilterButtonTapped), for: .touchUpInside)
     }
@@ -59,30 +66,32 @@ class RemarksTBLVCll1: UITableViewCell {
             stackView.heightAnchor.constraint(equalToConstant: 84)
         ])
 
-        stackView.addArrangedSubview(academicCard)
-        stackView.addArrangedSubview(behaviourCard)
-        stackView.addArrangedSubview(newCard)
+        stackView.addArrangedSubview(card1)
+        stackView.addArrangedSubview(card2)
+        stackView.addArrangedSubview(card3)
     }
 
-    private func configureCards() {
-        academicCard.configure(
-            title: "ACADEMIC", count: "0",
-            dotColor: UIColor(red: 0.25, green: 0.47, blue: 0.95, alpha: 1.0),
-            progress: 0,
-            progressColor: UIColor(red: 0.25, green: 0.47, blue: 0.95, alpha: 1.0)
-        )
-        behaviourCard.configure(
-            title: "BEHAVIOUR", count: "0",
-            dotColor: UIColor(red: 0.96, green: 0.65, blue: 0.10, alpha: 1.0),
-            progress: 0,
-            progressColor: UIColor(red: 0.96, green: 0.65, blue: 0.10, alpha: 1.0)
-        )
-        newCard.configure(
-            title: "NEW", count: "0",
-            dotColor: UIColor(red: 0.18, green: 0.73, blue: 0.42, alpha: 1.0),
-            progress: 0,
-            progressColor: UIColor(red: 0.18, green: 0.73, blue: 0.42, alpha: 1.0)
-        )
+    // ✅ Dynamic method to configure the top 3 summary cards based on API categories
+    func configureSummaryCards(with data: [SummaryCardData], totalCount: Int) {
+        let cards = [card1, card2, card3]
+        let total = max(totalCount, 1) // Prevent division by zero
+
+        for i in 0..<3 {
+            if i < data.count {
+                cards[i].isHidden = false
+                let item = data[i]
+                let progress = CGFloat(item.count) / CGFloat(total)
+                cards[i].configure(
+                    title: item.title.uppercased(),
+                    count: "\(item.count)",
+                    dotColor: item.color,
+                    progress: progress,
+                    progressColor: item.color
+                )
+            } else {
+                cards[i].isHidden = true // Hide if less than 3 categories are available
+            }
+        }
     }
 
     private func setupFilterScrollView() {
@@ -233,13 +242,6 @@ class RemarksTBLVCll1: UITableViewCell {
         button.layer.borderColor = UIColor(red: 0.82, green: 0.87, blue: 0.95, alpha: 1.0).cgColor
         selectedFilterButton = button
     }
-
-    func updateCounts(academic: Int, behaviour: Int, newCount: Int) {
-        let total = max(academic + behaviour + newCount, 1)
-        academicCard.update(count: "\(academic)", progress: CGFloat(academic) / CGFloat(total))
-        behaviourCard.update(count: "\(behaviour)", progress: CGFloat(behaviour) / CGFloat(total))
-        newCard.update(count: "\(newCount)", progress: CGFloat(newCount) / CGFloat(total))
-    }
 }
 
 // MARK: - Summary Card View
@@ -321,14 +323,6 @@ private class RemarkSummaryCardView: UIView {
         countLabel.text = count
         dotView.backgroundColor = dotColor
         progressBar.backgroundColor = progressColor
-        currentProgress = max(0, min(progress, 1))
-        setNeedsLayout()
-        layoutIfNeeded()
-        updateProgressWidth()
-    }
-
-    func update(count: String, progress: CGFloat) {
-        countLabel.text = count
         currentProgress = max(0, min(progress, 1))
         setNeedsLayout()
         layoutIfNeeded()

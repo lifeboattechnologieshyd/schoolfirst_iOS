@@ -9,6 +9,7 @@ import UIKit
 
 class FeedbackoverviewVCTBLVWCell: UITableViewCell {
     
+    @IBOutlet weak var viewhistorybutton: UIButton!
     @IBOutlet weak var Containerview: UIView!
     @IBOutlet weak var Containerview2: UIView!
     
@@ -51,6 +52,9 @@ class FeedbackoverviewVCTBLVWCell: UITableViewCell {
         
         // Wire up the Create New Feedback button
         Createnewfeedbackbutton.addTarget(self, action: #selector(createNewFeedbackTapped), for: .touchUpInside)
+        
+        // ✅ REQUIRED CHANGE: Wire up the View History button
+        viewhistorybutton.addTarget(self, action: #selector(viewHistoryTapped), for: .touchUpInside)
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -60,6 +64,11 @@ class FeedbackoverviewVCTBLVWCell: UITableViewCell {
     // MARK: - Button Action
     @objc private func createNewFeedbackTapped() {
         onCreateNewFeedbackTapped?()
+    }
+    
+    // ✅ REQUIRED CHANGE: Action for view history button
+    @objc private func viewHistoryTapped() {
+        applyFilter(.all)
     }
     
     // MARK: - Setup Status Cards

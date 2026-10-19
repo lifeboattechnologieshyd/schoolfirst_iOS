@@ -5,4 +5,13 @@
 //  Created by vamshi krishna on 19/10/26.
 //
 
-import Foundation
+import UIKit
+class leaverequestsVC: UIViewController {
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        
+    }
+            
+    }
