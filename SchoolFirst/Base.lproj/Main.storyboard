@@ -5710,6 +5710,8 @@ The school admin will review it soon.</string>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="Backbutton" destination="vXc-9A-SYp" id="fnH-ez-WVn"/>
+                        <outlet property="DateLabel" destination="KOk-Ub-Gzy" id="MMy-uc-lrq"/>
                         <outlet property="Tableview" destination="uFg-y7-TOP" id="G8Z-eB-cRz"/>
                     </connections>
                 </viewController>
@@ -5801,6 +5803,7 @@ The school admin will review it soon.</string>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="Backbutton" destination="LHH-Yw-KRr" id="NW9-cD-PGX"/>
                         <outlet property="Tableview" destination="GX5-ja-0YC" id="uaf-cL-s75"/>
                     </connections>
                 </viewController>
@@ -5918,12 +5921,29 @@ The school admin will review it soon.</string>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="Academicyearandterm" destination="mwh-an-xok" id="1p1-xM-IzO"/>
+                        <outlet property="Backbutton" destination="j9N-A3-v8N" id="o3p-LT-x7j"/>
                         <outlet property="Tableview" destination="sOH-21-1B8" id="rDi-al-tIW"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="RaS-7E-EcQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="11280" y="4727"/>
+            <point key="canvasLocation" x="11367" y="4732"/>
+        </scene>
+        <!--LeaverequestsuccessVC-->
+        <scene sceneID="lto-3G-dVn">
+            <objects>
+                <viewController storyboardIdentifier="LeaverequestsuccessVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="bva-Uh-pA9" customClass="LeaverequestsuccessVC" customModule="SF_Dev" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="dO7-fN-9Rb">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="84k-aS-hHz"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="8Ou-lp-8ZN" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="12065" y="4746"/>
         </scene>
         <!--WeaklyattendanceVC-->
         <scene sceneID="ugR-Qc-Fdl">
@@ -6014,7 +6034,7 @@ The school admin will review it soon.</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uy5-vu-jPR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="12087" y="4744"/>
+            <point key="canvasLocation" x="12831" y="4758"/>
         </scene>
         <!--AddleavenoteVC-->
         <scene sceneID="nBa-o2-iwL">
@@ -6105,7 +6125,7 @@ The school admin will review it soon.</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7lf-hE-46K" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="12813" y="4769"/>
+            <point key="canvasLocation" x="13585" y="4758"/>
         </scene>
         <!--Leave RejectVC-->
         <scene sceneID="LUf-T5-5J8">
@@ -6191,12 +6211,14 @@ The school admin will review it soon.</string>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="Backbutton" destination="qLA-3b-mXV" id="qfp-8U-Oyr"/>
+                        <outlet property="RejectdateLabel" destination="833-OG-qlx" id="T2B-JA-lTy"/>
                         <outlet property="Tableview" destination="Vr8-lM-Nr1" id="eTW-sS-lsU"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aLq-ez-9t0" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="13568" y="4752"/>
+            <point key="canvasLocation" x="14332" y="4758"/>
         </scene>
         <!--FeedbackoverviewVC-->
         <scene sceneID="12I-FC-n5f">
@@ -6314,7 +6336,7 @@ The school admin will review it soon.</string>
                                             <action selector="backButtonTapped:" destination="e9j-fV-Jri" eventType="touchUpInside" id="rIJ-v9-HYB"/>
                                         </connections>
                                     </button>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Attendance details" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iUR-bo-57m">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Attendance" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iUR-bo-57m">
                                         <rect key="frame" x="52" y="52" width="200" height="18"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="200" id="BeF-yG-Izo"/>
@@ -6324,7 +6346,7 @@ The school admin will review it soon.</string>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Friday, 4 September" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9OB-pa-J3B">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Vikram Malhotra · Class 10-A" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9OB-pa-J3B">
                                         <rect key="frame" x="52" y="72" width="200" height="12"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="12" id="0vi-rK-evk"/>
@@ -6375,6 +6397,7 @@ The school admin will review it soon.</string>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="Backbutton" destination="nlC-l9-KSR" id="AbO-sc-ztb"/>
                         <outlet property="Tableview" destination="a8s-ud-CGo" id="o7O-ve-Q8d"/>
                     </connections>
                 </viewController>
@@ -6466,6 +6489,8 @@ The school admin will review it soon.</string>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="Academicyearandtermlabel" destination="YaC-hk-Ps7" id="6ka-dW-6fp"/>
+                        <outlet property="Backbutton" destination="DYu-cJ-EO4" id="7om-Hv-Pah"/>
                         <outlet property="Tableview" destination="wGi-hb-qZi" id="lh3-K3-t2g"/>
                     </connections>
                 </viewController>
@@ -6557,6 +6582,8 @@ The school admin will review it soon.</string>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="Backbutton" destination="1hS-T3-WdM" id="Nhd-XX-L4a"/>
+                        <outlet property="Latedatelabel" destination="iFa-ok-jxW" id="Xd8-Td-fYd"/>
                         <outlet property="Tableview" destination="FvA-Bn-vgp" id="pVx-gK-Bq1"/>
                     </connections>
                 </viewController>
@@ -14697,28 +14724,28 @@ method (Credit Card, UPI, or Net Banking).</string>
             <color red="0.99607843137254903" green="0.94901960784313721" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="opaqueSeparatorColor">
-            <color red="0.77647058823529413" green="0.77647058823529413" blue="0.78431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.77647058820000003" green="0.77647058820000003" blue="0.7843137255" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray3Color">
-            <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray5Color">
-            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray6Color">
-            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGroupedBackgroundColor">
-            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="tableBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="tertiarySystemGroupedBackgroundColor">
-            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="viewFlipsideBackgroundColor">
             <color red="0.12156862745098039" green="0.12941176470588237" blue="0.14117647058823529" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

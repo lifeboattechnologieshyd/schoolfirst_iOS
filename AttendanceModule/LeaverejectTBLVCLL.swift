@@ -9,6 +9,13 @@ import UIKit
 
 class LeaverejectTBLVCLL: UITableViewCell {
 
+    @IBOutlet weak var BacktoleaverequestButton: UIButton!
+    @IBOutlet weak var ClassandsectionandrollLabel: UILabel!
+    @IBOutlet weak var DocumentattacherornotLabel: UILabel!
+    @IBOutlet weak var RequestdaysLabel: UILabel!
+    @IBOutlet weak var ReasonLabel: UILabel!
+    @IBOutlet weak var RejecteddateLabel: UILabel!
+    @IBOutlet weak var RejectreasonwithdateLabel: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

@@ -230,6 +230,12 @@ struct API {
     
     static let GALLERY_LIST = BASE_URL + "gallery/gallery/list"
     
+    static let STUDENT_LEAVE_REQUESTS = BASE_URL + "attendance/leaves"
+    static let GET_STUDENT_ATTENDANCE = BASE_URL + "attendance/attendance"
+    
+    static let APPLY_STUDENT_LEAVE = BASE_URL + "attendance/apply/leave"
+    
+    
    
     
     

@@ -449,7 +449,7 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
 
     private func navigateToAttendance() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        if let AttendancedashboardVC = storyboard.instantiateViewController(withIdentifier: "AttendancedashboardVC") as? AttendancedashboardVC {
+        if let AttendancedashboardVC = storyboard.instantiateViewController(withIdentifier: "attendancedashboardVC") as? attendancedashboardVC {
             AttendancedashboardVC.hidesBottomBarWhenPushed = true
             if let nav = navigationController {
                 nav.setNavigationBarHidden(true, animated: false)

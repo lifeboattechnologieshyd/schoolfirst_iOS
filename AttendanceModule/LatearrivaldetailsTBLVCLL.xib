@@ -207,10 +207,10 @@ lateness is shared with the class teacher.</string>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Friday, 04 Sep 2026" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9NZ-gP-gzc">
-                                <rect key="frame" x="67" y="30" width="140" height="20"/>
+                                <rect key="frame" x="67" y="30" width="260" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="CT8-LY-e1C"/>
-                                    <constraint firstAttribute="width" constant="140" id="E6K-7c-oc2"/>
+                                    <constraint firstAttribute="width" constant="260" id="E6K-7c-oc2"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                 <color key="textColor" red="0.08630371094" green="0.16076661649999999" blue="0.2824707031" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -360,9 +360,9 @@ lateness is shared with the class teacher.</string>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Class 10 · Section A · Roll 08" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AOL-ua-m6c">
-                                <rect key="frame" x="67" y="225" width="200" height="20"/>
+                                <rect key="frame" x="67" y="225" width="260" height="20"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="200" id="5B6-0E-IvB"/>
+                                    <constraint firstAttribute="width" constant="260" id="5B6-0E-IvB"/>
                                     <constraint firstAttribute="height" constant="20" id="5UA-pp-OMV"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
@@ -411,9 +411,9 @@ lateness is shared with the class teacher.</string>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Bus delay" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OXx-ea-QeP">
-                                <rect key="frame" x="67" y="290" width="200" height="20"/>
+                                <rect key="frame" x="67" y="290" width="260" height="20"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="200" id="AFf-jA-p0k"/>
+                                    <constraint firstAttribute="width" constant="260" id="AFf-jA-p0k"/>
                                     <constraint firstAttribute="height" constant="20" id="XhN-dH-ucT"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
@@ -494,7 +494,14 @@ lateness is shared with the class teacher.</string>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="Classsectionandrollnumberlabel" destination="AOL-ua-m6c" id="h6J-M3-t1h"/>
                 <outlet property="LatearrivaldateLabel" destination="9NZ-gP-gzc" id="Z8a-Mg-fjw"/>
+                <outlet property="LatedateLabel" destination="9NZ-gP-gzc" id="z9o-Hj-vpc"/>
+                <outlet property="LatereasonwithdateLabel" destination="qlF-oP-ebZ" id="GaU-Ex-srD"/>
+                <outlet property="LatetimeLabel" destination="yqr-B1-3NP" id="kFz-c1-nTm"/>
+                <outlet property="LatetimeLabel2" destination="yqr-B1-3NP" id="0H0-oz-pHr"/>
+                <outlet property="MarkedteachernameLabel" destination="FcA-O8-90q" id="4h3-kQ-sOl"/>
+                <outlet property="ReasonLabel" destination="OXx-ea-QeP" id="oye-B1-onV"/>
             </connections>
             <point key="canvasLocation" x="184.73282442748092" y="364.08450704225356"/>
         </tableViewCell>

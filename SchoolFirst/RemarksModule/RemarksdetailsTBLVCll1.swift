@@ -16,6 +16,7 @@ class RemarksdetailsTBLVCll1: UITableViewCell {
     @IBOutlet weak var CatogeryLabel: UILabel!
    
     @IBOutlet weak var StudentnameandgradeLabel: UILabel!
+    @IBOutlet weak var Cantainerview: UIView!
     @IBOutlet weak var RemarkdescriptionLabel: UILabel!
     @IBOutlet weak var RemarkdateandtimeLabel: UILabel!
     @IBOutlet weak var RemarkContextLabel: UILabel!

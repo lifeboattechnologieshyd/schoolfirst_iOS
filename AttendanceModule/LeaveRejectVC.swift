@@ -9,6 +9,8 @@ import UIKit
 
 class LeaveRejectVC: UIViewController {
     
+    @IBOutlet weak var RejectdateLabel: UILabel!
+    @IBOutlet weak var Backbutton: UIButton!
     @IBOutlet weak var Tableview: UITableView!
     
     override func viewDidLoad() {

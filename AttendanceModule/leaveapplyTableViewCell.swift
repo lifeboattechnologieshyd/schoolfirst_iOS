@@ -9,111 +9,101 @@ import UIKit
 
 class leaveapplyTableViewCell: UITableViewCell {
 
+    @IBOutlet weak var Submitrequestbutton: UIButton!
+    @IBOutlet weak var Uploadbutton: UIButton!
+    @IBOutlet weak var Notetextfield: UITextField!
+    @IBOutlet weak var Reasontextfield: UITextField!
+    @IBOutlet weak var Durationtextfield: UITextField!
+    @IBOutlet weak var Studentnametextfield: UITextField!
+    @IBOutlet weak var Todatebutton: UIButton!
+    @IBOutlet weak var Fromdatebutton: UIButton!
+    @IBOutlet weak var LeavetypeLabel: UILabel!
+    @IBOutlet weak var LeavetypedropdownButton: UIButton!
     @IBOutlet weak var Reasonscantainerview: UIView!
-    
-    // MARK: - Reason UI Properties
-    private let reasonTitleLabel = UILabel()
-    private let reasonStackView = UIStackView()
-    private var reasonButtons: [UIButton] = []
-    private var selectedReason: String = "Medical" // Default selection
-    
-    // Colors from Figma
-    private let selectedColor = UIColor(red: 0.25, green: 0.47, blue: 0.95, alpha: 1.0) // App Primary Blue
-    private let unselectedTextColor = UIColor(red: 0.2, green: 0.2, blue: 0.2, alpha: 1.0)
-    
-    // ✅ FIXED: Renamed from 'borderColor' to avoid UIKit conflict
-    private let unselectedBorderColor = UIColor(red: 0.85, green: 0.87, blue: 0.90, alpha: 1.0).cgColor
-    
+
+    // MARK: - Callbacks (handled by LeaveapplyVC)
+    var onFromDateTap: (() -> Void)?
+    var onToDateTap: (() -> Void)?
+    var onLeaveTypeTap: (() -> Void)?
+    var onSubmitTap: (() -> Void)?
+
     override func awakeFromNib() {
         super.awakeFromNib()
         selectionStyle = .none
-        setupReasonSection()
+
+        // Duration is calculated from dates — display only
+        Durationtextfield.isUserInteractionEnabled = false
+
+        Fromdatebutton.addTarget(
+            self,
+            action: #selector(fromDateButtonTapped),
+            for: .touchUpInside
+        )
+
+        Todatebutton.addTarget(
+            self,
+            action: #selector(toDateButtonTapped),
+            for: .touchUpInside
+        )
+
+        LeavetypedropdownButton.addTarget(
+            self,
+            action: #selector(leaveTypeButtonTapped),
+            for: .touchUpInside
+        )
+
+        Submitrequestbutton.addTarget(
+            self,
+            action: #selector(submitButtonTapped),
+            for: .touchUpInside
+        )
+
+        // Tapping the leave type label also opens the leave type card.
+        LeavetypeLabel.isUserInteractionEnabled = true
+        let labelTap = UITapGestureRecognizer(
+            target: self,
+            action: #selector(leaveTypeButtonTapped)
+        )
+        LeavetypeLabel.addGestureRecognizer(labelTap)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
-    
-    // MARK: - Setup Reason Section (Figma)
-    private func setupReasonSection() {
-        // Clean up any existing views just in case
-        Reasonscantainerview.subviews.forEach { $0.removeFromSuperview() }
-        
-        // 1. "Reason" Title Label
-        reasonTitleLabel.text = "Reason"
-        reasonTitleLabel.font = UIFont.systemFont(ofSize: 13, weight: .medium)
-        reasonTitleLabel.textColor = UIColor(red: 0.2, green: 0.2, blue: 0.2, alpha: 1.0)
-        reasonTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        // 2. Horizontal Stack View for Buttons
-        reasonStackView.axis = .horizontal
-        reasonStackView.spacing = 8
-        reasonStackView.distribution = .fillProportionally // Adjusts width based on text
-        reasonStackView.alignment = .fill
-        reasonStackView.translatesAutoresizingMaskIntoConstraints = false
-        
-        // 3. Create Buttons
-        let reasons = ["Medical", "Family", "Religious", "Other"]
-        
-        for (index, reason) in reasons.enumerated() {
-            let button = UIButton(type: .system)
-            button.setTitle(reason, for: .normal)
-            button.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .medium)
-            button.layer.cornerRadius = 8
-            button.tag = index
-            button.addTarget(self, action: #selector(reasonButtonTapped(_:)), for: .touchUpInside)
-            
-            // Height constraint for buttons (Figma shows ~36px)
-            button.heightAnchor.constraint(equalToConstant: 36).isActive = true
-            
-            reasonButtons.append(button)
-            reasonStackView.addArrangedSubview(button)
-        }
-        
-        // Add to container
-        Reasonscantainerview.addSubview(reasonTitleLabel)
-        Reasonscantainerview.addSubview(reasonStackView)
-        
-        // 4. Layout Constraints inside Reasonscantainerview
-        NSLayoutConstraint.activate([
-            reasonTitleLabel.topAnchor.constraint(equalTo: Reasonscantainerview.topAnchor, constant: 0),
-            reasonTitleLabel.leadingAnchor.constraint(equalTo: Reasonscantainerview.leadingAnchor, constant: 0),
-            reasonTitleLabel.trailingAnchor.constraint(equalTo: Reasonscantainerview.trailingAnchor, constant: 0),
-            
-            reasonStackView.topAnchor.constraint(equalTo: reasonTitleLabel.bottomAnchor, constant: 8),
-            reasonStackView.leadingAnchor.constraint(equalTo: Reasonscantainerview.leadingAnchor, constant: 0),
-            reasonStackView.trailingAnchor.constraint(equalTo: Reasonscantainerview.trailingAnchor, constant: 0),
-            reasonStackView.bottomAnchor.constraint(equalTo: Reasonscantainerview.bottomAnchor, constant: 0)
-        ])
-        
-        // Apply initial styling
-        updateButtonStyles()
+
+    // MARK: - Actions
+
+    @objc private func fromDateButtonTapped() {
+        onFromDateTap?()
     }
-    
-    // MARK: - Button Action
-    @objc private func reasonButtonTapped(_ sender: UIButton) {
-        if let title = sender.title(for: .normal) {
-            selectedReason = title
-            updateButtonStyles()
-        }
+
+    @objc private func toDateButtonTapped() {
+        onToDateTap?()
     }
-    
-    // MARK: - Styling
-    private func updateButtonStyles() {
-        for button in reasonButtons {
-            if button.title(for: .normal) == selectedReason {
-                // Selected State
-                button.backgroundColor = selectedColor
-                button.setTitleColor(.white, for: .normal)
-                button.layer.borderWidth = 0
-                button.layer.borderColor = UIColor.clear.cgColor
-            } else {
-                // Unselected State
-                button.backgroundColor = .white
-                button.setTitleColor(unselectedTextColor, for: .normal)
-                button.layer.borderWidth = 1
-                button.layer.borderColor = unselectedBorderColor // ✅ Updated to use the new name
-            }
-        }
+
+    @objc private func leaveTypeButtonTapped() {
+        onLeaveTypeTap?()
+    }
+
+    @objc private func submitButtonTapped() {
+        onSubmitTap?()
+    }
+
+    // MARK: - Public Updates (called by LeaveapplyVC)
+
+    func setFromDateText(_ text: String?) {
+        Fromdatebutton.setTitle(text ?? "Select date", for: .normal)
+    }
+
+    func setToDateText(_ text: String?) {
+        Todatebutton.setTitle(text ?? "Select date", for: .normal)
+    }
+
+    func setLeaveTypeText(_ text: String?) {
+        LeavetypeLabel.text = text ?? "Select leave type"
+    }
+
+    func setDurationText(_ text: String?) {
+        Durationtextfield.text = text ?? ""
     }
 }

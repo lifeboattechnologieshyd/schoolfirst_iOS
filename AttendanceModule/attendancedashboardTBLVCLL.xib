@@ -261,7 +261,7 @@ review.</string>
                                 <color key="textColor" red="0.4038085938" green="0.4548339844" blue="0.537109375" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pending" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0ul-su-9yW">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Present" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0ul-su-9yW">
                                 <rect key="frame" x="383" y="19.666666666666686" width="59" height="19"/>
                                 <color key="backgroundColor" red="0.8510742188" green="0.9765625" blue="0.9018554688" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <constraints>
@@ -414,9 +414,11 @@ review.</string>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="Applyleavebutton" destination="nU8-AY-viK" id="qTy-xl-bGV"/>
                 <outlet property="Dateandbuttonscantainerview" destination="eoG-uY-yNP" id="iwu-VE-O39"/>
                 <outlet property="Graphcantainerview" destination="b7I-gj-IxY" id="Vnz-zy-TWZ"/>
                 <outlet property="Gridcantainerview" destination="EMV-rm-vqm" id="ayE-0G-FTN"/>
+                <outlet property="Pendingleaverequstscantainerview" destination="oYY-OM-vXS" id="efJ-kI-6Hb"/>
             </connections>
             <point key="canvasLocation" x="180.15267175572518" y="466.19718309859155"/>
         </tableViewCell>

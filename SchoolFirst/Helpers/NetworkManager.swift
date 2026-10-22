@@ -312,6 +312,7 @@ struct APIResponse<T: Decodable>: Decodable {
         data = try? container.decodeIfPresent(T.self, forKey: .data)
     }
 }
+
 //*** Feedback catogeries API response
 struct FeedbackCategoryItem: Decodable {
     let id: String
@@ -348,6 +349,302 @@ struct RemarkItem: Decodable {
     let description: String
     let context: String
     let created_at: String
+}
+//***Get LeaveResponse Model
+
+struct LeaveListDataWrapper: Codable {
+    let data: [LeaveListItem]
+}
+
+struct LeaveListItem: Codable {
+    let leaveId: String
+    let student: LeaveListStudent
+    let branch: LeaveListBranch
+    let leaveType: String
+    let startDate: String
+    let endDate: String
+    let leaveDays: [LeaveListDayItem]
+    let totalDays: String
+    let reason: String
+    let note: String?
+    let pdf: String?
+    let status: String
+    let reviewRemarks: String?
+    let reviewedBy: LeaveListReviewer?
+    let reviewedAt: String?
+    let createdAt: String
+
+    enum CodingKeys: String, CodingKey {
+        case leaveId = "leave_id"
+        case student
+        case branch
+        case leaveType = "leave_type"
+        case startDate = "start_date"
+        case endDate = "end_date"
+        case leaveDays = "leave_days"
+        case totalDays = "total_days"
+        case reason
+        case note
+        case pdf
+        case status
+        case reviewRemarks = "review_remarks"
+        case reviewedBy = "reviewed_by"
+        case reviewedAt = "reviewed_at"
+        case createdAt = "created_at"
+    }
+}
+
+struct LeaveListStudent: Codable {
+    let id: String
+    let name: String
+    let admissionNumber: String
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case admissionNumber = "admission_number"
+    }
+}
+
+struct LeaveListBranch: Codable {
+    let id: String
+    let name: String
+}
+
+struct LeaveListDayItem: Codable {
+    let id: String
+    let date: String
+    let duration: String
+    let days: String
+}
+
+struct LeaveListReviewer: Codable {
+    let id: String
+    let name: String
+}
+
+//****leave apply API respsone
+
+struct LeaveApplyRequest: Codable {
+    let studentID: String
+    let leaveType: String
+    let leaveDays: [LeaveDayRequest]
+    let reason: String
+    let pdf: String?
+
+    enum CodingKeys: String, CodingKey {
+        case studentID  = "student_id"
+        case leaveType  = "leave_type"
+        case leaveDays  = "leave_days"
+        case reason
+        case pdf
+    }
+}
+
+struct LeaveDayRequest: Codable {
+    let date: String
+    let duration: String
+}
+
+// MARK: - Response Models
+
+struct LeaveApplyResponse: Codable {
+    let success: Bool
+    let description: String
+    let data: LeaveApplyData?
+}
+
+struct LeaveApplyData: Codable {
+    let leaveID: String
+    let studentID: String
+    let studentName: String
+    let leaveType: String
+    let startDate: String
+    let endDate: String
+    let leaveDays: [LeaveDayResponse]
+    let totalDays: String
+    let reason: String
+    let pdf: String?
+    let status: String
+
+    enum CodingKeys: String, CodingKey {
+        case leaveID     = "leave_id"
+        case studentID   = "student_id"
+        case studentName = "student_name"
+        case leaveType   = "leave_type"
+        case startDate   = "start_date"
+        case endDate     = "end_date"
+        case leaveDays   = "leave_days"
+        case totalDays   = "total_days"
+        case reason
+        case pdf
+        case status
+    }
+}
+
+struct LeaveDayResponse: Codable {
+    let date: String
+    let duration: String
+    let days: String
+}
+//***Get student Attendance model
+struct FetchStudentAttendanceResponseModel: Codable {
+    let success: Bool?
+    let description: String?
+    let data: FetchStudentAttendanceData?
+}
+
+// MARK: - Main Data Container
+struct FetchStudentAttendanceData: Codable {
+    let student: FetchStudentAttendanceStudentDetail?
+    let academicYear: FetchStudentAttendanceAcademicYear?
+    let summary: FetchStudentAttendanceSummary?
+    let monthlyTrend: [FetchStudentAttendanceMonthlyTrend]?
+    let attendance: [FetchStudentAttendanceRecord]?
+
+    enum CodingKeys: String, CodingKey {
+        case student
+        case academicYear = "academic_year"
+        case summary
+        case monthlyTrend = "monthly_trend"
+        case attendance
+    }
+}
+
+// MARK: - Student Detail
+struct FetchStudentAttendanceStudentDetail: Codable {
+    let id: String?
+    let name: String?
+    let admissionNumber: String?
+    let grade: FetchStudentAttendanceNamedEntity?
+    let section: FetchStudentAttendanceNamedEntity?
+    let branch: FetchStudentAttendanceNamedEntity?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case admissionNumber = "admission_number"
+        case grade
+        case section
+        case branch
+    }
+}
+
+// MARK: - Academic Year
+struct FetchStudentAttendanceAcademicYear: Codable {
+    let id: String?
+    let name: String?
+    let startDate: String?
+    let endDate: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case startDate = "start_date"
+        case endDate = "end_date"
+    }
+}
+
+// MARK: - Summary
+struct FetchStudentAttendanceSummary: Codable {
+    let totalDays: Int?
+    let present: Int?
+    let absent: Int?
+    let late: Int?
+    let leave: Int?
+    let halfDay: Int?
+    let eligibleDays: Int?
+    let attendedDays: Int?
+    let attendancePercentage: Double?
+
+    enum CodingKeys: String, CodingKey {
+        case totalDays = "total_days"
+        case present
+        case absent
+        case late
+        case leave
+        case halfDay = "half_day"
+        case eligibleDays = "eligible_days"
+        case attendedDays = "attended_days"
+        case attendancePercentage = "attendance_percentage"
+    }
+}
+
+// MARK: - Monthly Trend Item
+struct FetchStudentAttendanceMonthlyTrend: Codable {
+    let month: String?
+    let year: Int?
+    let totalAttendanceRecords: Int?
+    let present: Int?
+    let absent: Int?
+    let late: Int?
+    let leave: Int?
+    let halfDay: Int?
+    let attendancePercentage: Double?
+
+    enum CodingKeys: String, CodingKey {
+        case month
+        case year
+        case totalAttendanceRecords = "total_attendance_records"
+        case present
+        case absent
+        case late
+        case leave
+        case halfDay = "half_day"
+        case attendancePercentage = "attendance_percentage"
+    }
+}
+
+// MARK: - Individual Attendance Record
+struct FetchStudentAttendanceRecord: Codable {
+    let id: String?
+    let attendanceDate: String?
+    let status: String?
+    let student: FetchStudentAttendanceBasicStudent?
+    let grade: FetchStudentAttendanceNamedEntity?
+    let section: FetchStudentAttendanceNamedEntity?
+    let branch: FetchStudentAttendanceNamedEntity?
+    let remarks: String?
+    let createdAt: String?
+    let markedBy: FetchStudentAttendanceMarkedBy?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case attendanceDate = "attendance_date"
+        case status
+        case student
+        case grade
+        case section
+        case branch
+        case remarks
+        case createdAt = "created_at"
+        case markedBy = "marked_by"
+    }
+}
+
+// MARK: - Basic Student Info (Used in Record)
+struct FetchStudentAttendanceBasicStudent: Codable {
+    let id: String?
+    let name: String?
+    let admissionNumber: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case admissionNumber = "admission_number"
+    }
+}
+
+// MARK: - Generic Named Entity (Grade, Section, Branch)
+struct FetchStudentAttendanceNamedEntity: Codable {
+    let id: String?
+    let name: String?
+}
+
+// MARK: - Marked By Info
+struct FetchStudentAttendanceMarkedBy: Codable {
+    let id: String?
+    let name: String?
 }
 
 //***Remarkscatogories API response Model
