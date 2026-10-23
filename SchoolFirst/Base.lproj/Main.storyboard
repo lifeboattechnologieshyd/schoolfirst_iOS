@@ -6150,7 +6150,7 @@ The school admin will review it soon.</string>
                                             <action selector="backButtonTapped:" destination="e9j-fV-Jri" eventType="touchUpInside" id="No9-V3-GOo"/>
                                         </connections>
                                     </button>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add leave note" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YbC-mb-ycj">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Leave request" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YbC-mb-ycj">
                                         <rect key="frame" x="52" y="52" width="200" height="18"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="200" id="lGA-jU-HHd"/>
@@ -6675,6 +6675,8 @@ The school admin will review it soon.</string>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="BackButton" destination="keg-MU-63A" id="D6N-B9-DeY"/>
+                        <outlet property="DateLabel" destination="ydu-i7-S3e" id="VJt-vW-emc"/>
                         <outlet property="Tableview" destination="lEX-8w-3As" id="xGG-eA-SiK"/>
                     </connections>
                 </viewController>

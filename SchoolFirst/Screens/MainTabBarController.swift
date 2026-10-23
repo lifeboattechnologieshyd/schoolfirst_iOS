@@ -335,9 +335,13 @@ class MainTabBarController: UITabBarController,
         circleButton.backgroundColor = .white
         circleButton.tag = 998
         
-        circleButton.setImage(UIImage(named: "oasis_logo"), for: .normal)
-        circleButton.imageView?.contentMode = .scaleAspectFit
-        circleButton.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        // ✅ Do NOT use clipsToBounds = true here (it kills the shadow).
+        // Image is set safely in applyCircleImage(_:)
+        circleButton.setTitle(nil, for: .normal)
+        circleButton.setTitle(nil, for: .highlighted)
+        
+        // Default placeholder until updateMiddleTabTitleAndImage() runs
+        applyCircleImage(UIImage(named: "MyPlan") ?? UIImage(named: "oasis_logo"))
         
         circleButton.layer.borderWidth = 3
         circleButton.layer.borderColor = UIColor.clear.cgColor
@@ -451,22 +455,73 @@ class MainTabBarController: UITabBarController,
         hideNativeTabBar() // ✅ Extra safety
     }
     
+    // MARK: - Circle image helpers (ONLY change for your requirement)
+    
+    /// Safely applies any image to the circle button so it is always visible.
+    private func applyCircleImage(_ image: UIImage?) {
+        circleButton.setTitle(nil, for: .normal)
+        circleButton.setTitle(nil, for: .highlighted)
+        circleButton.setTitle(nil, for: .disabled)
+        
+        guard let image = image else {
+            circleButton.setImage(nil, for: .normal)
+            return
+        }
+        
+        // ✅ alwaysOriginal → asset colors stay, not tinted away
+        let finalImage = image.withRenderingMode(.alwaysOriginal)
+        
+        circleButton.setImage(finalImage, for: .normal)
+        circleButton.setImage(finalImage, for: .highlighted)
+        circleButton.setImage(finalImage, for: .disabled)
+        
+        circleButton.imageView?.contentMode = .scaleAspectFit
+        circleButton.imageView?.clipsToBounds = true
+        
+        // Keep image padded inside the 60pt circle
+        circleButton.contentHorizontalAlignment = .fill
+        circleButton.contentVerticalAlignment = .fill
+        circleButton.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        
+        // Make sure image view is on top
+        if let imageView = circleButton.imageView {
+            circleButton.bringSubviewToFront(imageView)
+        }
+    }
+    
     func updateMiddleTabTitleAndImage() {
         isSchoolUser = false
         
+        // Always clear title so it never covers the image
+        circleButton.setTitle(nil, for: .normal)
+        circleButton.setTitle(nil, for: .highlighted)
+        
         if UserManager.shared.user?.students?.count ?? 0 > 0 {
-            let first_student = UserManager.shared.user?.students?.first!
+            let first_student = UserManager.shared.user?.students?.first
             if let school = first_student?.school {
-                isSchoolUser = true
-                circleButton.loadImage(url: school.smallLogo ?? "")
+                let logoURL = school.smallLogo ?? ""
+                
+                // ✅ Only treat as school user when URL is actually valid
+                if !logoURL.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    isSchoolUser = true
+                    circleButton.loadImage(url: logoURL)
+                    middleLabel.text = "Home"
+                    return
+                }
             }
         }
         
-        if !isSchoolUser {
-            circleButton.setImage(UIImage(named: "MyPlan"), for: .normal)
+        // ✅ Non-school user OR missing logo → show MyPlan from assets
+        if let myPlanImage = UIImage(named: "MyPlan") {
+            applyCircleImage(myPlanImage)
+        } else if let fallback = UIImage(named: "oasis_logo") {
+            // safety fallback if asset name differs
+            applyCircleImage(fallback)
+            print("⚠️ MyPlan not found in Assets — using oasis_logo. Check exact asset name.")
+        } else {
+            print("⚠️ Neither MyPlan nor oasis_logo found in Assets.xcassets")
         }
         
         middleLabel.text = "Home"
-        circleButton.setTitle("", for: .normal)
     }
 }

@@ -13,9 +13,8 @@ class attendancedashboardVC: UIViewController {
     @IBOutlet weak var Tableview: UITableView!
 
     private var attendanceRecords: [FetchStudentAttendanceRecord] = []
-
-    // Academic year to pass to the absent details screen.
     private var attendanceAcademicYear: FetchStudentAttendanceAcademicYear?
+    private var attendanceResponseData: FetchStudentAttendanceData?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,12 +29,10 @@ class attendancedashboardVC: UIViewController {
         fetchAttendanceData()
     }
 
-    // MARK: - Back Button Action
     @objc private func didTapBackButton() {
         navigationController?.popViewController(animated: true)
     }
 
-    // MARK: - Setup TableView
     private func setupTableView() {
         Tableview.delegate = self
         Tableview.dataSource = self
@@ -65,17 +62,11 @@ class attendancedashboardVC: UIViewController {
         Tableview.tableFooterView = UIView()
     }
 
-    // MARK: - Fetch API Data
     private func fetchAttendanceData() {
         let endpoint = API.GET_STUDENT_ATTENDANCE
 
-        let studentId = UserDefaults.standard.string(
-            forKey: "STUDENT_ID"
-        ) ?? ""
-
-        let schoolId = UserDefaults.standard.string(
-            forKey: "SCHOOL_ID"
-        ) ?? ""
+        let studentId = UserDefaults.standard.string(forKey: "STUDENT_ID") ?? ""
+        let schoolId = UserDefaults.standard.string(forKey: "SCHOOL_ID") ?? ""
 
         let parameters: [String: Any] = [
             "student_id": studentId
@@ -97,25 +88,30 @@ class attendancedashboardVC: UIViewController {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let response):
-                    self?.attendanceRecords =
-                        response.data?.attendance ?? []
-
-                    self?.attendanceAcademicYear =
-                        response.data?.academicYear
-
+                    self?.attendanceResponseData = response.data
+                    self?.attendanceRecords = response.data?.attendance ?? []
+                    self?.attendanceAcademicYear = response.data?.academicYear
                     self?.Tableview.reloadData()
 
                 case .failure(let error):
-                    print(
-                        "Failed to fetch attendance: \(error.localizedDescription)"
-                    )
+                    print("Failed to fetch attendance: \(error.localizedDescription)")
                 }
             }
         }
     }
+
+    // Helper: find record for today from attendance array
+    private func todayRecord() -> FetchStudentAttendanceRecord? {
+        guard let records = attendanceResponseData?.attendance else { return nil }
+        let fmt = DateFormatter()
+        fmt.dateFormat = "yyyy-MM-dd"
+        fmt.locale = Locale(identifier: "en_US_POSIX")
+        let todayStr = fmt.string(from: Date())
+        
+        return records.first { $0.attendanceDate == todayStr }
+    }
 }
 
-// MARK: - UITableViewDelegate & UITableViewDataSource
 extension attendancedashboardVC: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(
@@ -140,6 +136,10 @@ extension attendancedashboardVC: UITableViewDelegate, UITableViewDataSource {
 
             cell.selectionStyle = .none
             cell.delegate = self
+            cell.configure(
+                with: attendanceResponseData,
+                todayRecord: todayRecord()
+            )
 
             return cell
 
@@ -158,23 +158,16 @@ extension attendancedashboardVC: UITableViewDelegate, UITableViewDataSource {
         }
     }
 
-    // MARK: - Open Attendance Details
     func tableView(
         _ tableView: UITableView,
         didSelectRowAt indexPath: IndexPath
     ) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        // Ignore the dashboard cell.
-        guard indexPath.row > 0 else {
-            return
-        }
+        guard indexPath.row > 0 else { return }
 
         let recordIndex = indexPath.row - 1
-
-        guard attendanceRecords.indices.contains(recordIndex) else {
-            return
-        }
+        guard attendanceRecords.indices.contains(recordIndex) else { return }
 
         let selectedRecord = attendanceRecords[recordIndex]
 
@@ -187,110 +180,63 @@ extension attendancedashboardVC: UITableViewDelegate, UITableViewDataSource {
         switch status {
 
         case "ABSENT":
-            // Existing absent navigation.
             guard let detailsVC = storyboard.instantiateViewController(
                 withIdentifier: "AbsentdetailsVC"
-            ) as? AbsentdetailsVC else {
-                return
-            }
-
+            ) as? AbsentdetailsVC else { return }
             detailsVC.attendanceRecord = selectedRecord
             detailsVC.academicYear = attendanceAcademicYear
-
-            navigationController?.pushViewController(
-                detailsVC,
-                animated: true
-            )
+            navigationController?.pushViewController(detailsVC, animated: true)
 
         case "LATE":
-            // Existing late navigation.
             guard let detailsVC = storyboard.instantiateViewController(
                 withIdentifier: "LatearrivaldetailsVC"
-            ) as? LatearrivaldetailsVC else {
-                return
-            }
-
+            ) as? LatearrivaldetailsVC else { return }
             detailsVC.attendanceRecord = selectedRecord
-
-            navigationController?.pushViewController(
-                detailsVC,
-                animated: true
-            )
+            navigationController?.pushViewController(detailsVC, animated: true)
 
         case "PRESENT":
-            // Open present details with the selected date's record.
             guard let detailsVC = storyboard.instantiateViewController(
                 withIdentifier: "PresentdetailsVC"
-            ) as? PresentdetailsVC else {
-                return
-            }
-
+            ) as? PresentdetailsVC else { return }
             detailsVC.attendanceRecord = selectedRecord
-
-            navigationController?.pushViewController(
-                detailsVC,
-                animated: true
-            )
+            navigationController?.pushViewController(detailsVC, animated: true)
 
         default:
-            // No navigation for other attendance statuses.
             return
         }
     }
 
-    // MARK: - Cell Height
     func tableView(
         _ tableView: UITableView,
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
-        if indexPath.row == 0 {
-            return 920
-        } else {
-            return 76
-        }
+        return indexPath.row == 0 ? 920 : 76
     }
 
     func tableView(
         _ tableView: UITableView,
         estimatedHeightForRowAt indexPath: IndexPath
     ) -> CGFloat {
-        if indexPath.row == 0 {
-            return 920
-        } else {
-            return 76
-        }
+        return indexPath.row == 0 ? 920 : 76
     }
 }
 
-// MARK: - AttendancedashboardTBLVCLLDelegate
 extension attendancedashboardVC: AttendancedashboardTBLVCLLDelegate {
 
     func didTapApplyLeaveButton() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-
         if let leaveApplyVC = storyboard.instantiateViewController(
             withIdentifier: "LeaveapplyVC"
         ) as? LeaveapplyVC {
-            navigationController?.pushViewController(
-                leaveApplyVC,
-                animated: true
-            )
+            navigationController?.pushViewController(leaveApplyVC, animated: true)
         }
     }
 
-    // MARK: - Pending Leave Requests Navigation
     func didTapPendingLeaveRequests() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-
         guard let leaveRequestsVC = storyboard.instantiateViewController(
             withIdentifier: "leaverequestsVC"
-        ) as? leaverequestsVC else {
-            return
-        }
-
-        navigationController?.pushViewController(
-            leaveRequestsVC,
-            animated: true
-        )
+        ) as? leaverequestsVC else { return }
+        navigationController?.pushViewController(leaveRequestsVC, animated: true)
     }
 }

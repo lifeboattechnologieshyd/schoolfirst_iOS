@@ -1437,6 +1437,34 @@ struct RouteStop: Codable {
 }
 
 //*** - Student Profile API Response Struct
+struct StudentDocument: Decodable {
+    let id: String
+    let documentType: String
+    let title: String
+    let fileUrl: String?
+    let academicYear: ProfileIdName?
+    let remarks: String?
+    let status: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, title, remarks, status
+        case documentType = "document_type"
+        case fileUrl = "file_url"
+        case academicYear = "academic_year"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(String.self, forKey: .id) ?? ""
+        documentType = try container.decodeIfPresent(String.self, forKey: .documentType) ?? ""
+        title = try container.decodeIfPresent(String.self, forKey: .title) ?? ""
+        fileUrl = try container.decodeIfPresent(String.self, forKey: .fileUrl)
+        academicYear = try container.decodeIfPresent(ProfileIdName.self, forKey: .academicYear)
+        remarks = try container.decodeIfPresent(String.self, forKey: .remarks)
+        status = try container.decodeIfPresent(String.self, forKey: .status)
+    }
+}
+
 struct StudentProfileResponse: Decodable {
     let success: Bool
     let description: String
@@ -1455,6 +1483,7 @@ struct StudentProfileResponse: Decodable {
         data = try container.decodeIfPresent(StudentProfileData.self, forKey: .data)
     }
 }
+
 struct StudentProfileData: Decodable {
     let id: String
     let name: String
@@ -1488,6 +1517,9 @@ struct StudentProfileData: Decodable {
     let transport: ProfileTransport?
     let hostelType: String
 
+    // ✅ ADDED
+    let documents: [StudentDocument]?
+
     enum CodingKeys: String, CodingKey {
         case id, name, gender, email, address, status, board, religion, caste
         case photoUrl = "photo_url"
@@ -1506,6 +1538,7 @@ struct StudentProfileData: Decodable {
         case emergencyContact = "emergency_contact"
         case previousSchool = "previous_school"
         case hostelType = "hostel_type"
+        case documents // ✅ ADDED
     }
 
     init(from decoder: Decoder) throws {
@@ -1541,11 +1574,9 @@ struct StudentProfileData: Decodable {
         previousSchool = try container.decodeIfPresent(ProfilePreviousSchool.self, forKey: .previousSchool)
         transport = try container.decodeIfPresent(ProfileTransport.self, forKey: .transport)
         hostelType = try container.decodeIfPresent(String.self, forKey: .hostelType) ?? ""
+        documents = try container.decodeIfPresent([StudentDocument].self, forKey: .documents) // ✅ ADDED
     }
 
-    // MARK: - Formatted Date Helpers
-    
-    /// Formats birth date, e.g., "10 May 2018"
     var formattedDateOfBirth: String {
         let inputFormatter = DateFormatter()
         inputFormatter.dateFormat = "yyyy-MM-dd"
@@ -1557,7 +1588,6 @@ struct StudentProfileData: Decodable {
         return dateOfBirth
     }
 
-    /// Formats admission date, e.g., "01 Jun 2025"
     var formattedAdmissionDate: String {
         let inputFormatter = DateFormatter()
         inputFormatter.dateFormat = "yyyy-MM-dd"

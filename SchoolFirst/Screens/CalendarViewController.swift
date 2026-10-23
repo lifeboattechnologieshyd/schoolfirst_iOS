@@ -24,7 +24,7 @@ class CalendarViewController: UIViewController {
     @IBOutlet weak var colVw: UICollectionView!
     override func viewDidLoad() {
         super.viewDidLoad()
-        imgProfile.loadImage(url: UserManager.shared.user?.profileImage ?? "", placeHolderImage: "dummy_kid_profile_pic")
+        imgProfile.loadImage(url: UserManager.shared.user?.profileImage ?? "", placeHolderImage: "dummy_profile_pic")
 
         self.colVw.register(UINib(nibName: "DateCell", bundle: nil), forCellWithReuseIdentifier: "DateCell")
         self.tblVw.register(UINib(nibName: "EventTableCell", bundle: nil), forCellReuseIdentifier: "EventTableCell")

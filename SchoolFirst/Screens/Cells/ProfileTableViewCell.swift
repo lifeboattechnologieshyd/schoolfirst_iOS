@@ -26,7 +26,7 @@ class ProfileTableViewCell: UITableViewCell {
         shareView.applyCardShadow()
         lblName.text = UserManager.shared.user?.username
         lblMobile.text = "\(UserManager.shared.user?.mobile ?? 0)"
-        imgView.loadImage(url: UserManager.shared.user?.profileImage ?? "", placeHolderImage: "dummy_kid_profile_pic")
+        imgView.loadImage(url: UserManager.shared.user?.profileImage ?? "", placeHolderImage: "dummy_profile_pic")
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

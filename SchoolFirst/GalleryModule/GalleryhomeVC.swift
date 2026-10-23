@@ -13,6 +13,9 @@ class GalleryhomeVC: UIViewController {
     
     private var selectedIndex: Int = 0
     private var hasAlbums: Bool = true
+    
+    // ✅ ADDED: tracks View All expanded state
+    private var isViewAllExpanded: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -102,16 +105,21 @@ class GalleryhomeVC: UIViewController {
         eventsTableView.register(UINib(nibName: "ALLEventTableViewCell", bundle: nil), forCellReuseIdentifier: "ALLEventTableViewCell")
         eventsTableView.register(UINib(nibName: "SingleeventTableViewCell", bundle: nil), forCellReuseIdentifier: "SingleeventTableViewCell")
         eventsTableView.register(EmtyalbumsTableViewCell.self, forCellReuseIdentifier: "EmtyalbumsTableViewCell")
+        
+        // ✅ ADDED: register full-grid cell for View All
+        eventsTableView.register(UINib(nibName: "AllcatogeryimagesTableViewCell", bundle: nil), forCellReuseIdentifier: "AllcatogeryimagesTableViewCell")
     }
 
     // MARK: - Navigation
     private func navigateToSingleEventGallery(albumIndex: Int) {
-        guard albumIndex < filteredAlbums.count else { return }
-        let album = filteredAlbums[albumIndex]
+        // ✅ ADDED: use correct array based on expanded state
+        let targetArray = isViewAllExpanded ? allAlbums : filteredAlbums
+        guard albumIndex < targetArray.count else { return }
+        let album = targetArray[albumIndex]
 
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SingleeventsGalleryVC") as? SingleeventsGalleryVC {
-            vc.album = album // PASS DATA
+            vc.album = album
             navigationController?.pushViewController(vc, animated: true)
             return
         }
@@ -131,6 +139,7 @@ extension GalleryhomeVC: UICollectionViewDelegate, UICollectionViewDataSource, U
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         selectedIndex = indexPath.item
+        isViewAllExpanded = false // ✅ ADDED: reset when changing category
         collectionView.reloadData()
         filterAlbums()
     }
@@ -144,23 +153,41 @@ extension GalleryhomeVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 // MARK: - UITableView (Albums)
 extension GalleryhomeVC: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { return 1 }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if !hasAlbums {
             let cell = tableView.dequeueReusableCell(withIdentifier: "EmtyalbumsTableViewCell", for: indexPath) as! EmtyalbumsTableViewCell
             cell.configure(category: categories[safe: selectedIndex]?.name ?? "All")
             cell.onBrowseAllTapped = { [weak self] in
                 self?.selectedIndex = 0
+                self?.isViewAllExpanded = false // ✅ ADDED: reset
                 self?.EventtypeCollectionview.reloadData()
                 self?.filterAlbums()
             }
             return cell
         }
 
+        // ✅ ADDED: All / View All expanded state
         if selectedIndex == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "ALLEventTableViewCell", for: indexPath) as! ALLEventTableViewCell
-            cell.configure(with: filteredAlbums)
-            cell.onAlbumTapped = { [weak self] idx in self?.navigateToSingleEventGallery(albumIndex: idx) }
-            return cell
+            if isViewAllExpanded {
+                // Show full grid of all categories albums (Figma style)
+                let cell = tableView.dequeueReusableCell(withIdentifier: "AllcatogeryimagesTableViewCell", for: indexPath) as! AllcatogeryimagesTableViewCell
+                cell.configure(with: allAlbums)
+                cell.onAlbumTapped = { [weak self] idx in self?.navigateToSingleEventGallery(albumIndex: idx) }
+                return cell
+            } else {
+                // Default header cell with Latest + View All button
+                let cell = tableView.dequeueReusableCell(withIdentifier: "ALLEventTableViewCell", for: indexPath) as! ALLEventTableViewCell
+                cell.configure(with: filteredAlbums)
+                cell.onAlbumTapped = { [weak self] idx in self?.navigateToSingleEventGallery(albumIndex: idx) }
+                
+                // ✅ ADDED: when View All tapped
+                cell.onViewAllTapped = { [weak self] in
+                    self?.isViewAllExpanded = true
+                    self?.eventsTableView.reloadData()
+                }
+                return cell
+            }
         }
 
         let cell = tableView.dequeueReusableCell(withIdentifier: "SingleeventTableViewCell", for: indexPath) as! SingleeventTableViewCell
@@ -168,6 +195,7 @@ extension GalleryhomeVC: UITableViewDataSource, UITableViewDelegate {
         cell.onAlbumTapped = { [weak self] idx in self?.navigateToSingleEventGallery(albumIndex: idx) }
         return cell
     }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat { return hasAlbums ? 1000 : 480 }
 }
 

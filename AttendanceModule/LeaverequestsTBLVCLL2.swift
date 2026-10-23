@@ -57,7 +57,7 @@ class LeaverequestsTBLVCLL2: UITableViewCell {
             blue: 0.38,
             alpha: 1.0
         )
-        ReasonLabel.numberOfLines = 1
+        ReasonLabel.numberOfLines = 2
         ReasonLabel.lineBreakMode = .byTruncatingTail
 
         RemarkLabel.font = .systemFont(ofSize: 12, weight: .medium)
@@ -70,15 +70,13 @@ class LeaverequestsTBLVCLL2: UITableViewCell {
         RemarkLabel.numberOfLines = 1
         RemarkLabel.lineBreakMode = .byTruncatingTail
 
-        // ✅ Only date will be shown here
         RequestdateLabel.font = .systemFont(ofSize: 11, weight: .bold)
-        RequestdateLabel.numberOfLines = 1
+        RequestdateLabel.numberOfLines = 2
         RequestdateLabel.textAlignment = .left
         RequestdateLabel.lineBreakMode = .byTruncatingTail
 
-        // ✅ Request number will be shown here
         RequestanddateLabel.font = .systemFont(ofSize: 11, weight: .bold)
-        RequestanddateLabel.numberOfLines = 1
+        RequestanddateLabel.numberOfLines = 2
         RequestanddateLabel.textAlignment = .left
         RequestanddateLabel.lineBreakMode = .byTruncatingTail
 
@@ -108,9 +106,6 @@ class LeaverequestsTBLVCLL2: UITableViewCell {
         Statuslabel.textColor = style.statusTextColor
         Statuslabel.backgroundColor = style.statusBackground
 
-        // ✅ Figma style:
-        // Top left: Request 3
-        // Bottom left: 12 Sep
         RequestanddateLabel.textColor = style.accentColor
         RequestanddateLabel.text = "Request \(requestNumber)"
 

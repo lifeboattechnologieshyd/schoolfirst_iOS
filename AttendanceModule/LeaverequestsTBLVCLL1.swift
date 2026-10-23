@@ -50,7 +50,9 @@ class LeaverequestsTBLVCLL1: UITableViewCell {
         term: String,
         selectedFilter: String
     ) {
+        // Populating the default storyboard label
         NumberofrequestsLabel.text = "\(totalRequests) requests"
+        
         AcademicyearLabel.text = academicYear
         Termanddatelabel.text = term
 

@@ -205,6 +205,11 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
             "Submit",
             for: .normal
         )
+        
+        SubmitButton.setTitle(
+            "Submit",
+            for: .disabled
+        )
 
         accessibilityLabel = nil
         accessibilityValue = nil
@@ -405,6 +410,17 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
 
         SubmitButton.clipsToBounds =
             true
+            
+        // ✅ Fix: Force the title color to white even when the button is disabled
+        SubmitButton.setTitleColor(
+            .white,
+            for: .normal
+        )
+        
+        SubmitButton.setTitleColor(
+            .white,
+            for: .disabled
+        )
 
         SubmitButton.addTarget(
             self,
@@ -473,6 +489,11 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
                 "Submitting...",
                 for: .normal
             )
+            
+            SubmitButton.setTitle(
+                "Submitting...",
+                for: .disabled
+            )
         }
 
         Addremarkstextview.isEditable =
@@ -496,12 +517,18 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
         SubmitButton.isEnabled =
             false
 
+        // ✅ Same color / fully visible — do not fade or gray out
         SubmitButton.alpha =
-            0.6
+            1
 
         SubmitButton.setTitle(
             "Submitted",
             for: .normal
+        )
+        
+        SubmitButton.setTitle(
+            "Submitted",
+            for: .disabled
         )
 
         // Remark always visible, but not editable
@@ -587,16 +614,22 @@ class HomeworkDetailsTableViewCell: UITableViewCell {
         SubmitButton.isEnabled =
             !isAlreadySubmitted
 
+        // ✅ Keep same visible color when already submitted
         SubmitButton.alpha =
-            isAlreadySubmitted
-            ? 0.6
-            : 1
+            1
 
         SubmitButton.setTitle(
             isAlreadySubmitted
             ? "Submitted"
             : "Submit",
             for: .normal
+        )
+        
+        SubmitButton.setTitle(
+            isAlreadySubmitted
+            ? "Submitted"
+            : "Submit",
+            for: .disabled
         )
 
         // ✅ Remarks always visible; editable only if NOT submitted

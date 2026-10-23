@@ -11,6 +11,7 @@ class PaymentsuccessRecieptVCTableViewCell: UITableViewCell {
 
     // MARK: - Outlets
 
+    @IBOutlet weak var Paymentmethodlabel: UILabel!
     @IBOutlet weak var Paidamount: UILabel!
     @IBOutlet weak var Backtodashboardbutton: UIButton!
     @IBOutlet weak var StudentnameLbl: UILabel!
@@ -37,6 +38,7 @@ class PaymentsuccessRecieptVCTableViewCell: UITableViewCell {
         StudentnameLbl?.text = nil
         PaymentDatetimeLbl?.text = nil
         TransactionIDLbl?.text = nil
+        Paymentmethodlabel?.text = nil   // ✅ reset
     }
 
     // MARK: - Configure with API Data
@@ -61,12 +63,14 @@ class PaymentsuccessRecieptVCTableViewCell: UITableViewCell {
             Paidamount?.text = "₹0"
             PaymentDatetimeLbl?.text = "--"
             TransactionIDLbl?.text = "--"
+            Paymentmethodlabel?.text = "PhonePe"   // ✅ configured
             return
         }
 
         Paidamount?.text = transaction.formattedTotalAmount
         PaymentDatetimeLbl?.text = transaction.formattedPaymentDateTime
         TransactionIDLbl?.text = transaction.referenceNumber
+        Paymentmethodlabel?.text = "PhonePe"        // ✅ configured
 
         print("""
         🧾 RECEIPT RENDERED
@@ -87,6 +91,7 @@ class PaymentsuccessRecieptVCTableViewCell: UITableViewCell {
         StudentnameLbl?.text = "Loading..."
         PaymentDatetimeLbl?.text = "..."
         TransactionIDLbl?.text = "..."
+        Paymentmethodlabel?.text = "..."            // ✅ configured
     }
 
     // MARK: - Fallback
@@ -120,6 +125,8 @@ class PaymentsuccessRecieptVCTableViewCell: UITableViewCell {
         df.dateFormat = "dd MMM yyyy, hh:mm a"
 
         PaymentDatetimeLbl?.text = df.string(from: Date())
+
+        Paymentmethodlabel?.text = "PhonePe"        // ✅ configured
 
         print("🛟 Receipt rendered using LOCAL fallback data")
     }

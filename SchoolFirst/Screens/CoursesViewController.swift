@@ -37,7 +37,7 @@ class CoursesViewController: UIViewController {
             opacity: 0.3,
             radius: 8)
 //        imgVw.loadImage(url: UserManager.shared.selectedSchool?.fullLogo ?? "")
-        userImg.loadImage(url: UserManager.shared.user?.profileImage ?? "", placeHolderImage: "dummy_kid_profile_pic")
+        userImg.loadImage(url: UserManager.shared.user?.profileImage ?? "", placeHolderImage: "dummy_profile_pic")
 
         setupViews()
         loadTab(0)

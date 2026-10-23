@@ -206,9 +206,9 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Friday, 04 Sep 2026" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hUV-gk-5Ha">
-                                <rect key="frame" x="67" y="30" width="140" height="20"/>
+                                <rect key="frame" x="67" y="30" width="260" height="20"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="140" id="0Lp-Nf-0kw"/>
+                                    <constraint firstAttribute="width" constant="260" id="0Lp-Nf-0kw"/>
                                     <constraint firstAttribute="height" constant="20" id="4bt-AP-CYr"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
@@ -257,10 +257,10 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Medical appointment" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sSX-Kr-NFt">
-                                <rect key="frame" x="67" y="95" width="160" height="20"/>
+                                <rect key="frame" x="67" y="95" width="260" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="CwN-kj-Aeg"/>
-                                    <constraint firstAttribute="width" constant="160" id="Pzi-LF-ENV"/>
+                                    <constraint firstAttribute="width" constant="260" id="Pzi-LF-ENV"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                 <color key="textColor" red="0.08630371094" green="0.16076661649999999" blue="0.2824707031" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -308,9 +308,9 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Request 2 · 1 day" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wPI-Xx-xx9">
-                                <rect key="frame" x="67" y="160" width="140" height="20"/>
+                                <rect key="frame" x="67" y="160" width="260" height="20"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="140" id="2DC-r1-AQk"/>
+                                    <constraint firstAttribute="width" constant="260" id="2DC-r1-AQk"/>
                                     <constraint firstAttribute="height" constant="20" id="Gal-KN-Yzq"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
@@ -359,10 +359,10 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Attached" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="289-JL-Kiw">
-                                <rect key="frame" x="67" y="225" width="200" height="20"/>
+                                <rect key="frame" x="67" y="225" width="260" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="VYy-MT-kGF"/>
-                                    <constraint firstAttribute="width" constant="200" id="n9K-M6-Aep"/>
+                                    <constraint firstAttribute="width" constant="260" id="n9K-M6-Aep"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                 <color key="textColor" red="0.08630371094" green="0.16076661649999999" blue="0.2824707031" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -410,10 +410,10 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Class 10 · Section A · Roll 08" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2ac-j7-D1d">
-                                <rect key="frame" x="67" y="290" width="200" height="20"/>
+                                <rect key="frame" x="67" y="290" width="260" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="EfP-gR-NJ7"/>
-                                    <constraint firstAttribute="width" constant="200" id="z1d-0S-wdO"/>
+                                    <constraint firstAttribute="width" constant="260" id="z1d-0S-wdO"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                 <color key="textColor" red="0.08630371094" green="0.16076661649999999" blue="0.2824707031" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -493,7 +493,12 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
-                <outlet property="LeaveapproveddateLabel" destination="hUV-gk-5Ha" id="KeM-AI-bgD"/>
+                <outlet property="ClassandsectionLabel" destination="2ac-j7-D1d" id="Ce4-aA-HdA"/>
+                <outlet property="DocumentattachedornotLabel" destination="289-JL-Kiw" id="P0a-kI-dsb"/>
+                <outlet property="LeavedateLabel" destination="hUV-gk-5Ha" id="jl5-pm-oy8"/>
+                <outlet property="LeavereasonanddateLabel" destination="OGq-LT-Ykg" id="hzZ-Rk-tBN"/>
+                <outlet property="NumberofdaysLabel" destination="wPI-Xx-xx9" id="n89-O3-gAZ"/>
+                <outlet property="ReasonLabel" destination="sSX-Kr-NFt" id="SzF-jc-Lri"/>
             </connections>
             <point key="canvasLocation" x="50.381679389312978" y="289.43661971830988"/>
         </tableViewCell>

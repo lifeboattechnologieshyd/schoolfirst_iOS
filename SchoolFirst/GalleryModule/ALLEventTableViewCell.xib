@@ -128,11 +128,11 @@
                         </constraints>
                         <state key="normal" title="Button"/>
                         <buttonConfiguration key="configuration" style="plain" title="View all">
-                            <fontDescription key="titleFontDescription" type="boldSystem" pointSize="12"/>
+                            <fontDescription key="titleFontDescription" type="boldSystem" pointSize="14"/>
                         </buttonConfiguration>
                     </button>
                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="YfP-2K-oTF">
-                        <rect key="frame" x="16" y="330" width="341" height="319"/>
+                        <rect key="frame" x="0.0" y="330" width="373" height="319"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="zVB-Lm-Lub">
                             <size key="itemSize" width="128" height="128"/>
@@ -145,17 +145,17 @@
                 <constraints>
                     <constraint firstItem="Rd0-e9-wGZ" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="2hk-WQ-TTx"/>
                     <constraint firstItem="dyG-Yt-evk" firstAttribute="leading" secondItem="Rd0-e9-wGZ" secondAttribute="leading" id="3Rs-00-OeJ"/>
-                    <constraint firstAttribute="bottom" secondItem="YfP-2K-oTF" secondAttribute="bottom" constant="10" id="FGT-wC-wAk"/>
                     <constraint firstAttribute="trailing" secondItem="dyG-Yt-evk" secondAttribute="trailing" constant="16" id="Hw2-Va-IxH"/>
                     <constraint firstItem="XzT-78-p5G" firstAttribute="leading" secondItem="dyG-Yt-evk" secondAttribute="leading" id="K4C-k6-pVe"/>
                     <constraint firstItem="XzT-78-p5G" firstAttribute="top" secondItem="dyG-Yt-evk" secondAttribute="bottom" constant="12" id="Ko2-LQ-zdk"/>
                     <constraint firstItem="p3t-NJ-EQw" firstAttribute="leading" secondItem="XzT-78-p5G" secondAttribute="leading" id="LD0-M8-rhS"/>
+                    <constraint firstAttribute="trailing" secondItem="YfP-2K-oTF" secondAttribute="trailing" id="NGo-ef-Q1R"/>
                     <constraint firstItem="Ueu-Od-aDV" firstAttribute="top" secondItem="XzT-78-p5G" secondAttribute="bottom" constant="12" id="OHM-LN-Wea"/>
-                    <constraint firstItem="YfP-2K-oTF" firstAttribute="top" secondItem="p3t-NJ-EQw" secondAttribute="bottom" constant="12" id="axp-JX-Vke"/>
+                    <constraint firstAttribute="bottom" secondItem="YfP-2K-oTF" secondAttribute="bottom" constant="10" id="coO-R8-4h4"/>
+                    <constraint firstItem="YfP-2K-oTF" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="fKi-q0-sqM"/>
                     <constraint firstItem="Rd0-e9-wGZ" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="4" id="fvc-vh-j1L"/>
-                    <constraint firstAttribute="trailing" secondItem="YfP-2K-oTF" secondAttribute="trailing" constant="16" id="iH6-fw-dXB"/>
                     <constraint firstItem="Ueu-Od-aDV" firstAttribute="trailing" secondItem="XzT-78-p5G" secondAttribute="trailing" id="kvc-n9-frk"/>
-                    <constraint firstItem="YfP-2K-oTF" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="nfu-2r-Eg4"/>
+                    <constraint firstItem="YfP-2K-oTF" firstAttribute="top" secondItem="p3t-NJ-EQw" secondAttribute="bottom" constant="12" id="mtD-ER-0jL"/>
                     <constraint firstItem="p3t-NJ-EQw" firstAttribute="top" secondItem="XzT-78-p5G" secondAttribute="bottom" constant="12" id="ogK-Uh-jl6"/>
                     <constraint firstItem="dyG-Yt-evk" firstAttribute="top" secondItem="Rd0-e9-wGZ" secondAttribute="bottom" constant="3" id="qZz-4h-e07"/>
                     <constraint firstItem="XzT-78-p5G" firstAttribute="trailing" secondItem="dyG-Yt-evk" secondAttribute="trailing" id="wPT-qu-ydQ"/>
@@ -169,6 +169,7 @@
                 <outlet property="ImagedescriptionLabel" destination="GvH-MG-Pa2" id="AaI-n0-q10"/>
                 <outlet property="ImagetitleLabel" destination="v6t-l9-heF" id="GmO-9i-yJL"/>
                 <outlet property="Latestimageview" destination="MIY-LO-JDS" id="tkG-dV-3lN"/>
+                <outlet property="Viewallbutton" destination="Ueu-Od-aDV" id="FXQ-2X-S5a"/>
             </connections>
             <point key="canvasLocation" x="34.351145038167935" y="297.53521126760563"/>
         </tableViewCell>
@@ -180,7 +181,7 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray5Color">
-            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

@@ -9,12 +9,26 @@ import UIKit
 
 class ApprovedleavedetailsVC: UIViewController {
     
+    @IBOutlet weak var DateLabel: UILabel!
+    @IBOutlet weak var BackButton: UIButton!
     @IBOutlet weak var Tableview: UITableView!
+    
+    var leaveItem: LeaveListItem?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupTableView()
+        setupBackButton()
+    }
+    
+    // MARK: - Back Button
+    private func setupBackButton() {
+        BackButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
+    }
+    
+    @objc private func didTapBackButton() {
+        navigationController?.popViewController(animated: true)
     }
     
     // MARK: - TableView Setup
@@ -44,12 +58,17 @@ extension ApprovedleavedetailsVC: UITableViewDelegate, UITableViewDataSource {
         cellForRowAt indexPath: IndexPath
     ) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(
+        guard let cell = tableView.dequeueReusableCell(
             withIdentifier: "ApprovedleavedetailsTBLVCLL",
             for: indexPath
-        )
+        ) as? ApprovedleavedetailsTBLVCLL else {
+            return UITableViewCell()
+        }
         
         cell.selectionStyle = .none
+        if let leaveItem = leaveItem {
+            cell.configure(with: leaveItem)
+        }
         return cell
     }
     
