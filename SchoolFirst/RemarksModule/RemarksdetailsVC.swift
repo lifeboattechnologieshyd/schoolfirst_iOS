@@ -17,6 +17,9 @@ class RemarksdetailsVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        Tableview.rowHeight = UITableView.automaticDimension
+        Tableview.estimatedRowHeight = 200
+
         Tableview.separatorStyle = .none
         
         Tableview.delegate = self
