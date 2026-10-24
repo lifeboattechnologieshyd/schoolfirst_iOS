@@ -42,6 +42,9 @@ class FeedbackinreviewVC: UIViewController {
         Tableview.delegate = self
         Tableview.dataSource = self
         
+        Tableview.rowHeight = UITableView.automaticDimension
+        Tableview.estimatedRowHeight = 500
+        
         // Register the Custom XIB/Nib Cell
         let nib = UINib(nibName: "FeedbackinreviewTBLVWCell", bundle: nil)
         Tableview.register(nib, forCellReuseIdentifier: "FeedbackinreviewTBLVWCell")
@@ -90,8 +93,8 @@ extension FeedbackinreviewVC: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     
-    // MARK: - Cell Height (Set to 900)
+    // MARK: - Cell Height (Dynamic)
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 800
+        return UITableView.automaticDimension
     }
 }

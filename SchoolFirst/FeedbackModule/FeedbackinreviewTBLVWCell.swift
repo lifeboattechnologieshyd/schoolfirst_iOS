@@ -75,6 +75,18 @@ class FeedbackinreviewTBLVWCell: UITableViewCell {
         Feedbackmessagelabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
         Feedbackmessagelabel.setContentCompressionResistancePriority(.required, for: .vertical)
 
+        // ✅ Dynamic height for feedbacksubjectLabel & View1
+        feedbacksubjectLabel.numberOfLines = 0
+        feedbacksubjectLabel.lineBreakMode = .byWordWrapping
+        feedbacksubjectLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        feedbacksubjectLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+
+        // ✅ Dynamic height for ResponsemessageLabel & view3
+        ResponsemessageLabel.numberOfLines = 0
+        ResponsemessageLabel.lineBreakMode = .byWordWrapping
+        ResponsemessageLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        ResponsemessageLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+
         setupStatusContainerView()
     }
 

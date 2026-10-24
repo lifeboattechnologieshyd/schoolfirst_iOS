@@ -46,10 +46,6 @@ class FeedbacksummuryTBLVWCell: UITableViewCell {
     private var connectorViews: [UIView] = []
     private var timelineBottomConstraint: NSLayoutConstraint?
 
-    // Keep strong refs so we can replace height constraints on reuse
-    private var view1HeightConstraint: NSLayoutConstraint?
-    private var view2HeightConstraint: NSLayoutConstraint?
-
     // MARK: - Timeline Colors
     private let blueDotColor = UIColor(red: 0.23, green: 0.51, blue: 0.96, alpha: 1)
     private let orangeDotColor = UIColor(red: 0.96, green: 0.62, blue: 0.04, alpha: 1)
@@ -80,24 +76,30 @@ class FeedbacksummuryTBLVWCell: UITableViewCell {
         // ── Subject label ──
         FeedbackSubjectLabel.numberOfLines = 0
         FeedbackSubjectLabel.lineBreakMode = .byWordWrapping
-        FeedbackSubjectLabel.setContentHuggingPriority(.required, for: .vertical)
+        FeedbackSubjectLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
         FeedbackSubjectLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+
+        // ── Submit date label ──
+        SubmitdateLabel.numberOfLines = 0
+        SubmitdateLabel.lineBreakMode = .byWordWrapping
+        SubmitdateLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        SubmitdateLabel.setContentCompressionResistancePriority(.required, for: .vertical)
 
         // ── Message label ──
         FeedbackmessageLabel.numberOfLines = 0
         FeedbackmessageLabel.lineBreakMode = .byWordWrapping
-        FeedbackmessageLabel.setContentHuggingPriority(.required, for: .vertical)
+        FeedbackmessageLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
         FeedbackmessageLabel.setContentCompressionResistancePriority(.required, for: .vertical)
 
         // ── view2 is UILabel — allow multi-line ──
         view2?.numberOfLines = 0
         view2?.lineBreakMode = .byWordWrapping
-        view2?.setContentHuggingPriority(.required, for: .vertical)
+        view2?.setContentHuggingPriority(.defaultHigh, for: .vertical)
         view2?.setContentCompressionResistancePriority(.required, for: .vertical)
 
         // ── CRITICAL: remove fixed height constraints from XIB ──
-        // Without this, view1 / view2 stay locked and clip the labels.
         stripFixedHeight(from: FeedbackSubjectLabel)
+        stripFixedHeight(from: SubmitdateLabel)
         stripFixedHeight(from: FeedbackmessageLabel)
         stripFixedHeight(from: view1)
         stripFixedHeight(from: view2)
@@ -282,80 +284,8 @@ class FeedbacksummuryTBLVWCell: UITableViewCell {
         // Build timeline
         configureActivityTimeline(with: feedback)
 
-        // ✅ After text is set, force view1 / view2 to expand to fit labels
-        expandView1AndView2()
-    }
-
-    // MARK: - ✅ Dynamically size view1 & view2 to fit their labels
-    private func expandView1AndView2() {
-
-        let screenW = UIScreen.main.bounds.width
-        // Inner content width ≈ screen - outer margin - card padding
-        let contentW = max(screenW - 72, 280)
-
-        // --- Subject height (lives in dark header; often related to view2 or sibling) ---
-        let subjectFont = FeedbackSubjectLabel.font ?? UIFont.systemFont(ofSize: 22, weight: .bold)
-        let subjectH = ceil((FeedbackSubjectLabel.text ?? "").boundingRect(
-            with: CGSize(width: contentW, height: .greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin, .usesFontLeading],
-            attributes: [.font: subjectFont],
-            context: nil
-        ).height)
-
-        // --- Message height (lives inside view1) ---
-        let messageFont = FeedbackmessageLabel.font ?? UIFont.systemFont(ofSize: 15, weight: .regular)
-        let messageH = ceil((FeedbackmessageLabel.text ?? "").boundingRect(
-            with: CGSize(width: contentW, height: .greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin, .usesFontLeading],
-            attributes: [.font: messageFont],
-            context: nil
-        ).height)
-
-        // view1 = white card that holds parent row + message
-        // base chrome (avatar row + padding) ≈ 70, plus message + bottom pad
-        let view1Total = max(70 + messageH + 24, 120)
-        applyHeight(view1Total, to: view1, storingIn: &view1HeightConstraint)
-
-        // view2 is UILabel — size it to its own text if it has any;
-        // otherwise give it subject-related space if used as subject container label
-        if let v2 = view2 {
-            let v2Text = v2.text ?? FeedbackSubjectLabel.text ?? ""
-            let v2Font = v2.font ?? subjectFont
-            let v2H = ceil(v2Text.boundingRect(
-                with: CGSize(width: contentW, height: .greatestFiniteMagnitude),
-                options: [.usesLineFragmentOrigin, .usesFontLeading],
-                attributes: [.font: v2Font],
-                context: nil
-            ).height)
-            // If view2 is just a small label, don't force huge height;
-            // if it holds subject-like text, use measured height.
-            let finalV2 = max(v2H + 8, 20)
-            applyHeight(finalV2, to: v2, storingIn: &view2HeightConstraint)
-        }
-
-        // Also ensure subject label itself can show full text
-        // (in case a leftover height constraint still fights it)
-        stripFixedHeight(from: FeedbackSubjectLabel)
-        stripFixedHeight(from: FeedbackmessageLabel)
-
         setNeedsLayout()
         layoutIfNeeded()
-    }
-
-    private func applyHeight(_ height: CGFloat, to view: UIView?, storingIn storage: inout NSLayoutConstraint?) {
-        guard let view = view else { return }
-
-        // Remove previous dynamic height we added
-        storage?.isActive = false
-        storage = nil
-
-        // Strip any remaining fixed heights from XIB
-        stripFixedHeight(from: view)
-
-        let c = view.heightAnchor.constraint(equalToConstant: height)
-        c.priority = UILayoutPriority(999) // high but not required — avoids unsatisfiable conflicts
-        c.isActive = true
-        storage = c
     }
 
     // MARK: - Father initials

@@ -39,23 +39,27 @@ class FeedbackoverviewVCTBLVWCell2: UITableViewCell {
         // ── Subject label – dynamic height ──
         feedbacksubject.numberOfLines = 0
         feedbacksubject.lineBreakMode = .byWordWrapping
-        feedbacksubject.setContentHuggingPriority(.required, for: .vertical)          // ✅
-        feedbacksubject.setContentCompressionResistancePriority(.required, for: .vertical) // ✅
+        feedbacksubject.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        feedbacksubject.setContentCompressionResistancePriority(.required, for: .vertical)
+
+        // ── Category & Date label ──
+        createddateandcatogeryandgradelabel.numberOfLines = 0
+        createddateandcatogeryandgradelabel.lineBreakMode = .byWordWrapping
+        createddateandcatogeryandgradelabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        createddateandcatogeryandgradelabel.setContentCompressionResistancePriority(.required, for: .vertical)
 
         // ── Message label – dynamic height ──
         feedbackmessage.numberOfLines = 0
         feedbackmessage.lineBreakMode = .byWordWrapping
-        feedbackmessage.setContentHuggingPriority(.required, for: .vertical)          // ✅
-        feedbackmessage.setContentCompressionResistancePriority(.required, for: .vertical) // ✅
+        feedbackmessage.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        feedbackmessage.setContentCompressionResistancePriority(.required, for: .vertical)
 
-        // ── Container view – remove any fixed-height constraint from IB ──
+        // ── Container view – remove any fixed-height constraints from IB ──
         cantainerview.clipsToBounds = true
-        removeFixedHeightConstraints(from: cantainerview)                              // ✅
-
-        // ── Minimum cell height (never collapses to 0) ──
-        let minHeight = contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: 108)
-        minHeight.priority = UILayoutPriority(999)
-        minHeight.isActive = true
+        removeFixedHeightConstraints(from: cantainerview)
+        removeFixedHeightConstraints(from: feedbacksubject)
+        removeFixedHeightConstraints(from: createddateandcatogeryandgradelabel)
+        removeFixedHeightConstraints(from: feedbackmessage)
     }
 
     // MARK: - Layout – critical for multi-line label sizing

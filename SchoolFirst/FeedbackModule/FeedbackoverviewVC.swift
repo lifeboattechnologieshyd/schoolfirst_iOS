@@ -40,8 +40,8 @@ class FeedbackoverviewVC: UIViewController {
         Tableview.showsVerticalScrollIndicator = false
         Tableview.allowsSelection = true
         
-        // Setup initial estimated height
-        Tableview.estimatedRowHeight = 120
+        Tableview.rowHeight = UITableView.automaticDimension
+        Tableview.estimatedRowHeight = 100
 
         Tableview.register(
             UINib(nibName: "FeedbackoverviewVCTBLVWCell", bundle: nil),
@@ -190,45 +190,17 @@ extension FeedbackoverviewVC: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
 
-    // ✅ FULLY FIXED: Using precise calculations based on device width to avoid empty space and truncation.
+    // MARK: - Dynamic Cell Height
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.row == 0 {
             return 250 // Static height for the top header cell
         }
-        
-        let feedback = filteredFeedbackList[indexPath.row - 1]
-        
-        // 1. Get the actual width of the device screen to calculate exact wrap points.
-        // Assuming ~16 for outer margins + ~16 inner padding = 64pt deduction from total width.
-        let availableWidth = UIScreen.main.bounds.width - 64
-        
-        // 2. Measure exactly how tall the Subject text is.
-        let subjectHeight = feedback.subject.boundingRect(
-            with: CGSize(width: availableWidth, height: .greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin, .usesFontLeading],
-            attributes: [.font: UIFont.systemFont(ofSize: 16, weight: .semibold)],
-            context: nil
-        ).height
-        
-        // 3. Measure exactly how tall the Message text is.
-        let messageHeight = feedback.message.boundingRect(
-            with: CGSize(width: availableWidth, height: .greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin, .usesFontLeading],
-            attributes: [.font: UIFont.systemFont(ofSize: 14, weight: .regular)],
-            context: nil
-        ).height
-        
-        // 4. Calculate final dynamically perfect height.
-        // `75` accounts for standard padding (Top, bottom, category string layout gaps).
-        let calculatedHeight = ceil(subjectHeight) + ceil(messageHeight) + 75
-        
-        // Ensure it doesn't shrink below the design's minimum (108)
-        return max(calculatedHeight, 108)
+        return UITableView.automaticDimension
     }
 
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.row == 0 { return 250 }
-        return 120
+        return 90
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

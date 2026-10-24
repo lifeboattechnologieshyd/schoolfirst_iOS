@@ -9,6 +9,9 @@ import UIKit
 
 class FeedbackresolvedTBLVCll: UITableViewCell {
 
+    @IBOutlet weak var View3: UIView!
+    @IBOutlet weak var View2: UIView!
+    @IBOutlet weak var View1: UIView!
     @IBOutlet weak var FathernamefirsttwolettersLabel: UILabel!
     @IBOutlet weak var FathernameLabel: UILabel!
     @IBOutlet weak var AcadamicLabel: UILabel!
@@ -44,7 +47,72 @@ class FeedbackresolvedTBLVCll: UITableViewCell {
     // MARK: - Lifecycle
     override func awakeFromNib() {
         super.awakeFromNib()
+        setupDynamicLabelsAndViews()
         setupStatusViewContainer()
+    }
+
+    // MARK: - Dynamic Labels & Views Setup
+    private func setupDynamicLabelsAndViews() {
+        // ── Subject label ──
+        feedbacksubjectlabel.numberOfLines = 0
+        feedbacksubjectlabel.lineBreakMode = .byWordWrapping
+        feedbacksubjectlabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        feedbacksubjectlabel.setContentCompressionResistancePriority(.required, for: .vertical)
+
+        // ── Submit / resolved time label ──
+        SubmittimeLabe.numberOfLines = 0
+        SubmittimeLabe.lineBreakMode = .byWordWrapping
+        SubmittimeLabe.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        SubmittimeLabe.setContentCompressionResistancePriority(.required, for: .vertical)
+
+        // ── Parent and submit date grade label ──
+        parentandsubmitdategradeLabel.numberOfLines = 0
+        parentandsubmitdategradeLabel.lineBreakMode = .byWordWrapping
+        parentandsubmitdategradeLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        parentandsubmitdategradeLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+
+        // ── Feedback message label ──
+        feedbackmessageLabel.numberOfLines = 0
+        feedbackmessageLabel.lineBreakMode = .byWordWrapping
+        feedbackmessageLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        feedbackmessageLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+
+        // ── Response message label ──
+        Resposnemessagelabel.numberOfLines = 0
+        Resposnemessagelabel.lineBreakMode = .byWordWrapping
+        Resposnemessagelabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        Resposnemessagelabel.setContentCompressionResistancePriority(.required, for: .vertical)
+
+        // ── Response date label ──
+        Responsedatenadtimelabel.numberOfLines = 0
+        Responsedatenadtimelabel.lineBreakMode = .byWordWrapping
+        Responsedatenadtimelabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        Responsedatenadtimelabel.setContentCompressionResistancePriority(.required, for: .vertical)
+
+        // ── Strip fixed heights from views if any ──
+        stripFixedHeight(from: feedbacksubjectlabel)
+        stripFixedHeight(from: SubmittimeLabe)
+        stripFixedHeight(from: feedbackmessageLabel)
+        stripFixedHeight(from: Resposnemessagelabel)
+        stripFixedHeight(from: View1)
+        stripFixedHeight(from: View2)
+        stripFixedHeight(from: View3)
+        stripFixedHeight(from: Statusviewcantainer)
+    }
+
+    private func stripFixedHeight(from view: UIView?) {
+        guard let view = view else { return }
+        view.constraints.forEach { c in
+            if c.firstAttribute == .height && c.relation == .equal && c.secondItem == nil {
+                c.isActive = false
+            }
+        }
+        view.superview?.constraints.forEach { c in
+            let isThisView = (c.firstItem as? UIView) == view || (c.secondItem as? UIView) == view
+            if isThisView && c.firstAttribute == .height && c.relation == .equal {
+                c.isActive = false
+            }
+        }
     }
 
     override func prepareForReuse() {
@@ -217,6 +285,9 @@ class FeedbackresolvedTBLVCll: UITableViewCell {
 
         // ── Build full Activity timeline dynamically from API data ──
         configureActivityTimeline(with: feedback)
+
+        setNeedsLayout()
+        layoutIfNeeded()
     }
 
     // MARK: - ✅ Configure Father Name + First Two Letters Avatar

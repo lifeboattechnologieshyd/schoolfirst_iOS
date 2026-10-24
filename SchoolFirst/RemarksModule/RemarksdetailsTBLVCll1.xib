@@ -37,11 +37,8 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yFI-5a-EPB">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yFI-5a-EPB">
                                 <rect key="frame" x="16" y="53" width="336" height="54"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="54" id="b1w-YH-9xs"/>
-                                </constraints>
                                 <string key="text">Excellent teamwork in science
 project</string>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="21"/>
@@ -100,7 +97,7 @@ project</string>
                                     <constraint firstAttribute="height" constant="2" id="2mF-xy-8GR"/>
                                 </constraints>
                             </view>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="12" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hpJ-BD-Q6b">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hpJ-BD-Q6b">
                                 <rect key="frame" x="16" y="192" width="336" height="114.66666666666669"/>
                                 <string key="text">Aarav demonstrated excellent teamwork
 during the science group project. He helped
@@ -115,7 +112,6 @@ effort.</string>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="hpJ-BD-Q6b" secondAttribute="bottom" constant="53.333333333333314" id="01U-1T-fmb"/>
                             <constraint firstItem="ThR-2M-ib5" firstAttribute="top" secondItem="MNr-wZ-DV3" secondAttribute="top" constant="18" id="2BN-ea-npt"/>
                             <constraint firstItem="3NW-fM-jBS" firstAttribute="top" secondItem="7lO-lL-jLi" secondAttribute="bottom" constant="12" id="4J1-Os-lns"/>
                             <constraint firstItem="3NW-fM-jBS" firstAttribute="leading" secondItem="7lO-lL-jLi" secondAttribute="leading" id="9uu-w6-gR9"/>
@@ -135,7 +131,6 @@ effort.</string>
                             <constraint firstItem="7lO-lL-jLi" firstAttribute="leading" secondItem="yFI-5a-EPB" secondAttribute="leading" id="mTB-Z3-YRc"/>
                             <constraint firstAttribute="trailing" secondItem="hpJ-BD-Q6b" secondAttribute="trailing" constant="16" id="nxG-Gh-ke1"/>
                             <constraint firstItem="BPv-K2-LGw" firstAttribute="leading" secondItem="7lO-lL-jLi" secondAttribute="trailing" constant="10" id="oHf-hS-uEi"/>
-                            <constraint firstAttribute="height" constant="360" id="oXy-tz-nLt"/>
                             <constraint firstItem="hpJ-BD-Q6b" firstAttribute="top" secondItem="3NW-fM-jBS" secondAttribute="bottom" constant="12" id="vdJ-3h-ZJo"/>
                         </constraints>
                         <userDefinedRuntimeAttributes>
@@ -359,6 +354,8 @@ and continue supporting his peers.</string>
                     <constraint firstItem="mEB-2D-W4E" firstAttribute="trailing" secondItem="bsR-73-nty" secondAttribute="trailing" id="py9-RL-zr6"/>
                     <constraint firstItem="MNr-wZ-DV3" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="16" id="sly-Ch-Qxz"/>
                     <constraint firstItem="mEB-2D-W4E" firstAttribute="leading" secondItem="bsR-73-nty" secondAttribute="leading" id="tls-fa-QPX"/>
+                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="mEB-2D-W4E" secondAttribute="bottom" constant="20" id="bL7-0V-mEB"/>
+                    <constraint firstAttribute="bottom" priority="999" secondItem="mEB-2D-W4E" secondAttribute="bottom" constant="20" id="wX9-3b-z8z"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>

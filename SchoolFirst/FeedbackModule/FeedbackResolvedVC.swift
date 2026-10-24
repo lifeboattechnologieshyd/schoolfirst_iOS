@@ -40,6 +40,8 @@ class FeedbackResolvedVC: UIViewController {
         Tableview.delegate = self
         Tableview.dataSource = self
         Tableview.showsVerticalScrollIndicator = false
+        Tableview.rowHeight = UITableView.automaticDimension
+        Tableview.estimatedRowHeight = 700
         
         // Register Cell
         let nib = UINib(nibName: "FeedbackresolvedTBLVCll", bundle: nil)
@@ -82,8 +84,12 @@ extension FeedbackResolvedVC: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
-    // MARK: - Height for row
+    // MARK: - Height for row (Dynamic)
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 800
+        return UITableView.automaticDimension
+    }
+
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 700
     }
 }

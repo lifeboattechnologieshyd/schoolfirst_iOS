@@ -49,7 +49,8 @@ class FeedbackstatusVC: UIViewController {
         Tableview.dataSource = self
         Tableview.showsVerticalScrollIndicator = false
         Tableview.separatorStyle = .none
-        Tableview.estimatedRowHeight = 700
+        Tableview.rowHeight = UITableView.automaticDimension
+        Tableview.estimatedRowHeight = 600
 
         Tableview.register(
             UINib(nibName: "FeedbacksummuryTBLVWCell", bundle: nil),
@@ -132,55 +133,6 @@ class FeedbackstatusVC: UIViewController {
         }
     }
 
-    // MARK: - ✅ Dynamic row height (subject + message + view1/view2 + timeline)
-    private func textHeight(_ text: String, font: UIFont, width: CGFloat) -> CGFloat {
-        guard !text.isEmpty else { return 0 }
-        let rect = (text as NSString).boundingRect(
-            with: CGSize(width: width, height: .greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin, .usesFontLeading],
-            attributes: [.font: font],
-            context: nil
-        )
-        return ceil(rect.height)
-    }
-
-    private func calculatedRowHeight(for feedback: Feedback, tableWidth: CGFloat) -> CGFloat {
-        let width = max(tableWidth - 72, UIScreen.main.bounds.width - 72)
-
-        // Subject (dark card)
-        let subjectH = textHeight(
-            feedback.subject,
-            font: UIFont.systemFont(ofSize: 22, weight: .bold),
-            width: width
-        )
-
-        // Message (inside view1)
-        let messageH = textHeight(
-            feedback.message,
-            font: UIFont.systemFont(ofSize: 15, weight: .regular),
-            width: width
-        )
-
-        // view1 grows with message (chrome ~70 + message + pad)
-        let view1H = max(70 + messageH + 24, 120)
-
-        // view2 — if used as extra label/container near subject
-        let view2H: CGFloat = 24
-
-        // Timeline: submit + responses + final status
-        let timelineCount = 1 + feedback.responses.count + 1
-        let timelineH = CGFloat(timelineCount) * 58.0 + 50.0
-
-        // Fixed chrome:
-        // dark card top (status/id) + padding  ~ 90
-        // gaps                                  ~ 36
-        // yellow banner                         ~ 72
-        // bottom pad                            ~ 28
-        let fixedChrome: CGFloat = 90 + 36 + 72 + 28
-
-        let total = fixedChrome + subjectH + view1H + view2H + timelineH
-        return max(total, 560)
-    }
 }
 
 // MARK: - UITableViewDelegate & UITableViewDataSource
@@ -205,14 +157,12 @@ extension FeedbackstatusVC: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
 
-    // ✅ Grows with view1, view2, subject, message
+    // MARK: - Cell Height (Dynamic)
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let feedback = feedback else { return 700 }
-        let w = tableView.bounds.width > 0 ? tableView.bounds.width : UIScreen.main.bounds.width
-        return calculatedRowHeight(for: feedback, tableWidth: w)
+        return UITableView.automaticDimension
     }
 
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 700
+        return 600
     }
 }
