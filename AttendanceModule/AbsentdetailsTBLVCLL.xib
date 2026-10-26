@@ -479,15 +479,28 @@ or medical slip if the school needs one.</string>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </view>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f2N-4j-21N">
+                        <rect key="frame" x="14" y="582" width="380" height="52"/>
+                        <color key="backgroundColor" red="0.1364746094" green="0.3049316406" blue="0.5424804688" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="52" id="hNa-Ic-6Xt"/>
+                        </constraints>
+                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <state key="normal" title="Button"/>
+                        <buttonConfiguration key="configuration" style="plain" title=" → Add leave note"/>
+                    </button>
                 </subviews>
                 <constraints>
                     <constraint firstItem="kvt-dP-SWN" firstAttribute="top" secondItem="MpN-Pl-EY6" secondAttribute="bottom" constant="12" id="3t4-Jv-NeW"/>
+                    <constraint firstItem="f2N-4j-21N" firstAttribute="top" secondItem="kvt-dP-SWN" secondAttribute="bottom" constant="12" id="FT0-eQ-NcL"/>
                     <constraint firstItem="MpN-Pl-EY6" firstAttribute="top" secondItem="wRb-c5-RTE" secondAttribute="bottom" constant="12" id="GwM-Lh-lKE"/>
                     <constraint firstItem="kvt-dP-SWN" firstAttribute="leading" secondItem="MpN-Pl-EY6" secondAttribute="leading" id="NeD-8V-Wpe"/>
+                    <constraint firstItem="f2N-4j-21N" firstAttribute="leading" secondItem="kvt-dP-SWN" secondAttribute="leading" id="Nn1-n4-i3h"/>
                     <constraint firstItem="MpN-Pl-EY6" firstAttribute="leading" secondItem="wRb-c5-RTE" secondAttribute="leading" id="Tsl-ZC-c0P"/>
                     <constraint firstAttribute="trailing" secondItem="wRb-c5-RTE" secondAttribute="trailing" constant="14" id="aUB-jj-2VS"/>
                     <constraint firstItem="kvt-dP-SWN" firstAttribute="trailing" secondItem="MpN-Pl-EY6" secondAttribute="trailing" id="ddQ-QY-TrP"/>
                     <constraint firstItem="MpN-Pl-EY6" firstAttribute="trailing" secondItem="wRb-c5-RTE" secondAttribute="trailing" id="kgG-F9-6PG"/>
+                    <constraint firstItem="f2N-4j-21N" firstAttribute="trailing" secondItem="kvt-dP-SWN" secondAttribute="trailing" id="lF8-NY-3Qb"/>
                     <constraint firstItem="wRb-c5-RTE" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="14" id="nrN-RB-66Z"/>
                     <constraint firstItem="wRb-c5-RTE" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="14" id="oxD-xT-scD"/>
                 </constraints>
@@ -496,6 +509,7 @@ or medical slip if the school needs one.</string>
             <connections>
                 <outlet property="Absentdate" destination="slc-Wt-rFH" id="8ry-YQ-ZGa"/>
                 <outlet property="AbsentdateLabel" destination="slc-Wt-rFH" id="Jmf-c9-0Wi"/>
+                <outlet property="Addleavenotebutton" destination="f2N-4j-21N" id="prx-T6-aeh"/>
                 <outlet property="Attendancestatuslabel" destination="5K4-6H-EdO" id="4Lq-nH-8xg"/>
                 <outlet property="ClasssectionandrollnumberLabel" destination="709-tT-mXt" id="35b-yE-TmN"/>
                 <outlet property="MarkedTeachernameLabel" destination="CIp-eS-1Sx" id="sJV-65-sgf"/>

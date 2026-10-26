@@ -9,6 +9,7 @@ import UIKit
 
 class PresentdetailsTBLVCLL: UITableViewCell {
 
+    @IBOutlet weak var VieweaklyattendanceButton: UIButton!
     @IBOutlet weak var StudentnameLabel: UILabel!
     @IBOutlet weak var Remarkslabel: UILabel!
     @IBOutlet weak var Classsectionandadmissionlabel: UILabel!

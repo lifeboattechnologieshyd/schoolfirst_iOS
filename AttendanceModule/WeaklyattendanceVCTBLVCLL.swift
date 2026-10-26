@@ -7,10 +7,24 @@
 
 import UIKit
 
+// MARK: - Delegate Protocol
+protocol WeaklyattendanceVCTBLVCLLDelegate: AnyObject {
+    func didChangeWeek(to newWeekStart: Date)
+    func didSelectDay(date: Date)
+}
+
 class WeaklyattendanceVCTBLVCLL: UITableViewCell {
 
+    @IBOutlet weak var TodaydayanddateLabel: UILabel!
+    @IBOutlet weak var NuberofleavesandlateinweakLabel: UILabel!
+    @IBOutlet weak var Todayattendancecellconatanerview: UIView!
+    
+    @IBOutlet weak var termanddatelabel: UILabel!
+    @IBOutlet weak var Accademicyearlabel: UILabel!
     @IBOutlet weak var Datecardsviewcontroller: UIView!
     @IBOutlet weak var Datewithbuttonscantainerview: UIView!
+    
+    weak var delegate: WeaklyattendanceVCTBLVCLLDelegate?
     
     // MARK: - UI Elements
     private let leftButton = UIButton(type: .system)
@@ -21,28 +35,46 @@ class WeaklyattendanceVCTBLVCLL: UITableViewCell {
     // For Date Cards
     private let daysStackView = UIStackView()
     private var dayCards: [DayCardView] = []
-    private var selectedDayIndex: Int = 4 // Defaulting to Friday to match Figma design
     
-    // MARK: - Data Properties
-    private var currentDate: Date = Date()
+    // State driven by configure()
+    private var currentWeekStart: Date = Date()
     
-    // Match Figma styling
-    private let primaryBlue = UIColor(red: 0.11, green: 0.31, blue: 0.61, alpha: 1.0) // Dark blue for arrows
-    private let dateTextColor = UIColor(red: 0.07, green: 0.09, blue: 0.15, alpha: 1.0) // Dark gray/black
-    private let termTextColor = UIColor(red: 0.42, green: 0.45, blue: 0.50, alpha: 1.0) // Light gray
+    // Embedded Cell for "Today/Selected Day" view
+    private var embeddedAttendanceCell: absentpresentlateTBLVCLL?
+    
+    // Styling
+    private let primaryBlue = UIColor(red: 0.11, green: 0.31, blue: 0.61, alpha: 1.0)
+    private let dateTextColor = UIColor(red: 0.07, green: 0.09, blue: 0.15, alpha: 1.0)
+    private let termTextColor = UIColor(red: 0.42, green: 0.45, blue: 0.50, alpha: 1.0)
     
     override func awakeFromNib() {
         super.awakeFromNib()
         setupDateContainer()
         setupDateCards()
-        updateDateDisplay()
+        setupEmbeddedCell()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
     
-    // MARK: - Setup Top Date Container
+    // MARK: - Setup Subviews
+    private func setupEmbeddedCell() {
+        let nib = UINib(nibName: "absentpresentlateTBLVCLL", bundle: nil)
+        if let cell = nib.instantiate(withOwner: nil, options: nil).first as? absentpresentlateTBLVCLL {
+            embeddedAttendanceCell = cell
+            cell.translatesAutoresizingMaskIntoConstraints = false
+            Todayattendancecellconatanerview.addSubview(cell)
+            
+            NSLayoutConstraint.activate([
+                cell.topAnchor.constraint(equalTo: Todayattendancecellconatanerview.topAnchor),
+                cell.bottomAnchor.constraint(equalTo: Todayattendancecellconatanerview.bottomAnchor),
+                cell.leadingAnchor.constraint(equalTo: Todayattendancecellconatanerview.leadingAnchor),
+                cell.trailingAnchor.constraint(equalTo: Todayattendancecellconatanerview.trailingAnchor)
+            ])
+        }
+    }
+    
     private func setupDateContainer() {
         Datewithbuttonscantainerview.subviews.forEach { $0.removeFromSuperview() }
         
@@ -102,7 +134,6 @@ class WeaklyattendanceVCTBLVCLL: UITableViewCell {
         ])
     }
     
-    // MARK: - Setup Date Cards (Mon - Fri)
     private func setupDateCards() {
         Datecardsviewcontroller.subviews.forEach { $0.removeFromSuperview() }
         
@@ -118,7 +149,7 @@ class WeaklyattendanceVCTBLVCLL: UITableViewCell {
             daysStackView.leadingAnchor.constraint(equalTo: Datecardsviewcontroller.leadingAnchor),
             daysStackView.trailingAnchor.constraint(equalTo: Datecardsviewcontroller.trailingAnchor),
             daysStackView.bottomAnchor.constraint(equalTo: Datecardsviewcontroller.bottomAnchor),
-            daysStackView.heightAnchor.constraint(equalToConstant: 65) // Match Figma height
+            daysStackView.heightAnchor.constraint(equalToConstant: 65)
         ])
         
         dayCards.removeAll()
@@ -126,7 +157,6 @@ class WeaklyattendanceVCTBLVCLL: UITableViewCell {
         for i in 0..<5 {
             let card = DayCardView()
             card.tag = i
-            
             let tap = UITapGestureRecognizer(target: self, action: #selector(dayCardTapped(_:)))
             card.addGestureRecognizer(tap)
             card.isUserInteractionEnabled = true
@@ -138,79 +168,90 @@ class WeaklyattendanceVCTBLVCLL: UITableViewCell {
     
     // MARK: - Actions
     @objc private func didTapLeftArrow() {
-        if let newDate = Calendar.current.date(byAdding: .weekOfYear, value: -1, to: currentDate) {
-            currentDate = newDate
-            updateDateDisplay()
+        if let previousWeek = Calendar.current.date(byAdding: .weekOfYear, value: -1, to: currentWeekStart) {
+            delegate?.didChangeWeek(to: previousWeek)
         }
     }
     
     @objc private func didTapRightArrow() {
-        if let newDate = Calendar.current.date(byAdding: .weekOfYear, value: 1, to: currentDate) {
-            currentDate = newDate
-            updateDateDisplay()
+        if let nextWeek = Calendar.current.date(byAdding: .weekOfYear, value: 1, to: currentWeekStart) {
+            delegate?.didChangeWeek(to: nextWeek)
         }
     }
     
     @objc private func dayCardTapped(_ sender: UITapGestureRecognizer) {
         guard let index = sender.view?.tag else { return }
-        selectedDayIndex = index
-        updateDayCardsUI()
+        if let tappedDate = Calendar.current.date(byAdding: .day, value: index, to: currentWeekStart) {
+            delegate?.didSelectDay(date: tappedDate)
+        }
     }
     
-    // MARK: - Update UI Logic
-    private func updateDateDisplay() {
-        var gregorian = Calendar(identifier: .gregorian)
-        gregorian.firstWeekday = 2 // Force Monday
+    // MARK: - Configure Cell using State from VC
+    func configure(
+        weekStart: Date,
+        selectedDate: Date,
+        selectedRecord: FetchStudentAttendanceRecord,
+        leaveCount: Int,
+        lateCount: Int
+    ) {
+        self.currentWeekStart = weekStart
+        var cal = Calendar(identifier: .gregorian)
+        cal.firstWeekday = 2
         
-        let startOfWeek = gregorian.date(from: gregorian.dateComponents([.yearForWeekOfYear, .weekOfYear], from: currentDate)) ?? currentDate
-        let endOfWeek = gregorian.date(byAdding: .day, value: 4, to: startOfWeek) ?? startOfWeek
+        let endOfWeek = cal.date(byAdding: .day, value: 4, to: weekStart) ?? weekStart
         
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "d MMM"
-        let startDateString = dateFormatter.string(from: startOfWeek)
-        let endDateString = dateFormatter.string(from: endOfWeek)
+        // 1. Update Top Date Range Label (e.g. 31 Aug - 4 Sep)
+        let topDateFormatter = DateFormatter()
+        topDateFormatter.dateFormat = "d MMM"
+        let startStr = topDateFormatter.string(from: weekStart)
+        let endStr = topDateFormatter.string(from: endOfWeek)
+        dateLabel.text = "\(startStr) – \(endStr)"
         
-        dateLabel.text = "\(startDateString) – \(endDateString)"
-        
+        // Update Academic Year/Term (Static or dynamic if available)
         let termStartDate = Calendar.current.date(from: DateComponents(year: 2026, month: 9, day: 1)) ?? Date()
-        let weeksPassed = gregorian.dateComponents([.weekOfYear], from: termStartDate, to: startOfWeek).weekOfYear ?? 0
-        let currentWeekNumber = max(1, weeksPassed + 1)
-        termLabel.text = "Term 1 · Week \(currentWeekNumber)"
+        let weeksPassed = cal.dateComponents([.weekOfYear], from: termStartDate, to: weekStart).weekOfYear ?? 0
+        termLabel.text = "Term 1 · Week \(max(1, weeksPassed + 1))"
         
-        // Populate the Day Cards
-        for (index, card) in dayCards.enumerated() {
-            if let date = gregorian.date(byAdding: .day, value: index, to: startOfWeek) {
-                let dayStr = getDayString(for: date)
-                let dateStr = dateFormatter.string(from: date)
-                card.configure(day: dayStr, date: dateStr, selected: index == selectedDayIndex)
+        // 2. Update Mon-Fri Pills
+        let pillDateFormatter = DateFormatter()
+        pillDateFormatter.dateFormat = "dd MMM"
+        let dayNameFormatter = DateFormatter()
+        dayNameFormatter.dateFormat = "EEE"
+        
+        // Figure out which index matches selectedDate
+        let selectedIndex = cal.dateComponents([.day], from: weekStart, to: selectedDate).day ?? 0
+        
+        for (i, card) in dayCards.enumerated() {
+            if let date = cal.date(byAdding: .day, value: i, to: weekStart) {
+                let dayStr = dayNameFormatter.string(from: date)
+                let dateStr = pillDateFormatter.string(from: date)
+                card.configure(day: dayStr, date: dateStr, selected: (i == selectedIndex))
             }
         }
-    }
-    
-    private func updateDayCardsUI() {
-        for (index, card) in dayCards.enumerated() {
-            card.setSelected(index == selectedDayIndex)
-        }
-    }
-    
-    private func getDayString(for date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEE" // Mon, Tue, Wed...
-        return formatter.string(from: date)
+        
+        // 3. Update "Today / Selected Day" Date Label (e.g. Friday · 4 Sep)
+        let fullDateFormatter = DateFormatter()
+        fullDateFormatter.dateFormat = "EEEE · d MMM"
+        TodaydayanddateLabel.text = fullDateFormatter.string(from: selectedDate)
+        
+        // 4. Update Summary Label (Leaves and Lates)
+        let leaveText = leaveCount == 1 ? "1 leave" : "\(leaveCount) leaves"
+        NuberofleavesandlateinweakLabel.text = "\(leaveText) · \(lateCount) late"
+        
+        // 5. Update Embedded Attendance Cell
+        embeddedAttendanceCell?.configure(with: selectedRecord)
     }
 }
 
-// MARK: - Custom Date Card View
+// MARK: - Custom Date Card View (Unchanged logically, just cleaner)
 class DayCardView: UIView {
     
     private let dayLabel = UILabel()
     private let dateLabel = UILabel()
     
-    private let selectedColor = UIColor(red: 0.11, green: 0.31, blue: 0.61, alpha: 1.0) // Dark blue
+    private let selectedColor = UIColor(red: 0.11, green: 0.31, blue: 0.61, alpha: 1.0)
     private let unselectedDayColor = UIColor(red: 0.07, green: 0.09, blue: 0.15, alpha: 1.0)
     private let unselectedDateColor = UIColor(red: 0.42, green: 0.45, blue: 0.50, alpha: 1.0)
-    
-    // ✅ FIXED: Renamed from 'borderColor' to avoid UIKit conflict
     private let defaultBorderColor = UIColor(red: 0.88, green: 0.91, blue: 0.94, alpha: 1.0)
     
     override init(frame: CGRect) {
@@ -233,7 +274,7 @@ class DayCardView: UIView {
         stackView.axis = .vertical
         stackView.spacing = 4
         stackView.alignment = .center
-        stackView.isUserInteractionEnabled = false // Let the container view handle taps
+        stackView.isUserInteractionEnabled = false
         stackView.translatesAutoresizingMaskIntoConstraints = false
         
         dayLabel.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
@@ -255,10 +296,7 @@ class DayCardView: UIView {
     func configure(day: String, date: String, selected: Bool) {
         dayLabel.text = day
         dateLabel.text = date
-        setSelected(selected)
-    }
-    
-    func setSelected(_ selected: Bool) {
+        
         if selected {
             backgroundColor = selectedColor
             layer.borderWidth = 0

@@ -84,6 +84,7 @@ extension AbsentdetailsVC: UITableViewDelegate, UITableViewDataSource {
         }
 
         cell.selectionStyle = .none
+        cell.delegate = self
         cell.configure(with: attendanceRecord)
 
         return cell
@@ -94,5 +95,23 @@ extension AbsentdetailsVC: UITableViewDelegate, UITableViewDataSource {
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
         return 700
+    }
+}
+
+// MARK: - AbsentdetailsTBLVCLLDelegate
+extension AbsentdetailsVC: AbsentdetailsTBLVCLLDelegate {
+    func didTapAddLeaveNote() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let addLeaveNoteVC = storyboard.instantiateViewController(withIdentifier: "AddleavenoteVC") as? AddleavenoteVC {
+            
+            addLeaveNoteVC.attendanceId = attendanceRecord?.id
+            addLeaveNoteVC.studentId = attendanceRecord?.student?.id
+            addLeaveNoteVC.attendanceDate = attendanceRecord?.attendanceDate
+            addLeaveNoteVC.attendanceStatus = attendanceRecord?.status
+            addLeaveNoteVC.studentName = attendanceRecord?.student?.name
+            addLeaveNoteVC.admissionNumber = attendanceRecord?.student?.admissionNumber
+            
+            navigationController?.pushViewController(addLeaveNoteVC, animated: true)
+        }
     }
 }

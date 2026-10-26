@@ -11,6 +11,7 @@ import UIKit
 protocol AttendancedashboardTBLVCLLDelegate: AnyObject {
     func didTapApplyLeaveButton()
     func didTapPendingLeaveRequests()
+    func didTapHistoryButton()
 }
 
 class attendancedashboardTBLVCLL: UITableViewCell {
@@ -21,10 +22,12 @@ class attendancedashboardTBLVCLL: UITableViewCell {
     @IBOutlet weak var RemarksLabel: UILabel!
     @IBOutlet weak var Acadamicyear: UILabel!
     
+    @IBOutlet weak var Lastleaverequestreasonandstatuslabel: UILabel!
     @IBOutlet weak var TodaydateLabel: UILabel!
     @IBOutlet weak var AttendancestatusLabel: UILabel!
     @IBOutlet weak var UpcomingrequestLabel: UILabel!
-    @IBOutlet weak var NumberofleavependingrequestsLabel: UILabel!
+   
+    @IBOutlet weak var Numberofpendingleaverequestslabel: UILabel!
     @IBOutlet weak var TermanddateLabel: UILabel!
     @IBOutlet weak var AcadamicyearLabel: UILabel!
     @IBOutlet weak var Pendingleaverequstscantainerview: UIView!
@@ -41,6 +44,13 @@ class attendancedashboardTBLVCLL: UITableViewCell {
     private let rightButton = UIButton(type: .system)
     private let dateLabel = UILabel()
     private let termLabel = UILabel()
+    
+    // MARK: - Dynamic Grid & Graph References
+    private var rateCard: AttendanceCardView!
+    private var presentCard: AttendanceCardView!
+    private var absentCard: AttendanceCardView!
+    private var lateCard: AttendanceCardView!
+    private var monthlyGraphView: MonthlyTrendGraphView!
 
     // MARK: - Data Properties
     private var currentDate: Date = Date()
@@ -81,6 +91,13 @@ class attendancedashboardTBLVCLL: UITableViewCell {
             for: .touchUpInside
         )
 
+        // History Button
+        HistoryButton.addTarget(
+            self,
+            action: #selector(didTapHistory),
+            for: .touchUpInside
+        )
+
         Pendingleaverequstscantainerview.isUserInteractionEnabled = true
         let pendingLeaveTapGesture = UITapGestureRecognizer(
             target: self,
@@ -95,10 +112,16 @@ class attendancedashboardTBLVCLL: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    // MARK: - Configure with Attendance API Data
-    func configure(with data: FetchStudentAttendanceData?, todayRecord: FetchStudentAttendanceRecord?) {
+    // MARK: - Configure with Attendance & Leave API Data
+    func configure(
+        with data: FetchStudentAttendanceData?,
+        todayRecord: FetchStudentAttendanceRecord?,
+        pendingLeaveCount: Int,
+        lastLeaveReason: String,
+        lastLeaveStatus: String
+    ) {
         
-        // TODAY DATE LABEL (e.g., "Monday, 7 Sep")
+        // 1. TODAY DATE LABEL
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "EEEE, d MMM"
         if let dateStr = todayRecord?.attendanceDate,
@@ -108,8 +131,9 @@ class attendancedashboardTBLVCLL: UITableViewCell {
             TodaydateLabel.text = dateFormatter.string(from: Date())
         }
         
-        // ACADEMIC YEAR (from API)
-        if let ayName = data?.academicYear?.name, !ayName.isEmpty {
+        // 2. ACADEMIC YEAR
+        let ayName = data?.academicYear?.name ?? ""
+        if !ayName.isEmpty {
             AcadamicyearLabel.text = ayName
             Acadamicyear.text = ayName
         } else {
@@ -119,7 +143,7 @@ class attendancedashboardTBLVCLL: UITableViewCell {
             Acadamicyear.text = "AY \(y)-\((y+1)%100)"
         }
         
-        // TERM & DATE LABEL (derived from academic year or static)
+        // 3. TERM & DATE LABEL
         if let start = data?.academicYear?.startDate,
            let end = data?.academicYear?.endDate,
            let s = Self.apiDateFormatter.date(from: start),
@@ -133,14 +157,13 @@ class attendancedashboardTBLVCLL: UITableViewCell {
             TermanddateLabel.text = "Term 1 · Jun-Oct"
         }
         
-        // TODAY ATTENDANCE STATUS (from API record)
+        // 4. TODAY ATTENDANCE STATUS
         let rawStatus = (todayRecord?.status ?? "PRESENT").uppercased()
         let displayStatus = rawStatus.capitalized
         
         AttendancestatusLabel.text = displayStatus
         Attendancestautusbadge.text = displayStatus
         
-        // Badge color styling based on status
         switch rawStatus {
         case "PRESENT":
             Attendancestautusbadge.backgroundColor = UIColor(red: 0.78, green: 0.94, blue: 0.84, alpha: 1.0)
@@ -164,10 +187,36 @@ class attendancedashboardTBLVCLL: UITableViewCell {
         Attendancestautusbadge.font = UIFont.systemFont(ofSize: 11, weight: .semibold)
         Attendancestautusbadge.textAlignment = .center
         
-        // SUMMARY VALUES (from API summary)
+        // 5. UPDATE GRID CARDS (Summary)
         if let summary = data?.summary {
-            // These could be used to update grid cards in setupGridContainer if needed
-            // Keeping existing static cards as-is; only configuring today section per request
+            let rate = summary.attendancePercentage ?? 0.0
+            rateCard.update(value: "\(Int(rate))%", subtitle: "Academic year \(ayName)")
+            
+            let present = summary.present ?? 0
+            let eligible = summary.eligibleDays ?? 0
+            presentCard.update(value: "\(present)", subtitle: "Out of \(eligible) school days")
+            
+            let absent = summary.absent ?? 0
+            absentCard.update(value: "\(absent)", subtitle: "Total absent days")
+            
+            let late = summary.late ?? 0
+            lateCard.update(value: "\(late)", subtitle: "Total late arrivals")
+        }
+        
+        // 6. UPDATE GRAPH (Monthly Trend)
+        monthlyGraphView.update(with: data?.monthlyTrend)
+        
+        // 7. UPDATE LEAVE REQUESTS SECTION (From API)
+        if pendingLeaveCount > 0 {
+            Numberofpendingleaverequestslabel.text = "\(pendingLeaveCount) pending request\(pendingLeaveCount == 1 ? "" : "s")"
+        } else {
+            Numberofpendingleaverequestslabel.text = "No pending requests"
+        }
+        
+        if lastLeaveStatus.isEmpty {
+            Lastleaverequestreasonandstatuslabel.text = "You have no recent leave requests"
+        } else {
+            Lastleaverequestreasonandstatuslabel.text = "\(lastLeaveReason) · \(lastLeaveStatus)"
         }
     }
 
@@ -178,6 +227,10 @@ class attendancedashboardTBLVCLL: UITableViewCell {
 
     @objc private func didTapPendingLeaveRequestsView() {
         delegate?.didTapPendingLeaveRequests()
+    }
+
+    @objc private func didTapHistory() {
+        delegate?.didTapHistoryButton()
     }
 
     // MARK: - Setup Top Date Container
@@ -296,22 +349,22 @@ class attendancedashboardTBLVCLL: UITableViewCell {
             red: 0.88, green: 0.91, blue: 0.94, alpha: 1.0
         ).cgColor
 
-        let graphView = MonthlyTrendGraphView()
-        graphView.translatesAutoresizingMaskIntoConstraints = false
+        monthlyGraphView = MonthlyTrendGraphView()
+        monthlyGraphView.translatesAutoresizingMaskIntoConstraints = false
 
-        Graphcantainerview.addSubview(graphView)
+        Graphcantainerview.addSubview(monthlyGraphView)
 
         NSLayoutConstraint.activate([
-            graphView.topAnchor.constraint(
+            monthlyGraphView.topAnchor.constraint(
                 equalTo: Graphcantainerview.topAnchor, constant: 16
             ),
-            graphView.leadingAnchor.constraint(
+            monthlyGraphView.leadingAnchor.constraint(
                 equalTo: Graphcantainerview.leadingAnchor, constant: 16
             ),
-            graphView.trailingAnchor.constraint(
+            monthlyGraphView.trailingAnchor.constraint(
                 equalTo: Graphcantainerview.trailingAnchor, constant: -16
             ),
-            graphView.bottomAnchor.constraint(
+            monthlyGraphView.bottomAnchor.constraint(
                 equalTo: Graphcantainerview.bottomAnchor, constant: -16
             )
         ])
@@ -358,46 +411,38 @@ class attendancedashboardTBLVCLL: UITableViewCell {
             )
         ])
 
-        let card1 = AttendanceCardView(
+        rateCard = AttendanceCardView(
             title: "Attendance rate",
-            value: "86%",
-            valueColor: UIColor(
-                red: 0.15, green: 0.39, blue: 0.92, alpha: 1.0
-            ),
-            subtitle: "Academic year 2026-27"
+            value: "0%",
+            valueColor: UIColor(red: 0.15, green: 0.39, blue: 0.92, alpha: 1.0),
+            subtitle: "Academic year"
         )
 
-        let card2 = AttendanceCardView(
+        presentCard = AttendanceCardView(
             title: "Present days",
-            value: "43",
-            valueColor: UIColor(
-                red: 0.13, green: 0.70, blue: 0.38, alpha: 1.0
-            ),
-            subtitle: "Out of 50 school days"
+            value: "0",
+            valueColor: UIColor(red: 0.13, green: 0.70, blue: 0.38, alpha: 1.0),
+            subtitle: "Out of 0 school days"
         )
 
-        let card3 = AttendanceCardView(
+        absentCard = AttendanceCardView(
             title: "Absent days",
-            value: "5",
-            valueColor: UIColor(
-                red: 0.92, green: 0.26, blue: 0.21, alpha: 1.0
-            ),
-            subtitle: "2 consecutive in Aug"
+            value: "0",
+            valueColor: UIColor(red: 0.92, green: 0.26, blue: 0.21, alpha: 1.0),
+            subtitle: "Total absent days"
         )
 
-        let card4 = AttendanceCardView(
+        lateCard = AttendanceCardView(
             title: "Late arrivals",
-            value: "2",
-            valueColor: UIColor(
-                red: 0.96, green: 0.62, blue: 0.04, alpha: 1.0
-            ),
-            subtitle: "Most recent: 02 Sep"
+            value: "0",
+            valueColor: UIColor(red: 0.96, green: 0.62, blue: 0.04, alpha: 1.0),
+            subtitle: "Total late arrivals"
         )
 
-        columnStack1.addArrangedSubview(card1)
-        columnStack1.addArrangedSubview(card3)
-        columnStack2.addArrangedSubview(card2)
-        columnStack2.addArrangedSubview(card4)
+        columnStack1.addArrangedSubview(rateCard)
+        columnStack1.addArrangedSubview(absentCard)
+        columnStack2.addArrangedSubview(presentCard)
+        columnStack2.addArrangedSubview(lateCard)
     }
 
     // MARK: - Button Actions
@@ -462,8 +507,11 @@ class attendancedashboardTBLVCLL: UITableViewCell {
     }()
 }
 
-// MARK: - Graph View (unchanged from working version)
+// MARK: - Graph View
 private class MonthlyTrendGraphView: UIView {
+    
+    private let stackView = UIStackView()
+    
     init() {
         super.init(frame: .zero)
         setupUI()
@@ -487,7 +535,6 @@ private class MonthlyTrendGraphView: UIView {
         subtitleLabel.textColor = UIColor(red: 0.42, green: 0.45, blue: 0.50, alpha: 1.0)
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
 
-        let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.distribution = .fillEqually
         stackView.spacing = 10
@@ -509,24 +556,39 @@ private class MonthlyTrendGraphView: UIView {
             stackView.trailingAnchor.constraint(equalTo: trailingAnchor),
             stackView.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
-
+    }
+    
+    // MARK: - Update Graph with API Data
+    func update(with trends: [FetchStudentAttendanceMonthlyTrend]?) {
+        // Clear existing bars
+        stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        
+        guard let trends = trends, !trends.isEmpty else { return }
+        
         let primaryDarkBlue = UIColor(red: 0.11, green: 0.31, blue: 0.61, alpha: 1.0)
         let slateBlue = UIColor(red: 0.49, green: 0.60, blue: 0.73, alpha: 1.0)
         let warningOrange = UIColor(red: 0.91, green: 0.66, blue: 0.25, alpha: 1.0)
-
-        let chartData: [(month: String, val: Int, color: UIColor)] = [
-            ("Apr", 92, slateBlue),
-            ("May", 88, slateBlue),
-            ("Jun", 94, primaryDarkBlue),
-            ("Jul", 90, slateBlue),
-            ("Aug", 83, warningOrange),
-            ("Sep", 86, slateBlue)
-        ]
-
-        for data in chartData {
-            let barView = SingleBarView(
-                month: data.month, value: data.val, color: data.color
-            )
+        
+        // Find max percentage to highlight with dark blue
+        let maxPercent = trends.compactMap { $0.attendancePercentage }.max() ?? 100.0
+        
+        // Take up to the last 6 months so it fits the UI well
+        let displayTrends = Array(trends.suffix(6))
+        
+        for trend in displayTrends {
+            let val = Int(trend.attendancePercentage ?? 0.0)
+            
+            let monthName = trend.month ?? ""
+            let shortMonth = String(monthName.prefix(3)).capitalized
+            
+            var color = slateBlue
+            if val < 85 {
+                color = warningOrange
+            } else if Double(val) == maxPercent && maxPercent > 0 {
+                color = primaryDarkBlue
+            }
+            
+            let barView = SingleBarView(month: shortMonth, value: val, color: color)
             stackView.addArrangedSubview(barView)
         }
     }
@@ -596,6 +658,10 @@ private class SingleBarView: UIView {
 }
 
 private class AttendanceCardView: UIView {
+    
+    private let valueLabel = UILabel()
+    private let subtitleLabel = UILabel()
+    
     init(title: String, value: String, valueColor: UIColor, subtitle: String) {
         super.init(frame: .zero)
         setupUI(title: title, value: value, valueColor: valueColor, subtitle: subtitle)
@@ -617,12 +683,10 @@ private class AttendanceCardView: UIView {
         titleLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         titleLabel.textColor = UIColor(red: 0.42, green: 0.45, blue: 0.50, alpha: 1.0)
 
-        let valueLabel = UILabel()
         valueLabel.text = value
         valueLabel.font = UIFont.systemFont(ofSize: 24, weight: .bold)
         valueLabel.textColor = valueColor
 
-        let subtitleLabel = UILabel()
         subtitleLabel.text = subtitle
         subtitleLabel.font = UIFont.systemFont(ofSize: 11, weight: .regular)
         subtitleLabel.textColor = UIColor(red: 0.53, green: 0.56, blue: 0.62, alpha: 1.0)
@@ -644,5 +708,10 @@ private class AttendanceCardView: UIView {
             stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
             stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12)
         ])
+    }
+    
+    func update(value: String, subtitle: String) {
+        self.valueLabel.text = value
+        self.subtitleLabel.text = subtitle
     }
 }

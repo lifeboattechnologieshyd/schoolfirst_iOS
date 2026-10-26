@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="xQk-ro-l25">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="c9l-wM-CBA">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -5923,6 +5923,7 @@ The school admin will review it soon.</string>
                     <connections>
                         <outlet property="Academicyearandterm" destination="mwh-an-xok" id="1p1-xM-IzO"/>
                         <outlet property="Backbutton" destination="j9N-A3-v8N" id="o3p-LT-x7j"/>
+                        <outlet property="Newleaverequestbutton" destination="3bg-9E-Hrd" id="6sX-1j-Zwe"/>
                         <outlet property="Tableview" destination="sOH-21-1B8" id="rDi-al-tIW"/>
                     </connections>
                 </viewController>
@@ -6029,6 +6030,7 @@ The school admin will review it soon.</string>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="Backbutton" destination="CyW-bX-A3c" id="jAn-Rx-dJx"/>
                         <outlet property="Tableview" destination="lgV-p9-1ae" id="DIc-5S-4cN"/>
                     </connections>
                 </viewController>
@@ -6120,7 +6122,8 @@ The school admin will review it soon.</string>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="Tableview" destination="Q8C-qx-nyX" id="vWz-as-yKR"/>
+                        <outlet property="Tableview" destination="Q8C-qx-nyX" id="nYf-1k-9vW"/>
+                        <outlet property="backbutton" destination="Ru2-tX-I05" id="zY2-n1-HO2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7lf-hE-46K" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -6220,6 +6223,21 @@ The school admin will review it soon.</string>
             </objects>
             <point key="canvasLocation" x="14332" y="4758"/>
         </scene>
+        <!--NotesubmitsuccessVC-->
+        <scene sceneID="vCG-Mv-5vo">
+            <objects>
+                <viewController storyboardIdentifier="NotesubmitsuccessVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="c9l-wM-CBA" customClass="NotesubmitsuccessVC" customModule="SF_Dev" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="w1v-Ey-P6k">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="wtd-0V-uy8"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="cXn-kz-B4T" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="15079" y="4766"/>
+        </scene>
         <!--FeedbackoverviewVC-->
         <scene sceneID="12I-FC-n5f">
             <objects>
@@ -6316,7 +6334,7 @@ The school admin will review it soon.</string>
         <!--AttendancedashboardVC-->
         <scene sceneID="Aq3-YJ-w6I">
             <objects>
-                <viewController storyboardIdentifier="attendancedashboardVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="HUW-cv-utz" customClass="attendancedashboardVC" customModule="SF_Dev" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="StudentAttendanceDashboardVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="HUW-cv-utz" customClass="attendancedashboardVC" customModule="SF_Dev" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Dcx-fM-h4K">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -6332,9 +6350,6 @@ The school admin will review it soon.</string>
                                         </constraints>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="Whitebackbutton"/>
-                                        <connections>
-                                            <action selector="backButtonTapped:" destination="e9j-fV-Jri" eventType="touchUpInside" id="rIJ-v9-HYB"/>
-                                        </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Attendance" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iUR-bo-57m">
                                         <rect key="frame" x="52" y="52" width="200" height="18"/>
@@ -6398,12 +6413,28 @@ The school admin will review it soon.</string>
                     </view>
                     <connections>
                         <outlet property="Backbutton" destination="nlC-l9-KSR" id="AbO-sc-ztb"/>
+                        <outlet property="Studentnameandgradelabel" destination="9OB-pa-J3B" id="6Kq-dP-PVW"/>
                         <outlet property="Tableview" destination="a8s-ud-CGo" id="o7O-ve-Q8d"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BED-CO-NAp" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="6443" y="4701"/>
+        </scene>
+        <!--BulletinlistVC-->
+        <scene sceneID="KEE-Hi-FQe">
+            <objects>
+                <viewController storyboardIdentifier="BulletinlistVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="5RI-or-vba" customClass="BulletinlistVC" customModule="SF_Dev" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="P42-9c-ohH">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="e6r-FT-onc"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hch-ec-sIX" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="6558" y="5547"/>
         </scene>
         <!--AbsentdetailsVC-->
         <scene sceneID="h3v-hy-0D2">
@@ -14726,28 +14757,28 @@ method (Credit Card, UPI, or Net Banking).</string>
             <color red="0.99607843137254903" green="0.94901960784313721" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="opaqueSeparatorColor">
-            <color red="0.77647058820000003" green="0.77647058820000003" blue="0.7843137255" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.77647058823529413" green="0.77647058823529413" blue="0.78431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray3Color">
-            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray5Color">
-            <color red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray6Color">
-            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGroupedBackgroundColor">
-            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="tableBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="tertiarySystemGroupedBackgroundColor">
-            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="viewFlipsideBackgroundColor">
             <color red="0.12156862745098039" green="0.12941176470588237" blue="0.14117647058823529" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

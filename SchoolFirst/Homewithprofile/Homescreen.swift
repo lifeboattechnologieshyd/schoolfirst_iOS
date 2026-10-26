@@ -449,7 +449,9 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
 
     private func navigateToAttendance() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        if let AttendancedashboardVC = storyboard.instantiateViewController(withIdentifier: "attendancedashboardVC") as? attendancedashboardVC {
+        if let AttendancedashboardVC = storyboard.instantiateViewController(withIdentifier: "StudentAttendanceDashboardVC") as? attendancedashboardVC {
+            // Passed directly while navigating
+            AttendancedashboardVC.studentNameAndGradeInfo = "\(UserManager.shared.resolvedStudentName) | \(UserManager.shared.resolvedGradeSection)"
             AttendancedashboardVC.hidesBottomBarWhenPushed = true
             if let nav = navigationController {
                 nav.setNavigationBarHidden(true, animated: false)

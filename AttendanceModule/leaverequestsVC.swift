@@ -12,6 +12,7 @@ private typealias LeaveListCompletion =
 
 class leaverequestsVC: UIViewController {
 
+    @IBOutlet weak var Newleaverequestbutton: UIButton!
     @IBOutlet weak var Academicyearandterm: UILabel!
     @IBOutlet weak var Tableview: UITableView!
     @IBOutlet weak var Backbutton: UIButton!
@@ -49,6 +50,7 @@ class leaverequestsVC: UIViewController {
         super.viewDidLoad()
         setupTableView()
         Backbutton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
+        Newleaverequestbutton.addTarget(self, action: #selector(didTapNewLeaveRequestButton), for: .touchUpInside)
         Academicyearandterm.text = "\(academicYearText()) · \(termText())"
         fetchLeaveRequests()
     }
@@ -61,6 +63,36 @@ class leaverequestsVC: UIViewController {
     // MARK: - Back Button
     @objc private func didTapBackButton() {
         navigationController?.popViewController(animated: true)
+    }
+
+    // MARK: - New Leave Request Button
+    @objc private func didTapNewLeaveRequestButton() {
+        navigateToLeaveApplyVC()
+    }
+
+    private func navigateToLeaveApplyVC() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let leaveApplyVC = storyboard.instantiateViewController(withIdentifier: "LeaveapplyVC") as? LeaveapplyVC {
+            leaveApplyVC.hidesBottomBarWhenPushed = true
+            if let nav = navigationController {
+                nav.setNavigationBarHidden(true, animated: false)
+                nav.pushViewController(leaveApplyVC, animated: true)
+            } else {
+                leaveApplyVC.modalPresentationStyle = .fullScreen
+                present(leaveApplyVC, animated: true)
+            }
+        } else {
+            // Fallback if storyboard ID is missing
+            let leaveApplyVC = LeaveapplyVC()
+            leaveApplyVC.hidesBottomBarWhenPushed = true
+            if let nav = navigationController {
+                nav.setNavigationBarHidden(true, animated: false)
+                nav.pushViewController(leaveApplyVC, animated: true)
+            } else {
+                leaveApplyVC.modalPresentationStyle = .fullScreen
+                present(leaveApplyVC, animated: true)
+            }
+        }
     }
 
     // MARK: - Table View

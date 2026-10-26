@@ -7,8 +7,13 @@
 
 import UIKit
 
+protocol AbsentdetailsTBLVCLLDelegate: AnyObject {
+    func didTapAddLeaveNote()
+}
+
 class AbsentdetailsTBLVCLL: UITableViewCell {
 
+    @IBOutlet weak var Addleavenotebutton: UIButton!
     @IBOutlet weak var ClasssectionandrollnumberLabel: UILabel!
     @IBOutlet weak var MarkedTeachernameLabel: UILabel!
     @IBOutlet weak var RemarksLabel: UILabel!
@@ -16,14 +21,22 @@ class AbsentdetailsTBLVCLL: UITableViewCell {
     @IBOutlet weak var AbsentdateLabel: UILabel!
     @IBOutlet weak var Absentdate: UILabel!
     @IBOutlet weak var Attendancestatuslabel: UILabel!
+    
+    weak var delegate: AbsentdetailsTBLVCLLDelegate?
 
     override func awakeFromNib() {
         super.awakeFromNib()
         // Existing XIB styling and layout remain unchanged.
+        
+        Addleavenotebutton.addTarget(self, action: #selector(didTapAddLeaveNoteButton), for: .touchUpInside)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
+    }
+    
+    @objc private func didTapAddLeaveNoteButton() {
+        delegate?.didTapAddLeaveNote()
     }
 
     // MARK: - Configure Selected Attendance Details

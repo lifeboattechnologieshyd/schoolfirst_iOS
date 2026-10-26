@@ -9,6 +9,8 @@ import UIKit
 
 class LatearrivaldetailsTBLVCLL: UITableViewCell {
 
+    @IBOutlet weak var AddnotefortheschoolButton: UIButton!
+    
     @IBOutlet weak var LatetimeLabel: UILabel!
     @IBOutlet weak var LatedateLabel: UILabel!
     @IBOutlet weak var ReasonLabel: UILabel!

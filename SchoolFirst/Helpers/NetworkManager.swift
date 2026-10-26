@@ -312,6 +312,39 @@ struct APIResponse<T: Decodable>: Decodable {
         data = try? container.decodeIfPresent(T.self, forKey: .data)
     }
 }
+//***give late and absent not resposne model
+struct ApplyStudentLeaveRequest: Codable {
+    let attendance_id: String
+    let student_id: String
+    let late_note: String?
+    let absent_note: String?
+}
+
+// MARK: - Response Model
+struct ApplyStudentLeaveResponse: Codable {
+    let success: Bool
+    let description: String?
+    let data: ApplyStudentLeaveData?
+}
+
+// MARK: - Response Data
+struct ApplyStudentLeaveData: Codable {
+    let id: String
+    let attendance_date: String
+    let status: String
+    let late_note: String?
+    let absent_note: String?
+    let student: ApplyStudentLeaveStudent?
+}
+
+// MARK: - Response Student
+struct ApplyStudentLeaveStudent: Codable {
+    let id: String
+    let name: String
+    let admission_number: String
+}
+
+
 
 //*** Feedback catogeries API response
 struct FeedbackCategoryItem: Decodable {

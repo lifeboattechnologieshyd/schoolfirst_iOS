@@ -9,16 +9,33 @@ import UIKit
 
 class attendancedashboardVC: UIViewController {
 
+    @IBOutlet weak var Studentnameandgradelabel: UILabel!
     @IBOutlet weak var Backbutton: UIButton!
     @IBOutlet weak var Tableview: UITableView!
 
     private var attendanceRecords: [FetchStudentAttendanceRecord] = []
     private var attendanceAcademicYear: FetchStudentAttendanceAcademicYear?
     private var attendanceResponseData: FetchStudentAttendanceData?
+    
+    // Properties for Pending Leave Requests
+    private var pendingLeaveCount: Int = 0
+    private var lastLeaveReason: String = ""
+    private var lastLeaveStatus: String = ""
+    
+    // Passed from Homescreen while navigating
+    var studentNameAndGradeInfo: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
+        
+        // Configure the Student Name & Grade Label
+        if let info = studentNameAndGradeInfo, !info.isEmpty {
+            Studentnameandgradelabel.text = info
+        } else {
+            // Fallback just in case
+            Studentnameandgradelabel.text = "\(UserManager.shared.resolvedStudentName) | \(UserManager.shared.resolvedGradeSection)"
+        }
 
         Backbutton.addTarget(
             self,
@@ -27,6 +44,7 @@ class attendancedashboardVC: UIViewController {
         )
 
         fetchAttendanceData()
+        fetchLeaveRequests() // New call to populate the pending leave cards UI
     }
 
     @objc private func didTapBackButton() {
@@ -65,15 +83,18 @@ class attendancedashboardVC: UIViewController {
     private func fetchAttendanceData() {
         let endpoint = API.GET_STUDENT_ATTENDANCE
 
-        let studentId = UserDefaults.standard.string(forKey: "STUDENT_ID") ?? ""
-        let schoolId = UserDefaults.standard.string(forKey: "SCHOOL_ID") ?? ""
+        // USE USERMANAGER INSTEAD OF USERDEFAULTS (Per your requirements)
+        let studentId = UserManager.shared.resolvedStudentID
+        let schoolId = UserManager.shared.resolvedSchoolID
+
+        guard !studentId.isEmpty, !schoolId.isEmpty else { return }
 
         let parameters: [String: Any] = [
             "student_id": studentId
         ]
 
         let headers: [String: String] = [
-            "x-school-id": schoolId
+            "X-School-ID": schoolId
         ]
 
         NetworkManager.shared.request(
@@ -95,6 +116,49 @@ class attendancedashboardVC: UIViewController {
 
                 case .failure(let error):
                     print("Failed to fetch attendance: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
+    // FETCH LEAVE REQUESTS FOR THE UI CARDS (Figma Requirement)
+    private func fetchLeaveRequests() {
+        let studentID = UserManager.shared.resolvedStudentID
+        let schoolID = UserManager.shared.resolvedSchoolID
+        
+        guard !studentID.isEmpty, !schoolID.isEmpty else { return }
+        
+        NetworkManager.shared.request(
+            urlString: API.STUDENT_LEAVE_REQUESTS,
+            method: .GET,
+            requiresAuth: true,
+            parameters: ["student_id": studentID, "student": studentID],
+            headers: ["X-School-ID": schoolID]
+        ) { [weak self] (result: Result<APIResponse<LeaveListDataWrapper>, NetworkError>) in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let response):
+                    let requests = response.data?.data ?? []
+                    
+                    // Count only pending requests
+                    let pending = requests.filter { $0.status.caseInsensitiveCompare("PENDING") == .orderedSame }
+                    self?.pendingLeaveCount = pending.count
+                    
+                    // Store the details of the latest request
+                    if let first = requests.first {
+                        // Assuming your model has .reason, adjust to .title or .leaveType if necessary
+                        self?.lastLeaveReason = first.reason ?? "Leave Request"
+                        self?.lastLeaveStatus = first.status.capitalized
+                    } else {
+                        self?.lastLeaveReason = ""
+                        self?.lastLeaveStatus = ""
+                    }
+                    
+                    // Refresh just the top cell where the leaves view exists
+                    self?.Tableview.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
+                    
+                case .failure(let error):
+                    print("Failed to fetch leave requests: \(error.localizedDescription)")
                 }
             }
         }
@@ -136,9 +200,14 @@ extension attendancedashboardVC: UITableViewDelegate, UITableViewDataSource {
 
             cell.selectionStyle = .none
             cell.delegate = self
+            
+            // Pass all required data directly to cell
             cell.configure(
                 with: attendanceResponseData,
-                todayRecord: todayRecord()
+                todayRecord: todayRecord(),
+                pendingLeaveCount: pendingLeaveCount,
+                lastLeaveReason: lastLeaveReason,
+                lastLeaveStatus: lastLeaveStatus
             )
 
             return cell
@@ -238,5 +307,15 @@ extension attendancedashboardVC: AttendancedashboardTBLVCLLDelegate {
             withIdentifier: "leaverequestsVC"
         ) as? leaverequestsVC else { return }
         navigationController?.pushViewController(leaveRequestsVC, animated: true)
+    }
+
+    func didTapHistoryButton() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let weeklyVC = storyboard.instantiateViewController(
+            withIdentifier: "WeaklyattendanceVC"
+        ) as? WeaklyattendanceVC {
+            weeklyVC.hidesBottomBarWhenPushed = true
+            navigationController?.pushViewController(weeklyVC, animated: true)
+        }
     }
 }
