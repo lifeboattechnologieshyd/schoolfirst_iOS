@@ -12,10 +12,12 @@ protocol AttendancedashboardTBLVCLLDelegate: AnyObject {
     func didTapApplyLeaveButton()
     func didTapPendingLeaveRequests()
     func didTapHistoryButton()
+    func didTapViewAllButton()
 }
 
 class attendancedashboardTBLVCLL: UITableViewCell {
 
+    @IBOutlet weak var Viewallbutton: UIButton!
     @IBOutlet weak var ViewallButton: UIButton!
     @IBOutlet weak var HistoryButton: UIButton!
     @IBOutlet weak var Attendancestautusbadge: UILabel!
@@ -95,6 +97,20 @@ class attendancedashboardTBLVCLL: UITableViewCell {
         HistoryButton.addTarget(
             self,
             action: #selector(didTapHistory),
+            for: .touchUpInside
+        )
+
+        // View All Button -> Navigate to leaverequestsVC
+        Viewallbutton.addTarget(
+            self,
+            action: #selector(didTapViewAll),
+            for: .touchUpInside
+        )
+        
+        // Also wire the second ViewallButton if it exists in storyboard
+        ViewallButton?.addTarget(
+            self,
+            action: #selector(didTapViewAll),
             for: .touchUpInside
         )
 
@@ -231,6 +247,10 @@ class attendancedashboardTBLVCLL: UITableViewCell {
 
     @objc private func didTapHistory() {
         delegate?.didTapHistoryButton()
+    }
+    
+    @objc private func didTapViewAll() {
+        delegate?.didTapViewAllButton()
     }
 
     // MARK: - Setup Top Date Container

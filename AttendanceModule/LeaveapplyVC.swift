@@ -27,6 +27,17 @@ class LeaveapplyVC: UIViewController {
         case to
     }
 
+    // ✅ FIX: Fixed master list of leave types — shown for EVERY student.
+    // Previously types were derived from the student's past leave requests,
+    // so students with no leave history got an empty dropdown.
+    private static let defaultLeaveTypes: [(raw: String, title: String)] = [
+        ("SICK", "Sick Leave"),
+        ("CASUAL", "Casual Leave"),
+        ("EMERGENCY", "Emergency Leave"),
+        ("PERSONAL", "Personal Leave"),
+        ("OTHER", "Other Leave")
+    ]
+
     private static let displayFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -49,6 +60,12 @@ class LeaveapplyVC: UIViewController {
         setupTableView()
 
         Backbutton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
+
+        // ✅ FIX: Initialize with the fixed list immediately so the dropdown
+        // ALWAYS has options — even before/without the API responding.
+        leaveTypeOptions = LeaveapplyVC.defaultLeaveTypes.map {
+            LeaveApplyTypeOption(rawValue: $0.raw, title: $0.title)
+        }
 
         fetchLeaveTypes()
     }
@@ -109,27 +126,38 @@ class LeaveapplyVC: UIViewController {
                     switch result {
                     case .success(let response):
                         guard response.success else {
-                            self.leaveTypeOptions = []
+                            // ✅ FIX: keep the default list — don't clear it
                             return
                         }
 
                         let items = response.data?.data ?? []
+                        // ✅ FIX: merge API types INTO the default list (not replace)
                         self.leaveTypeOptions = self.makeLeaveTypeOptions(from: items)
 
                     case .failure(let error):
+                        // ✅ FIX: keep the default list on failure — don't clear it
                         print("❌ Leave types error: \(error.localizedDescription)")
-                        self.leaveTypeOptions = []
                     }
                 }
             }
         )
     }
 
-    /// Builds unique leave types from the API, keeping the API order.
+    /// ✅ FIXED: Always starts with the fixed master list, then merges in any
+    /// additional unique types found in the student's leave history.
     private func makeLeaveTypeOptions(from items: [LeaveListItem]) -> [LeaveApplyTypeOption] {
         var seen = Set<String>()
         var options: [LeaveApplyTypeOption] = []
 
+        // 1. Baseline: fixed leave types (always present for every student)
+        for def in LeaveapplyVC.defaultLeaveTypes {
+            seen.insert(def.raw)
+            options.append(
+                LeaveApplyTypeOption(rawValue: def.raw, title: def.title)
+            )
+        }
+
+        // 2. Merge: any extra types from API history not in the defaults
         for item in items {
             let raw = item.leaveType
                 .trimmingCharacters(in: .whitespacesAndNewlines)
@@ -157,6 +185,8 @@ class LeaveapplyVC: UIViewController {
             return "Casual Leave"
         case "EMERGENCY":
             return "Emergency Leave"
+        case "PERSONAL":                                    // ✅ added explicit case
+            return "Personal Leave"
         case "OTHER":
             return "Other Leave"
         default:
@@ -427,7 +457,7 @@ class LeaveapplyVC: UIViewController {
     }
 
     // MARK: - Navigation to Success Screen
-    
+
     private func openSuccessScreen(with data: LeaveApplyData?) {
         let vc = LeaverequestsuccessVC()
 
@@ -758,7 +788,7 @@ fileprivate final class LeaveApplyTypeCard: UIViewController, UITableViewDataSou
         tableView.heightAnchor.constraint(equalToConstant: max(tableHeight, rowHeight)).isActive = true
         tableView.isHidden = options.isEmpty
 
-        emptyLabel.text = "No leave types found.\nLeave types appear after leave requests are loaded."
+        emptyLabel.text = "No leave types found."
         emptyLabel.numberOfLines = 0
         emptyLabel.textAlignment = .center
         emptyLabel.textColor = .gray

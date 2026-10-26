@@ -215,6 +215,7 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
         case "Gallery": navigateToGallery()
         case "Remarks": navigateToRemarks()
         case "Contact us": navigateToContactus()
+        case "Bulletin": navigateToBulletin()
             
             
             // ✅ NEW: Gallery navigation added
@@ -401,6 +402,19 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
             } else {
                 PTMVC.modalPresentationStyle = .fullScreen
                 present(PTMVC, animated: true)
+            }
+        }
+    }
+    private func navigateToBulletin() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let Bulletin = storyboard.instantiateViewController(withIdentifier: "BulletinlistVC") as? BulletinlistVC {
+            Bulletin.hidesBottomBarWhenPushed = true
+            if let nav = navigationController {
+                nav.setNavigationBarHidden(true, animated: false)
+                nav.pushViewController(Bulletin, animated: true)
+            } else {
+                Bulletin.modalPresentationStyle = .fullScreen
+                present(Bulletin, animated: true)
             }
         }
     }

@@ -279,14 +279,14 @@ extension attendancedashboardVC: UITableViewDelegate, UITableViewDataSource {
         _ tableView: UITableView,
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
-        return indexPath.row == 0 ? 920 : 76
+        return indexPath.row == 0 ? 900 : 76
     }
 
     func tableView(
         _ tableView: UITableView,
         estimatedHeightForRowAt indexPath: IndexPath
     ) -> CGFloat {
-        return indexPath.row == 0 ? 920 : 76
+        return indexPath.row == 0 ? 900 : 76
     }
 }
 
@@ -317,5 +317,13 @@ extension attendancedashboardVC: AttendancedashboardTBLVCLLDelegate {
             weeklyVC.hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(weeklyVC, animated: true)
         }
+    }
+    
+    func didTapViewAllButton() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let leaveRequestsVC = storyboard.instantiateViewController(
+            withIdentifier: "leaverequestsVC"
+        ) as? leaverequestsVC else { return }
+        navigationController?.pushViewController(leaveRequestsVC, animated: true)
     }
 }

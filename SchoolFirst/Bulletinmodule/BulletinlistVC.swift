@@ -12,9 +12,26 @@ class BulletinlistVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // 1. Initialize the SwiftUI View
-        let swiftUIView = BulletinListView()
+        self.navigationController?.setNavigationBarHidden(true, animated: false)
+        setupSwiftUIView()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
+    private func setupSwiftUIView() {
+        // 1. Initialize the SwiftUI View with back & selection callbacks
+        let swiftUIView = BulletinListView(
+            onBack: { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
+            },
+            onSelectBulletin: { [weak self] selectedBulletin in
+                let detailVC = BulletindetailVC(bulletin: selectedBulletin)
+                self?.navigationController?.pushViewController(detailVC, animated: true)
+            }
+        )
         
         // 2. Create the Hosting Controller
         let hostingController = UIHostingController(rootView: swiftUIView)
@@ -33,8 +50,5 @@ class BulletinlistVC: UIViewController {
         ])
         
         hostingController.didMove(toParent: self)
-        
-        // Hide standard navigation bar if you have one, as SwiftUI has the custom purple one
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
     }
 }

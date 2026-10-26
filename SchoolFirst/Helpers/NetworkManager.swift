@@ -312,6 +312,65 @@ struct APIResponse<T: Decodable>: Decodable {
         data = try? container.decodeIfPresent(T.self, forKey: .data)
     }
 }
+//***bulletin list model
+struct BulletinListWrapper: Codable {
+    let data: [BulletinEntry]?
+}
+
+/// Individual bulletin item from API
+struct BulletinEntry: Codable, Identifiable {
+    let id: String
+    let category: BulletinCategoryInfo?
+    let title: String
+    let summary: String?
+    let messageBody: String?
+    let banner: BulletinBanner?
+    let isPinned: Bool?
+    let isRead: Bool?
+    let attachments: [BulletinAttachment]?
+    let createdAt: String?
+    let status: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case category
+        case title
+        case summary
+        case messageBody = "message_body"
+        case banner
+        case isPinned = "is_pinned"
+        case isRead = "is_read"
+        case attachments
+        case createdAt = "created_at"
+        case status
+    }
+}
+
+/// Nested category inside each bulletin
+struct BulletinCategoryInfo: Codable {
+    let id: String
+    let name: String
+}
+
+/// Nested banner inside each bulletin
+struct BulletinBanner: Codable {
+    let label: String?
+    let headline: String?
+    let bannerColor: String?
+
+    enum CodingKeys: String, CodingKey {
+        case label
+        case headline
+        case bannerColor = "banner_color"
+    }
+}
+
+/// Nested attachment inside each bulletin
+struct BulletinAttachment: Codable, Identifiable {
+    let id: String
+    let name: String?
+    let pdf: String?
+}
 //***give late and absent not resposne model
 struct ApplyStudentLeaveRequest: Codable {
     let attendance_id: String
@@ -344,7 +403,21 @@ struct ApplyStudentLeaveStudent: Codable {
     let admission_number: String
 }
 
+//***BulletinCategory response model
 
+struct BulletinCategory: Codable {
+    let id: String
+    let name: String
+    let description: String?
+    let isActive: Bool?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case description
+        case isActive = "is_active"
+    }
+}
 
 //*** Feedback catogeries API response
 struct FeedbackCategoryItem: Decodable {
