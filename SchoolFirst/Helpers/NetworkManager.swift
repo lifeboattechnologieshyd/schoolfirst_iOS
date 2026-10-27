@@ -2,7 +2,6 @@
 //  NetworkManager.swift
 //  SchoolFirst
 //
-
 import Foundation
 
 enum HTTPMethod: String {
@@ -37,6 +36,7 @@ enum NetworkError: LocalizedError {
         }
     }
 }
+
 class NetworkManager {
     static let shared = NetworkManager()
     
@@ -49,6 +49,7 @@ class NetworkManager {
         requiresAuth: Bool = true,
         parameters: [String: Any]? = nil,
         headers: [String: String]? = nil,
+        showErrorAlert: Bool = true,          // ✅ NEW: screens can suppress the generic popup
         completion: @escaping (Result<APIResponse<T>, NetworkError>) -> Void
     ) {
         
@@ -163,7 +164,7 @@ class NetworkManager {
 
                         case 404:
                             // Suppress popup for BASE_URL_2 public endpoints
-                            if !urlString.contains(API.BASE_URL_2) {
+                            if showErrorAlert && !urlString.contains(API.BASE_URL_2) {
                                 DispatchQueue.main.async {
                                     AlertManager.shared.showAlert(
                                         title: "Not Found",
@@ -171,13 +172,13 @@ class NetworkManager {
                                     )
                                 }
                             } else {
-                                print("⚠️ BASE_URL_2 returned 404 for \(urlString)")
+                                print("⚠️ 404 for \(urlString)")
                             }
                             completion(.failure(.noData))
 
                         case 405:
                             // Suppress popup for BASE_URL_2 public endpoints
-                            if !urlString.contains(API.BASE_URL_2) {
+                            if showErrorAlert && !urlString.contains(API.BASE_URL_2) {
                                 DispatchQueue.main.async {
                                     AlertManager.shared.showAlert(
                                         title: "Method Not Allowed",
@@ -185,13 +186,13 @@ class NetworkManager {
                                     )
                                 }
                             } else {
-                                print("⚠️ BASE_URL_2 returned 405 for \(urlString)")
+                                print("⚠️ 405 for \(urlString)")
                             }
                             completion(.failure(.serverError("405")))
 
                         case 500:
                             // Suppress popup for BASE_URL_2 public endpoints
-                            if !urlString.contains(API.BASE_URL_2) {
+                            if showErrorAlert && !urlString.contains(API.BASE_URL_2) {
                                 DispatchQueue.main.async {
                                     AlertManager.shared.showAlert(
                                         title: "Server Error",
@@ -199,7 +200,7 @@ class NetworkManager {
                                     )
                                 }
                             } else {
-                                print("⚠️ BASE_URL_2 returned 500 for \(urlString)")
+                                print("⚠️ 500 for \(urlString)")
                             }
                             completion(.failure(.serverError("500")))
 
@@ -214,7 +215,7 @@ class NetworkManager {
                             }
 
                             // Suppress popup for BASE_URL_2 public endpoints
-                            if !urlString.contains(API.BASE_URL_2) {
+                            if showErrorAlert && !urlString.contains(API.BASE_URL_2) {
                                 DispatchQueue.main.async {
                                     AlertManager.shared.showAlert(
                                         title: "Error",
@@ -222,7 +223,7 @@ class NetworkManager {
                                     )
                                 }
                             } else {
-                                print("⚠️ BASE_URL_2 returned \(httpResponse.statusCode) for \(urlString)")
+                                print("⚠️ \(httpResponse.statusCode) for \(urlString): \(errorDescription)")
                             }
                             completion(.failure(.serverError(errorDescription)))
                         }
@@ -312,6 +313,219 @@ struct APIResponse<T: Decodable>: Decodable {
         data = try? container.decodeIfPresent(T.self, forKey: .data)
     }
 }
+//*** Get hallticket API Resposne model
+struct HallTicketAPIResponse: Codable {
+    let success: Bool?
+    let description: String?
+    let data: HallTicketData?
+}
+
+struct HallTicketData: Codable {
+    let hallTicket: HallTicketInfo?
+    let student: HallTicketStudent?
+    let examination: HallTicketExamination?
+    let schedules: [HallTicketSchedule]?
+    
+    enum CodingKeys: String, CodingKey {
+        case hallTicket = "hall_ticket"
+        case student
+        case examination
+        case schedules
+    }
+}
+
+// MARK: - Hall Ticket Info
+struct HallTicketInfo: Codable {
+    let id: String?
+    let hallTicketNumber: String?
+    let school: HallTicketSchool?
+    let status: String?
+    let generatedAt: String?
+    let publishedAt: String?
+    let pdf: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case hallTicketNumber = "hall_ticket_number"
+        case school
+        case status
+        case generatedAt = "generated_at"
+        case publishedAt = "published_at"
+        case pdf
+    }
+}
+
+struct HallTicketSchool: Codable {
+    let id: String?
+    let name: String?
+    let address: String?
+    let board: String?
+}
+
+// MARK: - Student
+struct HallTicketStudent: Codable {
+    let id: String?
+    let name: String?
+    let admissionNumber: String?
+    let grade: HallTicketNameId?
+    let section: HallTicketNameId?
+    let branch: HallTicketNameId?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case admissionNumber = "admission_number"
+        case grade
+        case section
+        case branch
+    }
+}
+
+struct HallTicketNameId: Codable {
+    let id: String?
+    let name: String?
+}
+
+// MARK: - Examination
+struct HallTicketExamination: Codable {
+    let id: String?
+    let name: String?
+    let examinationType: HallTicketNameId?
+    let academicYear: HallTicketNameId?
+    let startDate: String?
+    let endDate: String?
+    let resultDate: String?
+    let instructions: String?
+    let reportingDate: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case examinationType = "examination_type"
+        case academicYear = "academic_year"
+        case startDate = "start_date"
+        case endDate = "end_date"
+        case resultDate = "result_date"
+        case instructions
+        case reportingDate = "reporting_date"
+    }
+}
+
+// MARK: - Schedule
+struct HallTicketSchedule: Codable, Identifiable {
+    let id: String?
+    let subject: HallTicketNameId?
+    let examDate: String?
+    let startTime: String?
+    let endTime: String?
+    let roomNumber: String?
+    let maximumMarks: String?
+    let passingMarks: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case subject
+        case examDate = "exam_date"
+        case startTime = "start_time"
+        case endTime = "end_time"
+        case roomNumber = "room_number"
+        case maximumMarks = "maximum_marks"
+        case passingMarks = "passing_marks"
+    }
+}
+//***Exam details API resposne model
+struct FetchExamDetailResponse: Codable {
+    let success: Bool?
+    let description: String?
+    let data: ExamDetail?
+}
+
+// MARK: - Exam Detail
+struct ExamDetail: Codable {
+    let id: String?
+    let name: String?
+    let school: ExamSchool?
+    let examinationType: ExamNamedEntity?   // ✅ reuses existing
+    let academicYear: ExamNamedEntity?      // ✅ reuses existing
+    let startDate: String?
+    let endDate: String?
+    let resultDate: String?
+    let reportingDate: String?
+    let status: String?
+    let description: String?
+    let student: ExamStudent?
+    let schedules: [ExamSchedule]?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, school
+        case examinationType = "examination_type"
+        case academicYear    = "academic_year"
+        case startDate       = "start_date"
+        case endDate         = "end_date"
+        case resultDate      = "result_date"
+        case reportingDate   = "reporting_date"
+        case status, description, student, schedules
+    }
+}
+
+// MARK: - School (has phone_number → can't reuse ExamNamedEntity)
+struct ExamSchool: Codable {
+    let id: String?
+    let name: String?
+    let phoneNumber: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name
+        case phoneNumber = "phone_number"
+    }
+}
+
+// MARK: - Student
+struct ExamStudent: Codable {
+    let id: String?
+    let name: String?
+    let admissionNumber: String?
+    let grade: ExamNamedEntity?             // ✅ reuses existing
+    let section: ExamNamedEntity?           // ✅ reuses existing
+
+    enum CodingKeys: String, CodingKey {
+        case id, name
+        case admissionNumber = "admission_number"
+        case grade, section
+    }
+}
+
+// MARK: - Exam Schedule
+struct ExamSchedule: Codable {
+    let id: String?
+    let subject: ExamNamedEntity?           // ✅ reuses existing
+    let grade: ExamNamedEntity?             // ✅ reuses existing
+    let examDate: String?
+    let startTime: String?
+    let endTime: String?
+    let roomNumber: String?
+    let maximumMarks: String?
+    let passingMarks: String?
+    let internalPercentage: String?
+    let externalPercentage: String?
+    let practicalPercentage: String?
+    let instructions: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, subject, grade
+        case examDate            = "exam_date"
+        case startTime           = "start_time"
+        case endTime             = "end_time"
+        case roomNumber          = "room_number"
+        case maximumMarks        = "maximum_marks"
+        case passingMarks        = "passing_marks"
+        case internalPercentage  = "internal_percentage"
+        case externalPercentage  = "external_percentage"
+        case practicalPercentage = "practical_percentage"
+        case instructions
+    }
+}
+
 //***bulletin list model
 struct BulletinListWrapper: Codable {
     let data: [BulletinEntry]?
@@ -370,6 +584,48 @@ struct BulletinAttachment: Codable, Identifiable {
     let id: String
     let name: String?
     let pdf: String?
+}
+//*** Get exams API resposne Model
+struct FetchExamsResponse: Codable {
+    let success: Bool?
+    let description: String?
+    let total: Int?
+    let data: [ExamItem]?
+}
+
+// MARK: - Exam Item
+struct ExamItem: Codable {
+    let id: String?
+    let name: String?
+    let examinationType: ExamNamedEntity?
+    let academicYear: ExamNamedEntity?
+    let branch: ExamNamedEntity?
+    let startDate: String?
+    let endDate: String?
+    let resultDate: String?
+    let reportingDate: String?
+    let status: String?
+    let description: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case examinationType = "examination_type"
+        case academicYear = "academic_year"
+        case branch
+        case startDate = "start_date"
+        case endDate = "end_date"
+        case resultDate = "result_date"
+        case reportingDate = "reporting_date"
+        case status
+        case description
+    }
+}
+
+// MARK: - Reusable Entity Model for Examination Type, Academic Year, and Branch
+struct ExamNamedEntity: Codable {
+    let id: String?
+    let name: String?
 }
 //***give late and absent not resposne model
 struct ApplyStudentLeaveRequest: Codable {

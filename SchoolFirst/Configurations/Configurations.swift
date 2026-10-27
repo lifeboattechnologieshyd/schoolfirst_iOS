@@ -238,6 +238,12 @@ struct API {
     static let BULLETIN_CATEGORIES = BASE_URL + "bulletin/categories"
     static let BULLETINS = BASE_URL + "bulletin/bulletins"
     
+    static let GET_EXAMS = BASE_URL + "examination/exam"
+    static let GET_EXAM_DETAIL = BASE_URL + "examination/exam/detail"
+    static let GET_HALL_TICKET = BASE_URL + "examination/hall-ticket"
+
+
+    
     
     
     

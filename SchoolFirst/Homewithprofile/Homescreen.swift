@@ -216,6 +216,7 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
         case "Remarks": navigateToRemarks()
         case "Contact us": navigateToContactus()
         case "Bulletin": navigateToBulletin()
+        case "Exams": navigateToExams()
             
             
             // ✅ NEW: Gallery navigation added
@@ -532,6 +533,20 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
             }
         }
     }
+    private func navigateToExams() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let ExamVC = storyboard.instantiateViewController(withIdentifier: "ExamhomeVC") as? ExamhomeVC {
+            ExamVC.hidesBottomBarWhenPushed = true
+            if let nav = navigationController {
+                nav.setNavigationBarHidden(true, animated: false)
+                nav.pushViewController(ExamVC, animated: true)
+            } else {
+                ExamVC.modalPresentationStyle = .fullScreen
+                present(ExamVC, animated: true)
+            }
+        }
+    }
+    
     private func navigateToContactus() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         if let Contactus = storyboard.instantiateViewController(withIdentifier: "ContactschooldashboardVC") as? ContactschooldashboardVC {
