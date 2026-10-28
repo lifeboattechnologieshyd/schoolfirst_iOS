@@ -217,6 +217,7 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
         case "Contact us": navigateToContactus()
         case "Bulletin": navigateToBulletin()
         case "Exams": navigateToExams()
+        case "Time Table": navigateToTimetable()
             
             
             // ✅ NEW: Gallery navigation added
@@ -546,6 +547,20 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
             }
         }
     }
+    private func navigateToTimetable() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let TimetableVC = storyboard.instantiateViewController(withIdentifier: "TodaytimetableVC") as? TodaytimetableVC {
+            TimetableVC.hidesBottomBarWhenPushed = true
+            if let nav = navigationController {
+                nav.setNavigationBarHidden(true, animated: false)
+                nav.pushViewController(TimetableVC, animated: true)
+            } else {
+                TimetableVC.modalPresentationStyle = .fullScreen
+                present(TimetableVC, animated: true)
+            }
+        }
+    }
+    
     
     private func navigateToContactus() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
