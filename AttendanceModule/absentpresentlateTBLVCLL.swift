@@ -125,16 +125,37 @@ class absentpresentlateTBLVCLL: UITableViewCell {
         // Always assign the date, including when it is missing.
         Reaqestdate.text = formattedDate(record.attendanceDate)
 
-        // Use the actual API remarks when available.
-        let remarks = (record.remarks ?? "")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-
-        ReasonLabel.text = remarks.isEmpty
-            ? getDefaultRemark(for: status)
-            : remarks
+        // ✅ Reason text based on status (Absent / Late / Leave) from API remarks.
+        ReasonLabel.text = reasonText(for: status, remarks: record.remarks)
 
         // Apply all status-dependent colors on every configuration.
         applyStatusColors(for: status)
+    }
+
+    // MARK: - Reason Text (Absent / Late / Leave)
+    private func reasonText(for status: String, remarks: String?) -> String {
+
+        let remarks = (remarks ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        switch status {
+
+        case "ABSENT":
+            // Absent reason from API, otherwise fallback.
+            return remarks.isEmpty ? "Absent · Reason not provided" : remarks
+
+        case "LATE":
+            // Late reason from API, otherwise fallback.
+            return remarks.isEmpty ? "Late arrival · Reason not provided" : remarks
+
+        case "LEAVE":
+            // Leave reason from API, otherwise fallback.
+            return remarks.isEmpty ? "On leave · Reason not provided" : remarks
+
+        default:
+            // Present / Half day / others keep existing behaviour.
+            return remarks.isEmpty ? getDefaultRemark(for: status) : remarks
+        }
     }
 
     // MARK: - Status Colors

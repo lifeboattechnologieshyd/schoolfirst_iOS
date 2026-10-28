@@ -237,6 +237,8 @@ struct API {
     
     static let BULLETIN_CATEGORIES = BASE_URL + "bulletin/categories"
     static let BULLETINS = BASE_URL + "bulletin/bulletins"
+    static let MARK_BULLETIN_READ = BASE_URL + "bulletin/read"
+
     
     static let GET_EXAMS = BASE_URL + "examination/exam"
     static let GET_EXAM_DETAIL = BASE_URL + "examination/exam/detail"

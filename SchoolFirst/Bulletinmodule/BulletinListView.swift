@@ -74,6 +74,12 @@ struct BulletinListView: View {
     @State private var bulletins: [BulletinEntry] = []
     @State private var isLoadingBulletins = false
     
+    // ✅ IDs of bulletins the user has opened (locally marked as read)
+    @State private var readBulletinIds: Set<String> = []
+    
+    // ── Header height (matches Figma) ───────────────────────────────
+    private let headerContentHeight: CGFloat = 180
+    
     // ── Date helpers (created once) ─────────────────────────────────
     private static let apiDateParser: ISO8601DateFormatter = {
         let f = ISO8601DateFormatter()
@@ -91,10 +97,13 @@ struct BulletinListView: View {
         ZStack(alignment: .top) {
             Color(red: 0.96, green: 0.96, blue: 0.98).ignoresSafeArea()
             
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 0) {
-                    headerSection
-                    
+            VStack(spacing: 0) {
+                // ✅ FIXED header — stays pinned at top, does not scroll
+                headerSection
+                    .zIndex(1)
+                
+                // ✅ Only filters + list scroll
+                ScrollView(showsIndicators: false) {
                     VStack(spacing: 20) {
                         filterSection
                         
@@ -103,7 +112,6 @@ struct BulletinListView: View {
                     .background(Color(red: 0.96, green: 0.96, blue: 0.98))
                 }
             }
-            .ignoresSafeArea(edges: .top)
         }
         .onAppear {
             loadBulletinCategories()
@@ -164,6 +172,44 @@ struct BulletinListView: View {
                 }
             }
         }
+    }
+    
+    // ✅ POST bulletin/read — marks the selected bulletin as read on the server
+    private func markBulletinAsRead(_ bulletinId: String) {
+        let payload = MarkBulletinReadRequest(bulletinId: bulletinId)
+        let parameters: [String: Any] = ["bulletin_id": payload.bulletinId]
+        
+        let schoolId = UserDefaults.standard.string(forKey: "SCHOOL_ID") ?? ""
+        let headers: [String: String] = ["x-school-id": schoolId]
+        
+        NetworkManager.shared.request(
+            urlString: API.MARK_BULLETIN_READ,
+            method: .POST,
+            requiresAuth: true,
+            parameters: parameters,
+            headers: headers,
+            showErrorAlert: false
+        ) { (result: Result<APIResponse<MarkBulletinReadData>, NetworkError>) in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let response):
+                    if response.data?.isRead == true {
+                        self.readBulletinIds.insert(bulletinId)
+                    }
+                    print("✅ Bulletin marked as read:", response.description)
+                case .failure(let error):
+                    print("❌ Failed to mark bulletin as read:", error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    // ✅ Mark read locally + on server, then navigate to detail
+    private func handleSelect(_ item: BulletinItem) {
+        guard let entry = entryForItem(item) else { return }
+        readBulletinIds.insert(entry.id)          // hides the red bubble immediately & after coming back
+        markBulletinAsRead(entry.id)
+        onSelectBulletin?(entry)
     }
     
     // Fill the count badges on filter chips from loaded bulletins
@@ -247,7 +293,8 @@ struct BulletinListView: View {
             description: entry.summary ?? entry.messageBody ?? "",
             sender: categoryName, // API has no sender field — category shown instead
             time: displayTime,
-            isUnread: entry.isRead == false
+            // ✅ Unread only if server says unread AND user hasn't opened it locally
+            isUnread: entry.isRead == false && !readBulletinIds.contains(entry.id)
         )
     }
     
@@ -292,7 +339,7 @@ struct BulletinListView: View {
     }
     
     private var unreadCount: Int {
-        bulletins.filter { $0.isRead == false }.count
+        bulletins.filter { $0.isRead == false && !readBulletinIds.contains($0.id) }.count
     }
     
     // MARK: - List (Pinned / Today / Yesterday / Earlier / Empty State)
@@ -320,9 +367,7 @@ struct BulletinListView: View {
                     ForEach(visiblePinnedItems) { item in
                         PinnedBulletinCell(item: item)
                             .onTapGesture {
-                                if let entry = entryForItem(item) {
-                                    onSelectBulletin?(entry)   // ✅ renamed
-                                }
+                                handleSelect(item)
                             }
                     }
                 }
@@ -334,9 +379,7 @@ struct BulletinListView: View {
                     ForEach(visibleTodayItems) { item in
                         StandardBulletinCell(item: item)
                             .onTapGesture {
-                                if let entry = entryForItem(item) {
-                                    onSelectBulletin?(entry)   // ✅ renamed
-                                }
+                                handleSelect(item)
                             }
                     }
                 }
@@ -348,9 +391,7 @@ struct BulletinListView: View {
                     ForEach(visibleYesterdayItems) { item in
                         StandardBulletinCell(item: item)
                             .onTapGesture {
-                                if let entry = entryForItem(item) {
-                                    onSelectBulletin?(entry)   // ✅ renamed
-                                }
+                                handleSelect(item)
                             }
                     }
                 }
@@ -362,9 +403,7 @@ struct BulletinListView: View {
                     ForEach(visibleEarlierItems) { item in
                         StandardBulletinCell(item: item)
                             .onTapGesture {
-                                if let entry = entryForItem(item) {
-                                    onSelectBulletin?(entry)   // ✅ renamed
-                                }
+                                handleSelect(item)
                             }
                     }
                 }
@@ -474,32 +513,34 @@ struct BulletinListView: View {
     
     // MARK: - UI Components
     
+    // ✅ UPDATED: Fixed, compact header (180pt content, matches Figma)
     private var headerSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Spacer().frame(height: 40)
-            
+        VStack(alignment: .leading, spacing: 12) {
+            // Top row: Back • Title • Bell
             HStack {
                 Button(action: {
                     onBack?()
                 }) {
                     Image(systemName: "chevron.left")
+                        .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(.white)
-                        .padding(10)
+                        .frame(width: 38, height: 38)
                         .background(Color.white.opacity(0.2))
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
                 
                 Spacer()
                 Text("School Bulletin")
-                    .font(.headline)
+                    .font(.system(size: 17, weight: .bold))
                     .foregroundColor(.white)
                 Spacer()
                 
                 Button(action: {}) {
                     ZStack(alignment: .topTrailing) {
                         Image(systemName: "bell")
+                            .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(.white)
-                            .padding(10)
+                            .frame(width: 38, height: 38)
                             .background(Color.white.opacity(0.2))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                         
@@ -516,31 +557,41 @@ struct BulletinListView: View {
                 }
             }
             
+            // Subtitle
             Text("News, events and notices from your school, all in one place.")
-                .font(.subheadline)
+                .font(.system(size: 13))
                 .foregroundColor(.white.opacity(0.9))
-                .padding(.top, 8)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
             
+            // Search bar
             HStack {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.gray)
                 TextField("Search announcements", text: $searchText)
+                    .font(.system(size: 14))
                     .foregroundColor(.black)
             }
-            .padding(12)
+            .padding(.horizontal, 12)
+            .frame(height: 44)
             .background(Color.white)
             .cornerRadius(12)
-            .padding(.top, 8)
         }
-        .padding()
+        .padding(.horizontal, 16)
+        .padding(.top, 8)
+        .frame(maxWidth: .infinity, minHeight: headerContentHeight, maxHeight: headerContentHeight, alignment: .top)
         .background(
-            LinearGradient(
-                gradient: Gradient(colors: [Color(red: 0.2, green: 0.3, blue: 0.8), Color(red: 0.4, green: 0.3, blue: 0.9)]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            // Gradient extends behind the status bar; bottom corners rounded
+            RoundedCorner(radius: 24, corners: [.bottomLeft, .bottomRight])
+                .fill(
+                    LinearGradient(
+                        gradient: Gradient(colors: [Color(red: 0.2, green: 0.3, blue: 0.8), Color(red: 0.4, green: 0.3, blue: 0.9)]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .ignoresSafeArea(edges: .top)
         )
-        .cornerRadius(24, corners: [.bottomLeft, .bottomRight])
     }
     
     private var filterSection: some View {

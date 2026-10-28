@@ -585,6 +585,33 @@ struct BulletinAttachment: Codable, Identifiable {
     let name: String?
     let pdf: String?
 }
+//*** Read bulletin Post API payload
+struct MarkBulletinReadRequest: Codable {
+    let bulletinId: String
+
+    enum CodingKeys: String, CodingKey {
+        case bulletinId = "bulletin_id"
+    }
+}
+//*** Read bulletin Post API response model
+
+struct MarkBulletinReadResponse: Codable {
+    let success: Bool?
+    let description: String?
+    let data: MarkBulletinReadData?
+}
+
+struct MarkBulletinReadData: Codable {
+    let bulletinId: String?
+    let isRead: Bool?
+    let readAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case bulletinId = "bulletin_id"
+        case isRead = "is_read"
+        case readAt = "read_at"
+    }
+}
 //*** Get exams API resposne Model
 struct FetchExamsResponse: Codable {
     let success: Bool?

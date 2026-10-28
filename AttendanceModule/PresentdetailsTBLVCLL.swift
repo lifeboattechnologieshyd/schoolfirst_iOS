@@ -18,13 +18,26 @@ class PresentdetailsTBLVCLL: UITableViewCell {
     @IBOutlet weak var CheckedinontimewithDatelabel: UILabel!
     @IBOutlet weak var PresentdateLabel: UILabel!
 
+    /// Called when VieweaklyattendanceButton is tapped
+    var onWeeklyAttendanceTapped: (() -> Void)?
+
     override func awakeFromNib() {
         super.awakeFromNib()
         // Existing XIB styling and layout remain unchanged.
+
+        VieweaklyattendanceButton?.addTarget(
+            self,
+            action: #selector(didTapWeeklyAttendance),
+            for: .touchUpInside
+        )
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
+    }
+
+    @objc private func didTapWeeklyAttendance() {
+        onWeeklyAttendanceTapped?()
     }
 
     // MARK: - Configure Selected Present Attendance

@@ -12,12 +12,13 @@ struct BulletinDetailView: View {
     var onBack: (() -> Void)? = nil
     var onShare: ((String) -> Void)? = nil
     
-    @State private var isReadState: Bool = false
+    // ✅ Tracks which attachment is currently downloading (shows spinner)
+    @State private var downloadingURL: String? = nil
     
     // ── Banner overlap config (how far the banner hangs over the header edge) ──
     private var bannerOverlap: CGFloat { bulletin?.banner != nil ? 36 : 0 }
     
-    // ── Date parsers ────────────────────────────────────────────────
+    // ── Date parsers
     private static let apiDateParser: ISO8601DateFormatter = {
         let f = ISO8601DateFormatter()
         f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -78,10 +79,13 @@ struct BulletinDetailView: View {
         ZStack(alignment: .bottom) {
             Color(red: 0.96, green: 0.96, blue: 0.98).ignoresSafeArea()
             
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 0) {
-                    headerWithBanner
-                    
+            VStack(spacing: 0) {
+                // ✅ FIXED: Header + banner stay pinned at top (do not scroll)
+                headerWithBanner
+                    .zIndex(1)
+                
+                // ✅ Only the content below scrolls
+                ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 18) {
                         // Tags row
                         tagsRow
@@ -102,22 +106,15 @@ struct BulletinDetailView: View {
                         attachmentsSection
                     }
                     .padding(.horizontal, 20)
-                    // ✅ Pull content up so it sits right below the overhanging banner
-                    .padding(.top, bulletin?.banner != nil ? -(bannerOverlap - 16) : 20)
-                    .padding(.bottom, 100) // space for bottom action button
+                    .padding(.top, 16)
+                    .padding(.bottom, 30)
                 }
             }
             .ignoresSafeArea(edges: .top)
-            
-            // Bottom "Mark as read" button
-            bottomActionBar
-        }
-        .onAppear {
-            isReadState = bulletin?.isRead ?? false
         }
     }
     
-    // MARK: - Header & Banner Section (Figma: banner overlaps header edge)
+    // MARK: - Header & Banner Section
     private var headerWithBanner: some View {
         VStack(spacing: 0) {
             // 1. Purple header — rounded corners clipped HERE ONLY (nav bar section)
@@ -177,19 +174,44 @@ struct BulletinDetailView: View {
             )
             .cornerRadius(28, corners: [.bottomLeft, .bottomRight])
             
-            // 2. Banner card — drawn AFTER the header, pulled up so it
-            //    straddles the purple header's bottom edge (Figma overlap)
+            // 2. Banner card — pulled up so it straddles the purple header's
+            //    bottom edge (Figma overlap). Negative padding (instead of offset)
+            //    so no empty gap is left below the fixed header.
             if let banner = bulletin?.banner {
                 bannerCard(banner: banner)
                     .padding(.horizontal, 20)
-                    .offset(y: -bannerOverlap)
+                    .padding(.top, -bannerOverlap)
             }
         }
     }
     
     // MARK: - Banner Card
     private func bannerCard(banner: BulletinBanner) -> some View {
-        ZStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 6) {
+            if let label = banner.label, !label.isEmpty {
+                Text(label.uppercased())
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(Color.white.opacity(0.8))
+                    .tracking(0.5)
+            }
+            
+            if let headline = banner.headline, !headline.isEmpty {
+                Text(headline)
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(.white)
+            }
+            
+            if !gradeSectionText.isEmpty {
+                Text(gradeSectionText)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(Color.white.opacity(0.85))
+                    .padding(.top, 2)
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
             RoundedRectangle(cornerRadius: 18)
                 .fill(
                     LinearGradient(
@@ -214,31 +236,7 @@ struct BulletinDetailView: View {
                     }
                     .clipShape(RoundedRectangle(cornerRadius: 18))
                 )
-            
-            VStack(alignment: .leading, spacing: 6) {
-                if let label = banner.label, !label.isEmpty {
-                    Text(label.uppercased())
-                        .font(.system(size: 11, weight: .bold))
-                        .foregroundColor(Color.white.opacity(0.8))
-                        .tracking(0.5)
-                }
-                
-                if let headline = banner.headline, !headline.isEmpty {
-                    Text(headline)
-                        .font(.system(size: 24, weight: .bold))
-                        .foregroundColor(.white)
-                }
-                
-                if !gradeSectionText.isEmpty {
-                    Text(gradeSectionText)
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundColor(Color.white.opacity(0.85))
-                        .padding(.top, 2)
-                }
-            }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 18)
-        }
+        )
         .shadow(color: Color(red: 0.22, green: 0.28, blue: 0.80).opacity(0.25), radius: 10, x: 0, y: 6)
     }
     
@@ -370,24 +368,27 @@ struct BulletinDetailView: View {
             
             Spacer()
             
+            // ✅ FIXED: Actually downloads the PDF and shows the Save/Share sheet
             Button(action: {
-                if let urlString = urlString,
-                   !urlString.isEmpty,
-                   let url = URL(string: urlString),
-                   url.scheme == "http" || url.scheme == "https" {
-                    UIApplication.shared.open(url)
-                }
+                downloadAttachment(urlString: urlString, fileName: title)
             }) {
                 ZStack {
                     Circle()
                         .fill(Color(red: 0.23, green: 0.35, blue: 0.88))
                         .frame(width: 38, height: 38)
                     
-                    Image(systemName: "arrow.down")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.white)
+                    if downloadingURL == urlString {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .scaleEffect(0.8)
+                    } else {
+                        Image(systemName: "arrow.down")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(.white)
+                    }
                 }
             }
+            .disabled(downloadingURL != nil)
         }
         .padding(14)
         .background(Color.white)
@@ -395,62 +396,105 @@ struct BulletinDetailView: View {
         .shadow(color: Color.black.opacity(0.04), radius: 6, x: 0, y: 2)
     }
     
-    // MARK: - Bottom Action Bar
-    private var bottomActionBar: some View {
-        VStack {
-            Button(action: {
-                isReadState.toggle()
-            }) {
-                HStack(spacing: 8) {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 15, weight: .bold))
-                    Text(isReadState ? "Marked as read" : "Mark as read")
-                        .font(.system(size: 15, weight: .bold))
-                }
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .frame(height: 52)
-                .background(
-                    LinearGradient(
-                        gradient: Gradient(colors: [
-                            Color(red: 0.22, green: 0.32, blue: 0.86),
-                            Color(red: 0.38, green: 0.28, blue: 0.88)
-                        ]),
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
-                .cornerRadius(14)
-                .shadow(color: Color(red: 0.23, green: 0.35, blue: 0.88).opacity(0.35), radius: 10, x: 0, y: 5)
-            }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 16)
+    // MARK: - Download Attachment
+    private func downloadAttachment(urlString: String?, fileName: String) {
+        guard let raw = urlString?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !raw.isEmpty else {
+            showDownloadAlert(title: "Download failed", message: "No file link available.")
+            return
         }
-        .background(
-            Color.white
-                .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: -4)
-                .ignoresSafeArea(edges: .bottom)
-        )
+        
+        // Handle links that contain spaces / special characters
+        let encoded = raw.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? raw
+        guard let url = URL(string: raw) ?? URL(string: encoded),
+              let scheme = url.scheme?.lowercased(),
+              scheme == "http" || scheme == "https" else {
+            showDownloadAlert(title: "Download failed", message: "Invalid file link.")
+            return
+        }
+        
+        downloadingURL = urlString
+        
+        let task = URLSession.shared.downloadTask(with: url) { tempURL, response, error in
+            DispatchQueue.main.async {
+                downloadingURL = nil
+                
+                if let error = error {
+                    showDownloadAlert(title: "Download failed", message: error.localizedDescription)
+                    return
+                }
+                
+                guard let tempURL = tempURL else {
+                    showDownloadAlert(title: "Download failed", message: "Unable to download the file.")
+                    return
+                }
+                
+                // Build a proper file name ending with .pdf
+                var safeName = fileName
+                    .replacingOccurrences(of: "/", with: "-")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                if safeName.isEmpty { safeName = "Document" }
+                if !safeName.lowercased().hasSuffix(".pdf") { safeName += ".pdf" }
+                
+                let destination = FileManager.default.temporaryDirectory
+                    .appendingPathComponent(safeName)
+                
+                do {
+                    if FileManager.default.fileExists(atPath: destination.path) {
+                        try FileManager.default.removeItem(at: destination)
+                    }
+                    try FileManager.default.moveItem(at: tempURL, to: destination)
+                } catch {
+                    showDownloadAlert(title: "Download failed", message: error.localizedDescription)
+                    return
+                }
+                
+                // Present system sheet → user can "Save to Files", open, AirDrop, etc.
+                guard let topVC = topViewController() else { return }
+                let activityVC = UIActivityViewController(
+                    activityItems: [destination],
+                    applicationActivities: nil
+                )
+                if let popover = activityVC.popoverPresentationController {
+                    popover.sourceView = topVC.view
+                    popover.sourceRect = CGRect(
+                        x: topVC.view.bounds.midX,
+                        y: topVC.view.bounds.midY,
+                        width: 0, height: 0
+                    )
+                    popover.permittedArrowDirections = []
+                }
+                topVC.present(activityVC, animated: true)
+            }
+        }
+        task.resume()
     }
-}
-
-// MARK: - Preview
-struct BulletinDetailView_Previews: PreviewProvider {
-    static var previews: some View {
-        BulletinDetailView(
-            bulletin: BulletinEntry(
-                id: "1",
-                category: BulletinCategoryInfo(id: "c1", name: "Notices"),
-                title: "Mid-term exam timetable released",
-                summary: "Exams begin on 3 Nov.",
-                messageBody: "Dear parents, the Mid-Term Examinations for Grade 5 begin on 3 November 2026. Please note the following:\n\n• Reporting time: 8:15 AM on all exam days.\n• Bring: ID card, pencil box and a water bottle.\n• Revision week: 27–31 Oct, half-day classes.",
-                banner: BulletinBanner(label: "MID-TERM EXAMS", headline: "3 – 14 Nov 2026", bannerColor: "INDIGO"),
-                isPinned: true,
-                isRead: false,
-                attachments: [BulletinAttachment(id: "a1", name: "Mid-term timetable.pdf", pdf: "https://example.com/timetable.pdf")],
-                createdAt: "2026-10-24T12:11:51.739295Z",
-                status: "PUBLISHED"
-            )
-        )
+    
+    private func showDownloadAlert(title: String, message: String) {
+        guard let topVC = topViewController() else { return }
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        topVC.present(alert, animated: true)
+    }
+    
+    private func topViewController() -> UIViewController? {
+        let keyWindow = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first { $0.isKeyWindow }
+        
+        var top = keyWindow?.rootViewController
+        while true {
+            if let presented = top?.presentedViewController {
+                top = presented
+            } else if let nav = top as? UINavigationController {
+                top = nav.visibleViewController
+            } else if let tab = top as? UITabBarController {
+                top = tab.selectedViewController
+            } else {
+                break
+            }
+        }
+        return top
     }
 }

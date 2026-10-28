@@ -36,6 +36,23 @@ class PresentdetailsVC: UIViewController {
         navigationController?.popViewController(animated: true)
     }
 
+    // MARK: - Navigate to Weekly Attendance
+    private func navigateToWeeklyAttendance() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+        // Try storyboard first; fall back to plain init
+        if let weeklyVC = storyboard.instantiateViewController(
+            withIdentifier: "WeaklyattendanceVC"
+        ) as? WeaklyattendanceVC {
+            navigationController?.pushViewController(weeklyVC, animated: true)
+            return
+        }
+
+        // Fallback if not in storyboard / different ID
+        let weeklyVC = WeaklyattendanceVC()
+        navigationController?.pushViewController(weeklyVC, animated: true)
+    }
+
     // MARK: - Configure Controller Date Label
     private func updateDateLabel() {
         let dateString = (attendanceRecord?.attendanceDate ?? "")
@@ -99,6 +116,11 @@ extension PresentdetailsVC: UITableViewDelegate, UITableViewDataSource {
 
         cell.selectionStyle = .none
         cell.configure(with: attendanceRecord)
+
+        // Wire the weekly attendance button → navigate
+        cell.onWeeklyAttendanceTapped = { [weak self] in
+            self?.navigateToWeeklyAttendance()
+        }
 
         return cell
     }
