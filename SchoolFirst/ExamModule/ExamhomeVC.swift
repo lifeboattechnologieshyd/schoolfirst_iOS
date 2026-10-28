@@ -291,16 +291,44 @@ class ExamhomeVC: UIViewController {
         openExamDetail(examID: selectedExam.id)
     }
     
+    // ✅ Navigate to All Exams History
+    @objc private func didTapSeeAllExams() {
+        let historyVC = Allexamshistorywithsearch()
+        historyVC.studentID = UserManager.shared.resolvedStudentID
+        historyVC.schoolID = UserManager.shared.resolvedSchoolID
+        historyVC.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(historyVC, animated: true)
+    }
+    
     // ✅ NEW: Hero "View details" / "Full schedule" / "See all" / paper row
     @objc private func openNextExamDetail() {
         openExamDetail(examID: nextExamID ?? exams.first?.id)
+    }
+    
+    // ✅ NEW: Hero "View details" → ExamdetailsoverviewVC
+    @objc private func openExamDetailsOverview() {
+        let overviewVC = ExamdetailsoverviewVC()
+        overviewVC.examDetail = examDetail
+        overviewVC.examID = nextExamID ?? exams.first?.id
+        overviewVC.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(overviewVC, animated: true)
     }
     
     @objc private func paperRowTapped(_ gesture: UITapGestureRecognizer) {
         openNextExamDetail()
     }
     
-    // ✅ NEW: Navigate to HallticketpreviewVC when tapping Hall Ticket card
+    // ✅ Navigate to ExamresultVC when tapping results card
+    @objc private func resultsCardTapped() {
+            let resultsVC = ExamresultVC()
+            resultsVC.studentID = UserManager.shared.resolvedStudentID
+            resultsVC.schoolID = UserManager.shared.resolvedSchoolID
+            resultsVC.examinationID = nextExamID ?? exams.first?.id ?? ""
+            resultsVC.hidesBottomBarWhenPushed = true
+            navigationController?.pushViewController(resultsVC, animated: true)
+        }
+    
+    // ✅ Navigate to HallticketpreviewVC when tapping Hall Ticket card
     @objc private func hallTicketCardTapped() {
         let hallTicketVC = HallticketpreviewVC()
         
@@ -633,8 +661,8 @@ extension ExamhomeVC {
         viewBtn.layer.cornerRadius = 8
         viewBtn.translatesAutoresizingMaskIntoConstraints = false
         viewBtn.contentEdgeInsets = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16)
-        // ✅ NEW: navigate
-        viewBtn.addTarget(self, action: #selector(openNextExamDetail), for: .touchUpInside)
+        // ✅ UPDATED: navigate to ExamdetailsoverviewVC
+        viewBtn.addTarget(self, action: #selector(openExamDetailsOverview), for: .touchUpInside)
         
         bottomRow.addArrangedSubview(countdownStack)
         bottomRow.addArrangedSubview(UIView()) // Spacer
@@ -656,6 +684,11 @@ extension ExamhomeVC {
         let card1 = createSmallCard(icon: "chart.bar.fill", badge: "A2", badgeBg: Colors.badgeGreenBg, badgeText: Colors.badgeGreenText, title: "Go to results", subtitle: "View the available result")
         let card2 = createSmallCard(icon: "doc.text.fill", badge: "Ready", badgeBg: Colors.badgeGreenBg, badgeText: Colors.badgeGreenText, title: "Hall ticket", subtitle: "HT-2026-9023")
         
+        // ✅ ADDED TAP GESTURE AND INTERACTION FOR RESULTS CARD
+        card1.isUserInteractionEnabled = true
+        let resultsTapGesture = UITapGestureRecognizer(target: self, action: #selector(resultsCardTapped))
+        card1.addGestureRecognizer(resultsTapGesture)
+        
         // ✅ ADDED TAP GESTURE AND INTERACTION FOR HALL TICKET CARD
         card2.isUserInteractionEnabled = true
         let hallTicketTapGesture = UITapGestureRecognizer(target: self, action: #selector(hallTicketCardTapped))
@@ -671,7 +704,8 @@ extension ExamhomeVC {
         container.axis = .vertical
         container.spacing = 12
         
-        let header = createSectionHeader(title: "Exams", actionTitle: "See all")
+        // ✅ UPDATED: Passes #selector(didTapSeeAllExams) to navigate to the new history view
+        let header = createSectionHeader(title: "Exams", actionTitle: "See all", action: #selector(didTapSeeAllExams))
         container.addArrangedSubview(header)
         
         let listStack = UIStackView()
@@ -722,7 +756,8 @@ extension ExamhomeVC {
         container.axis = .vertical
         container.spacing = 12
         
-        let header = createSectionHeader(title: "Upcoming papers", actionTitle: "Full schedule")
+        // ✅ UPDATED: Passes #selector(openNextExamDetail) to navigate to full schedule
+        let header = createSectionHeader(title: "Upcoming papers", actionTitle: "Full schedule", action: #selector(openNextExamDetail))
         container.addArrangedSubview(header)
         
         // Card wrapping the list
@@ -888,7 +923,8 @@ extension ExamhomeVC {
         return card
     }
     
-    private func createSectionHeader(title: String, actionTitle: String) -> UIView {
+    // ✅ UPDATED: Added target action dynamic injection
+    private func createSectionHeader(title: String, actionTitle: String, action: Selector) -> UIView {
         let stack = UIStackView()
         stack.axis = .horizontal
         stack.alignment = .center
@@ -902,8 +938,8 @@ extension ExamhomeVC {
         actionBtn.setTitle(actionTitle, for: .normal)
         actionBtn.setTitleColor(Colors.primaryBlue, for: .normal)
         actionBtn.titleLabel?.font = .systemFont(ofSize: 14, weight: .medium)
-        // ✅ NEW: navigate to schedule
-        actionBtn.addTarget(self, action: #selector(openNextExamDetail), for: .touchUpInside)
+        // ✅ NEW: Uses the passed-in selector
+        actionBtn.addTarget(self, action: action, for: .touchUpInside)
         
         stack.addArrangedSubview(titleLbl)
         stack.addArrangedSubview(UIView())

@@ -525,7 +525,424 @@ struct ExamSchedule: Codable {
         case instructions
     }
 }
+//*** Get report card API resposne model
+struct ReportCardResponse: Codable {
+    let success: Bool?
+    let description: String?
+    let message: String?
+    let data: ReportCardData?
+}
 
+// MARK: - Data
+struct ReportCardData: Codable {
+    let reportCard: ReportCardInfo?
+    let student: ReportCardStudent?
+    let examination: ReportCardExamination?
+    let subjects: [ReportCardSubject]?
+
+    enum CodingKeys: String, CodingKey {
+        case reportCard = "report_card"
+        case student
+        case examination
+        case subjects
+    }
+}
+
+// MARK: - Report Card Info
+struct ReportCardInfo: Codable {
+    let id: String?
+    let status: String?
+    let totalMarks: Double?
+    let obtainedMarks: Double?
+    let percentage: Double?
+    let grade: String?
+    let gradePoint: Double?
+    let gradeColor: String?
+    let result: String?
+    let teacherRemarks: String?
+    let publishedAt: String?
+    let pdf: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case status
+        case totalMarks = "total_marks"
+        case obtainedMarks = "obtained_marks"
+        case percentage
+        case grade
+        case gradePoint = "grade_point"
+        case gradeColor = "grade_color"
+        case result
+        case teacherRemarks = "teacher_remarks"
+        case publishedAt = "published_at"
+        case pdf
+    }
+}
+
+// MARK: - Student
+struct ReportCardStudent: Codable {
+    let id: String?
+    let name: String?
+    let admissionNumber: String?
+    let grade: String?
+    let section: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case admissionNumber = "admission_number"
+        case grade
+        case section
+    }
+}
+
+// MARK: - Examination
+struct ReportCardExamination: Codable {
+    let id: String?
+    let name: String?
+    let examinationType: String?
+    let academicYear: String?
+    let startDate: String?
+    let endDate: String?
+    let resultDate: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case examinationType = "examination_type"
+        case academicYear = "academic_year"
+        case startDate = "start_date"
+        case endDate = "end_date"
+        case resultDate = "result_date"
+    }
+}
+
+// MARK: - Subject
+struct ReportCardSubject: Codable, Identifiable {
+    var id: String { resultId ?? UUID().uuidString }
+    
+    let resultId: String?
+    let subject: ReportCardSubjectInfo?
+    let examDate: String?
+    let maximumMarks: Double?
+    let passingMarks: Double?
+    let marks: ReportCardMarks?
+    let grade: String?
+    let gradePoint: Double?
+    let remarks: String?
+
+    enum CodingKeys: String, CodingKey {
+        case resultId = "result_id"
+        case subject
+        case examDate = "exam_date"
+        case maximumMarks = "maximum_marks"
+        case passingMarks = "passing_marks"
+        case marks
+        case grade
+        case gradePoint = "grade_point"
+        case remarks
+    }
+}
+
+// MARK: - Subject Info
+struct ReportCardSubjectInfo: Codable {
+    let id: String?
+    let name: String?
+}
+
+// MARK: - Marks
+struct ReportCardMarks: Codable {
+    let internalMarks: Double?
+    let externalMarks: Double?
+    let practicalMarks: Double?
+    let marksObtained: Double?
+
+    enum CodingKeys: String, CodingKey {
+        case internalMarks = "internal_marks"
+        case externalMarks = "external_marks"
+        case practicalMarks = "practical_marks"
+        case marksObtained = "marks_obtained"
+    }
+}
+
+// MARK: - Convenience Helpers
+extension ReportCardInfo {
+    var isPass: Bool {
+        (result ?? "").uppercased() == "PASS"
+    }
+    
+    var totalMarksInt: Int {
+        Int(totalMarks ?? 0)
+    }
+    
+    var obtainedMarksInt: Int {
+        Int(obtainedMarks ?? 0)
+    }
+    
+    var percentageText: String {
+        String(format: "%.1f%%", percentage ?? 0)
+    }
+    
+    var gradePointText: String {
+        if let gp = gradePoint {
+            return String(format: "%.2f", gp)
+        }
+        return "—"
+    }
+}
+
+extension ReportCardSubject {
+    var subjectName: String {
+        subject?.name?.capitalized ?? "Subject"
+    }
+    
+    var maxMarksInt: Int {
+        Int(maximumMarks ?? 0)
+    }
+    
+    var obtainedMarksInt: Int {
+        Int(marks?.marksObtained ?? 0)
+    }
+    
+    var isDistinctionOrA: Bool {
+        (grade ?? "").uppercased().starts(with: "A")
+    }
+}
+
+//*** Get results deataisl APi response model
+struct ExamResultDetailResponse: Codable {
+    let success: Bool?
+    let description: String?
+    let data: ExamResultDetailData?
+}
+
+// MARK: - Main Data
+struct ExamResultDetailData: Codable {
+    let student: ExamResultStudent?
+    let examination: ExamResultDetailExamination?
+    let summary: ExamResultSummary?
+    let subjects: [ExamResultSubjectItem]?
+}
+
+// MARK: - Student
+struct ExamResultStudent: Codable, Identifiable {
+    let id: String?
+    let name: String?
+    let admissionNumber: String?
+    let grade: ExamGradeInfo?
+    let section: ExamSectionInfo?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case admissionNumber = "admission_number"
+        case grade
+        case section
+    }
+}
+
+struct ExamGradeInfo: Codable, Identifiable {
+    let id: String?
+    let name: String?
+}
+
+struct ExamSectionInfo: Codable, Identifiable {
+    let id: String?
+    let name: String?
+}
+
+// MARK: - Examination
+struct ExamResultDetailExamination: Codable, Identifiable {
+    let id: String?
+    let name: String?
+    let examinationType: ExamDetailType?
+    let academicYear: ExamDetailAcademicYear?
+    let startDate: String?
+    let endDate: String?
+    let resultDate: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case examinationType = "examination_type"
+        case academicYear = "academic_year"
+        case startDate = "start_date"
+        case endDate = "end_date"
+        case resultDate = "result_date"
+    }
+}
+
+struct ExamDetailType: Codable, Identifiable {
+    let id: String?
+    let name: String?
+}
+
+struct ExamDetailAcademicYear: Codable, Identifiable {
+    let id: String?
+    let name: String?
+}
+
+// MARK: - Summary
+struct ExamResultSummary: Codable {
+    let totalMarks: String?
+    let obtainedMarks: String?
+    let percentage: String?
+    let grade: String?
+    let gradePoint: String?
+    let result: String?
+    let teacherRemarks: String?
+
+    enum CodingKeys: String, CodingKey {
+        case totalMarks = "total_marks"
+        case obtainedMarks = "obtained_marks"
+        case percentage
+        case grade
+        case gradePoint = "grade_point"
+        case result
+        case teacherRemarks = "teacher_remarks"
+    }
+}
+
+// MARK: - Subject Item
+struct ExamResultSubjectItem: Codable, Identifiable {
+    let id: String?
+    let subject: ExamSubjectInfo?
+    let examDate: String?
+    let maximumMarks: String?
+    let passingMarks: String?
+    let internalMarks: String?
+    let externalMarks: String?
+    let practicalMarks: String?
+    let marksObtained: String?
+    let grade: String?
+    let gradeColor: String?
+    let gradePoint: String?
+    let remarks: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case subject
+        case examDate = "exam_date"
+        case maximumMarks = "maximum_marks"
+        case passingMarks = "passing_marks"
+        case internalMarks = "internal_marks"
+        case externalMarks = "external_marks"
+        case practicalMarks = "practical_marks"
+        case marksObtained = "marks_obtained"
+        case grade
+        case gradeColor = "grade_color"
+        case gradePoint = "grade_point"
+        case remarks
+    }
+}
+
+struct ExamSubjectInfo: Codable, Identifiable {
+    let id: String?
+    let name: String?
+}
+
+// MARK: - Convenience Helpers
+extension ExamResultSummary {
+    var totalMarksDouble: Double { Double(totalMarks ?? "") ?? 0.0 }
+    var obtainedMarksDouble: Double { Double(obtainedMarks ?? "") ?? 0.0 }
+    var percentageDouble: Double { Double(percentage ?? "") ?? 0.0 }
+    var isPass: Bool { result?.uppercased() == "PASS" }
+}
+
+extension ExamResultSubjectItem {
+    var maxMarksInt: Int { Int(Double(maximumMarks ?? "") ?? 0) }
+    var marksObtainedInt: Int { Int(Double(marksObtained ?? "") ?? 0) }
+    var percentageDouble: Double {
+        guard maxMarksInt > 0 else { return 0.0 }
+        return Double(marksObtainedInt) / Double(maxMarksInt)
+    }
+}
+//***Get results API response model
+struct ExamResultsResponse: Codable {
+    let success: Bool?
+    let description: String?
+    let total: Int?
+    let data: [ExamResultItem]?
+}
+
+// MARK: - Exam Result Item
+struct ExamResultItem: Codable, Identifiable {
+    let id: String?
+    let examination: ExamResultExamination?
+    let academicYear: ExamResultAcademicYear?
+    let totalMarks: String?
+    let obtainedMarks: String?
+    let percentage: String?
+    let grade: String?
+    let gradePoint: String?
+    let gradeColor: String?
+    let result: String?
+    let teacherRemarks: String?
+    let publishedAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case examination
+        case academicYear = "academic_year"
+        case totalMarks = "total_marks"
+        case obtainedMarks = "obtained_marks"
+        case percentage
+        case grade
+        case gradePoint = "grade_point"
+        case gradeColor = "grade_color"
+        case result
+        case teacherRemarks = "teacher_remarks"
+        case publishedAt = "published_at"
+    }
+}
+
+// MARK: - Examination
+struct ExamResultExamination: Codable, Identifiable {
+    let id: String?
+    let name: String?
+    let examinationType: ExamResultExaminationType?
+    let startDate: String?
+    let endDate: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case examinationType = "examination_type"
+        case startDate = "start_date"
+        case endDate = "end_date"
+    }
+}
+
+// MARK: - Examination Type
+struct ExamResultExaminationType: Codable, Identifiable {
+    let id: String?
+    let name: String?
+}
+
+// MARK: - Academic Year
+struct ExamResultAcademicYear: Codable, Identifiable {
+    let id: String?
+    let name: String?
+}
+
+// MARK: - Convenience Helpers
+extension ExamResultItem {
+    var totalMarksDouble: Double {
+        Double(totalMarks ?? "") ?? 0.0
+    }
+
+    var obtainedMarksDouble: Double {
+        Double(obtainedMarks ?? "") ?? 0.0
+    }
+
+    var percentageDouble: Double {
+        Double(percentage ?? "") ?? 0.0
+    }
+
+    var isPass: Bool {
+        result?.uppercased() == "PASS"
+    }
+}
 //***bulletin list model
 struct BulletinListWrapper: Codable {
     let data: [BulletinEntry]?
