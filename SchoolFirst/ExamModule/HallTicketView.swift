@@ -403,7 +403,7 @@ struct HallTicketView: View {
     @State private var showDownloadAlert: Bool = false
     @State private var downloadAlertMessage: String = ""
     
-    let themeBlue = Color(red: 0.13, green: 0.30, blue: 0.53) // Dark Blue
+    let themeBlue = Color(red: 11/255, green: 86/255, blue: 154/255) // Strict Figma #0B569A
     let lightBlueBg = Color(red: 0.93, green: 0.95, blue: 0.98)
     
     /// Primary exam first, then the rest
@@ -422,10 +422,10 @@ struct HallTicketView: View {
                 Spacer()
                 
             } else if viewModel.isNotAvailable {
-                // ✅ Friendly "not published yet" state (no error popup)
-                Spacer()
-                notAvailableView
-                Spacer()
+                // ✅ Empty State matching Figma
+                ScrollView {
+                    notAvailableView
+                }
                 
             } else if let error = viewModel.errorMessage {
                 Spacer()
@@ -466,14 +466,12 @@ struct HallTicketView: View {
                             .padding(.bottom, 20)
                     }
                 }
-                .background(Color(white: 0.98))
             } else {
                 Spacer()
             }
         }
-        .background(Color(white: 0.98).edgesIgnoringSafeArea(.all))
+        .background(Color(white: 0.98).ignoresSafeArea())
         .navigationBarHidden(true)
-        .edgesIgnoringSafeArea(.top)
         .onAppear {
             // Avoid re-fetching every time the view re-appears
             if viewModel.hallTicketData == nil && !viewModel.isNotAvailable {
@@ -489,38 +487,113 @@ struct HallTicketView: View {
         }
     }
     
-    // MARK: - Not Available State
+    // MARK: - ✅ UPDATED: Not Available State (Matching Figma exactly)
     private var notAvailableView: some View {
-        VStack(spacing: 14) {
-            Image(systemName: "doc.text.magnifyingglass")
-                .font(.system(size: 34, weight: .semibold))
-                .foregroundColor(themeBlue)
-                .padding(20)
-                .background(lightBlueBg)
-                .clipShape(Circle())
-            
-            Text("Hall ticket not available")
-                .font(.system(size: 17, weight: .bold))
-                .foregroundColor(Color(red: 0.07, green: 0.09, blue: 0.15))
-            
-            Text(viewModel.errorMessage ?? "Your hall ticket has not been published yet. Please check back later.")
-                .font(.subheadline)
-                .foregroundColor(.gray)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
-            
-            Button(action: { viewModel.fetchHallTicket(examIDs: allExamIDs) }) {
-                HStack(spacing: 6) {
-                    Image(systemName: "arrow.clockwise")
-                    Text("Refresh").fontWeight(.bold)
+        VStack(spacing: 16) {
+            // Top Header Line
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Hall Ticket")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(themeBlue)
+                    Text("Examination") // Fallback if API hasn't loaded a name
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
                 }
-                .foregroundColor(.white)
-                .padding(.horizontal, 24)
-                .padding(.vertical, 12)
-                .background(themeBlue)
-                .cornerRadius(8)
+                Spacer()
+                Text("Not issued")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(Color(red: 0.85, green: 0.47, blue: 0.0)) // Dark orange text
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Color(red: 1.0, green: 0.95, blue: 0.90)) // Light orange bg
+                    .cornerRadius(12)
             }
-            .padding(.top, 4)
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+            
+            // Main White Card
+            VStack(spacing: 24) {
+                // Icon Header
+                ZStack {
+                    Circle()
+                        .fill(Color(red: 1.0, green: 0.96, blue: 0.92))
+                        .frame(width: 80, height: 80)
+                    Image(systemName: "ticket")
+                        .font(.system(size: 32))
+                        .foregroundColor(Color(red: 0.95, green: 0.61, blue: 0.07))
+                }
+                .padding(.top, 20)
+                
+                // Explanatory Text
+                VStack(spacing: 8) {
+                    Text("Hall ticket isn't available yet")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(Color(red: 0.07, green: 0.09, blue: 0.15))
+                    
+                    Text("The school is finalising room allocations and student details. No action is required from you right now.")
+                        .font(.system(size: 13, weight: .regular))
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 10)
+                        .lineSpacing(4)
+                }
+                
+                // Buttons
+                VStack(spacing: 12) {
+                    Button(action: {
+                        // Dummy action placeholder
+                        print("Notify me tapped")
+                    }) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "bell")
+                                .font(.system(size: 14, weight: .semibold))
+                            Text("Notify me when ready")
+                                .font(.system(size: 14, weight: .bold))
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(Color(red: 0.11, green: 0.18, blue: 0.35)) // Dark button color
+                        .cornerRadius(12)
+                    }
+                    
+                    Button(action: {
+                        // Triggers the pop behavior matching back button
+                        if let onBack = onBack {
+                            onBack()
+                        } else {
+                            presentationMode.wrappedValue.dismiss()
+                        }
+                    }) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "calendar")
+                                .font(.system(size: 14, weight: .semibold))
+                            Text("View exam schedule")
+                                .font(.system(size: 14, weight: .bold))
+                        }
+                        .foregroundColor(Color(red: 0.11, green: 0.18, blue: 0.35))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(Color.white)
+                        .cornerRadius(12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color(red: 0.89, green: 0.91, blue: 0.94), lineWidth: 1)
+                        )
+                    }
+                }
+                .padding(.bottom, 10)
+            }
+            .padding(20)
+            .background(Color.white)
+            .cornerRadius(16)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Color(red: 0.89, green: 0.91, blue: 0.94), lineWidth: 1)
+            )
+            .padding(.horizontal, 16)
         }
     }
     
@@ -534,31 +607,32 @@ struct HallTicketView: View {
                     presentationMode.wrappedValue.dismiss()
                 }
             }) {
-                Image(systemName: "arrow.left")
+                Image(systemName: "arrow.backward")
                     .foregroundColor(.white)
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(.system(size: 16, weight: .semibold))
+                    .frame(width: 32, height: 32)
             }
             
             VStack(alignment: .leading, spacing: 2) {
                 Text("Hall Ticket")
-                    .font(.headline)
+                    .font(.system(size: 18, weight: .bold))
                     .foregroundColor(.white)
                 Text("School moments, all in one place")
-                    .font(.caption)
-                    .foregroundColor(.white.opacity(0.8))
+                    .font(.system(size: 11, weight: .regular))
+                    .foregroundColor(.white.opacity(0.75))
             }
             Spacer()
             
             Button(action: {}) {
                 Image(systemName: "bell")
                     .foregroundColor(.white)
-                    .font(.system(size: 20))
+                    .font(.system(size: 16, weight: .regular))
+                    .frame(width: 32, height: 32)
             }
         }
-        .padding(.horizontal)
-        .padding(.bottom, 16)
-        .frame(height: 100, alignment: .bottom)
-        .background(themeBlue)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(themeBlue.ignoresSafeArea(edges: .top))
     }
     
     private func headerSection(data: HallTicketData) -> some View {
@@ -757,7 +831,6 @@ struct HallTicketView: View {
                 HStack(spacing: 8) {
                     Image(systemName: "exclamationmark.circle")
                         .foregroundColor(.orange)
-                    Text("Important instructions")
                         .font(.system(size: 15, weight: .bold))
                 }
                 

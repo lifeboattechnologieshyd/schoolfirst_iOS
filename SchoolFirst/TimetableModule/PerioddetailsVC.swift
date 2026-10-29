@@ -1,4 +1,5 @@
 //
+//
 //  PerioddetailsVC.swift
 //  SchoolFirst
 //
@@ -10,29 +11,43 @@ import SwiftUI
 
 class PerioddetailsVC: UIViewController {
     
+    // Data passed from TodaytimetableVC / WeaklytimetableVC
+    var period: TimetablePeriodEntry?
+    var selectedDate: Date = Date()
+    var classSectionString: String = ""
+    
+    // Add this to receive full data from the previous screen
+    var fullTimetableData: StudentTimetableData?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Hide standard navigation bar to use the custom Figma header
         self.navigationController?.setNavigationBarHidden(true, animated: false)
         
-        // Initialize the SwiftUI View
-        var swiftUIView = PeriodDetailsView()
+        var swiftUIView = PeriodDetailsView(
+            period: period,
+            selectedDate: selectedDate,
+            classSectionString: classSectionString
+        )
         
-        // Navigation Callback
+        // Pass API data to SchedulechangesandhistoryVC
         swiftUIView.onViewScheduleChangesTapped = { [weak self] in
+            guard let self = self else { return }
             let scheduleVC = SchedulechangesandhistoryVC()
-            self?.navigationController?.pushViewController(scheduleVC, animated: true)
+            scheduleVC.timetableData = self.fullTimetableData
+            scheduleVC.baseDate = self.selectedDate
+            self.navigationController?.pushViewController(scheduleVC, animated: true)
         }
         
-        // Wrap it in a UIHostingController
+        swiftUIView.onBackToTimetableTapped = { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
+        }
+        
         let hostingController = UIHostingController(rootView: swiftUIView)
         
-        // Add as a child view controller
         addChild(hostingController)
         view.addSubview(hostingController.view)
         
-        // Setup Constraints
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
@@ -43,100 +58,145 @@ class PerioddetailsVC: UIViewController {
         
         hostingController.didMove(toParent: self)
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
 }
 
-// MARK: - Dummy Model for API mapping
-struct PeriodDetailsModel {
-    let periodName: String
-    let isSubstitution: Bool
-    let subjectName: String
-    let topicName: String
-    let substitutionAlertTitle: String
-    let substitutionAlertDesc: String
-    let periodTime: String
-    let teacherName: String
-    let room: String
-    let classSection: String
-    let classTimetable: String
+// ... [Keep your existing PeriodDetailsView and related enums exactly as they are] ...
+// MARK: - Period Detail State (derived from API data)
+enum PeriodDetailState {
+    case normal
+    case teacherSubstitution
+    case roomChange
 }
 
 // MARK: - SwiftUI View
-
 struct PeriodDetailsView: View {
     @Environment(\.presentationMode) var presentationMode
     
-    // Navigation Callback
+    let period: TimetablePeriodEntry?
+    let selectedDate: Date
+    let classSectionString: String
+    
     var onViewScheduleChangesTapped: (() -> Void)? = nil
+    var onBackToTimetableTapped: (() -> Void)? = nil
     
-    // Dummy Data
-    let model = PeriodDetailsModel(
-        periodName: "PERIOD 3",
-        isSubstitution: true,
-        subjectName: "Science",
-        topicName: "Living systems · Chapter 6",
-        substitutionAlertTitle: "Teacher substitution today",
-        substitutionAlertDesc: "Meera Nair is away. Arun Kapoor will take this period. Time and room are unchanged.",
-        periodTime: "09:45–10:30 AM",
-        teacherName: "Arun Kapoor · Substitute",
-        room: "Science Lab 1",
-        classSection: "Grade 5 · Section B",
-        classTimetable: "Tuesday · Period 3"
-    )
+    let mainBlue = Color(red: 11/255, green: 86/255, blue: 154/255)
     
-    let mainBlue = Color(red: 11/255, green: 86/255, blue: 154/255) // #0B569A
+    // MARK: - Derived values from API
+    
+    private var state: PeriodDetailState {
+        if period?.hasSubstitution == true { return .teacherSubstitution }
+        if let notes = period?.notes?.lowercased(), notes.contains("room") { return .roomChange }
+        return .normal
+    }
+    
+    private var periodBadge: String {
+        "PERIOD \(period?.period?.periodNumber ?? 0)"
+    }
+    
+    private var subjectName: String {
+        period?.subject?.name?.capitalized ?? "Subject"
+    }
+    
+    private var headerDateString: String {
+        let f = DateFormatter()
+        f.dateFormat = "EEEE, d MMMM"
+        return f.string(from: selectedDate)
+    }
+    
+    private var fullDateString: String {
+        let f = DateFormatter()
+        f.dateFormat = "EEEE, d MMMM yyyy"
+        return f.string(from: selectedDate)
+    }
+    
+    private var weekdayString: String {
+        let f = DateFormatter()
+        f.dateFormat = "EEEE"
+        return f.string(from: selectedDate)
+    }
+    
+    private var periodTimeString: String {
+        guard let p = period?.period, !p.displayStart.isEmpty, !p.displayEnd.isEmpty else { return "Time N/A" }
+        return "\(p.displayStart)–\(p.displayEnd)"
+    }
+    
+    private var regularTeacherName: String {
+        period?.regularTeacher?.name ?? period?.substitution?.originalTeacher?.name ?? "Teacher"
+    }
+    
+    private var substituteTeacherName: String {
+        period?.teacher?.name ?? period?.substitution?.substituteTeacher?.name ?? "Substitute teacher"
+    }
+    
+    private var teacherDisplayString: String {
+        switch state {
+        case .teacherSubstitution:
+            return "\(substituteTeacherName) · Substitute"
+        default:
+            return period?.teacher?.name ?? period?.regularTeacher?.name ?? "Teacher N/A"
+        }
+    }
+    
+    private var roomString: String {
+        if let notes = period?.notes, !notes.isEmpty, notes != "Regular class" {
+            return notes
+        }
+        return "Classroom"
+    }
+    
+    private var substitutionDescription: String {
+        if let reason = period?.substitution?.reason, !reason.isEmpty {
+            return "\(regularTeacherName) is away (\(reason)). \(substituteTeacherName) will take this period. Time and room are unchanged."
+        }
+        return "\(regularTeacherName) is away. \(substituteTeacherName) will take this period. Time and room are unchanged."
+    }
+    
+    private var classTimetableString: String {
+        "\(weekdayString) · Period \(period?.period?.periodNumber ?? 0)"
+    }
+    
+    // MARK: - Body
     
     var body: some View {
         VStack(spacing: 0) {
-            // Top Custom Header (Fixed height 100)
             headerView
             
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 16) {
                     
-                    // Subject Card
                     subjectCardView
                     
-                    // Substitution Alert Box
-                    if model.isSubstitution {
+                    if state == .teacherSubstitution {
                         substitutionAlertView
                     }
                     
-                    // Details List Card
+                    if state == .roomChange {
+                        roomChangeAlertView
+                    }
+                    
                     detailsListCardView
                     
-                    // Bottom Action Button → Navigate to SchedulechangesandhistoryVC
-                    Button(action: {
-                        onViewScheduleChangesTapped?()
-                    }) {
-                        HStack {
-                            Image(systemName: "arrow.right")
-                                .font(.system(size: 16, weight: .bold))
-                            Text("View schedule changes")
-                                .font(.system(size: 16, weight: .bold))
-                        }
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(mainBlue)
-                        .cornerRadius(12)
-                    }
-                    .padding(.top, 8)
-                    
+                    actionButtons
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 20)
                 .padding(.bottom, 30)
             }
-            .background(Color.white) // Clean white background for the scroll area
+            .background(Color.white)
         }
-        .edgesIgnoringSafeArea(.top)
+        .background(Color.white.ignoresSafeArea())
         .navigationBarHidden(true)
     }
     
-    // MARK: - Subviews
+    // MARK: - Header
     
     private var headerView: some View {
-        HStack {
+        HStack(alignment: .center) {
             Button(action: {
                 presentationMode.wrappedValue.dismiss()
             }) {
@@ -149,7 +209,7 @@ struct PeriodDetailsView: View {
                 Text("Period details")
                     .font(.system(size: 20, weight: .bold))
                     .foregroundColor(.white)
-                Text("Tuesday, 22 September")
+                Text(headerDateString)
                     .font(.system(size: 12, weight: .regular))
                     .foregroundColor(.white.opacity(0.8))
             }
@@ -158,16 +218,17 @@ struct PeriodDetailsView: View {
             Spacer()
         }
         .padding(.horizontal, 16)
+        .padding(.top, 10)
         .padding(.bottom, 16)
-        .frame(height: 100, alignment: .bottom)
-        .background(mainBlue)
+        .background(mainBlue.ignoresSafeArea(edges: .top))
     }
+    
+    // MARK: - Subject Card
     
     private var subjectCardView: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                // Period Badge
-                Text(model.periodName)
+                Text(periodBadge)
                     .font(.system(size: 10, weight: .bold))
                     .foregroundColor(.white)
                     .padding(.horizontal, 10)
@@ -177,9 +238,16 @@ struct PeriodDetailsView: View {
                 
                 Spacer()
                 
-                // Substitution Badge
-                if model.isSubstitution {
+                if state == .teacherSubstitution {
                     Text("SUBSTITUTION")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(.orange)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(Color.orange.opacity(0.15))
+                        .cornerRadius(12)
+                } else if state == .roomChange {
+                    Text("ROOM CHANGED")
                         .font(.system(size: 10, weight: .bold))
                         .foregroundColor(.orange)
                         .padding(.horizontal, 10)
@@ -190,11 +258,11 @@ struct PeriodDetailsView: View {
             }
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(model.subjectName)
+                Text(subjectName)
                     .font(.system(size: 24, weight: .bold))
                     .foregroundColor(mainBlue)
                 
-                Text(model.topicName)
+                Text(fullDateString)
                     .font(.system(size: 14, weight: .regular))
                     .foregroundColor(.gray)
             }
@@ -208,6 +276,8 @@ struct PeriodDetailsView: View {
         )
     }
     
+    // MARK: - Teacher Substitution Alert
+    
     private var substitutionAlertView: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: "bell")
@@ -216,11 +286,11 @@ struct PeriodDetailsView: View {
                 .padding(.top, 2)
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(model.substitutionAlertTitle)
+                Text("Teacher substitution today")
                     .font(.system(size: 14, weight: .bold))
                     .foregroundColor(.black)
                 
-                Text(model.substitutionAlertDesc)
+                Text(substitutionDescription)
                     .font(.system(size: 12, weight: .regular))
                     .foregroundColor(.gray)
                     .lineSpacing(2)
@@ -228,7 +298,7 @@ struct PeriodDetailsView: View {
             Spacer()
         }
         .padding()
-        .background(Color(red: 1.0, green: 0.98, blue: 0.92)) // Light yellowish-orange
+        .background(Color(red: 1.0, green: 0.98, blue: 0.92))
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
@@ -236,38 +306,82 @@ struct PeriodDetailsView: View {
         )
     }
     
+    // MARK: - Room Change Alert
+    
+    private var roomChangeAlertView: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: "bell")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(.orange)
+                    .padding(.top, 2)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Room changed for this period")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.black)
+                    
+                    Text("Teacher and time are unchanged.")
+                        .font(.system(size: 12, weight: .regular))
+                        .foregroundColor(.gray)
+                }
+                Spacer()
+            }
+            
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("ORIGINAL")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(.gray)
+                    Text("Classroom")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundColor(.black)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(12)
+                .background(Color.white)
+                .cornerRadius(10)
+                .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray.opacity(0.2), lineWidth: 1))
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("UPDATED")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(.orange)
+                    Text(roomString)
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundColor(.black)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(12)
+                .background(Color.orange.opacity(0.1))
+                .cornerRadius(10)
+                .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.orange.opacity(0.4), lineWidth: 1))
+            }
+        }
+        .padding()
+        .background(Color(red: 1.0, green: 0.98, blue: 0.92))
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.orange.opacity(0.3), lineWidth: 1)
+        )
+    }
+    
+    // MARK: - Details List
+    
     private var detailsListCardView: some View {
         VStack(spacing: 0) {
-            DetailRowView(
-                iconName: "clock",
-                title: "PERIOD TIME",
-                value: model.periodTime,
-                showDivider: true
-            )
-            DetailRowView(
-                iconName: "person",
-                title: "TEACHER",
-                value: model.teacherName,
-                showDivider: true
-            )
-            DetailRowView(
-                iconName: "mappin.and.ellipse",
-                title: "ROOM",
-                value: model.room,
-                showDivider: true
-            )
-            DetailRowView(
-                iconName: "person.2",
-                title: "CLASS / SECTION",
-                value: model.classSection,
-                showDivider: true
-            )
-            DetailRowView(
-                iconName: "calendar",
-                title: "CLASS TIMETABLE",
-                value: model.classTimetable,
-                showDivider: false // Last item has no divider
-            )
+            DetailRowView(iconName: "clock", title: "PERIOD TIME", value: periodTimeString, showDivider: true)
+            DetailRowView(iconName: "person", title: "TEACHER", value: teacherDisplayString, showDivider: true)
+            
+            if state == .roomChange {
+                DetailRowView(iconName: "mappin.and.ellipse", title: "UPDATED ROOM", value: roomString, showDivider: true)
+            } else if state == .teacherSubstitution {
+                DetailRowView(iconName: "mappin.and.ellipse", title: "ROOM", value: roomString, showDivider: true)
+            }
+            
+            DetailRowView(iconName: "person.2", title: "CLASS / SECTION", value: classSectionString.isEmpty ? "Class / Section" : classSectionString, showDivider: true)
+            DetailRowView(iconName: "calendar", title: "CLASS TIMETABLE", value: classTimetableString, showDivider: false)
         }
         .background(Color.white)
         .cornerRadius(16)
@@ -275,6 +389,66 @@ struct PeriodDetailsView: View {
             RoundedRectangle(cornerRadius: 16)
                 .stroke(Color.gray.opacity(0.2), lineWidth: 1)
         )
+    }
+    
+    // MARK: - Action Buttons
+    
+    @ViewBuilder
+    private var actionButtons: some View {
+        switch state {
+        case .teacherSubstitution:
+            filledButton(title: "View schedule changes") {
+                onViewScheduleChangesTapped?()
+            }
+            .padding(.top, 8)
+            
+        case .normal:
+            filledButton(title: "Back to \(weekdayString) timetable") {
+                onBackToTimetableTapped?()
+            }
+            .padding(.top, 8)
+            
+        case .roomChange:
+            VStack(spacing: 12) {
+                filledButton(title: "View \(weekdayString) timetable") {
+                    onBackToTimetableTapped?()
+                }
+                
+                Button(action: {
+                    onViewScheduleChangesTapped?()
+                }) {
+                    HStack {
+                        Image(systemName: "calendar")
+                            .font(.system(size: 16, weight: .bold))
+                        Text("View schedule changes")
+                            .font(.system(size: 16, weight: .bold))
+                    }
+                    .foregroundColor(mainBlue)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(Color.white)
+                    .cornerRadius(12)
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(mainBlue, lineWidth: 1.5))
+                }
+            }
+            .padding(.top, 8)
+        }
+    }
+    
+    private func filledButton(title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack {
+                Image(systemName: "arrow.right")
+                    .font(.system(size: 16, weight: .bold))
+                Text(title)
+                    .font(.system(size: 16, weight: .bold))
+            }
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 16)
+            .background(mainBlue)
+            .cornerRadius(12)
+        }
     }
 }
 
@@ -290,7 +464,6 @@ struct DetailRowView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 16) {
-                // Icon Container
                 ZStack {
                     RoundedRectangle(cornerRadius: 10)
                         .fill(mainBlue.opacity(0.08))
@@ -301,7 +474,6 @@ struct DetailRowView: View {
                         .foregroundColor(mainBlue)
                 }
                 
-                // Text Info
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
                         .font(.system(size: 10, weight: .bold))
@@ -321,15 +493,15 @@ struct DetailRowView: View {
                 Rectangle()
                     .fill(Color.gray.opacity(0.15))
                     .frame(height: 1)
-                    .padding(.leading, 72) // Align divider with text
+                    .padding(.leading, 72)
             }
         }
     }
 }
 
-// MARK: - Previews (For Xcode Canvas)
+// MARK: - Previews
 struct PeriodDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        PeriodDetailsView(onViewScheduleChangesTapped: {})
+        PeriodDetailsView(period: nil, selectedDate: Date(), classSectionString: "Grade 5 · Section B")
     }
 }

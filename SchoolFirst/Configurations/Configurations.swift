@@ -245,7 +245,11 @@ struct API {
     static let GET_HALL_TICKET = BASE_URL + "examination/hall-ticket"
     static let GET_EXAM_RESULTS = BASE_URL + "examination/results"
     static let GET_EXAM_RESULT_DETAIL = BASE_URL + "examination/results/detail"
-    static let GET_REPORT_CARD = "examination/reportcard"
+    static let GET_REPORT_CARD = BASE_URL + "examination/reportcard"
+    
+    static let GET_TIMETABLE_TERMS = BASE_URL + "timetable/term"
+    static let GET_STUDENT_TIMETABLE = BASE_URL + "timetable/timetable"
+
 
 
 

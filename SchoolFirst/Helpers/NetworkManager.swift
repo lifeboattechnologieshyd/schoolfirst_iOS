@@ -313,6 +313,195 @@ struct APIResponse<T: Decodable>: Decodable {
         data = try? container.decodeIfPresent(T.self, forKey: .data)
     }
 }
+//***Get student time Table API resposne model
+struct StudentTimetableData: Codable {
+    let student: TimetableStudent?
+    let term: TimetableTermInfo?
+    let date: String?
+    let totalPeriods: Int?
+    let substitutionCount: Int?
+    let schedule: TimetableSchedule?
+    
+    enum CodingKeys: String, CodingKey {
+        case student, term, date, schedule
+        case totalPeriods = "total_periods"
+        case substitutionCount = "substitution_count"
+    }
+}
+
+struct TimetableStudent: Codable {
+    let id: String?
+    let name: String?
+    let admissionNumber: String?
+    let grade: TimetableNamedItem?
+    let section: TimetableNamedItem?
+    
+    enum CodingKeys: String, CodingKey {
+        case id, name, grade, section
+        case admissionNumber = "admission_number"
+    }
+}
+
+struct TimetableTermInfo: Codable {
+    let id: String?
+    let name: String?
+    let startDate: String?
+    let endDate: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id, name
+        case startDate = "start_date"
+        case endDate = "end_date"
+    }
+}
+
+struct TimetableNamedItem: Codable {
+    let id: String?
+    let name: String?
+}
+
+struct TimetableSchedule: Codable {
+    let monday: [TimetablePeriodEntry]?
+    let tuesday: [TimetablePeriodEntry]?
+    let wednesday: [TimetablePeriodEntry]?
+    let thursday: [TimetablePeriodEntry]?
+    let friday: [TimetablePeriodEntry]?
+    let saturday: [TimetablePeriodEntry]?
+    let sunday: [TimetablePeriodEntry]?
+    
+    enum CodingKeys: String, CodingKey {
+        case monday = "MONDAY"
+        case tuesday = "TUESDAY"
+        case wednesday = "WEDNESDAY"
+        case thursday = "THURSDAY"
+        case friday = "FRIDAY"
+        case saturday = "SATURDAY"
+        case sunday = "SUNDAY"
+    }
+    
+    /// Returns periods for a given date based on weekday
+    func periods(for date: Date) -> [TimetablePeriodEntry] {
+        let weekday = Calendar.current.component(.weekday, from: date)
+        // Calendar: 1=Sun, 2=Mon, ... 7=Sat
+        switch weekday {
+        case 1: return sunday ?? []
+        case 2: return monday ?? []
+        case 3: return tuesday ?? []
+        case 4: return wednesday ?? []
+        case 5: return thursday ?? []
+        case 6: return friday ?? []
+        case 7: return saturday ?? []
+        default: return []
+        }
+    }
+}
+
+struct TimetablePeriodEntry: Codable, Identifiable {
+    var id: String { entryId ?? UUID().uuidString }
+    
+    let entryId: String?
+    let period: TimetablePeriodInfo?
+    let subject: TimetableNamedItem?
+    let regularTeacher: TimetableTeacher?
+    let teacher: TimetableTeacher?
+    let substitution: TimetableSubstitution?
+    let hasSubstitution: Bool?
+    let notes: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case period, subject, teacher, substitution, notes
+        case entryId = "entry_id"
+        case regularTeacher = "regular_teacher"
+        case hasSubstitution = "has_substitution"
+    }
+}
+
+struct TimetablePeriodInfo: Codable {
+    let id: String?
+    let periodNumber: Int?
+    let startTime: String?
+    let endTime: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case periodNumber = "period_number"
+        case startTime = "start_time"
+        case endTime = "end_time"
+    }
+    
+    /// "09:00:00" → "09:00"
+    var displayStart: String {
+        String((startTime ?? "").prefix(5))
+    }
+    
+    /// "09:45:00" → "09:45"
+    var displayEnd: String {
+        String((endTime ?? "").prefix(5))
+    }
+    
+    /// "09:00-09:45"
+    var timeRange: String {
+        "\(displayStart)-\(displayEnd)"
+    }
+    
+    /// "Period 1"
+    var periodLabel: String {
+        "Period \(periodNumber ?? 0)"
+    }
+}
+
+struct TimetableTeacher: Codable {
+    let id: String?
+    let employeeId: String?
+    let name: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id, name
+        case employeeId = "employee_id"
+    }
+}
+
+struct TimetableSubstitution: Codable {
+    let id: String?
+    let date: String?
+    let status: String?
+    let reason: String?
+    let originalTeacher: TimetableNamedItem?
+    let substituteTeacher: TimetableNamedItem?
+    
+    enum CodingKeys: String, CodingKey {
+        case id, date, status, reason
+        case originalTeacher = "original_teacher"
+        case substituteTeacher = "substitute_teacher"
+    }
+}
+//***Get time table terms API resposne model
+struct TimetableTermItem: Codable, Identifiable {
+    let id: String?
+    let name: String?
+    let academicYear: TimetableAcademicYear?
+    let branch: TimetableBranch?
+    let startDate: String?
+    let endDate: String?
+    let status: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id, name, branch, status
+        case academicYear = "academic_year"
+        case startDate = "start_date"
+        case endDate = "end_date"
+    }
+}
+
+struct TimetableAcademicYear: Codable {
+    let id: String?
+    let name: String?
+}
+
+struct TimetableBranch: Codable {
+    let id: String?
+    let name: String?
+}
 //*** Get hallticket API Resposne model
 struct HallTicketAPIResponse: Codable {
     let success: Bool?

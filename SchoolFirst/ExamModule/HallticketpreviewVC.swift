@@ -3,6 +3,7 @@
 //  SchoolFirst
 //
 
+
 import UIKit
 import SwiftUI
 import Combine
@@ -19,7 +20,7 @@ struct HTPreviewData: Codable {
     let student: HTPreviewStudent?
     let examination: HTPreviewExamination?
     let schedules: [HTPreviewSchedule]?
-    
+
     enum CodingKeys: String, CodingKey {
         case hallTicket = "hall_ticket"
         case student
@@ -36,7 +37,7 @@ struct HTPreviewInfo: Codable {
     let generatedAt: String?
     let publishedAt: String?
     let pdf: String?
-    
+
     enum CodingKeys: String, CodingKey {
         case id
         case hallTicketNumber = "hall_ticket_number"
@@ -62,7 +63,7 @@ struct HTPreviewStudent: Codable {
     let grade: HTPreviewNameId?
     let section: HTPreviewNameId?
     let branch: HTPreviewNameId?
-    
+
     enum CodingKeys: String, CodingKey {
         case id
         case name
@@ -88,7 +89,7 @@ struct HTPreviewExamination: Codable {
     let resultDate: String?
     let instructions: String?
     let reportingDate: String?
-    
+
     enum CodingKeys: String, CodingKey {
         case id
         case name
@@ -111,7 +112,7 @@ struct HTPreviewSchedule: Codable, Identifiable {
     let roomNumber: String?
     let maximumMarks: String?
     let passingMarks: String?
-    
+
     enum CodingKeys: String, CodingKey {
         case id
         case subject
@@ -131,32 +132,33 @@ class HTPreviewViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var isNotAvailable: Bool = false
     @Published var isDownloading: Bool = false
-    
+
     private var pendingExamIDs: [String] = []
-    
+
     func fetchHallTicket(examIDs: [String]) {
         let studentID = UserManager.shared.resolvedStudentID
         let schoolID = UserManager.shared.resolvedSchoolID
-        
+
         var seen = Set<String>()
         let ids = examIDs
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty && seen.insert($0).inserted }
-        
+
         guard !ids.isEmpty, !studentID.isEmpty, !schoolID.isEmpty else {
             self.isLoading = false
+            self.isNotAvailable = true
             self.errorMessage = "Missing required details to fetch Hall Ticket."
             return
         }
-        
+
         self.isLoading = true
         self.errorMessage = nil
         self.isNotAvailable = false
         self.pendingExamIDs = ids
-        
+
         tryNextExam(studentID: studentID, schoolID: schoolID)
     }
-    
+
     private func tryNextExam(studentID: String, schoolID: String) {
         guard !pendingExamIDs.isEmpty else {
             self.isLoading = false
@@ -164,16 +166,15 @@ class HTPreviewViewModel: ObservableObject {
             self.errorMessage = "Your hall ticket has not been published yet."
             return
         }
-        
+
         let examID = pendingExamIDs.removeFirst()
-        
+
         let parameters: [String: Any] = [
             "student_id": studentID,
             "examination_id": examID
         ]
         let headers: [String: String] = ["X-School-ID": schoolID]
-        
-        // Make sure API.GET_HALL_TICKET exists in your constants
+
         NetworkManager.shared.request(
             urlString: API.GET_HALL_TICKET,
             method: .GET,
@@ -184,7 +185,7 @@ class HTPreviewViewModel: ObservableObject {
         ) { [weak self] (result: Result<APIResponse<HTPreviewData>, NetworkError>) in
             DispatchQueue.main.async {
                 guard let self = self else { return }
-                
+
                 switch result {
                 case .success(let response):
                     if response.success, let data = response.data, data.hallTicket != nil {
@@ -205,19 +206,19 @@ class HTPreviewViewModel: ObservableObject {
 class HallticketpreviewVC: UIViewController {
     var examID: String = ""
     var candidateExamIDs: [String] = []
-    
+
     private let viewModel = HTPreviewViewModel()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(true, animated: false)
-        
+
         setupSwiftUI()
-        
+
         let allIDs = [examID] + candidateExamIDs
         viewModel.fetchHallTicket(examIDs: allIDs)
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
@@ -248,59 +249,154 @@ class HallticketpreviewVC: UIViewController {
 struct HTPreviewMainView: View {
     @ObservedObject var viewModel: HTPreviewViewModel
     var onBack: () -> Void
-    
+
     // Theme Colors
-    private let navyColor = Color(red: 0.11, green: 0.31, blue: 0.58)
+    private let navyColor = Color(red: 11/255, green: 86/255, blue: 154/255) // Strict Figma #0B569A
     private let darkNavyButton = Color(red: 0.11, green: 0.18, blue: 0.35)
     private let screenBgColor = Color(red: 0.98, green: 0.98, blue: 0.99)
-    private let textDark = Color(red: 0.08, green: 0.11, blue: 0.19)
+    private let textDark = Color(red: 0.07, green: 0.09, blue: 0.15)
     private let textGray = Color(red: 0.45, green: 0.48, blue: 0.54)
     private let lightBlueBg = Color(red: 0.94, green: 0.97, blue: 1.0)
-    
+
     var body: some View {
-        VStack(spacing: 0) {
-            headerView
-            
-            if viewModel.isLoading {
+        ZStack {
+            VStack(spacing: 0) {
+                headerView
+
                 Spacer()
-                ProgressView("Fetching Hall Ticket...")
-                    .progressViewStyle(CircularProgressViewStyle(tint: navyColor))
-                Spacer()
-            } else if viewModel.isNotAvailable {
-                Spacer()
-                VStack(spacing: 12) {
-                    Image(systemName: "doc.text.magnifyingglass")
-                        .font(.system(size: 40))
-                        .foregroundColor(navyColor)
-                    Text("Hall ticket not available")
-                        .font(.headline)
-                    Text(viewModel.errorMessage ?? "Your hall ticket has not been published yet.")
-                        .font(.subheadline)
-                        .foregroundColor(textGray)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-                }
-                Spacer()
-            } else if let data = viewModel.hallTicketData {
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 16) {
-                        pageTitleSection(data: data)
-                        documentCard(data: data)
-                        downloadButton()
-                        
-                        let issuedDate = HTPreviewDateHelper.formatFullDate(data.hallTicket?.publishedAt ?? data.hallTicket?.generatedAt)
-                        Text("Issued \(issuedDate) • Keep this document secure.")
-                            .font(.system(size: 10, weight: .regular))
-                            .foregroundColor(textGray)
-                            .padding(.bottom, 24)
+
+                if viewModel.isLoading {
+                    ProgressView("Fetching Hall Ticket...")
+                        .progressViewStyle(CircularProgressViewStyle(tint: navyColor))
+                } else if viewModel.isNotAvailable {
+                    notAvailableView
+                } else if let data = viewModel.hallTicketData {
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 16) {
+                            pageTitleSection(data: data)
+                            documentCard(data: data)
+                            downloadButton()
+
+                            let issuedDate = HTPreviewDateHelper.formatFullDate(data.hallTicket?.publishedAt ?? data.hallTicket?.generatedAt)
+                            Text("Issued \(issuedDate) • Keep this document secure.")
+                                .font(.system(size: 10, weight: .regular))
+                                .foregroundColor(textGray)
+                                .padding(.bottom, 24)
+                        }
+                        .padding(.top, 16)
                     }
-                    .padding(.top, 16)
                 }
+
+                Spacer()
             }
         }
         .background(screenBgColor.ignoresSafeArea())
     }
-    
+
+    // MARK: - Not Available View (Matching Figma exactly)
+    private var notAvailableView: some View {
+        VStack(spacing: 16) {
+            // Top Header Line
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Hall Ticket")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(navyColor)
+                    Text("Examination")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
+                Spacer()
+                Text("Not issued")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(Color(red: 0.85, green: 0.47, blue: 0.0))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Color(red: 1.0, green: 0.95, blue: 0.90))
+                    .cornerRadius(12)
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+
+            // Main White Card
+            VStack(spacing: 24) {
+                // Icon Header
+                ZStack {
+                    Circle()
+                        .fill(Color(red: 1.0, green: 0.96, blue: 0.92))
+                        .frame(width: 80, height: 80)
+                    Image(systemName: "ticket")
+                        .font(.system(size: 32))
+                        .foregroundColor(Color(red: 0.95, green: 0.61, blue: 0.07))
+                }
+                .padding(.top, 20)
+
+                // Explanatory Text
+                VStack(spacing: 8) {
+                    Text("Hall ticket isn't available yet")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(textDark)
+
+                    Text("The school is finalising room allocations and student details. No action is required from you right now.")
+                        .font(.system(size: 13, weight: .regular))
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 10)
+                        .lineSpacing(4)
+                }
+
+                // Buttons
+                VStack(spacing: 12) {
+                    Button(action: {
+                        print("Notify me tapped")
+                    }) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "bell")
+                                .font(.system(size: 14, weight: .semibold))
+                            Text("Notify me when ready")
+                                .font(.system(size: 14, weight: .bold))
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(darkNavyButton)
+                        .cornerRadius(12)
+                    }
+
+                    Button(action: {
+                        onBack()
+                    }) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "calendar")
+                                .font(.system(size: 14, weight: .semibold))
+                            Text("View exam schedule")
+                                .font(.system(size: 14, weight: .bold))
+                        }
+                        .foregroundColor(darkNavyButton)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(Color.white)
+                        .cornerRadius(12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color(red: 0.89, green: 0.91, blue: 0.94), lineWidth: 1)
+                        )
+                    }
+                }
+                .padding(.bottom, 10)
+            }
+            .padding(20)
+            .background(Color.white)
+            .cornerRadius(16)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Color(red: 0.89, green: 0.91, blue: 0.94), lineWidth: 1)
+            )
+            .padding(.horizontal, 16)
+        }
+    }
+
     // MARK: - Nav Header
     private var headerView: some View {
         HStack(alignment: .center, spacing: 12) {
@@ -310,19 +406,19 @@ struct HTPreviewMainView: View {
                     .foregroundColor(.white)
                     .frame(width: 32, height: 32)
             }
-            
+
             VStack(alignment: .leading, spacing: 2) {
                 Text("Hall Ticket")
                     .font(.system(size: 18, weight: .bold))
                     .foregroundColor(.white)
-                
+
                 Text("School moments, all in one place")
                     .font(.system(size: 11, weight: .regular))
                     .foregroundColor(.white.opacity(0.8))
             }
-            
+
             Spacer()
-            
+
             Button(action: {}) {
                 Image(systemName: "bell")
                     .font(.system(size: 16, weight: .regular))
@@ -331,11 +427,10 @@ struct HTPreviewMainView: View {
             }
         }
         .padding(.horizontal, 16)
-        .padding(.top, 10)
-        .padding(.bottom, 14)
+        .padding(.vertical, 12)
         .background(navyColor.ignoresSafeArea(edges: .top))
     }
-    
+
     // MARK: - Title Section
     private func pageTitleSection(data: HTPreviewData) -> some View {
         HStack(alignment: .top) {
@@ -343,13 +438,13 @@ struct HTPreviewMainView: View {
                 Text("Hall Ticket")
                     .font(.system(size: 22, weight: .bold))
                     .foregroundColor(textDark)
-                
+
                 Text(data.examination?.name ?? "Examination 2026")
                     .font(.system(size: 12, weight: .regular))
                     .foregroundColor(textGray)
             }
             Spacer()
-            
+
             let status = (data.hallTicket?.status ?? "Ready").capitalized
             Text(status)
                 .font(.system(size: 11, weight: .bold))
@@ -361,11 +456,11 @@ struct HTPreviewMainView: View {
         }
         .padding(.horizontal, 16)
     }
-    
+
     // MARK: - The Main Hall Ticket Document
     private func documentCard(data: HTPreviewData) -> some View {
         VStack(spacing: 24) {
-            
+
             // 1. School Header
             VStack(spacing: 6) {
                 ZStack {
@@ -377,34 +472,34 @@ struct HTPreviewMainView: View {
                         .font(.system(size: 20))
                 }
                 .padding(.bottom, 4)
-                
+
                 Text(data.hallTicket?.school?.name ?? "School Name")
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(textDark)
                     .multilineTextAlignment(.center)
-                
+
                 let address = data.hallTicket?.school?.address ?? ""
                 let board = data.hallTicket?.school?.board ?? ""
                 let subtitle = board.isEmpty ? address : (address.isEmpty ? "Affiliated to \(board)" : "\(address) • Affiliated to \(board)")
-                
+
                 Text(subtitle)
                     .font(.system(size: 10, weight: .regular))
                     .foregroundColor(textGray)
                     .multilineTextAlignment(.center)
             }
             .frame(maxWidth: .infinity, alignment: .center)
-            
+
             // 2. Exam Title
             VStack(spacing: 6) {
                 Text("HALL TICKET")
                     .font(.system(size: 14, weight: .black))
                     .foregroundColor(textDark)
                     .tracking(1.5)
-                
+
                 Text(data.examination?.name ?? "Examination 2026")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(textGray)
-                
+
                 Text(data.hallTicket?.hallTicketNumber ?? "HT-PENDING")
                     .font(.system(size: 10, weight: .bold))
                     .foregroundColor(navyColor)
@@ -414,17 +509,17 @@ struct HTPreviewMainView: View {
                     .cornerRadius(6)
             }
             .frame(maxWidth: .infinity, alignment: .center)
-            
+
             // 3. Student Details Grid
             VStack(spacing: 16) {
                 let sName = data.student?.name ?? "Student Name"
                 let rNum = data.hallTicket?.hallTicketNumber ?? "--"
-                
+
                 let grade = data.student?.grade?.name ?? ""
                 let section = data.student?.section?.name ?? ""
                 let classSec = grade.isEmpty ? "--" : "\(grade)-\(section)"
                 let admNum = data.student?.admissionNumber ?? "--"
-                
+
                 HStack(alignment: .top) {
                     studentDetailItem(title: "STUDENT NAME", value: sName)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -438,7 +533,7 @@ struct HTPreviewMainView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
-            
+
             // 4. Timetable
             VStack(spacing: 0) {
                 HStack {
@@ -456,35 +551,33 @@ struct HTPreviewMainView: View {
                 .background(lightBlueBg)
                 .cornerRadius(6)
                 .padding(.bottom, 12)
-                
+
                 let schedules = data.schedules ?? []
                 ForEach(Array(schedules.enumerated()), id: \.offset) { index, schedule in
                     HStack(alignment: .top) {
                         VStack(alignment: .leading, spacing: 4) {
                             let subjName = schedule.subject?.name?.capitalized ?? "Subject"
                             let subjId = schedule.subject?.id ?? ""
-                            
-                            // FIX APPLIED HERE:
-                            // Check if the id is a long UUID string. If yes, DO NOT show it.
+
                             let isUUID = UUID(uuidString: subjId) != nil
                             let displaySubject = (subjId.isEmpty || isUUID || subjId.count > 10) ? subjName : "\(subjName) (\(subjId))"
-                            
+
                             Text(displaySubject)
                                 .font(.system(size: 11, weight: .bold))
                                 .foregroundColor(textDark)
                                 .fixedSize(horizontal: false, vertical: true)
-                            
+
                             Text(HTPreviewDateHelper.formatTime(schedule.startTime))
                                 .font(.system(size: 9, weight: .regular))
                                 .foregroundColor(textGray)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        
+
                         Text(HTPreviewDateHelper.formatShortDate(schedule.examDate))
                             .font(.system(size: 11, weight: .bold))
                             .foregroundColor(textDark)
                             .frame(width: 60, alignment: .leading)
-                        
+
                         Text(schedule.roomNumber ?? "--")
                             .font(.system(size: 11, weight: .regular))
                             .foregroundColor(textGray)
@@ -492,33 +585,33 @@ struct HTPreviewMainView: View {
                     }
                     .padding(.horizontal, 12)
                     .padding(.vertical, 10)
-                    
+
                     if index < schedules.count - 1 {
                         Divider().background(Color(red: 0.9, green: 0.9, blue: 0.9))
                             .padding(.horizontal, 12)
                     }
                 }
             }
-            
+
             // 5. Venue Box
             HStack(alignment: .top, spacing: 12) {
                 Image(systemName: "mappin.and.ellipse")
                     .foregroundColor(navyColor)
                     .font(.system(size: 20))
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text("EXAMINATION VENUE")
                         .font(.system(size: 9, weight: .bold))
                         .foregroundColor(textGray)
-                    
+
                     let branch = data.student?.branch?.name ?? ""
                     let sName = data.hallTicket?.school?.name ?? "School Name"
                     let venueTitle = branch.isEmpty ? sName : "\(sName) - \(branch)"
-                    
+
                     Text(venueTitle)
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(textDark)
-                    
+
                     Text(HTPreviewDateHelper.reportingText(data.examination?.reportingDate))
                         .font(.system(size: 10, weight: .regular))
                         .foregroundColor(textGray)
@@ -528,7 +621,7 @@ struct HTPreviewMainView: View {
             .padding(14)
             .background(screenBgColor)
             .cornerRadius(10)
-            
+
             // 6. Instructions
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 8) {
@@ -539,7 +632,7 @@ struct HTPreviewMainView: View {
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(textDark)
                 }
-                
+
                 let lines = HTPreviewDateHelper.instructionLines(data.examination?.instructions)
                 VStack(alignment: .leading, spacing: 8) {
                     ForEach(lines, id: \.self) { line in
@@ -555,7 +648,7 @@ struct HTPreviewMainView: View {
             .background(Color.white)
             .cornerRadius(10)
             .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color(red: 0.9, green: 0.9, blue: 0.9), lineWidth: 1))
-            
+
             // 7. Signatures
             HStack(spacing: 20) {
                 signatureBlock(title: "Class Teacher")
@@ -571,7 +664,7 @@ struct HTPreviewMainView: View {
         .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 4)
         .padding(.horizontal, 16)
     }
-    
+
     // MARK: - Download Button
     private func downloadButton() -> some View {
         Button(action: {
@@ -592,7 +685,7 @@ struct HTPreviewMainView: View {
         .padding(.horizontal, 16)
         .padding(.top, 8)
     }
-    
+
     // MARK: - UI Helpers
     private func studentDetailItem(title: String, value: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -604,7 +697,7 @@ struct HTPreviewMainView: View {
                 .foregroundColor(textDark)
         }
     }
-    
+
     private func signatureBlock(title: String) -> some View {
         VStack(spacing: 8) {
             Text("-------------------")
@@ -620,16 +713,16 @@ struct HTPreviewMainView: View {
 // MARK: - Date Formatting Helper
 struct HTPreviewDateHelper {
     private static let posix = Locale(identifier: "en_US_POSIX")
-    
+
     static func parseDate(_ raw: String?) -> Date? {
         guard let raw = raw?.trimmingCharacters(in: .whitespacesAndNewlines), !raw.isEmpty else { return nil }
-        
+
         let iso = ISO8601DateFormatter()
         iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         if let d = iso.date(from: raw) { return d }
         iso.formatOptions = [.withInternetDateTime]
         if let d = iso.date(from: raw) { return d }
-        
+
         let f = DateFormatter()
         f.locale = posix
         for format in ["yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd"] {
@@ -638,7 +731,7 @@ struct HTPreviewDateHelper {
         }
         return nil
     }
-    
+
     static func formatShortDate(_ dateStr: String?) -> String {
         guard let date = parseDate(dateStr) else { return dateStr ?? "--" }
         let out = DateFormatter()
@@ -646,20 +739,20 @@ struct HTPreviewDateHelper {
         out.dateFormat = "MMM dd"
         return out.string(from: date)
     }
-    
+
     static func formatTime(_ timeStr: String?) -> String {
         guard let timeStr = timeStr, !timeStr.isEmpty else { return "--" }
         let inFormatter = DateFormatter()
         inFormatter.locale = posix
         inFormatter.dateFormat = timeStr.count > 5 ? "HH:mm:ss" : "HH:mm"
         guard let date = inFormatter.date(from: timeStr) else { return timeStr }
-        
+
         let out = DateFormatter()
         out.locale = posix
         out.dateFormat = "hh:mm a"
         return out.string(from: date)
     }
-    
+
     static func formatFullDate(_ dateStr: String?) -> String {
         guard let date = parseDate(dateStr) else { return dateStr ?? "--" }
         let out = DateFormatter()
@@ -667,14 +760,14 @@ struct HTPreviewDateHelper {
         out.dateFormat = "MMM dd, yyyy"
         return out.string(from: date)
     }
-    
+
     static func reportingText(_ raw: String?) -> String {
         let fallback = "Report at the assigned room 30 minutes before the exam."
         guard let raw = raw, !raw.isEmpty, let date = parseDate(raw) else { return fallback }
-        
+
         let out = DateFormatter()
         out.locale = posix
-        
+
         if raw.contains("T") || raw.contains(":") {
             out.dateFormat = "h:mm a"
             return "Report at the assigned room by \(out.string(from: date))."
@@ -683,14 +776,14 @@ struct HTPreviewDateHelper {
             return "Report at the assigned room on \(out.string(from: date))."
         }
     }
-    
+
     static func instructionLines(_ raw: String?) -> [String] {
         let fallback = [
             "• Carry this Hall Ticket and school ID card to every paper.",
             "• Report 30 minutes before the scheduled time.",
             "• Electronic items, calculators and mobile devices are prohibited."
         ]
-        
+
         guard let raw = raw, !raw.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return fallback }
         return raw.components(separatedBy: .newlines)
             .map { $0.trimmingCharacters(in: .whitespaces) }

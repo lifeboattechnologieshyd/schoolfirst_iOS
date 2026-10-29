@@ -551,7 +551,7 @@ extension ExamhomeVC {
         
         let examName = examDetail?.name
             ?? nextExamItem?.name
-            ?? (isDetailLoading || exams.isEmpty ? "Loading examination..." : "No examination")
+            ?? (isDetailLoading || exams.isEmpty ? "No upcoming exams" : "No examination")
         
         let examTypeName = examDetail?.examinationType?.name
             ?? nextExamItem?.examinationType?.name
@@ -570,8 +570,8 @@ extension ExamhomeVC {
         let subjectsText = subjectCount > 0 ? "\(subjectCount) subjects" : "Subjects TBA"
         let subtitleText = "\(rangeShort) • \(subjectsText) • \(examTypeName)"
         
-        let statusRaw = (examDetail?.status ?? nextExamItem?.status ?? "SCHEDULED")
-        let statusText = statusRaw.replacingOccurrences(of: "_", with: " ").capitalized
+        // ✅ NEW: Shows "Upcoming" if exams list has items, otherwise "Not scheduled"
+        let statusText = exams.isEmpty ? "Not scheduled" : "Upcoming"
         
         // Countdown
         var daysText = "--"
@@ -580,7 +580,7 @@ extension ExamhomeVC {
             if days > 1       { daysText = "\(days) days" }
             else if days == 1 { daysText = "1 day" }
             else if days == 0 { daysText = "Today" }
-            else              { daysText = "Completed" }
+            else              { daysText = "Exam concluded" }
             
             if let subj = sortedSchedules.first?.subject?.name {
                 untilText = days < 0 ? "last paper \(subj.capitalized)" : "until \(subj.capitalized)"
@@ -714,7 +714,7 @@ extension ExamhomeVC {
         
         if examsData.isEmpty {
             let emptyLabel = UILabel()
-            emptyLabel.text = "Loading upcoming exams..."
+            emptyLabel.text = "No upcoming exams..."
             emptyLabel.font = .systemFont(ofSize: 14, weight: .medium)
             emptyLabel.textColor = Colors.textGray
             emptyLabel.textAlignment = .center

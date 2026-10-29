@@ -180,10 +180,11 @@ class ExamresultVC: UIViewController {
     private func navigateToReportCard() {
         let reportVC = ReportcardpreviewVC()
         
-        // Pass the required IDs from the ViewModel to the Report Card
-        reportVC.studentID = viewModel.studentID
-        reportVC.schoolID = viewModel.schoolID
+        // Pass the required IDs and selected exam result detail from the ViewModel to the Report Card
+        reportVC.studentID = viewModel.studentID.isEmpty ? UserManager.shared.resolvedStudentID : viewModel.studentID
+        reportVC.schoolID = viewModel.schoolID.isEmpty ? UserManager.shared.resolvedSchoolID : viewModel.schoolID
         reportVC.examinationID = viewModel.examinationID
+        reportVC.examResultDetail = viewModel.resultDetail
         
         navigationController?.pushViewController(reportVC, animated: true)
     }
@@ -206,12 +207,18 @@ class ExamresultVC: UIViewController {
             VStack(spacing: 0) {
                 headerView
                 
-                if viewModel.isLoading && viewModel.resultDetail == nil {
+                if viewModel.isLoading && viewModel.resultDetail == nil && viewModel.examResultsList.isEmpty {
                     Spacer()
                     ProgressView("Loading examination results...")
                         .foregroundColor(textGray)
                     Spacer()
+                } else if viewModel.examResultsList.isEmpty || viewModel.resultDetail == nil {
+                    // Pending / Empty State
+                    ScrollView(.vertical, showsIndicators: false) {
+                        pendingStateView
+                    }
                 } else {
+                    // Success State
                     ScrollView(.vertical, showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 20) {
                             VStack(alignment: .leading, spacing: 6) {
@@ -241,6 +248,90 @@ class ExamresultVC: UIViewController {
             .background(screenBgColor.ignoresSafeArea())
         }
         
+        // MARK: - Pending / Not Published State
+        private var pendingStateView: some View {
+            VStack(spacing: 16) {
+                // Title Section
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Results pending")
+                            .font(.system(size: 22, weight: .bold))
+                            .foregroundColor(textDark)
+                        
+                        Text("Examination")
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundColor(textGray)
+                    }
+                    Spacer()
+                    Text("Not published")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundColor(Color(red: 0.85, green: 0.47, blue: 0.0))
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(Color(red: 1.0, green: 0.95, blue: 0.90))
+                        .cornerRadius(12)
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 16)
+                
+                // Main White Card
+                VStack(spacing: 24) {
+                    // Icon Header
+                    ZStack {
+                        Circle()
+                            .fill(Color(red: 1.0, green: 0.96, blue: 0.92))
+                            .frame(width: 80, height: 80)
+                        Image(systemName: "clock")
+                            .font(.system(size: 32))
+                            .foregroundColor(Color(red: 0.95, green: 0.61, blue: 0.07))
+                    }
+                    .padding(.top, 20)
+                    
+                    // Explanatory Text
+                    VStack(spacing: 8) {
+                        Text("The school is preparing the student's results")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(textDark)
+                            .multilineTextAlignment(.center)
+                        
+                        Text("Marks are being reviewed and verified by the school before publication.")
+                            .font(.system(size: 13, weight: .regular))
+                            .foregroundColor(textGray)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 10)
+                            .lineSpacing(4)
+                    }
+                    
+                    // Button
+                    Button(action: {
+                        print("Notify me tapped")
+                    }) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "bell")
+                                .font(.system(size: 14, weight: .semibold))
+                            Text("Notify me when published")
+                                .font(.system(size: 14, weight: .bold))
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(darkNavyButton)
+                        .cornerRadius(12)
+                    }
+                    .padding(.bottom, 10)
+                }
+                .padding(20)
+                .background(Color.white)
+                .cornerRadius(16)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(borderColor, lineWidth: 1)
+                )
+                .padding(.horizontal, 16)
+            }
+        }
+        
+        // MARK: - Header
         private var headerView: some View {
             HStack(alignment: .center, spacing: 12) {
                 Button(action: onBack) {
@@ -251,7 +342,7 @@ class ExamresultVC: UIViewController {
                 }
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Results")
+                    Text("Exam Results")
                         .font(.system(size: 18, weight: .bold))
                         .foregroundColor(.white)
                     
