@@ -33,6 +33,10 @@ class PerioddetailsVC: UIViewController {
         // Pass API data to SchedulechangesandhistoryVC
         swiftUIView.onViewScheduleChangesTapped = { [weak self] in
             guard let self = self else { return }
+            if let existing = self.navigationController?.viewControllers.first(where: { $0 is SchedulechangesandhistoryVC }) {
+                self.navigationController?.popToViewController(existing, animated: true)
+                return
+            }
             let scheduleVC = SchedulechangesandhistoryVC()
             scheduleVC.timetableData = self.fullTimetableData
             scheduleVC.baseDate = self.selectedDate

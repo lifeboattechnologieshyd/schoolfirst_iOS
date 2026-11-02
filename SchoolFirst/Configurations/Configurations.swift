@@ -249,6 +249,8 @@ struct API {
     
     static let GET_TIMETABLE_TERMS = BASE_URL + "timetable/term"
     static let GET_STUDENT_TIMETABLE = BASE_URL + "timetable/timetable"
+    
+    static let GET_CALENDAR_EVENTS = "calendar/event"
 
 
 

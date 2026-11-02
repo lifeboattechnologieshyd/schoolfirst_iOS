@@ -20,6 +20,7 @@ class TodayTimetableViewModel: ObservableObject {
     @Published var substitutionCount: Int = 0
     @Published var substitutionMessage: String = ""
     @Published var classSectionString: String = ""
+    @Published var rawTimetableData: StudentTimetableData?
     
     @Published var currentDate: Date = Date()
     @Published var isLoading: Bool = false
@@ -99,8 +100,10 @@ class TodayTimetableViewModel: ObservableObject {
                 switch result {
                 case .success(let response):
                     if response.success, let data = response.data {
+                        self?.rawTimetableData = data
                         self?.processTimetableData(data)
                     } else {
+                        self?.rawTimetableData = nil
                         self?.dailyPeriods = []
                         self?.substitutionCount = 0
                     }
@@ -289,11 +292,12 @@ class TodaytimetableVC: UIViewController {
         }
         
         // Navigation to PerioddetailsVC with API data
-        swiftUIView.onPeriodTapped = { [weak self] period, date, classSection in
+        swiftUIView.onPeriodTapped = { [weak self] period, date, classSection, rawData in
             let detailsVC = PerioddetailsVC()
             detailsVC.period = period
             detailsVC.selectedDate = date
             detailsVC.classSectionString = classSection
+            detailsVC.fullTimetableData = rawData
             self?.navigationController?.pushViewController(detailsVC, animated: true)
         }
         
@@ -337,7 +341,7 @@ enum LocalPeriodState {
 struct TodayTimetableView: View {
     @StateObject private var viewModel = TodayTimetableViewModel()
     var onWeekViewTapped: (() -> Void)? = nil
-    var onPeriodTapped: ((TimetablePeriodEntry, Date, String) -> Void)? = nil
+    var onPeriodTapped: ((TimetablePeriodEntry, Date, String, StudentTimetableData?) -> Void)? = nil
     
     var body: some View {
         VStack(spacing: 0) {
@@ -488,7 +492,7 @@ struct TodayTimetableView: View {
                                 VStack(spacing: 12) {
                                     if let nowP = categories.now {
                                         Button(action: {
-                                            onPeriodTapped?(nowP, viewModel.currentDate, viewModel.classSectionString)
+                                            onPeriodTapped?(nowP, viewModel.currentDate, viewModel.classSectionString, viewModel.rawTimetableData)
                                         }) {
                                             APIPeriodCardView(entry: nowP, state: .now)
                                         }
@@ -496,7 +500,7 @@ struct TodayTimetableView: View {
                                     }
                                     if let nextP = categories.next {
                                         Button(action: {
-                                            onPeriodTapped?(nextP, viewModel.currentDate, viewModel.classSectionString)
+                                            onPeriodTapped?(nextP, viewModel.currentDate, viewModel.classSectionString, viewModel.rawTimetableData)
                                         }) {
                                             APIPeriodCardView(entry: nextP, state: .next)
                                         }
@@ -540,7 +544,7 @@ struct TodayTimetableView: View {
                                 VStack(spacing: 12) {
                                     ForEach(categories.later) { period in
                                         Button(action: {
-                                            onPeriodTapped?(period, viewModel.currentDate, viewModel.classSectionString)
+                                            onPeriodTapped?(period, viewModel.currentDate, viewModel.classSectionString, viewModel.rawTimetableData)
                                         }) {
                                             APIPeriodCardView(entry: period, state: .later)
                                         }

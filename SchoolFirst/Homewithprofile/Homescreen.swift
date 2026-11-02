@@ -218,6 +218,7 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
         case "Bulletin": navigateToBulletin()
         case "Exams": navigateToExams()
         case "Time Table": navigateToTimetable()
+        case "Events": navigateToEvents()
             
             
             // ✅ NEW: Gallery navigation added
@@ -575,6 +576,20 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
             }
         }
     }
+    private func navigateToEvents() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let Events = storyboard.instantiateViewController(withIdentifier: "EventsdashboardVC") as? EventsdashboardVC {
+            Events.hidesBottomBarWhenPushed = true
+            if let nav = navigationController {
+                nav.setNavigationBarHidden(true, animated: false)
+                nav.pushViewController(Events, animated: true)
+            } else {
+                Events.modalPresentationStyle = .fullScreen
+                present(Events, animated: true)
+            }
+        }
+    }
+    
 }
 
 // MARK: - UI

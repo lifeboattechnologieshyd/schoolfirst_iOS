@@ -313,6 +313,52 @@ struct APIResponse<T: Decodable>: Decodable {
         data = try? container.decodeIfPresent(T.self, forKey: .data)
     }
 }
+//***Get Events API Response model
+struct CalendarEventItem: Codable, Identifiable {
+    let id: String
+    let title: String?
+    let description: String?
+    let eventType: String?
+    let eventDate: String?
+    let startTime: String?
+    let endTime: String?
+    let isAllDay: Bool?
+    let status: String?
+    let color: String?
+    let referenceId: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case title
+        case description
+        case eventType = "event_type"
+        case eventDate = "event_date"
+        case startTime = "start_time"
+        case endTime = "end_time"
+        case isAllDay = "is_all_day"
+        case status
+        case color
+        case referenceId = "reference_id"
+    }
+}
+
+// Event type helper (optional but useful for UI mapping)
+enum CalendarEventType: String {
+    case event = "EVENT"
+    case homework = "HOMEWORK"
+    case holiday = "HOLIDAY"
+    
+    init(from string: String?) {
+        switch string?.uppercased() {
+        case "EVENT":    self = .event
+        case "HOMEWORK": self = .homework
+        case "HOLIDAY":  self = .holiday
+        default:         self = .event
+        }
+    }
+}
+
+
 //***Get student time Table API resposne model
 struct StudentTimetableData: Codable {
     let student: TimetableStudent?
