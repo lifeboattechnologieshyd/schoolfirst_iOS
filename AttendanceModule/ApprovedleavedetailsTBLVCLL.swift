@@ -23,15 +23,28 @@ class ApprovedleavedetailsTBLVCLL: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
     
     // MARK: - Configure
     func configure(with leave: LeaveListItem) {
         
-        // Class & Section
-        ClassandsectionLabel.text = leave.branch.name
+        // Class, section and admission number with fallback chain
+        // (same pattern as PresentdetailsTBLVCLL)
+        let grade = nonEmptyText(UserManager.shared.resolvedStudentGrade) ?? "—"
+        let section = nonEmptyText(UserManager.shared.resolvedStudentSection) ?? "—"
+
+        // Try runtime-safe extraction from selectedKid
+        let dbAdmission = extractAdmissionNumber(from: UserManager.shared.selectedKid)
+
+        // Last resort: UserDefaults
+        let savedAdmission = nonEmptyText(
+            UserDefaults.standard.string(forKey: "STUDENT_ADMISSION_NUMBER")
+        )
+
+        let admissionNumber = dbAdmission ?? savedAdmission ?? "—"
+
+        ClassandsectionLabel.text =
+            "\(grade) · \(section) "
         
         // Document Attached or Not
         if let pdf = leave.pdf,
@@ -62,6 +75,50 @@ class ApprovedleavedetailsTBLVCLL: UITableViewCell {
         } else {
             LeavereasonanddateLabel.text = displayLeaveType(leave.leaveType)
         }
+    }
+    
+    // MARK: - Runtime-safe Admission Number Extractor from Student
+    /// Reads the admission number field from Student model WITHOUT compile-time dependency.
+    /// Works whatever the property is named: admissionNumber, admission_number, rollNumber, roll_number, etc.
+    private func extractAdmissionNumber(from student: Student?) -> String? {
+        guard let student = student else { return nil }
+
+        let candidateKeys = [
+            "admissionNumber", "admission_number", "admission_no",
+            "admissionNo", "admission_id", "admissionId",
+            "rollNumber", "roll_number", "rollNo", "roll_no",
+            "registerNumber", "register_number",
+            "studentNumber", "student_number"
+        ]
+
+        let mirror = Mirror(reflecting: student)
+        for child in mirror.children {
+            guard let label = child.label, candidateKeys.contains(label) else { continue }
+
+            if let str = child.value as? String, !str.isEmpty {
+                return str
+            }
+            if let optionalStr = child.value as? String?, let str = optionalStr, !str.isEmpty {
+                return str
+            }
+            if let intVal = child.value as? Int {
+                return String(intVal)
+            }
+            if let optInt = child.value as? Int?, let intVal = optInt {
+                return String(intVal)
+            }
+        }
+        return nil
+    }
+
+    // MARK: - Handle Missing or Empty Values
+    private func nonEmptyText(_ value: String?) -> String? {
+        guard let text = value?
+            .trimmingCharacters(in: .whitespacesAndNewlines),
+              !text.isEmpty else {
+            return nil
+        }
+        return text
     }
     
     // MARK: - Helpers

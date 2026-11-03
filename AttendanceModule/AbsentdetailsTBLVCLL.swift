@@ -61,17 +61,26 @@ class AbsentdetailsTBLVCLL: UITableViewCell {
             format: "EEEE, dd MMM yyyy"
         )
 
-        // Class and section for this attendance record.
-        let grade = nonEmptyText(record?.grade?.name) ?? "—"
-        let section = nonEmptyText(record?.section?.name) ?? "—"
+        // Class, section and admission number for the selected record.
+        // Fallback to UserManager / DBManager if the API record is missing these details.
+        let grade = nonEmptyText(record?.grade?.name) ?? nonEmptyText(UserManager.shared.resolvedStudentGrade) ?? "—"
+        let section = nonEmptyText(record?.section?.name) ?? nonEmptyText(UserManager.shared.resolvedStudentSection) ?? "—"
 
-        // The API provides admission number, not roll number.
-        let admissionNumber = nonEmptyText(
-            record?.student?.admissionNumber
-        ) ?? "—"
+        // Try from the API attendance record first
+        let recordAdmission = nonEmptyText(record?.student?.admissionNumber)
+
+        // Fallback: runtime-safe extraction from selectedKid (Student model)
+        let dbAdmission = extractAdmissionNumber(from: UserManager.shared.selectedKid)
+
+        // Last resort: UserDefaults
+        let savedAdmission = nonEmptyText(
+            UserDefaults.standard.string(forKey: "STUDENT_ADMISSION_NUMBER")
+        )
+
+        let admissionNumber = recordAdmission ?? dbAdmission ?? savedAdmission ?? "—"
 
         ClasssectionandrollnumberLabel.text =
-            "\(grade) · \(section) · Admission no. \(admissionNumber)"
+            "\(grade) · \(section) "
 
         // Teacher who marked this particular record.
         MarkedTeachernameLabel.text = nonEmptyText(
@@ -85,6 +94,40 @@ class AbsentdetailsTBLVCLL: UITableViewCell {
 
         // This API response has no separate absence reason field.
         Reason.text = "Not provided"
+    }
+
+    // MARK: - Runtime-safe Admission Number Extractor from Student
+    /// Reads the admission number field from Student model WITHOUT compile-time dependency.
+    /// Works whatever the property is named: admissionNumber, admission_number, rollNumber, roll_number, etc.
+    private func extractAdmissionNumber(from student: Student?) -> String? {
+        guard let student = student else { return nil }
+
+        let candidateKeys = [
+            "admissionNumber", "admission_number", "admission_no",
+            "admissionNo", "admission_id", "admissionId",
+            "rollNumber", "roll_number", "rollNo", "roll_no",
+            "registerNumber", "register_number",
+            "studentNumber", "student_number"
+        ]
+
+        let mirror = Mirror(reflecting: student)
+        for child in mirror.children {
+            guard let label = child.label, candidateKeys.contains(label) else { continue }
+
+            if let str = child.value as? String, !str.isEmpty {
+                return str
+            }
+            if let optionalStr = child.value as? String?, let str = optionalStr, !str.isEmpty {
+                return str
+            }
+            if let intVal = child.value as? Int {
+                return String(intVal)
+            }
+            if let optInt = child.value as? Int?, let intVal = optInt {
+                return String(intVal)
+            }
+        }
+        return nil
     }
 
     // MARK: - Handle Missing or Empty Values
