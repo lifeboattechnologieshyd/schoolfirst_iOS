@@ -250,6 +250,39 @@ struct ScheduleChangesView: View {
         return df.string(from: Date())
     }
     
+    private var weekDateRange: (start: Date, end: Date) {
+        var calendar = Calendar.current
+        calendar.firstWeekday = 2 // Match Monday
+        
+        var components = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: baseDate)
+        components.weekday = 2
+        let start = calendar.date(from: components) ?? baseDate
+        let end = calendar.date(byAdding: .day, value: 5, to: start) ?? baseDate
+        return (start, end)
+    }
+
+    private var weekRangeString: String {
+        let dates = weekDateRange
+        let df1 = DateFormatter()
+        df1.dateFormat = "d MMM"
+        let df2 = DateFormatter()
+        df2.dateFormat = "d MMM yyyy"
+        return "\(df1.string(from: dates.start))–\(df2.string(from: dates.end))"
+    }
+
+    private var weekRangeShortString: String {
+        let dates = weekDateRange
+        let df = DateFormatter()
+        df.dateFormat = "d MMM"
+        return "\(df.string(from: dates.start)) to \(df.string(from: dates.end))"
+    }
+    
+    private var asOfDateString: String {
+        let df = DateFormatter()
+        df.dateFormat = "EEEE, d MMMM"
+        return "As of \(df.string(from: Date())) · Upcoming"
+    }
+    
     // Dynamically builds the sentence like: "The room change on 24 Sep and moved period on 25 Sep are still in Upcoming."
     private var upcomingSummaryText: String {
         if upcomingData.isEmpty { return "" }
@@ -283,10 +316,9 @@ struct ScheduleChangesView: View {
                     
                     activeChildSection
                     
-                    if selectedTab == .history {
-                        contextTagsView
-                            .padding(.top, -4)
-                    }
+                    // Displayed across both tabs based on the new requirement
+                    contextTagsView
+                        .padding(.top, -4)
                     
                     tabSwitcherView
                     
@@ -622,7 +654,7 @@ struct ScheduleChangesView: View {
     private var tabSwitcherView: some View {
         HStack(spacing: 0) {
             let upcomingCount = upcomingData.count
-            let upcomingTitle = upcomingCount > 0 ? "Upcoming · \(upcomingCount)" : "Upcoming"
+            let upcomingTitle = upcomingCount > 0 ? "Upcoming · \(upcomingCount)" : "Upcoming · 0"
             let historyTitle = historyData.count > 0 ? "History · \(historyData.count)" : "History"
             
             tabButton(title: upcomingTitle, tab: .upcoming)
@@ -657,23 +689,140 @@ struct ScheduleChangesView: View {
     // MARK: - Upcoming Section
     private var upcomingSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                Text("Upcoming updates")
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(Color(red: 0.08, green: 0.11, blue: 0.19))
-                Spacer()
-                Text(termName)
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundColor(mainBlue)
-            }
-            .padding(.top, 4)
-            
             if upcomingData.isEmpty {
-                emptyStateView(message: "No upcoming schedule changes.")
+                upcomingEmptyStateView
             } else {
+                HStack {
+                    Text("Upcoming updates")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(Color(red: 0.08, green: 0.11, blue: 0.19))
+                    Spacer()
+                    Text(termName)
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundColor(mainBlue)
+                }
+                .padding(.top, 4)
+                
                 ForEach(upcomingData) { item in
                     ChangeCardView(item: item)
                 }
+            }
+        }
+    }
+    
+    // MARK: - Upcoming Empty State Component
+    private var upcomingEmptyStateView: some View {
+        VStack(spacing: 24) {
+            
+            // Week Data Range Card
+            VStack(alignment: .leading, spacing: 4) {
+                Text(weekRangeString)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(Color(red: 0.08, green: 0.11, blue: 0.19))
+                
+                Text(asOfDateString)
+                    .font(.system(size: 12, weight: .regular))
+                    .foregroundColor(Color(red: 0.45, green: 0.48, blue: 0.54))
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .background(Color.white)
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color(red: 0.89, green: 0.91, blue: 0.94), lineWidth: 1)
+            )
+            
+            // Reconstructed 3D-like Icon View Component
+            ZStack {
+                Circle()
+                    .fill(Color(red: 242/255, green: 247/255, blue: 255/255))
+                    .frame(width: 90, height: 90)
+                
+                // Red Top of the Calendar
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color(red: 239/255, green: 68/255, blue: 68/255))
+                    .frame(width: 44, height: 14)
+                    .offset(y: -14)
+                
+                // White Body of the Calendar
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.white)
+                    .frame(width: 44, height: 26)
+                    .shadow(color: Color.black.opacity(0.08), radius: 3, x: 0, y: 2)
+                    .offset(y: 4)
+                
+                // Tiny Calendar UI Dots
+                VStack(spacing: 4) {
+                    HStack(spacing: 4) {
+                        Circle().fill(Color.red.opacity(0.3)).frame(width: 4, height: 4)
+                        Circle().fill(Color.red.opacity(0.3)).frame(width: 4, height: 4)
+                        Circle().fill(Color.red.opacity(0.3)).frame(width: 4, height: 4)
+                    }
+                    HStack(spacing: 4) {
+                        Circle().fill(Color.red.opacity(0.3)).frame(width: 4, height: 4)
+                        Circle().fill(Color.red.opacity(0.3)).frame(width: 4, height: 4)
+                        Circle().fill(Color.red.opacity(0.3)).frame(width: 4, height: 4)
+                    }
+                }
+                .offset(y: 4)
+                
+                // Clock overlay icon
+                Image(systemName: "clock.fill")
+                    .resizable()
+                    .frame(width: 22, height: 22)
+                    .foregroundColor(mainBlue)
+                    .background(Circle().fill(Color.white))
+                    .offset(x: 18, y: 14)
+            }
+            .padding(.top, 16)
+            
+            // Empty State Labels
+            VStack(spacing: 8) {
+                Text("No upcoming changes")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundColor(Color(red: 0.08, green: 0.11, blue: 0.19))
+                
+                Text("No schedule changes are planned for \(studentFirstName) from \(weekRangeShortString).")
+                    .font(.system(size: 14, weight: .regular))
+                    .foregroundColor(Color(red: 0.45, green: 0.48, blue: 0.54))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 16)
+            }
+            
+            // Info Box
+            Text("The regular timetable still applies. You can view previous changes in History.")
+                .font(.system(size: 13, weight: .regular))
+                .foregroundColor(Color(red: 0.45, green: 0.48, blue: 0.54))
+                .multilineTextAlignment(.center)
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color.white)
+                .cornerRadius(12)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color(red: 0.89, green: 0.91, blue: 0.94), lineWidth: 1)
+                )
+            
+            // Action Button
+            Button(action: {
+                if let onBack = onBackToTimetable {
+                    onBack()
+                } else {
+                    presentationMode.wrappedValue.dismiss()
+                }
+            }) {
+                HStack(spacing: 8) {
+                    Image(systemName: "calendar")
+                        .font(.system(size: 16, weight: .bold))
+                    Text("Back to timetable")
+                        .font(.system(size: 16, weight: .bold))
+                }
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(mainBlue)
+                .cornerRadius(12)
             }
         }
     }

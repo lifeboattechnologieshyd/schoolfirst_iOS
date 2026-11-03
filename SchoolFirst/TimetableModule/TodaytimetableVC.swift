@@ -26,6 +26,23 @@ class TodayTimetableViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
     
+    // Properties for No Classes empty state
+    @Published var studentFirstName: String = "your child"
+    @Published var nextClassInfo: NextClassInfo?
+    
+    struct NextClassInfo {
+        let date: Date
+        let dateString: String
+        let dayName: String
+        let count: Int
+    }
+    
+    var currentDayName: String {
+        let f = DateFormatter()
+        f.dateFormat = "EEEE"
+        return f.string(from: currentDate)
+    }
+    
     // MARK: - Fetch Terms
     func fetchTerms() {
         let schoolID = UserManager.shared.resolvedSchoolID
@@ -106,11 +123,13 @@ class TodayTimetableViewModel: ObservableObject {
                         self?.rawTimetableData = nil
                         self?.dailyPeriods = []
                         self?.substitutionCount = 0
+                        self?.nextClassInfo = nil
                     }
                 case .failure(let error):
                     print("❌ Error fetching daily timetable: \(error.localizedDescription)")
                     self?.dailyPeriods = []
                     self?.substitutionCount = 0
+                    self?.nextClassInfo = nil
                 }
             }
         }
@@ -119,6 +138,10 @@ class TodayTimetableViewModel: ObservableObject {
     // MARK: - Process Timetable Data
     private func processTimetableData(_ data: StudentTimetableData) {
         self.substitutionCount = data.substitutionCount ?? 0
+        
+        // Setup Student Name for the No Classes View
+        let fullName = data.student?.name ?? "your child"
+        self.studentFirstName = fullName.components(separatedBy: " ").first ?? fullName
         
         // Class / Section from API
         let grade = data.student?.grade?.name ?? ""
@@ -154,6 +177,41 @@ class TodayTimetableViewModel: ObservableObject {
         } else {
             self.substitutionMessage = "Schedule changes available."
         }
+        
+        // Calculate Next Class Day for the No Classes View
+        self.nextClassInfo = findNextClassInfo()
+    }
+    
+    // MARK: - Find Next Class Info
+    private func findNextClassInfo() -> NextClassInfo? {
+        guard let schedule = rawTimetableData?.schedule else { return nil }
+        
+        for offset in 1...7 {
+            guard let checkDate = Calendar.current.date(byAdding: .day, value: offset, to: currentDate) else { continue }
+            let weekday = Calendar.current.component(.weekday, from: checkDate)
+            
+            var periods: [TimetablePeriodEntry] = []
+            switch weekday {
+            case 1: periods = schedule.sunday ?? []
+            case 2: periods = schedule.monday ?? []
+            case 3: periods = schedule.tuesday ?? []
+            case 4: periods = schedule.wednesday ?? []
+            case 5: periods = schedule.thursday ?? []
+            case 6: periods = schedule.friday ?? []
+            case 7: periods = schedule.saturday ?? []
+            default: break
+            }
+            
+            if !periods.isEmpty {
+                let f = DateFormatter()
+                f.dateFormat = "EEEE"
+                let dayName = f.string(from: checkDate)
+                f.dateFormat = "EEEE, d MMMM"
+                let dateString = f.string(from: checkDate)
+                return NextClassInfo(date: checkDate, dateString: dateString, dayName: dayName, count: periods.count)
+            }
+        }
+        return nil
     }
     
     // MARK: - Categorize Periods (Now, Next, Later)
@@ -460,10 +518,9 @@ struct TodayTimetableView: View {
                         ProgressView("Loading Timetable...")
                             .padding(.top, 40)
                     } else if viewModel.dailyPeriods.isEmpty {
-                        Text("No classes scheduled for this day.")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.gray)
-                            .padding(.top, 40)
+                        
+                        noClassesView
+                        
                     } else {
                         let categories = viewModel.categorizedPeriods
                         
@@ -567,6 +624,120 @@ struct TodayTimetableView: View {
         .onAppear {
             viewModel.fetchTerms()
         }
+    }
+    
+    // MARK: - No Classes Empty State View
+    @ViewBuilder
+    private var noClassesView: some View {
+        VStack(spacing: 24) {
+            // Calendar Icon with Red Dot
+            ZStack {
+                Circle()
+                    .fill(Color(red: 235/255, green: 244/255, blue: 255/255))
+                    .frame(width: 100, height: 100)
+                
+                Image(systemName: "calendar")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 45, height: 45)
+                    .foregroundColor(Color(red: 11/255, green: 86/255, blue: 154/255))
+                
+                Circle()
+                    .fill(Color.red)
+                    .frame(width: 12, height: 12)
+                    .offset(x: 14, y: 10)
+            }
+            .padding(.top, 30)
+            
+            // Dynamic Title and Subtitle
+            VStack(spacing: 12) {
+                Text("No classes on \(viewModel.currentDayName)")
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundColor(Color(red: 20/255, green: 40/255, blue: 70/255))
+                
+                Text("It's \(viewModel.currentDayName), so there are no periods scheduled for \(viewModel.studentFirstName) today. Enjoy the break!")
+                    .font(.system(size: 15, weight: .regular))
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(4)
+                    .padding(.horizontal, 32)
+            }
+            
+            // Show Next Class Details if available
+            if let nextInfo = viewModel.nextClassInfo {
+                
+                // Next Class Card
+                HStack(spacing: 16) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color(red: 235/255, green: 244/255, blue: 255/255))
+                            .frame(width: 44, height: 44)
+                        
+                        Image(systemName: "calendar")
+                            .font(.system(size: 18, weight: .medium))
+                            .foregroundColor(Color(red: 11/255, green: 86/255, blue: 154/255))
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("NEXT CLASS DAY")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(.gray)
+                        Text("\(nextInfo.dateString) · \(nextInfo.count) periods")
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundColor(.black)
+                    }
+                    Spacer()
+                }
+                .padding(16)
+                .background(Color.white)
+                .cornerRadius(16)
+                .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.gray.opacity(0.2), lineWidth: 1))
+                .padding(.horizontal, 20)
+                .padding(.top, 10)
+                
+                // View Next Day Button (Filled)
+                Button(action: {
+                    viewModel.currentDate = nextInfo.date
+                    viewModel.fetchDailyTimetable()
+                }) {
+                    HStack {
+                        Image(systemName: "calendar.badge.clock")
+                        Text("View \(nextInfo.dayName)")
+                    }
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(Color(red: 11/255, green: 86/255, blue: 154/255))
+                    .cornerRadius(25)
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
+            }
+            
+            // Open Weekly Timetable Button (Outlined)
+            Button(action: {
+                onWeekViewTapped?()
+            }) {
+                HStack {
+                    Image(systemName: "calendar")
+                    Text("Open weekly timetable")
+                }
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(Color(red: 11/255, green: 86/255, blue: 154/255))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(Color.white)
+                .cornerRadius(25)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 25)
+                        .stroke(Color(red: 11/255, green: 86/255, blue: 154/255), lineWidth: 1.5)
+                )
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, viewModel.nextClassInfo == nil ? 20 : 0)
+        }
+        .padding(.bottom, 40)
     }
 }
 
@@ -739,8 +910,12 @@ struct APIPeriodCardView: View {
                     .lineLimit(1)
                 
                 HStack(spacing: 4) {
-                    Image(systemName: "mappin.and.ellipse")
-                        .font(.system(size: 10))
+                    Image("Icon 37")
+                        .resizable()
+                        .renderingMode(.template)
+                        .scaledToFit()
+                        .frame(width: 10, height: 10)
+                    
                     Text(roomString)
                         .font(.system(size: 12, weight: .regular))
                 }

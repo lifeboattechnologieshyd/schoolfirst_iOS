@@ -17,7 +17,14 @@ class EventsdashboardVC: UIViewController {
     }
     
     private func setupSwiftUIView() {
-        let swiftUIView = AllEventsView()
+        var swiftUIView = AllEventsView()
+        
+        // Handle Event Tap Navigation
+        swiftUIView.onEventTapped = { [weak self] selectedEvent in
+            let detailVC = EventdetailsVC()
+            detailVC.event = selectedEvent // Pass the API data
+            self?.navigationController?.pushViewController(detailVC, animated: true)
+        }
         
         let hostingController = UIHostingController(rootView: swiftUIView)
         addChild(hostingController)
@@ -35,39 +42,84 @@ class EventsdashboardVC: UIViewController {
     }
 }
 
-// MARK: - Dummy Models (For future API Integration)
+// MARK: - Event Theme (Matches Event Detail Screens)
 
-enum EventTheme {
-    case academic
-    case finance
-    case community
+enum EventCardTheme {
+    case ptm          // Purple
+    case fee          // Orange / Finance
+    case exam         // Red
+    case holiday      // Green
+    case event        // Dark Grey
+    case announcement // Purple-ish
+    case homework     // Blue
+    case assignment   // Red
+    case transport    // Orange / Brown
+    case library      // Blue
+    case other        // Dark Grey
     
     var backgroundColor: Color {
         switch self {
-        case .academic:  return Color(red: 1.0, green: 0.89, blue: 0.89)  // Light Red
-        case .finance:   return Color(red: 1.0, green: 0.95, blue: 0.90)  // Light Orange
-        case .community: return Color(red: 0.85, green: 0.77, blue: 1.0)  // Light Purple
+        case .ptm:          return Color(red: 0.90, green: 0.85, blue: 1.00)
+        case .fee:          return Color(red: 1.00, green: 0.92, blue: 0.83)
+        case .exam:         return Color(red: 1.00, green: 0.87, blue: 0.87)
+        case .holiday:      return Color(red: 0.84, green: 0.95, blue: 0.87)
+        case .event:        return Color(red: 0.86, green: 0.89, blue: 0.93)
+        case .announcement: return Color(red: 0.89, green: 0.84, blue: 1.00)
+        case .homework:     return Color(red: 0.86, green: 0.92, blue: 1.00)
+        case .assignment:   return Color(red: 1.00, green: 0.87, blue: 0.87)
+        case .transport:    return Color(red: 1.00, green: 0.90, blue: 0.78)
+        case .library:      return Color(red: 0.84, green: 0.91, blue: 1.00)
+        case .other:        return Color(red: 0.86, green: 0.89, blue: 0.93)
         }
     }
     
     var textColor: Color {
         switch self {
-        case .academic:  return Color(red: 0.6, green: 0.1, blue: 0.15)   // Dark Red
-        case .finance:   return Color(red: 0.55, green: 0.35, blue: 0.15) // Dark Brown/Orange
-        case .community: return Color(red: 0.35, green: 0.15, blue: 0.75) // Dark Purple
+        case .ptm:          return Color(red: 0.35, green: 0.15, blue: 0.75)
+        case .fee:          return Color(red: 0.55, green: 0.35, blue: 0.15)
+        case .exam:         return Color(red: 0.60, green: 0.10, blue: 0.15)
+        case .holiday:      return Color(red: 0.15, green: 0.45, blue: 0.25)
+        case .event:        return Color(red: 0.15, green: 0.20, blue: 0.30)
+        case .announcement: return Color(red: 0.40, green: 0.20, blue: 0.70)
+        case .homework:     return Color(red: 0.15, green: 0.35, blue: 0.65)
+        case .assignment:   return Color(red: 0.60, green: 0.10, blue: 0.15)
+        case .transport:    return Color(red: 0.60, green: 0.35, blue: 0.10)
+        case .library:      return Color(red: 0.15, green: 0.35, blue: 0.70)
+        case .other:        return Color(red: 0.15, green: 0.20, blue: 0.30)
         }
     }
-}
-
-struct EventDummyModel: Identifiable {
-    let id = UUID()
-    let theme: EventTheme
-    let categoryName: String
-    let timeOrAmount: String
-    let title: String
-    let location: String?
-    let isDueToday: Bool
-    let attendeeCount: Int?
+    
+    var displayName: String {
+        switch self {
+        case .ptm:          return "PTM"
+        case .fee:          return "Fee"
+        case .exam:         return "Exam"
+        case .holiday:      return "Holiday"
+        case .event:        return "Event"
+        case .announcement: return "Announcement"
+        case .homework:     return "Homework"
+        case .assignment:   return "Assignment"
+        case .transport:    return "Transport"
+        case .library:      return "Library"
+        case .other:        return "Other"
+        }
+    }
+    
+    static func from(apiType: String?) -> EventCardTheme {
+        switch (apiType ?? "").uppercased() {
+        case "PTM":          return .ptm
+        case "FEE":          return .fee
+        case "EXAM":         return .exam
+        case "HOLIDAY":      return .holiday
+        case "EVENT":        return .event
+        case "ANNOUNCEMENT": return .announcement
+        case "HOMEWORK":     return .homework
+        case "ASSIGNMENT":   return .assignment
+        case "TRANSPORT":    return .transport
+        case "LIBRARY":      return .library
+        default:             return .other
+        }
+    }
 }
 
 // MARK: - SwiftUI View
@@ -75,57 +127,113 @@ struct EventDummyModel: Identifiable {
 struct AllEventsView: View {
     @Environment(\.presentationMode) var presentationMode
     
-    // Dummy Data Array
-    let events: [EventDummyModel] = [
-        EventDummyModel(
-            theme: .academic,
-            categoryName: "Academic",
-            timeOrAmount: "9:00 AM - 11:30 AM",
-            title: "Maths Final Exam",
-            location: "Gymnasium Hall, Floor 2",
-            isDueToday: false,
-            attendeeCount: nil
-        ),
-        EventDummyModel(
-            theme: .finance,
-            categoryName: "Finance",
-            timeOrAmount: "₹4500.00",
-            title: "Q2 Tuition Fee Due",
-            location: nil,
-            isDueToday: true,
-            attendeeCount: nil
-        ),
-        EventDummyModel(
-            theme: .community,
-            categoryName: "Community",
-            timeOrAmount: "4:00 PM",
-            title: "Annual PTA Meeting",
-            location: "Conference\nRoom C",
-            isDueToday: false,
-            attendeeCount: 12
-        )
-    ]
+    var onEventTapped: ((CalendarEventItem) -> Void)?
+    
+    @State private var events: [CalendarEventItem] = []
+    @State private var isLoading: Bool = false
+    @State private var errorMessage: String? = nil
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header — total height ~100 (safe area + content)
             headerView
             
-            // Events List
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 16) {
-                    ForEach(events) { event in
-                        EventCardView(event: event)
-                    }
+            if isLoading && events.isEmpty {
+                Spacer()
+                ProgressView()
+                    .scaleEffect(1.2)
+                Spacer()
+            } else if events.isEmpty {
+                Spacer()
+                VStack(spacing: 10) {
+                    Image(systemName: "calendar.badge.exclamationmark")
+                        .font(.system(size: 44))
+                        .foregroundColor(.gray.opacity(0.5))
+                    Text(errorMessage ?? "No events available.")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
                 }
-                .padding(16)
+                Spacer()
+            } else {
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(spacing: 16) {
+                        ForEach(events) { event in
+                            Button(action: {
+                                onEventTapped?(event) // Trigger navigation
+                            }) {
+                                EventCardView(event: event)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                    }
+                    .padding(16)
+                }
+                .background(Color.white)
             }
-            .background(Color.white)
         }
+        .background(Color.white)
         .edgesIgnoringSafeArea(.top)
+        .onAppear {
+            fetchEvents()
+        }
     }
     
-    // MARK: - Subviews
+    // MARK: - API Call
+    
+    private func fetchEvents() {
+        let schoolID = UserManager.shared.resolvedSchoolID
+        let studentID = UserManager.shared.resolvedStudentID
+        let sectionID = UserDefaults.standard.string(forKey: "STUDENT_SECTION") ?? ""
+        
+        guard !schoolID.isEmpty, !studentID.isEmpty else {
+            self.errorMessage = "Student or school info unavailable."
+            return
+        }
+        
+        isLoading = true
+        
+        var parameters: [String: Any] = [
+            "student_id": studentID
+        ]
+        if !sectionID.isEmpty {
+            parameters["section_id"] = sectionID
+        }
+        
+        let headers: [String: String] = [
+            "X-School-ID": schoolID
+        ]
+        
+        NetworkManager.shared.request(
+            urlString: API.GET_CALENDAR_EVENTS,
+            method: .GET,
+            requiresAuth: true,
+            parameters: parameters,
+            headers: headers
+        ) { (result: Result<APIResponse<[CalendarEventItem]>, NetworkError>) in
+            DispatchQueue.main.async {
+                self.isLoading = false
+                switch result {
+                case .success(let response):
+                    if response.success, let data = response.data {
+                        self.events = data.sorted { lhs, rhs in
+                            (lhs.eventDate ?? "") < (rhs.eventDate ?? "")
+                        }
+                        self.errorMessage = nil
+                    } else {
+                        self.events = []
+                        self.errorMessage = response.description.isEmpty ? "No events available." : response.description
+                    }
+                case .failure(let error):
+                    self.events = []
+                    self.errorMessage = error.localizedDescription
+                    print("❌ Calendar events fetch failed: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
+    // MARK: - Header
     
     private var headerView: some View {
         VStack(spacing: 0) {
@@ -149,14 +257,13 @@ struct AllEventsView: View {
                 Spacer()
                 
                 Button(action: {
-                    // Notifications Action
+                    // Notifications
                 }) {
                     Image(systemName: "bell")
                         .font(.system(size: 18, weight: .regular))
                         .foregroundColor(Color(red: 11/255, green: 86/255, blue: 154/255))
                 }
                 
-                // Profile Avatar
                 ZStack {
                     Circle()
                         .fill(Color(red: 0.90, green: 0.91, blue: 0.96))
@@ -170,7 +277,7 @@ struct AllEventsView: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 12)
         }
-        .frame(height: 100) // Figma header height
+        .frame(height: 100)
         .background(Color.white)
         .overlay(
             Rectangle()
@@ -192,64 +299,89 @@ struct AllEventsView: View {
 // MARK: - Reusable Card Component
 
 struct EventCardView: View {
-    let event: EventDummyModel
+    let event: CalendarEventItem
+    
+    private var theme: EventCardTheme {
+        EventCardTheme.from(apiType: event.eventType)
+    }
+    
+    private var topLineText: String {
+        var parts: [String] = []
+        if event.isAllDay == true {
+            parts.append("All day")
+        } else if let st = event.startTime, let et = event.endTime {
+            parts.append("\(formatTime(st)) - \(formatTime(et))")
+        } else if let st = event.startTime {
+            parts.append(formatTime(st))
+        } else if let dateStr = event.eventDate, let d = parseDate(dateStr) {
+            let df = DateFormatter()
+            df.dateFormat = "d MMM yyyy"
+            parts.append(df.string(from: d))
+        }
+        parts.append(theme.displayName)
+        return parts.joined(separator: " · ")
+    }
+    
+    private var titleText: String {
+        event.title ?? "Untitled"
+    }
+    
+    private var dateBadgeText: String? {
+        guard let dateStr = event.eventDate, let d = parseDate(dateStr) else { return nil }
+        let df = DateFormatter()
+        df.dateFormat = "d MMM, yyyy"
+        return df.string(from: d)
+    }
+    
+    private var isDueToday: Bool {
+        guard let dateStr = event.eventDate, let d = parseDate(dateStr) else { return false }
+        return Calendar.current.isDateInToday(d)
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            
-            // Top Row (Time/Amount & Category)
             HStack {
-                Text("\(event.timeOrAmount) · \(event.categoryName)")
+                Text(topLineText)
                     .font(.system(size: 12, weight: .semibold))
                 Spacer()
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .bold))
             }
-            .foregroundColor(event.theme.textColor.opacity(0.8))
+            .foregroundColor(theme.textColor.opacity(0.85))
             
-            // Event Title
-            Text(event.title)
+            Text(titleText)
                 .font(.system(size: 18, weight: .bold))
-                .foregroundColor(event.theme.textColor)
+                .foregroundColor(theme.textColor)
+                .fixedSize(horizontal: false, vertical: true)
             
-            // Dynamic Middle Content (Location / Due Today / Attendees)
-            if event.location != nil || event.isDueToday {
-                HStack(alignment: .top, spacing: 24) {
+            if let desc = event.description, !desc.isEmpty {
+                HStack(alignment: .top, spacing: 6) {
+                    Image("Icon 37")
+                        .resizable()
+                        .renderingMode(.template)
+                        .scaledToFit()
+                        .frame(width: 13, height: 13)
+                        .padding(.top, 2)
                     
-                    // Location (Academic & Community)
-                    if let location = event.location {
-                        HStack(alignment: .top, spacing: 6) {
-                            Image(systemName: event.theme == .community ? "building.2" : "mappin")
-                                .font(.system(size: 14))
-                                .padding(.top, 2)
-                            
-                            Text(location)
-                                .font(.system(size: 13, weight: .regular))
-                                .lineLimit(2)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                        .foregroundColor(event.theme.textColor.opacity(0.85))
-                    }
-                    
-                    // Attendees Pile (Community specifically)
-                    if let attendees = event.attendeeCount {
-                        HStack(spacing: 8) {
-                            attendeesPileView
-                            
-                            VStack(alignment: .leading, spacing: 0) {
-                                Text("\(attendees)")
-                                    .font(.system(size: 10, weight: .bold))
-                                Text("Attendees")
-                                    .font(.system(size: 10, weight: .regular))
-                            }
-                            .foregroundColor(event.theme.textColor)
-                        }
-                    }
+                    Text(desc)
+                        .font(.system(size: 13, weight: .regular))
+                        .lineLimit(3)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
+                .foregroundColor(theme.textColor.opacity(0.85))
             }
             
-            // Due Today Badge (Finance specifically)
-            if event.isDueToday {
+            if let dateBadge = dateBadgeText {
+                HStack(spacing: 6) {
+                    Image(systemName: "calendar")
+                        .font(.system(size: 12))
+                    Text(dateBadge)
+                        .font(.system(size: 12, weight: .semibold))
+                }
+                .foregroundColor(theme.textColor.opacity(0.85))
+            }
+            
+            if isDueToday && (theme == .fee || theme == .homework || theme == .assignment) {
                 HStack(spacing: 4) {
                     Text("!")
                         .font(.system(size: 11, weight: .heavy))
@@ -263,9 +395,8 @@ struct EventCardView: View {
                 .cornerRadius(12)
             }
             
-            // Bottom Action (Set Reminder)
             Button(action: {
-                // Reminder action
+                // Set Reminder action logic for the cell
             }) {
                 HStack(spacing: 6) {
                     Image(systemName: "alarm")
@@ -273,45 +404,36 @@ struct EventCardView: View {
                     Text("Set Reminder")
                         .font(.system(size: 14, weight: .medium))
                 }
-                .foregroundColor(event.theme.textColor)
+                .foregroundColor(theme.textColor)
             }
             .padding(.top, 4)
         }
         .padding(16)
-        .background(event.theme.backgroundColor)
+        .background(theme.backgroundColor)
         .cornerRadius(16)
     }
     
-    // MARK: - Attendees Pile UI
-    private var attendeesPileView: some View {
-        HStack(spacing: -8) {
-            // First mock user
-            Circle()
-                .fill(Color.white)
-                .frame(width: 24, height: 24)
-                .overlay(
-                    Image(systemName: "person.crop.circle.fill")
-                        .resizable()
-                        .foregroundColor(Color(red: 0.8, green: 0.9, blue: 0.8))
-                )
-            // Second mock user
-            Circle()
-                .fill(Color.white)
-                .frame(width: 24, height: 24)
-                .overlay(
-                    Image(systemName: "person.crop.circle.fill")
-                        .resizable()
-                        .foregroundColor(Color(red: 0.8, green: 0.8, blue: 0.9))
-                )
-            // +9 Badge
-            Circle()
-                .fill(event.theme.textColor)
-                .frame(width: 24, height: 24)
-                .overlay(
-                    Text("+9")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundColor(.white)
-                )
+    private func parseDate(_ str: String) -> Date? {
+        let df = DateFormatter()
+        df.locale = Locale(identifier: "en_US_POSIX")
+        df.dateFormat = "yyyy-MM-dd"
+        return df.date(from: str)
+    }
+    
+    private func formatTime(_ str: String) -> String {
+        let inFormats = ["HH:mm:ss", "HH:mm"]
+        let df = DateFormatter()
+        df.locale = Locale(identifier: "en_US_POSIX")
+        
+        for fmt in inFormats {
+            df.dateFormat = fmt
+            if let d = df.date(from: str) {
+                let out = DateFormatter()
+                out.locale = Locale(identifier: "en_US_POSIX")
+                out.dateFormat = "h:mm a"
+                return out.string(from: d)
+            }
         }
+        return str
     }
 }

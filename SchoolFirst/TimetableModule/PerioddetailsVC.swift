@@ -69,7 +69,6 @@ class PerioddetailsVC: UIViewController {
     }
 }
 
-// ... [Keep your existing PeriodDetailsView and related enums exactly as they are] ...
 // MARK: - Period Detail State (derived from API data)
 enum PeriodDetailState {
     case normal
@@ -375,17 +374,17 @@ struct PeriodDetailsView: View {
     
     private var detailsListCardView: some View {
         VStack(spacing: 0) {
-            DetailRowView(iconName: "clock", title: "PERIOD TIME", value: periodTimeString, showDivider: true)
-            DetailRowView(iconName: "person", title: "TEACHER", value: teacherDisplayString, showDivider: true)
+            DetailRowView(iconName: "clock", title: "PERIOD TIME", value: periodTimeString, showDivider: true, isAssetIcon: false)
+            DetailRowView(iconName: "person", title: "TEACHER", value: teacherDisplayString, showDivider: true, isAssetIcon: false)
             
             if state == .roomChange {
-                DetailRowView(iconName: "mappin.and.ellipse", title: "UPDATED ROOM", value: roomString, showDivider: true)
+                DetailRowView(iconName: "Icon 37", title: "UPDATED ROOM", value: roomString, showDivider: true, isAssetIcon: true)
             } else if state == .teacherSubstitution {
-                DetailRowView(iconName: "mappin.and.ellipse", title: "ROOM", value: roomString, showDivider: true)
+                DetailRowView(iconName: "Icon 37", title: "ROOM", value: roomString, showDivider: true, isAssetIcon: true)
             }
             
-            DetailRowView(iconName: "person.2", title: "CLASS / SECTION", value: classSectionString.isEmpty ? "Class / Section" : classSectionString, showDivider: true)
-            DetailRowView(iconName: "calendar", title: "CLASS TIMETABLE", value: classTimetableString, showDivider: false)
+            DetailRowView(iconName: "person.2", title: "CLASS / SECTION", value: classSectionString.isEmpty ? "Class / Section" : classSectionString, showDivider: true, isAssetIcon: false)
+            DetailRowView(iconName: "calendar", title: "CLASS TIMETABLE", value: classTimetableString, showDivider: false, isAssetIcon: false)
         }
         .background(Color.white)
         .cornerRadius(16)
@@ -394,7 +393,6 @@ struct PeriodDetailsView: View {
                 .stroke(Color.gray.opacity(0.2), lineWidth: 1)
         )
     }
-    
     // MARK: - Action Buttons
     
     @ViewBuilder
@@ -462,6 +460,7 @@ struct DetailRowView: View {
     let title: String
     let value: String
     let showDivider: Bool
+    var isAssetIcon: Bool = false
     
     let mainBlue = Color(red: 11/255, green: 86/255, blue: 154/255)
     
@@ -473,9 +472,18 @@ struct DetailRowView: View {
                         .fill(mainBlue.opacity(0.08))
                         .frame(width: 40, height: 40)
                     
-                    Image(systemName: iconName)
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(mainBlue)
+                    if isAssetIcon {
+                        Image(iconName)
+                            .renderingMode(.template)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 20, height: 20)
+                            .foregroundColor(mainBlue)
+                    } else {
+                        Image(systemName: iconName)
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(mainBlue)
+                    }
                 }
                 
                 VStack(alignment: .leading, spacing: 4) {
