@@ -234,6 +234,8 @@ struct API {
     static let GET_STUDENT_ATTENDANCE = BASE_URL + "attendance/attendance"
     
     static let APPLY_STUDENT_LEAVE = BASE_URL + "attendance/apply/leave"
+    static let ATTENDANCE_LATE_NOTE = BASE_URL + "attendance/late-note"
+
     
     static let BULLETIN_CATEGORIES = BASE_URL + "bulletin/categories"
     static let BULLETINS = BASE_URL + "bulletin/bulletins"

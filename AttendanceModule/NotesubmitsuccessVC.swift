@@ -10,43 +10,46 @@ import SwiftUI
 
 class NotesubmitsuccessVC: UIViewController {
     
+    // MARK: - Data received from AddleavenoteVC
+    var responseData: AttendanceLateNoteData?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Hide the default navigation bar since we are building a custom header in SwiftUI
         navigationController?.setNavigationBarHidden(true, animated: false)
         setupSwiftUIView()
     }
     
     private func setupSwiftUIView() {
-        // Initialize the SwiftUI view and pass navigation actions
         let successView = NoteSubmitSuccessView(
+            responseData: responseData,
             onBack: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             },
-            onBackToLeaveRequests: { [weak self] in
-                // Attempt to pop back to the Leave requests screen if it exists in the stack
-                if let nav = self?.navigationController {
-                    for vc in nav.viewControllers {
-                        // Assuming "leaverequestsVC" is the name of your leave requests controller
-                        if String(describing: type(of: vc)) == "leaverequestsVC" {
-                            nav.popToViewController(vc, animated: true)
-                            return
-                        }
-                    }
-                    // Fallback if not found
-                    nav.popViewController(animated: true)
+            onBackToAttendanceDashboard: { [weak self] in
+                guard let self = self, let nav = self.navigationController else { return }
+                
+                // If attendancedashboardVC already exists in the stack, pop to it
+                if let existing = nav.viewControllers.first(where: { $0 is attendancedashboardVC }) {
+                    nav.popToViewController(existing, animated: true)
+                    return
+                }
+                
+                // Otherwise, instantiate from storyboard to get IBOutlets connected
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                if let dashboardVC = storyboard.instantiateViewController(
+                    withIdentifier: "attendancedashboardVC"
+                ) as? attendancedashboardVC {
+                    nav.pushViewController(dashboardVC, animated: true)
                 }
             }
         )
         
         let hostingController = UIHostingController(rootView: successView)
         
-        // Add Hosting Controller as a child
         addChild(hostingController)
         view.addSubview(hostingController.view)
         
-        // Setup Constraints
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
@@ -62,8 +65,53 @@ class NotesubmitsuccessVC: UIViewController {
 // MARK: - SwiftUI View
 
 struct NoteSubmitSuccessView: View {
+    var responseData: AttendanceLateNoteData?
     var onBack: () -> Void
-    var onBackToLeaveRequests: () -> Void
+    var onBackToAttendanceDashboard: () -> Void
+    
+    // MARK: - Dynamic Data Properties
+    
+    private var isLate: Bool {
+        (responseData?.status ?? "").uppercased() == "LATE"
+    }
+    
+    private var titleText: String {
+        isLate ? "Late note submitted" : "Absent note submitted"
+    }
+    
+    private var referenceID: String {
+        let id = (responseData?.id ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        return id.isEmpty ? "—" : String(id.prefix(8).uppercased())
+    }
+    
+    private var studentName: String {
+        let name = (responseData?.student?.name ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        return name.isEmpty ? UserManager.shared.resolvedStudentName : name
+    }
+    
+    private var dateString: String {
+        let raw = (responseData?.attendanceDate ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !raw.isEmpty else { return "—" }
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.dateFormat = "yyyy-MM-dd"
+        guard let date = f.date(from: raw) else { return raw }
+        f.dateFormat = "dd MMM yyyy"
+        return f.string(from: date)
+    }
+    
+    private var noteText: String {
+        let late = (responseData?.lateNote ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let absent = (responseData?.absentNote ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        if !late.isEmpty { return late }
+        if !absent.isEmpty { return absent }
+        return "—"
+    }
+    
+    private var statusText: String {
+        let raw = (responseData?.status ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        return raw.isEmpty ? "—" : raw.replacingOccurrences(of: "_", with: " ").capitalized
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -94,9 +142,9 @@ struct NoteSubmitSuccessView: View {
                 }
             }
             .padding(.horizontal, 20)
-            .padding(.top, topSafeAreaPadding()) // Adjust for device notch/dynamic island
+            .padding(.top, topSafeAreaPadding())
             .padding(.bottom, 20)
-            .background(Color(red: 27/255, green: 71/255, blue: 137/255)) // Dark Blue Background
+            .background(Color(red: 27/255, green: 71/255, blue: 137/255))
             
             // MARK: - Scrollable Content
             ScrollView {
@@ -109,7 +157,7 @@ struct NoteSubmitSuccessView: View {
                             .frame(width: 110, height: 110)
                         
                         Circle()
-                            .fill(Color(red: 76/255, green: 191/255, blue: 133/255)) // Green
+                            .fill(Color(red: 76/255, green: 191/255, blue: 133/255))
                             .frame(width: 75, height: 75)
                         
                         Image(systemName: "checkmark")
@@ -120,7 +168,7 @@ struct NoteSubmitSuccessView: View {
                     
                     // Main Title & Description
                     VStack(spacing: 8) {
-                        Text("Late note submitted")
+                        Text(titleText)
                             .font(.system(size: 24, weight: .bold))
                             .foregroundColor(Color(red: 30/255, green: 41/255, blue: 59/255))
                         
@@ -138,16 +186,16 @@ struct NoteSubmitSuccessView: View {
                                 .font(.system(size: 16, weight: .bold))
                                 .foregroundColor(Color(red: 30/255, green: 41/255, blue: 59/255))
                             Spacer()
-                            Text("FB-2026-0816")
+                            Text(referenceID)
                                 .font(.system(size: 12, weight: .semibold))
                                 .foregroundColor(Color(red: 45/255, green: 100/255, blue: 200/255))
                         }
                         .padding(.bottom, 4)
                         
-                        // ✅ Changed from SummaryRowView to NoteSummaryRowView to prevent collision
-                        NoteSummaryRowView(title: "STUDENT", value: "Kabir Singh")
-                        NoteSummaryRowView(title: "DATE", value: "10 Sep 2026")
-                        NoteSummaryRowView(title: "NOTE", value: "Bus issue")
+                        NoteSummaryRowView(title: "STUDENT", value: studentName)
+                        NoteSummaryRowView(title: "STATUS", value: statusText)
+                        NoteSummaryRowView(title: "DATE", value: dateString)
+                        NoteSummaryRowView(title: "NOTE", value: noteText)
                     }
                     .padding(20)
                     .background(Color.white)
@@ -170,40 +218,43 @@ struct NoteSubmitSuccessView: View {
                     .cornerRadius(12)
                     
                     // Action Button
-                    Button(action: onBackToLeaveRequests) {
-                        Text("Back to Leave requests")
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundColor(Color(red: 30/255, green: 41/255, blue: 59/255))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                            .background(Color.white)
-                            .cornerRadius(12)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color(red: 230/255, green: 232/255, blue: 235/255), lineWidth: 1)
-                            )
+                    Button(action: onBackToAttendanceDashboard) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "chart.bar.doc.horizontal")
+                                .font(.system(size: 16, weight: .bold))
+                            Text("Back to Attendance dashboard")
+                                .font(.system(size: 16, weight: .bold))
+                        }
+                        .foregroundColor(Color(red: 30/255, green: 41/255, blue: 59/255))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(Color.white)
+                        .cornerRadius(12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color(red: 230/255, green: 232/255, blue: 235/255), lineWidth: 1)
+                        )
                     }
                     .padding(.top, 8)
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 40)
             }
-            .background(Color(red: 248/255, green: 250/255, blue: 252/255)) // Very Light Gray/Blueish Background
+            .background(Color(red: 248/255, green: 250/255, blue: 252/255))
         }
         .ignoresSafeArea(edges: .top)
     }
     
-    // Helper to dynamically calculate safe area for the custom nav bar
     private func topSafeAreaPadding() -> CGFloat {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let window = windowScene.windows.first else {
-            return 50 // fallback padding
+            return 50
         }
         return window.safeAreaInsets.top > 0 ? window.safeAreaInsets.top + 10 : 30
     }
 }
 
-// MARK: - Summary Row Subview (Renamed to prevent 'invalid redeclaration' error)
+// MARK: - Summary Row Subview
 struct NoteSummaryRowView: View {
     var title: String
     var value: String

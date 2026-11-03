@@ -20,10 +20,23 @@ class AddleavenoteVC: UIViewController {
     var studentName: String?
     var admissionNumber: String?
     
+    // MARK: - Submission State
+    // Remembers that the note was submitted, so when the user pops back
+    // from the success screen the cell shows the submitted note read-only.
+    private var isSubmitted = false
+    private var submittedData: AttendanceLateNoteData?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
         setupBackButton()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // Re-render when returning from the success screen so the
+        // submitted note shows in success (read-only) mode.
+        Tableview.reloadData()
     }
     
     // MARK: - Setup Back Button
@@ -50,10 +63,10 @@ class AddleavenoteVC: UIViewController {
         Tableview.tableFooterView = UIView()
     }
     
-    // MARK: - API Call - Apply Student Leave
-    private func applyStudentLeave(note: String) {
+    // MARK: - API Call — Attendance Late Note (PUT)
+    private func submitAttendanceNote(note: String) {
         
-        // 1. Get School ID
+        // 1. Get School ID from DBManager / UserManager
         let schoolId = UserManager.shared.resolvedSchoolID
         if schoolId.isEmpty {
             AlertManager.shared.showAlert(
@@ -65,7 +78,6 @@ class AddleavenoteVC: UIViewController {
         
         // 2. Get Access Token
         let accessToken = UserDefaults.standard.string(forKey: "ACCESSTOKEN")
-        
         if accessToken == nil || accessToken!.isEmpty {
             AlertManager.shared.showAlert(
                 title: "Authentication Error",
@@ -74,40 +86,56 @@ class AddleavenoteVC: UIViewController {
             return
         }
         
-        // 3. Build parameters — only include the relevant note key
-        var parameters: [String: Any] = [
-            "attendance_id": attendanceId ?? "",
-            "student_id": studentId ?? ""
-        ]
+        // 3. Get Student ID from UserManager fallback
+        let studentID = (studentId ?? "").isEmpty
+            ? UserManager.shared.resolvedStudentID
+            : studentId!
         
-        let statusUppercased = attendanceStatus?.uppercased() ?? ""
+        // 4. Build payload — send both late_note and absent_note based on status
+        let statusUppercased = (attendanceStatus ?? "").uppercased()
+        var lateNote = ""
+        var absentNote = ""
         
         if statusUppercased == "LATE" {
-            parameters["late_note"] = note
-            // ✅ Removed NSNull() — just omit the key entirely
+            lateNote = note
         } else {
-            parameters["absent_note"] = note
-            // ✅ Removed NSNull() — just omit the key entirely
+            absentNote = note
         }
         
-        // 4. Prepare Headers
-        let headers: [String: String] = [
-            "Authorization": "Bearer \(accessToken!)",
-            "X-School-Id": schoolId
+        let parameters: [String: Any] = [
+            "attendance_id": attendanceId ?? "",
+            "student_id": studentID,
+            "late_note": lateNote,
+            "absent_note": absentNote
         ]
         
-        // 5. API Call — PUT as confirmed by backend developer
+        // 5. Headers — X-School-ID (Authorization is auto-handled by NetworkManager)
+        let headers: [String: String] = [
+            "X-School-ID": schoolId
+        ]
+        
+        // 6. API Call — PUT to attendance/late-note
         NetworkManager.shared.request(
-            urlString: API.APPLY_STUDENT_LEAVE,
+            urlString: API.ATTENDANCE_LATE_NOTE,
             method: .PUT,
+            requiresAuth: true,
             parameters: parameters,
             headers: headers
-        ) { (result: Result<APIResponse<ApplyStudentLeaveResponse>, NetworkError>) in
+        ) { (result: Result<APIResponse<AttendanceLateNoteData>, NetworkError>) in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let response):
                     if response.success {
-                        self.navigationController?.popViewController(animated: true)
+                        // Remember submission so popping back shows
+                        // the note read-only in success mode.
+                        self.isSubmitted = true
+                        self.submittedData = response.data
+                        self.Tableview.reloadData()
+                        
+                        // Navigate to success screen with response data
+                        let successVC = NotesubmitsuccessVC()
+                        successVC.responseData = response.data
+                        self.navigationController?.pushViewController(successVC, animated: true)
                     } else {
                         AlertManager.shared.showAlert(
                             title: "Error",
@@ -145,10 +173,16 @@ extension AddleavenoteVC: UITableViewDelegate, UITableViewDataSource {
         
         cell.selectionStyle = .none
         cell.delegate = self
-        cell.configure(
-            attendanceStatus: attendanceStatus,
-            attendanceDate: attendanceDate
-        )
+        
+        if isSubmitted {
+            // ✅ Show the submitted note top-aligned and read-only
+            cell.configureSuccess(data: submittedData)
+        } else {
+            cell.configure(
+                attendanceStatus: attendanceStatus,
+                attendanceDate: attendanceDate
+            )
+        }
         return cell
     }
     
@@ -163,6 +197,7 @@ extension AddleavenoteVC: UITableViewDelegate, UITableViewDataSource {
 
 // MARK: - AddleavenoteTBLVCLLDelegate
 extension AddleavenoteVC: AddleavenoteTBLVCLLDelegate {
+    
     func didTapSubmitLeaveNote(note: String) {
         let trimmedNote = note.trimmingCharacters(in: .whitespacesAndNewlines)
         
@@ -174,6 +209,10 @@ extension AddleavenoteVC: AddleavenoteTBLVCLLDelegate {
             return
         }
         
-        applyStudentLeave(note: trimmedNote)
+        submitAttendanceNote(note: trimmedNote)
+    }
+    
+    func didTapBackToAttendance() {
+        navigationController?.popViewController(animated: true)
     }
 }

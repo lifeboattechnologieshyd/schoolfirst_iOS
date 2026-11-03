@@ -1307,35 +1307,50 @@ struct ExamNamedEntity: Codable {
     let name: String?
 }
 //***give late and absent not resposne model
-struct ApplyStudentLeaveRequest: Codable {
-    let attendance_id: String
-    let student_id: String
-    let late_note: String?
-    let absent_note: String?
+struct AttendanceLateNotePayload: Codable {
+    let attendanceId: String
+    let lateNote: String
+    let studentId: String
+    let absentNote: String
+
+    enum CodingKeys: String, CodingKey {
+        case attendanceId = "attendance_id"
+        case lateNote = "late_note"
+        case studentId = "student_id"
+        case absentNote = "absent_note"
+    }
 }
 
-// MARK: - Response Model
-struct ApplyStudentLeaveResponse: Codable {
-    let success: Bool
-    let description: String?
-    let data: ApplyStudentLeaveData?
+
+// MARK: - Late Note Response Data
+struct AttendanceLateNoteData: Codable {
+    let id: String?
+    let attendanceDate: String?
+    let status: String?
+    let lateNote: String?
+    let absentNote: String?
+    let student: AttendanceLateNoteStudent?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case attendanceDate = "attendance_date"
+        case status
+        case lateNote = "late_note"
+        case absentNote = "absent_note"
+        case student
+    }
 }
 
-// MARK: - Response Data
-struct ApplyStudentLeaveData: Codable {
-    let id: String
-    let attendance_date: String
-    let status: String
-    let late_note: String?
-    let absent_note: String?
-    let student: ApplyStudentLeaveStudent?
-}
+struct AttendanceLateNoteStudent: Codable {
+    let id: String?
+    let name: String?
+    let admissionNumber: String?
 
-// MARK: - Response Student
-struct ApplyStudentLeaveStudent: Codable {
-    let id: String
-    let name: String
-    let admission_number: String
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case admissionNumber = "admission_number"
+    }
 }
 
 //***BulletinCategory response model
