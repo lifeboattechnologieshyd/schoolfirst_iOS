@@ -10,6 +10,12 @@ class MultiColorCalendarCell: FSCalendarCell {
   private var hasColors: Bool = false
   private var isLightCurrentColor: Bool = false
 
+  var isDateSelected: Bool = false {
+      didSet {
+          updateSelectionState()
+      }
+  }
+
   override init(frame: CGRect) {
       super.init(frame: frame)
       setupMultiColorContainer()
@@ -23,7 +29,7 @@ class MultiColorCalendarCell: FSCalendarCell {
   private func setupMultiColorContainer() {
       multiColorContainer.translatesAutoresizingMaskIntoConstraints = false
       multiColorContainer.clipsToBounds = true
-      multiColorContainer.layer.cornerRadius = 10
+      multiColorContainer.layer.cornerRadius = 18
       multiColorContainer.isHidden = true
       contentView.addSubview(multiColorContainer)
 
@@ -40,7 +46,7 @@ class MultiColorCalendarCell: FSCalendarCell {
       contentView.bringSubviewToFront(multiColorContainer)
       if let titleLabel = titleLabel {
           contentView.bringSubviewToFront(titleLabel)
-          if hasColors {
+          if hasColors || isDateSelected {
               titleLabel.textColor = isLightCurrentColor ? .black : .white
           }
       }
@@ -48,7 +54,21 @@ class MultiColorCalendarCell: FSCalendarCell {
 
   override func prepareForReuse() {
       super.prepareForReuse()
+      isDateSelected = false
       showMultiColor(false)
+  }
+
+  private func updateSelectionState() {
+      if isDateSelected && !hasColors {
+          multiColorContainer.isHidden = false
+          multiColorContainer.backgroundColor = UIColor(red: 27/255, green: 78/255, blue: 122/255, alpha: 1.0)
+          isLightCurrentColor = false
+          titleLabel?.textColor = .white
+      } else if !isDateSelected && !hasColors {
+          multiColorContainer.isHidden = true
+          multiColorContainer.backgroundColor = .clear
+      }
+      setNeedsLayout()
   }
 
   // MARK: - Original method (backward compatible)
@@ -58,10 +78,15 @@ class MultiColorCalendarCell: FSCalendarCell {
       } else {
           hasColors = false
           isLightCurrentColor = false
-          multiColorContainer.isHidden = true
-          multiColorContainer.backgroundColor = .clear
           colorViews.forEach { $0.removeFromSuperview() }
           colorViews.removeAll()
+          if isDateSelected {
+              multiColorContainer.isHidden = false
+              multiColorContainer.backgroundColor = UIColor(red: 27/255, green: 78/255, blue: 122/255, alpha: 1.0)
+          } else {
+              multiColorContainer.isHidden = true
+              multiColorContainer.backgroundColor = .clear
+          }
       }
   }
 

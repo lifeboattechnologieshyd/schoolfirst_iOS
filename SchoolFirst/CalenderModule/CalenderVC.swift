@@ -8,9 +8,13 @@ class CalenderVC: UIViewController {
     @IBOutlet weak var backButton: UIButton!
 
     // MARK: - Properties
-    private var allEvents: [SchoolCalendarEvent] = []
+    private var allEvents: [CalendarEventItem] = []
     private var selectedDate: Date = Date()
-    private var selectedDateEvents: [SchoolCalendarEvent] = []
+    private var selectedDateEvents: [CalendarEventItem] = []
+    
+    // Dynamic Academic Data
+    private var currentTermName: String = "Term 2"
+    private var currentAcademicYear: String = "2026-2027"
 
     private let activityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(style: .large)
@@ -24,6 +28,7 @@ class CalenderVC: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupTableView()
+        fetchAcademicCalendar()
         fetchCalendarEvents()
     }
 
@@ -47,9 +52,9 @@ class CalenderVC: UIViewController {
         tableView.tableFooterView = UIView()
         tableView.showsVerticalScrollIndicator = false
 
-        // IMPORTANT: cell height collapse fix
+        // Automatic dimension for dynamic cell height
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 750
+        tableView.estimatedRowHeight = 850
 
         if #available(iOS 15.0, *) {
             tableView.sectionHeaderTopPadding = 0
@@ -60,8 +65,48 @@ class CalenderVC: UIViewController {
             forCellReuseIdentifier: "CalenderVCTableViewCell1"
         )
     }
+    
+    // MARK: - API Calls
+    
+    private func fetchAcademicCalendar() {
+        let schoolId = UserManager.shared.resolvedSchoolID
 
-    // MARK: - API Call
+        guard !schoolId.isEmpty else { return }
+
+        let headers: [String: String] = ["X-School-Id": schoolId]
+
+        NetworkManager.shared.request(
+            urlString: API.ACADEMIC_CALENDAR,
+            method: .GET,
+            requiresAuth: true,
+            parameters: nil,
+            headers: headers
+        ) { [weak self] (result: Result<APIResponse<[AcademicCalendarItem]>, NetworkError>) in
+            guard let self = self else { return }
+
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let response):
+                    let calendars = response.data ?? []
+                    // Find the ACTIVE calendar, or fallback to the first one
+                    if let activeCalendar = calendars.first(where: { $0.status == "ACTIVE" }) ?? calendars.first {
+                        if let term = activeCalendar.term?.name {
+                            self.currentTermName = term
+                        }
+                        if let year = activeCalendar.academicYear?.name {
+                            self.currentAcademicYear = year
+                        }
+                        print("✅ Academic Calendar loaded: \(self.currentTermName), \(self.currentAcademicYear)")
+                        self.tableView.reloadData()
+                    }
+
+                case .failure(let error):
+                    print("❌ Academic Calendar API error: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+
     private func fetchCalendarEvents() {
         let studentId = UserManager.shared.resolvedStudentID
         let schoolId = UserManager.shared.resolvedSchoolID
@@ -82,7 +127,7 @@ class CalenderVC: UIViewController {
             requiresAuth: true,
             parameters: parameters,
             headers: headers
-        ) { [weak self] (result: Result<APIResponse<[SchoolCalendarEvent]>, NetworkError>) in
+        ) { [weak self] (result: Result<APIResponse<[CalendarEventItem]>, NetworkError>) in
             guard let self = self else { return }
 
             DispatchQueue.main.async {
@@ -100,7 +145,6 @@ class CalenderVC: UIViewController {
                         title: "Error",
                         message: error.localizedDescription
                     )
-                    // empty ayina calendar UI show avvali
                     self.allEvents = []
                     self.tableView.reloadData()
                 }
@@ -108,49 +152,10 @@ class CalenderVC: UIViewController {
         }
     }
 
-    // MARK: - Navigation Helpers
-    private func navigateToFees() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "ParentfeeVC")
-        navigationController?.pushViewController(vc, animated: true)
-    }
-
-    private func navigateToHomework() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "HomeworkVC")
-        navigationController?.pushViewController(vc, animated: true)
-    }
-
-    private func navigateToExams() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "ExamVC")
-        navigationController?.pushViewController(vc, animated: true)
-    }
-
-    private func navigateToPTM() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "PTMVC")
-        navigationController?.pushViewController(vc, animated: true)
-    }
-
-    private func navigateToAssignments() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "AssignmentVC")
-        navigationController?.pushViewController(vc, animated: true)
-    }
-
-    private func navigateToTransport() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "TransportVC")
-        navigationController?.pushViewController(vc, animated: true)
-    }
-
     // MARK: - Actions (Supports both Capital 'B' & small 'b' from Storyboard)
     @objc @IBAction func BackButtonTapped(_ sender: Any) {
         handleBackNavigation()
     }
-
-  
 
     private func handleBackNavigation() {
         if let nav = navigationController {
@@ -169,8 +174,7 @@ extension CalenderVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { 1 }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        // Fixed height for cell content visibility
-        return 750
+        return UITableView.automaticDimension
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -181,33 +185,14 @@ extension CalenderVC: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
 
-        cell.configure(with: allEvents)
+        // Pass events, plus the dynamically fetched term and academic year
+        cell.configure(
+            with: allEvents,
+            termName: currentTermName,
+            academicYear: currentAcademicYear
+        )
 
-        cell.onFeeEventDateTapped = { [weak self] in
-            self?.navigateToFees()
-        }
-        cell.onHomeworkTapped = { [weak self] in
-            self?.navigateToHomework()
-        }
-        cell.onExamEventTapped = { [weak self] in
-            self?.navigateToExams()
-        }
-        cell.onPTMeetingTapped = { [weak self] in
-            self?.navigateToPTM()
-        }
-        cell.onAssignmentTapped = { [weak self] in
-            self?.navigateToAssignments()
-        }
-        cell.onTransportTapped = { [weak self] in
-            self?.navigateToTransport()
-        }
-        cell.onMultipleEventsTapped = { [weak self] in
-            guard let self = self else { return }
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "MultipleeventsVC") as? MultipleeventsVC {
-                self.navigationController?.pushViewController(vc, animated: true)
-            }
-        }
+        // Only update selected date state; do not navigate away on date tap
         cell.onDateSelected = { [weak self] date, events in
             self?.selectedDate = date
             self?.selectedDateEvents = events

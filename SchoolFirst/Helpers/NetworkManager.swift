@@ -313,6 +313,71 @@ struct APIResponse<T: Decodable>: Decodable {
         data = try? container.decodeIfPresent(T.self, forKey: .data)
     }
 }
+//***Get caleder API resposne Model
+struct AcademicCalendarItem: Codable {
+    let id: String?
+    let name: String?
+    let status: String?
+    let school: AcademicCalendarSchool?
+    let branch: AcademicCalendarBranch?
+    let academicYear: AcademicCalendarYear?
+    let term: AcademicCalendarTerm?
+    let weekendRules: [WeekendRule]?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, status, school, branch
+        case academicYear = "academic_year"
+        case term
+        case weekendRules = "weekend_rules"
+    }
+}
+
+// MARK: - School
+struct AcademicCalendarSchool: Codable {
+    let id: String?
+    let name: String?
+}
+
+// MARK: - Branch
+struct AcademicCalendarBranch: Codable {
+    let id: String?
+    let name: String?
+}
+
+// MARK: - Academic Year
+struct AcademicCalendarYear: Codable {
+    let id: String?
+    let name: String?
+}
+
+// MARK: - Term
+struct AcademicCalendarTerm: Codable {
+    let id: String?
+    let name: String?
+    let startDate: String?
+    let endDate: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name
+        case startDate = "start_date"
+        case endDate = "end_date"
+    }
+}
+
+// MARK: - Weekend Rule
+struct WeekendRule: Codable {
+    let id: String?
+    let dayOfWeek: String?
+    let ruleType: String?
+    let weekNumbers: [Int]?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case dayOfWeek = "day_of_week"
+        case ruleType = "rule_type"
+        case weekNumbers = "week_numbers"
+    }
+}
 //***Get Events API Response model
 struct CalendarEventItem: Codable, Identifiable {
     let id: String
@@ -357,6 +422,8 @@ enum CalendarEventType: String {
         }
     }
 }
+
+typealias SchoolCalendarEvent = CalendarEventItem
 
 
 //***Get student time Table API resposne model
@@ -1972,81 +2039,11 @@ struct GalleryCategory: Decodable, Identifiable {
 // ****MARK: - Calendar Events Response
 import UIKit
 
-// MARK: - School Calendar Event Model
-struct SchoolCalendarEvent: Codable {
-    let id: String
-    let title: String?
-    let description: String?
-    let eventType: String?
-    let eventDate: String?
-    let startTime: String?
-    let endTime: String?
-    let isAllDay: Bool?
-    let status: String?
-    let color: String?
-    let referenceId: String?
-    let targets: [SchoolCalendarTarget]?
-
-    enum CodingKeys: String, CodingKey {
-        case id
-        case title
-        case description
-        case eventType = "event_type"
-        case eventDate = "event_date"
-        case startTime = "start_time"
-        case endTime = "end_time"
-        case isAllDay = "is_all_day"
-        case status
-        case color
-        case referenceId = "reference_id"
-        case targets
-    }
-}
-
-// MARK: - Target Details
-struct SchoolCalendarTarget: Codable {
-    let id: String?
-    let targetType: String?
-    let academicYear: SchoolCalendarAcademicYear?
-    let branch: SchoolCalendarBranch?
-    let grade: SchoolCalendarGrade?
-    let section: SchoolCalendarSection?
-
-    enum CodingKeys: String, CodingKey {
-        case id
-        case targetType = "target_type"
-        case academicYear = "academic_year"
-        case branch
-        case grade
-        case section
-    }
-}
-
-struct SchoolCalendarAcademicYear: Codable {
-    let id: String?
-    let name: String?
-}
-
-struct SchoolCalendarBranch: Codable {
-    let id: String?
-    let name: String?
-}
-
-struct SchoolCalendarGrade: Codable {
-    let id: String?
-    let name: String?
-}
-
-struct SchoolCalendarSection: Codable {
-    let id: String?
-    let name: String?
-}
-
-// MARK: - Helper Extensions for UI
-extension SchoolCalendarEvent {
+// MARK: - Helper Extensions for CalendarEventItem
+extension CalendarEventItem {
 
     var parsedEventDate: Date? {
-        guard let dateString = eventDate, !dateString.isEmpty else { return nil }
+        guard let dateString = eventDate?.trimmingCharacters(in: .whitespacesAndNewlines), !dateString.isEmpty else { return nil }
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -2064,7 +2061,7 @@ extension SchoolCalendarEvent {
 
     var formattedTimeRange: String {
         let isAllDayEvent = isAllDay ?? false
-        if isAllDayEvent { return "All Day" }
+        if isAllDayEvent { return "All day" }
 
         let start = formatTimeString(startTime)
         let end = formatTimeString(endTime)
@@ -2076,7 +2073,7 @@ extension SchoolCalendarEvent {
         } else if !end.isEmpty {
             return end
         }
-        return ""
+        return "All day"
     }
 
     var timeRangeDisplayText: String {
@@ -2088,18 +2085,52 @@ extension SchoolCalendarEvent {
         return date.isEmpty ? time : date
     }
 
+    var subtitleDisplayText: String {
+        let time = formattedTimeRange
+        let desc = (description?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "")
+        let extra = !desc.isEmpty ? desc : (referenceId ?? eventType?.capitalized ?? "School")
+        if !time.isEmpty && !extra.isEmpty {
+            return "\(time) • \(extra)"
+        }
+        return time.isEmpty ? extra : time
+    }
+
     var uiColor: UIColor {
-        if let hex = color, !hex.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return UIColor(hexString: hex)
+        if let colorStr = color?.trimmingCharacters(in: .whitespacesAndNewlines), !colorStr.isEmpty {
+            if let parsed = parseColorHex(colorStr) {
+                return parsed
+            }
         }
         return fallbackColor(for: eventType)
     }
 
+    private func parseColorHex(_ colorStr: String) -> UIColor? {
+        let lower = colorStr.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        switch lower {
+        case "red":    return UIColor(red: 239/255, green: 68/255, blue: 68/255, alpha: 1.0)
+        case "green":  return UIColor(red: 46/255, green: 107/255, blue: 86/255, alpha: 1.0)
+        case "blue":   return UIColor(red: 27/255, green: 78/255, blue: 122/255, alpha: 1.0)
+        case "yellow": return UIColor(red: 234/255, green: 179/255, blue: 8/255, alpha: 1.0)
+        case "orange": return UIColor(red: 249/255, green: 115/255, blue: 22/255, alpha: 1.0)
+        case "purple": return UIColor(red: 168/255, green: 85/255, blue: 247/255, alpha: 1.0)
+        case "teal":   return UIColor(red: 20/255, green: 184/255, blue: 166/255, alpha: 1.0)
+        default: break
+        }
+        return UIColor(hexString: colorStr)
+    }
+
     private func formatTimeString(_ time: String?) -> String {
-        guard let time = time, !time.isEmpty else { return "" }
+        guard let time = time?.trimmingCharacters(in: .whitespacesAndNewlines), !time.isEmpty else { return "" }
         let inFormatter = DateFormatter()
         inFormatter.dateFormat = "HH:mm:ss"
         inFormatter.locale = Locale(identifier: "en_US_POSIX")
+        if let date = inFormatter.date(from: time) {
+            let outFormatter = DateFormatter()
+            outFormatter.dateFormat = "hh:mm a"
+            outFormatter.locale = Locale(identifier: "en_US_POSIX")
+            return outFormatter.string(from: date)
+        }
+        inFormatter.dateFormat = "HH:mm"
         if let date = inFormatter.date(from: time) {
             let outFormatter = DateFormatter()
             outFormatter.dateFormat = "hh:mm a"
@@ -2111,25 +2142,23 @@ extension SchoolCalendarEvent {
 
     private func fallbackColor(for type: String?) -> UIColor {
         guard let type = type?.uppercased() else {
-            return UIColor.systemBlue
+            return UIColor(red: 46/255, green: 107/255, blue: 86/255, alpha: 1.0)
         }
         switch type {
+        case "HOLIDAY":
+            return UIColor(red: 46/255, green: 107/255, blue: 86/255, alpha: 1.0)
+        case "HOMEWORK":
+            return UIColor(red: 168/255, green: 85/255, blue: 247/255, alpha: 1.0)
         case "PTM", "FEE":
             return UIColor(red: 234/255, green: 179/255, blue: 8/255, alpha: 1.0)
         case "EXAM":
             return UIColor(red: 239/255, green: 68/255, blue: 68/255, alpha: 1.0)
-        case "HOLIDAY":
-            return UIColor(red: 249/255, green: 115/255, blue: 22/255, alpha: 1.0)
-        case "EVENT":
-            return UIColor(red: 34/255, green: 197/255, blue: 94/255, alpha: 1.0)
-        case "HOMEWORK":
-            return UIColor(red: 168/255, green: 85/255, blue: 247/255, alpha: 1.0)
         case "ASSIGNMENT":
             return UIColor(red: 20/255, green: 184/255, blue: 166/255, alpha: 1.0)
         case "TRANSPORT":
             return UIColor(red: 59/255, green: 130/255, blue: 246/255, alpha: 1.0)
         default:
-            return UIColor.systemBlue
+            return UIColor(red: 46/255, green: 107/255, blue: 86/255, alpha: 1.0)
         }
     }
 }
