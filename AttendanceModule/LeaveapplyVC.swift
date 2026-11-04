@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import UniformTypeIdentifiers
+import PhotosUI
 
 class LeaveapplyVC: UIViewController {
 
@@ -21,6 +23,10 @@ class LeaveapplyVC: UIViewController {
     private var selectedLeaveType: LeaveApplyTypeOption?
     private var leaveTypeOptions: [LeaveApplyTypeOption] = []
     private var isSubmitting = false
+
+    // Document attachment (sent as base64 string in "pdf" field)
+    private var selectedPDFBase64: String?
+    private var selectedPDFFileName: String?
 
     private enum DateField {
         case from
@@ -185,7 +191,7 @@ class LeaveapplyVC: UIViewController {
             return "Casual Leave"
         case "EMERGENCY":
             return "Emergency Leave"
-        case "PERSONAL":                                    // ✅ added explicit case
+        case "PERSONAL":
             return "Personal Leave"
         case "OTHER":
             return "Other Leave"
@@ -211,6 +217,7 @@ class LeaveapplyVC: UIViewController {
         cell.setToDateText(toDate.map { displayString(for: $0) })
         cell.setLeaveTypeText(selectedLeaveType?.title)
         cell.setDurationText(durationDisplayText())
+        cell.setDocumentFileName(selectedPDFFileName)
     }
 
     private func displayString(for date: Date) -> String {
@@ -297,6 +304,115 @@ class LeaveapplyVC: UIViewController {
         present(card, animated: true)
     }
 
+    // MARK: - Document Upload
+
+    private func presentDocumentPicker() {
+        let sheet = UIAlertController(
+            title: "Attach document",
+            message: "Medical slip, PDF or photo",
+            preferredStyle: .actionSheet
+        )
+
+        sheet.addAction(UIAlertAction(title: "PDF / File", style: .default) { [weak self] _ in
+            self?.openDocumentPicker()
+        })
+
+        sheet.addAction(UIAlertAction(title: "Photo Library", style: .default) { [weak self] _ in
+            self?.openPhotoPicker()
+        })
+
+        sheet.addAction(UIAlertAction(title: "Camera", style: .default) { [weak self] _ in
+            self?.openCamera()
+        })
+
+        if selectedPDFBase64 != nil {
+            sheet.addAction(UIAlertAction(title: "Remove attachment", style: .destructive) { [weak self] _ in
+                self?.clearAttachedDocument()
+            })
+        }
+
+        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+
+        // iPad support
+        if let pop = sheet.popoverPresentationController {
+            pop.sourceView = leaveCell()?.Documentapploadbutton
+                ?? leaveCell()?.Uploadbutton
+                ?? view
+            pop.sourceRect = (leaveCell()?.Documentapploadbutton
+                ?? leaveCell()?.Uploadbutton)?.bounds
+                ?? CGRect(x: view.bounds.midX, y: view.bounds.midY, width: 1, height: 1)
+        }
+
+        present(sheet, animated: true)
+    }
+
+    private func openDocumentPicker() {
+        let types: [UTType] = [.pdf, .image, .jpeg, .png, .data]
+        let picker = UIDocumentPickerViewController(forOpeningContentTypes: types, asCopy: true)
+        picker.delegate = self
+        picker.allowsMultipleSelection = false
+        present(picker, animated: true)
+    }
+
+    private func openPhotoPicker() {
+        if #available(iOS 14, *) {
+            var config = PHPickerConfiguration(photoLibrary: .shared())
+            config.filter = .images
+            config.selectionLimit = 1
+            let picker = PHPickerViewController(configuration: config)
+            picker.delegate = self
+            present(picker, animated: true)
+        } else {
+            let picker = UIImagePickerController()
+            picker.sourceType = .photoLibrary
+            picker.delegate = self
+            picker.allowsEditing = false
+            present(picker, animated: true)
+        }
+    }
+
+    private func openCamera() {
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
+            showAlert(title: "Camera", message: "Camera is not available on this device.")
+            return
+        }
+        let picker = UIImagePickerController()
+        picker.sourceType = .camera
+        picker.delegate = self
+        picker.allowsEditing = false
+        present(picker, animated: true)
+    }
+
+    private func attachDocument(data: Data, fileName: String) {
+        // Guard against very large files (~5 MB)
+        let maxBytes = 5 * 1024 * 1024
+        guard data.count <= maxBytes else {
+            showAlert(
+                title: "File too large",
+                message: "Please select a file smaller than 5 MB."
+            )
+            return
+        }
+
+        selectedPDFBase64 = data.base64EncodedString()
+        selectedPDFFileName = fileName
+        leaveCell()?.setDocumentFileName(fileName)
+    }
+
+    private func attachImage(_ image: UIImage, fileName: String) {
+        guard let data = image.jpegData(compressionQuality: 0.75) else {
+            showAlert(title: "Error", message: "Could not process the selected image.")
+            return
+        }
+        attachDocument(data: data, fileName: fileName)
+    }
+
+    private func clearAttachedDocument() {
+        selectedPDFBase64 = nil
+        selectedPDFFileName = nil
+        leaveCell()?.setDocumentFileName(nil)
+    }
+
     // MARK: - Submit Leave Request
 
     private func handleSubmitTapped() {
@@ -307,8 +423,8 @@ class LeaveapplyVC: UIViewController {
         let reason = (cell.Reasontextfield.text ?? "")
             .trimmingCharacters(in: .whitespacesAndNewlines)
 
-        // Note is OPTIONAL
-        let note = (cell.Notetextfield.text ?? "")
+        // Note is OPTIONAL — read from top-aligned editor
+        let note = cell.currentNoteText()
             .trimmingCharacters(in: .whitespacesAndNewlines)
 
         // --- 2. Validation ---
@@ -376,12 +492,15 @@ class LeaveapplyVC: UIViewController {
             ]
         }
 
+        // pdf: base64 string when attached, otherwise null
+        let pdfValue: Any = selectedPDFBase64 ?? NSNull()
+
         let parameters: [String: Any] = [
             "student_id": studentID,
             "leave_type": leaveType.rawValue,
             "leave_days": leaveDaysPayload,
             "reason": finalReason,
-            "pdf": NSNull()
+            "pdf": pdfValue
         ]
 
         // --- 7. Submit ---
@@ -478,7 +597,7 @@ class LeaveapplyVC: UIViewController {
             start = fromDate.map { LeaveapplyVC.apiDateFormatter.string(from: $0) } ?? ""
             end = toDate.map { LeaveapplyVC.apiDateFormatter.string(from: $0) } ?? start
             status = "PENDING"
-            hasPDF = false
+            hasPDF = (selectedPDFBase64 != nil)
         }
 
         let sentTo = "Class teacher"
@@ -500,10 +619,11 @@ class LeaveapplyVC: UIViewController {
         fromDate = nil
         toDate = nil
         selectedLeaveType = nil
+        clearAttachedDocument()
 
         if let cell = leaveCell() {
             cell.Reasontextfield.text = ""
-            cell.Notetextfield.text = ""
+            cell.clearNoteText()   // clears top-aligned note editor
             applyState(to: cell)
         }
     }
@@ -561,6 +681,10 @@ extension LeaveapplyVC: UITableViewDelegate, UITableViewDataSource {
             self?.handleSubmitTapped()
         }
 
+        cell.onDocumentUploadTap = { [weak self] in
+            self?.presentDocumentPicker()
+        }
+
         applyState(to: cell)
         return cell
     }
@@ -571,6 +695,86 @@ extension LeaveapplyVC: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return 800
+    }
+}
+
+// MARK: - UIDocumentPickerDelegate
+
+extension LeaveapplyVC: UIDocumentPickerDelegate {
+
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let url = urls.first else { return }
+
+        let didAccess = url.startAccessingSecurityScopedResource()
+        defer {
+            if didAccess { url.stopAccessingSecurityScopedResource() }
+        }
+
+        do {
+            let data = try Data(contentsOf: url)
+            let name = url.lastPathComponent
+            attachDocument(data: data, fileName: name)
+        } catch {
+            showAlert(title: "Error", message: "Could not read the selected file.")
+        }
+    }
+
+    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        // no-op
+    }
+}
+
+// MARK: - PHPickerViewControllerDelegate
+
+@available(iOS 14, *)
+extension LeaveapplyVC: PHPickerViewControllerDelegate {
+
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+
+        guard let result = results.first else { return }
+
+        if result.itemProvider.canLoadObject(ofClass: UIImage.self) {
+            result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] object, error in
+                DispatchQueue.main.async {
+                    guard let self = self else { return }
+                    if let image = object as? UIImage {
+                        let name = "photo_\(Int(Date().timeIntervalSince1970)).jpg"
+                        self.attachImage(image, fileName: name)
+                    } else {
+                        self.showAlert(
+                            title: "Error",
+                            message: error?.localizedDescription ?? "Could not load photo."
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - UIImagePickerControllerDelegate & UINavigationControllerDelegate
+
+extension LeaveapplyVC: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+
+    func imagePickerController(
+        _ picker: UIImagePickerController,
+        didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
+    ) {
+        picker.dismiss(animated: true)
+
+        guard let image = info[.originalImage] as? UIImage else {
+            showAlert(title: "Error", message: "Could not load the selected image.")
+            return
+        }
+
+        let prefix = picker.sourceType == .camera ? "camera" : "photo"
+        let name = "\(prefix)_\(Int(Date().timeIntervalSince1970)).jpg"
+        attachImage(image, fileName: name)
+    }
+
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true)
     }
 }
 

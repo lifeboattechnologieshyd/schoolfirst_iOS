@@ -105,11 +105,11 @@ extension AbsentdetailsVC: AbsentdetailsTBLVCLLDelegate {
         if let addLeaveNoteVC = storyboard.instantiateViewController(withIdentifier: "AddleavenoteVC") as? AddleavenoteVC {
             
             addLeaveNoteVC.attendanceId = attendanceRecord?.id
-            addLeaveNoteVC.studentId = attendanceRecord?.student?.id
+            addLeaveNoteVC.studentId = attendanceRecord?.student?.id ?? UserManager.shared.resolvedStudentID
             addLeaveNoteVC.attendanceDate = attendanceRecord?.attendanceDate
-            addLeaveNoteVC.attendanceStatus = attendanceRecord?.status
-            addLeaveNoteVC.studentName = attendanceRecord?.student?.name
-            addLeaveNoteVC.admissionNumber = attendanceRecord?.student?.admissionNumber
+            addLeaveNoteVC.attendanceStatus = attendanceRecord?.status ?? "ABSENT"
+            addLeaveNoteVC.studentName = attendanceRecord?.student?.name ?? UserManager.shared.resolvedStudentName
+            addLeaveNoteVC.admissionNumber = attendanceRecord?.student?.admissionNumber ?? UserDefaults.standard.string(forKey: "STUDENT_ADMISSION_NUMBER")
             
             navigationController?.pushViewController(addLeaveNoteVC, animated: true)
         }

@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol LatearrivaldetailsTBLVCLLDelegate: AnyObject {
+    func didTapAddNoteForTheSchool()
+}
+
 class LatearrivaldetailsTBLVCLL: UITableViewCell {
 
     @IBOutlet weak var AddnotefortheschoolButton: UIButton!
@@ -21,13 +25,21 @@ class LatearrivaldetailsTBLVCLL: UITableViewCell {
     @IBOutlet weak var LatereasonwithdateLabel: UILabel!
     @IBOutlet weak var LatearrivaldateLabel: UILabel!
 
+    weak var delegate: LatearrivaldetailsTBLVCLLDelegate?
+
     override func awakeFromNib() {
         super.awakeFromNib()
         // Existing XIB styling and layout remain unchanged.
+        
+        AddnotefortheschoolButton.addTarget(self, action: #selector(didTapAddNoteForTheSchoolButton), for: .touchUpInside)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
+    }
+    
+    @objc private func didTapAddNoteForTheSchoolButton() {
+        delegate?.didTapAddNoteForTheSchool()
     }
 
     // MARK: - Configure Selected Late Attendance

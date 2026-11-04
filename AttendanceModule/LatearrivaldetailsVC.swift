@@ -96,6 +96,7 @@ extension LatearrivaldetailsVC: UITableViewDelegate, UITableViewDataSource {
         }
 
         cell.selectionStyle = .none
+        cell.delegate = self
         cell.configure(with: attendanceRecord)
 
         return cell
@@ -106,5 +107,23 @@ extension LatearrivaldetailsVC: UITableViewDelegate, UITableViewDataSource {
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
         return 800
+    }
+}
+
+// MARK: - LatearrivaldetailsTBLVCLLDelegate
+extension LatearrivaldetailsVC: LatearrivaldetailsTBLVCLLDelegate {
+    func didTapAddNoteForTheSchool() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let addLeaveNoteVC = storyboard.instantiateViewController(withIdentifier: "AddleavenoteVC") as? AddleavenoteVC {
+            
+            addLeaveNoteVC.attendanceId = attendanceRecord?.id
+            addLeaveNoteVC.studentId = attendanceRecord?.student?.id ?? UserManager.shared.resolvedStudentID
+            addLeaveNoteVC.attendanceDate = attendanceRecord?.attendanceDate
+            addLeaveNoteVC.attendanceStatus = attendanceRecord?.status ?? "LATE"
+            addLeaveNoteVC.studentName = attendanceRecord?.student?.name ?? UserManager.shared.resolvedStudentName
+            addLeaveNoteVC.admissionNumber = attendanceRecord?.student?.admissionNumber ?? UserDefaults.standard.string(forKey: "STUDENT_ADMISSION_NUMBER")
+            
+            navigationController?.pushViewController(addLeaveNoteVC, animated: true)
+        }
     }
 }
