@@ -309,7 +309,11 @@ class ExamhomeVC: UIViewController {
     @objc private func openExamDetailsOverview() {
         let overviewVC = ExamdetailsoverviewVC()
         overviewVC.examDetail = examDetail
-        overviewVC.examID = nextExamID ?? exams.first?.id
+        let primaryID = nextExamID ?? exams.first?.id
+        overviewVC.examID = primaryID
+        overviewVC.candidateExamIDs = exams
+            .compactMap { $0.id }
+            .filter { !$0.isEmpty && $0 != primaryID }
         overviewVC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(overviewVC, animated: true)
     }

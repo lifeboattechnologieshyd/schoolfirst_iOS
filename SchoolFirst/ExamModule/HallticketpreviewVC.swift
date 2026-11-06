@@ -134,33 +134,45 @@ class HTPreviewViewModel: ObservableObject {
     @Published var isDownloading: Bool = false
 
     private var pendingExamIDs: [String] = []
+    private var triedExamIDs: Set<String> = []
+    private var hasFetchedFallbackExams: Bool = false
 
     func fetchHallTicket(examIDs: [String]) {
         let studentID = UserManager.shared.resolvedStudentID
         let schoolID = UserManager.shared.resolvedSchoolID
 
-        var seen = Set<String>()
-        let ids = examIDs
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty && seen.insert($0).inserted }
-
-        guard !ids.isEmpty, !studentID.isEmpty, !schoolID.isEmpty else {
+        guard !studentID.isEmpty, !schoolID.isEmpty else {
             self.isLoading = false
             self.isNotAvailable = true
             self.errorMessage = "Missing required details to fetch Hall Ticket."
             return
         }
 
+        var seen = Set<String>()
+        let ids = examIDs
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty && seen.insert($0).inserted }
+
         self.isLoading = true
         self.errorMessage = nil
         self.isNotAvailable = false
         self.pendingExamIDs = ids
+        self.triedExamIDs.removeAll()
+        self.hasFetchedFallbackExams = false
 
-        tryNextExam(studentID: studentID, schoolID: schoolID)
+        if ids.isEmpty {
+            fetchFallbackExamsList(studentID: studentID, schoolID: schoolID)
+        } else {
+            tryNextExam(studentID: studentID, schoolID: schoolID)
+        }
     }
 
     private func tryNextExam(studentID: String, schoolID: String) {
         guard !pendingExamIDs.isEmpty else {
+            if !hasFetchedFallbackExams {
+                fetchFallbackExamsList(studentID: studentID, schoolID: schoolID)
+                return
+            }
             self.isLoading = false
             self.isNotAvailable = true
             self.errorMessage = "Your hall ticket has not been published yet."
@@ -168,6 +180,7 @@ class HTPreviewViewModel: ObservableObject {
         }
 
         let examID = pendingExamIDs.removeFirst()
+        triedExamIDs.insert(examID)
 
         let parameters: [String: Any] = [
             "student_id": studentID,
@@ -188,7 +201,7 @@ class HTPreviewViewModel: ObservableObject {
 
                 switch result {
                 case .success(let response):
-                    if response.success, let data = response.data, data.hallTicket != nil {
+                    if response.success, let data = response.data, (data.hallTicket != nil || data.student != nil || data.examination != nil) {
                         self.isLoading = false
                         self.hallTicketData = data
                     } else {
@@ -197,6 +210,41 @@ class HTPreviewViewModel: ObservableObject {
                 case .failure(_):
                     self.tryNextExam(studentID: studentID, schoolID: schoolID)
                 }
+            }
+        }
+    }
+
+    private func fetchFallbackExamsList(studentID: String, schoolID: String) {
+        hasFetchedFallbackExams = true
+        let parameters: [String: Any] = ["student_id": studentID]
+        let headers: [String: String] = ["X-School-ID": schoolID]
+
+        NetworkManager.shared.request(
+            urlString: API.GET_EXAMS,
+            method: .GET,
+            requiresAuth: true,
+            parameters: parameters,
+            headers: headers,
+            showErrorAlert: false
+        ) { [weak self] (result: Result<APIResponse<[ExamItem]>, NetworkError>) in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                switch result {
+                case .success(let response):
+                    let fallbackIDs = (response.data ?? [])
+                        .compactMap { $0.id?.trimmingCharacters(in: .whitespacesAndNewlines) }
+                        .filter { !$0.isEmpty && !self.triedExamIDs.contains($0) }
+                    if !fallbackIDs.isEmpty {
+                        self.pendingExamIDs.append(contentsOf: fallbackIDs)
+                        self.tryNextExam(studentID: studentID, schoolID: schoolID)
+                        return
+                    }
+                case .failure:
+                    break
+                }
+                self.isLoading = false
+                self.isNotAvailable = true
+                self.errorMessage = "Your hall ticket has not been published yet."
             }
         }
     }

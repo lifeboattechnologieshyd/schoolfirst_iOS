@@ -29,6 +29,7 @@ class ExamdetailsoverviewVC: UIViewController {
     // MARK: - API Data (passed from ExamhomeVC)
     var examDetail: ExamDetail?
     var examID: String?
+    var candidateExamIDs: [String] = []
 
     // MARK: - Derived Data (from API)
     private var examTitle: String {
@@ -188,6 +189,38 @@ class ExamdetailsoverviewVC: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: false)
         setupLayout()
         buildScreen()
+        fetchExamDetailIfNeeded()
+    }
+
+    private func fetchExamDetailIfNeeded() {
+        guard examDetail == nil else { return }
+        let targetID = (examID?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false ? examID : nil)
+        guard let id = targetID else { return }
+        let studentID = UserManager.shared.resolvedStudentID
+        let schoolID = UserManager.shared.resolvedSchoolID
+        guard !id.isEmpty, !studentID.isEmpty, !schoolID.isEmpty else { return }
+
+        let parameters: [String: Any] = [
+            "student_id": studentID,
+            "examination_id": id
+        ]
+        let headers: [String: String] = ["X-School-ID": schoolID]
+
+        NetworkManager.shared.request(
+            urlString: API.GET_EXAM_DETAIL,
+            method: .GET,
+            requiresAuth: true,
+            parameters: parameters,
+            headers: headers
+        ) { [weak self] (result: Result<APIResponse<ExamDetail>, NetworkError>) in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                if case .success(let response) = result, response.success, let detail = response.data {
+                    self.examDetail = detail
+                    self.buildScreen()
+                }
+            }
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -343,7 +376,19 @@ class ExamdetailsoverviewVC: UIViewController {
 
     @objc private func didTapHallTicket() {
         let hallTicketVC = HallticketpreviewVC()
-        hallTicketVC.examID = examID ?? examDetail?.id ?? ""
+        let primaryID = (examDetail?.id?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+                         ? examDetail?.id
+                         : examID)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        hallTicketVC.examID = primaryID
+
+        var fallbacks = candidateExamIDs
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty && $0 != primaryID }
+        if let fallbackID = examID?.trimmingCharacters(in: .whitespacesAndNewlines),
+           !fallbackID.isEmpty && fallbackID != primaryID && !fallbacks.contains(fallbackID) {
+            fallbacks.append(fallbackID)
+        }
+        hallTicketVC.candidateExamIDs = fallbacks
         navigationController?.pushViewController(hallTicketVC, animated: true)
     }
 
