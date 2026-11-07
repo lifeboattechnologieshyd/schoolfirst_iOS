@@ -18,28 +18,83 @@ struct PSPaymentData {
 }
 
 struct PaymentSuccessView: View {
-    //  onBack and onViewReceipt closure properties
+    // API Models passed from ViewController
+    var feeData: PendingFeeResponse?
+    var creationData: FeePaymentCreationResponse?
+    var verifyData: FeeVerifyPaymentData?
+    
+    // Callbacks
     var onBack: () -> Void
     var onViewReceipt: () -> Void
+    var onBackToFees: (() -> Void)? = nil
     
-    // Dummy Data (Replace with ViewModel / API response later)
-    let data = PSPaymentData(
-        amountPaid: "₹8,585",
-        paymentMethod: "Card",
-        dateTime: "17 Aug 2026 • 9:41 AM",
-        outstandingBalance: "₹0",
-        receiptNumber: "RCP-2026-0893",
-        appliedItems: [
-            "₹8,150 applied to outstanding fee items",
-            "₹350 late fee settled",
-            "Receipt generated and saved to payment history"
-        ]
-    )
+    // Dynamic payment data binding from APIs with fallback
+    private var data: PSPaymentData {
+        let amountVal: String
+        if let vAmount = verifyData?.amount, !vAmount.isEmpty {
+            amountVal = formatCurrencyString(vAmount)
+        } else if let cAmount = creationData?.amount, cAmount > 0 {
+            amountVal = formatCurrency(cAmount)
+        } else if let total = feeData?.totalPayableAmount, total > 0 {
+            amountVal = formatCurrency(total)
+        } else {
+            amountVal = "₹0"
+        }
+        
+        let receiptNum: String
+        if let vTxn = verifyData?.transactionNumber, !vTxn.isEmpty {
+            receiptNum = vTxn
+        } else if let cTxn = creationData?.transactionNumber, !cTxn.isEmpty {
+            receiptNum = cTxn
+        } else if let orderId = creationData?.orderId, !orderId.isEmpty {
+            receiptNum = orderId
+        } else {
+            receiptNum = "TXN-B7447EB9AE57"
+        }
+        
+        let dateStr: String
+        if let paidAt = verifyData?.paidAt, !paidAt.isEmpty {
+            dateStr = formatDate(paidAt)
+        } else {
+            let df = DateFormatter()
+            df.dateFormat = "d MMM yyyy • h:mm a"
+            df.locale = Locale(identifier: "en_IN")
+            dateStr = df.string(from: Date())
+        }
+        
+        var items: [String] = []
+        if let fees = feeData?.fees, !fees.isEmpty {
+            for fee in fees {
+                items.append("\(formatCurrency(fee.payableAmount)) applied to \(fee.feeType)")
+            }
+            if let lateFee = feeData?.feeSummary?.totalLateFee, lateFee > 0 {
+                items.append("\(formatCurrency(lateFee)) late fee settled")
+            }
+            items.append("Receipt generated and saved to payment history")
+        } else {
+            items = [
+                "\(amountVal) applied to outstanding fee items",
+                "Receipt generated and saved to payment history"
+            ]
+        }
+        
+        return PSPaymentData(
+            amountPaid: amountVal,
+            paymentMethod: "PhonePe / Online",
+            dateTime: dateStr,
+            outstandingBalance: "₹0",
+            receiptNumber: receiptNum,
+            appliedItems: items
+        )
+    }
+    
+    private var studentName: String {
+        feeData?.student.name ?? "Student"
+    }
     
     var body: some View {
         VStack(spacing: 0) {
             // 1. Custom Header
-            //  Passed onBack to PSHeaderView
             PSHeaderView(onBack: onBack)
             
             ScrollView(showsIndicators: false) {
@@ -55,15 +110,13 @@ struct PaymentSuccessView: View {
                                 .font(.system(size: 24, weight: .bold))
                                 .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
                             
-                            Text("Aarav's fee payment has been received and the outstanding balance is now cleared.")
+                            Text("\(studentName)'s fee payment has been received and the outstanding balance is now cleared.")
                                 .font(.system(size: 14))
                                 .foregroundColor(.secondary)
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, 20)
                             
-                            Button(action: {
-                                // TODO: Handle view receipt tap
-                            }) {
+                            Button(action: onViewReceipt) {
                                 Text("Receipt \(data.receiptNumber)")
                                     .font(.system(size: 13, weight: .medium))
                                     .foregroundColor(Color(red: 0.05, green: 0.35, blue: 0.65))
@@ -79,8 +132,10 @@ struct PaymentSuccessView: View {
                     PSAppliedItemsCard(items: data.appliedItems)
                     
                     // 5. Action Buttons
-                    // Passed onViewReceipt to PSActionButtonsView
-                    PSActionButtonsView(onViewReceipt: onViewReceipt)
+                    PSActionButtonsView(
+                        onViewReceipt: onViewReceipt,
+                        onBackToFees: onBackToFees ?? onBack
+                    )
                     
                     // 6. Footer Help Text
                     PSHelpFooter()
@@ -93,11 +148,44 @@ struct PaymentSuccessView: View {
         }
         .edgesIgnoringSafeArea(.top)
     }
+    
+    // MARK: - Formatters
+    
+    private func formatCurrency(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.locale = Locale(identifier: "en_IN")
+        formatter.maximumFractionDigits = 2
+        return "₹\(formatter.string(from: NSNumber(value: value)) ?? "0")"
+    }
+    
+    private func formatCurrencyString(_ value: String) -> String {
+        if let dbl = Double(value) {
+            return formatCurrency(dbl)
+        }
+        return value.hasPrefix("₹") ? value : "₹\(value)"
+    }
+    
+    private func formatDate(_ isoString: String) -> String {
+        let isoFormatter = ISO8601DateFormatter()
+        isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        var date = isoFormatter.date(from: isoString)
+        if date == nil {
+            isoFormatter.formatOptions = [.withInternetDateTime]
+            date = isoFormatter.date(from: isoString)
+        }
+        if let date = date {
+            let df = DateFormatter()
+            df.dateFormat = "d MMM yyyy • h:mm a"
+            df.locale = Locale(identifier: "en_IN")
+            return df.string(from: date)
+        }
+        return isoString
+    }
 }
 
 // MARK: - Subviews
 
-// Added onBack property and wrapped arrow in Button
 struct PSHeaderView: View {
     var onBack: () -> Void
     
@@ -105,7 +193,6 @@ struct PSHeaderView: View {
         VStack {
             Spacer().frame(height: 50)
             HStack {
-                //Button wrapping the back arrow to trigger onBack
                 Button(action: onBack) {
                     Image(systemName: "arrow.left")
                         .font(.system(size: 20, weight: .semibold))
@@ -131,29 +218,25 @@ struct PSHeaderView: View {
             .padding(.horizontal)
             .padding(.bottom, 16)
         }
-        .background(Color(red: 0.05, green: 0.35, blue: 0.65)) // Theme Blue
+        .background(Color(red: 0.05, green: 0.35, blue: 0.65))
     }
 }
 
 struct PSSuccessIcon: View {
     var body: some View {
         ZStack {
-            // Outer faint green circle
             Circle()
                 .fill(Color.green.opacity(0.1))
                 .frame(width: 100, height: 100)
             
-            // Inner solid green circle
             Circle()
                 .fill(Color.green)
                 .frame(width: 70, height: 70)
             
-            // Checkmark
             Image(systemName: "checkmark")
                 .font(.system(size: 32, weight: .bold))
                 .foregroundColor(.white)
             
-            // Decorative small dots (Confetti)
             Circle()
                 .fill(Color.orange)
                 .frame(width: 8, height: 8)
@@ -250,14 +333,12 @@ struct PSAppliedItemsCard: View {
     }
 }
 
-// Added onViewReceipt property and wired it to View detailed receipt button
 struct PSActionButtonsView: View {
     var onViewReceipt: () -> Void
+    var onBackToFees: (() -> Void)? = nil
     
     var body: some View {
         VStack(spacing: 12) {
-            // Primary Button
-            // Changed from empty TODO to onViewReceipt callback
             Button(action: onViewReceipt) {
                 HStack {
                     Image(systemName: "doc.text")
@@ -272,10 +353,9 @@ struct PSActionButtonsView: View {
                 .cornerRadius(10)
             }
             
-            // Secondary Buttons Row
             HStack(spacing: 12) {
                 Button(action: {
-                    // TODO: Handle Share
+                    // Share Receipt placeholder
                 }) {
                     HStack {
                         Image(systemName: "square.and.arrow.up")
@@ -295,7 +375,7 @@ struct PSActionButtonsView: View {
                 }
                 
                 Button(action: {
-                    // TODO: Handle Back to fees
+                    onBackToFees?()
                 }) {
                     HStack {
                         Image(systemName: "doc.text")
@@ -331,7 +411,6 @@ struct PSHelpFooter: View {
     }
 }
 
-//  Added onBack and onViewReceipt arguments to preview
 #Preview {
     PaymentSuccessView(onBack: {}, onViewReceipt: {})
 }

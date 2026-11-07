@@ -12,6 +12,7 @@ import SwiftUI
 struct ReviewPaymentView: View {
     // **** ADDED: API Response object passed from ViewController ****
     var feeData: PendingFeeResponse?
+    var isLoading: Bool = false
     
     var onBack: () -> Void
     var onPay: () -> Void
@@ -83,6 +84,7 @@ struct ReviewPaymentView: View {
             RPBottomBar(
                 amount: formatCurrency(totalPayable),
                 isDisabled: totalPayable <= 0,
+                isLoading: isLoading,
                 onBack: onBack,
                 onPay: onPay
             )
@@ -396,10 +398,11 @@ struct RPInfoNoteView: View {
     }
 }
 
-// **** UPDATED: Dynamically disables button if there is nothing to pay ****
+// **** UPDATED: Dynamically disables button if there is nothing to pay or loading ****
 struct RPBottomBar: View {
     let amount: String
     let isDisabled: Bool
+    var isLoading: Bool = false
     let onBack: () -> Void
     let onPay: () -> Void
     
@@ -430,18 +433,28 @@ struct RPBottomBar: View {
                         .cornerRadius(10)
                 }
                 .frame(width: 100)
+                .disabled(isLoading)
                 
                 Button(action: onPay) {
-                    Text(amount == "₹0" ? "Cleared" : "Pay \(amount)")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(Color(red: 0.1, green: 0.2, blue: 0.4))
-                        .cornerRadius(10)
+                    if isLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(Color(red: 0.1, green: 0.2, blue: 0.4))
+                            .cornerRadius(10)
+                    } else {
+                        Text(amount == "₹0" ? "Cleared" : "Pay \(amount)")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(Color(red: 0.1, green: 0.2, blue: 0.4))
+                            .cornerRadius(10)
+                    }
                 }
-                .disabled(isDisabled)
-                .opacity(isDisabled ? 0.6 : 1.0)
+                .disabled(isDisabled || isLoading)
+                .opacity((isDisabled || isLoading) ? 0.6 : 1.0)
             }
         }
         .padding(.horizontal, 16)

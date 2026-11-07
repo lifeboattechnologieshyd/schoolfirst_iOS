@@ -10,6 +10,11 @@ import SwiftUI
 
 class PaymentsuccessVC: UIViewController {
     
+    // Injected API Data
+    var feeResponse: PendingFeeResponse?
+    var paymentCreationData: FeePaymentCreationResponse?
+    var verifyPaymentData: FeeVerifyPaymentData?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupSwiftUIView()
@@ -22,16 +27,20 @@ class PaymentsuccessVC: UIViewController {
     }
     
     private func setupSwiftUIView() {
-        //   Passed onBack and onViewReceipt closures to PaymentSuccessView
+        // Passed callbacks and API data to PaymentSuccessView
         let swiftUIView = PaymentSuccessView(
+            feeData: feeResponse,
+            creationData: paymentCreationData,
+            verifyData: verifyPaymentData,
             onBack: { [weak self] in
-                // ADDED: Handle back navigation (pop)
                 self?.handleBackNavigation()
             },
             onViewReceipt: { [weak self] in
-                //  Navigate to PaymentreceiptVC when "View detailed receipt" is tapped
                 let receiptVC = PaymentreceiptVC()
                 self?.navigationController?.pushViewController(receiptVC, animated: true)
+            },
+            onBackToFees: { [weak self] in
+                self?.handleBackToFees()
             }
         )
         
@@ -56,10 +65,24 @@ class PaymentsuccessVC: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
-    //  Handles pop navigation back to previous screen 
+    // Handles pop navigation back to previous screen
     private func handleBackNavigation() {
         if let nav = navigationController, nav.viewControllers.first != self {
             nav.popViewController(animated: true)
+        } else {
+            dismiss(animated: true)
+        }
+    }
+    
+    private func handleBackToFees() {
+        if let nav = navigationController {
+            for vc in nav.viewControllers {
+                if vc is ParentfeeVC {
+                    nav.popToViewController(vc, animated: true)
+                    return
+                }
+            }
+            nav.popToRootViewController(animated: true)
         } else {
             dismiss(animated: true)
         }

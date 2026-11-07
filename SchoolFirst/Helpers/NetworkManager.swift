@@ -270,6 +270,52 @@ class NetworkManager {
         }
     }
 
+    // MARK: - Fee Payment Methods (PhonePe)
+
+    func createFeePayment(
+        studentId: String,
+        amount: String,
+        schoolId: String,
+        studentFeeIds: [String]? = nil,
+        completion: @escaping (Result<APIResponse<FeePaymentCreationResponse>, NetworkError>) -> Void
+    ) {
+        var parameters: [String: Any] = [
+            "student_id": studentId,
+            "amount": amount
+        ]
+        if let feeIds = studentFeeIds, !feeIds.isEmpty {
+            parameters["student_fee_ids"] = feeIds
+        }
+
+        request(
+            urlString: API.FEE_CREATE_PAYMENT_PHONEPE,
+            method: .POST,
+            requiresAuth: true,
+            parameters: parameters,
+            headers: ["X-School-Id": schoolId],
+            completion: completion
+        )
+    }
+
+    func verifyFeePayment(
+        transactionNumber: String,
+        schoolId: String,
+        completion: @escaping (Result<APIResponse<FeeVerifyPaymentData>, NetworkError>) -> Void
+    ) {
+        let parameters: [String: Any] = [
+            "transaction_number": transactionNumber
+        ]
+
+        request(
+            urlString: API.FEE_VERIFY_PAYMENT,
+            method: .POST,
+            requiresAuth: true,
+            parameters: parameters,
+            headers: ["X-School-Id": schoolId],
+            completion: completion
+        )
+    }
+
 }
 
 struct TestResponsere: Decodable {
@@ -2929,6 +2975,7 @@ struct HomeworkSubmissionResponseData: Codable {
 struct FeePaymentCreationResponse: Decodable {
     let transactionId: String
     let transactionNumber: String
+    let studentId: String
     let amount: Double
     let token: String
     let orderId: String
@@ -2938,6 +2985,7 @@ struct FeePaymentCreationResponse: Decodable {
     enum CodingKeys: String, CodingKey {
         case transactionId     = "transaction_id"
         case transactionNumber = "transaction_number"
+        case studentId         = "student_id"
         case amount
         case token
         case orderId           = "order_id"
@@ -2950,6 +2998,7 @@ struct FeePaymentCreationResponse: Decodable {
         
         transactionId     = try container.decodeIfPresent(String.self, forKey: .transactionId) ?? ""
         transactionNumber = try container.decodeIfPresent(String.self, forKey: .transactionNumber) ?? ""
+        studentId         = try container.decodeIfPresent(String.self, forKey: .studentId) ?? ""
         
         // Handle amount as String ("2000") or Double (2000.0)
         if let d = try? container.decode(Double.self, forKey: .amount) {
@@ -3435,6 +3484,85 @@ struct CalendarSection: Codable {
 struct CalendarStudent: Codable {
     let id: String
     let name: String
+}
+//**** verifypayamant payload
+struct FeeVerifyPaymentRequest: Codable {
+    let transactionNumber: String
+
+    enum CodingKeys: String, CodingKey {
+        case transactionNumber = "transaction_number"
+    }
+}
+//***verifypayment resposne model
+struct FeeVerifyPaymentResponse: Codable {
+    let success: Bool
+    let description: String
+    let data: FeeVerifyPaymentData?
+}
+
+// MARK: - FeeVerifyPaymentData
+struct FeeVerifyPaymentData: Codable {
+    let transactionId: String
+    let transactionNumber: String
+    let studentId: String
+    let amount: String
+    let status: String
+    let gatewayOrderId: String
+    let gatewayTransactionId: String
+    let paidAt: String
+
+    enum CodingKeys: String, CodingKey {
+        case transactionId        = "transaction_id"
+        case transactionNumber    = "transaction_number"
+        case studentId            = "student_id"
+        case amount               = "amount"
+        case status               = "status"
+        case gatewayOrderId       = "gateway_order_id"
+        case gatewayTransactionId = "gateway_transaction_id"
+        case paidAt               = "paid_at"
+    }
+
+    init(
+        transactionId: String = "",
+        transactionNumber: String = "",
+        studentId: String = "",
+        amount: String = "",
+        status: String = "",
+        gatewayOrderId: String = "",
+        gatewayTransactionId: String = "",
+        paidAt: String = ""
+    ) {
+        self.transactionId = transactionId
+        self.transactionNumber = transactionNumber
+        self.studentId = studentId
+        self.amount = amount
+        self.status = status
+        self.gatewayOrderId = gatewayOrderId
+        self.gatewayTransactionId = gatewayTransactionId
+        self.paidAt = paidAt
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        transactionId = try container.decodeIfPresent(String.self, forKey: .transactionId) ?? ""
+        transactionNumber = try container.decodeIfPresent(String.self, forKey: .transactionNumber) ?? ""
+        studentId = try container.decodeIfPresent(String.self, forKey: .studentId) ?? ""
+        
+        if let str = try? container.decode(String.self, forKey: .amount) {
+            amount = str
+        } else if let dbl = try? container.decode(Double.self, forKey: .amount) {
+            amount = dbl.truncatingRemainder(dividingBy: 1) == 0 ? "\(Int(dbl))" : String(format: "%.2f", dbl)
+        } else if let val = try? container.decode(Int.self, forKey: .amount) {
+            amount = "\(val)"
+        } else {
+            amount = ""
+        }
+        
+        status = try container.decodeIfPresent(String.self, forKey: .status) ?? ""
+        gatewayOrderId = try container.decodeIfPresent(String.self, forKey: .gatewayOrderId) ?? ""
+        gatewayTransactionId = try container.decodeIfPresent(String.self, forKey: .gatewayTransactionId) ?? ""
+        paidAt = try container.decodeIfPresent(String.self, forKey: .paidAt) ?? ""
+    }
 }
 
 // MARK: - Parent Fee Models
