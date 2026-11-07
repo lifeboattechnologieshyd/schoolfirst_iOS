@@ -55,6 +55,8 @@ struct PHTransaction: Identifiable {
 }
 
 struct PaymentHistoryView: View {
+    // onBack closure property
+    var onBack: () -> Void
     
     // Dummy Data (Replace with ViewModel / API Data later)
     let studentName = "Aarav Sharma"
@@ -89,7 +91,8 @@ struct PaymentHistoryView: View {
     var body: some View {
         VStack(spacing: 0) {
             // 1. Header
-            PHHeaderView()
+            // UPDATED: Passed onBack to PHHeaderView
+            PHHeaderView(onBack: onBack)
             
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 16) {
@@ -188,13 +191,21 @@ struct PaymentHistoryView: View {
 
 // MARK: - Subviews
 
+//Added onBack closure and wrapped back arrow in Button
 struct PHHeaderView: View {
+    var onBack: () -> Void
+    
     var body: some View {
         VStack {
             Spacer().frame(height: 50) // Safe area padding
             HStack {
-                Image(systemName: "arrow.left")
-                    .font(.system(size: 20, weight: .semibold))
+                //ADDED: Button to trigger onBack
+                Button(action: onBack) {
+                    Image(systemName: "arrow.left")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(.white)
+                }
+                .buttonStyle(PlainButtonStyle())
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Payment history")
@@ -382,5 +393,6 @@ struct PHBottomNote: View {
 }
 
 #Preview {
-    PaymentHistoryView()
+    // UPDATED: Added onBack argument
+    PaymentHistoryView(onBack: {})
 }

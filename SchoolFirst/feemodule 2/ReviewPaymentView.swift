@@ -29,6 +29,9 @@ struct RPReviewData {
 }
 
 struct ReviewPaymentView: View {
+    var onBack: () -> Void
+    var onPay: () -> Void // ADDED: onPay closure property
+    
     // Dummy Data (Replace this with API data / ViewModel later)
     let data = RPReviewData(
         academicYear: "2026-27",
@@ -53,7 +56,7 @@ struct ReviewPaymentView: View {
     var body: some View {
         VStack(spacing: 0) {
             // 1. Header
-            RPHeaderView()
+            RPHeaderView(onBack: onBack)
             
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 16) {
@@ -80,11 +83,8 @@ struct ReviewPaymentView: View {
             .background(Color(UIColor.systemGroupedBackground))
             
             // 7. Bottom Sticky Bar
-            RPBottomBar(amount: data.totalPayable, onBack: {
-                // TODO: Handle Back
-            }, onPay: {
-                // TODO: Handle Pay
-            })
+            // Replaced TODO placeholder with the onPay closure
+            RPBottomBar(amount: data.totalPayable, onBack: onBack, onPay: onPay)
         }
         .edgesIgnoringSafeArea(.top)
     }
@@ -93,12 +93,18 @@ struct ReviewPaymentView: View {
 // MARK: - Subviews
 
 struct RPHeaderView: View {
+    var onBack: () -> Void
+    
     var body: some View {
         VStack {
             Spacer().frame(height: 50)
             HStack {
-                Image(systemName: "arrow.left")
-                    .font(.system(size: 20, weight: .semibold))
+                Button(action: onBack) {
+                    Image(systemName: "arrow.left")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(.white)
+                }
+                .buttonStyle(PlainButtonStyle())
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Review payment")
@@ -397,6 +403,7 @@ struct RPBottomBar: View {
     }
 }
 
+//Added onPay argument to preview
 #Preview {
-    ReviewPaymentView()
+    ReviewPaymentView(onBack: {}, onPay: {})
 }

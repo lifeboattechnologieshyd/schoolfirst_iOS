@@ -31,6 +31,9 @@ struct PRReceiptData {
 }
 
 struct PaymentReceiptView: View {
+    // onBack closure property to trigger pop navigation from UIKit
+    var onBack: () -> Void
+    
     // Dummy Data (Replace with ViewModel / API Response later)
     let data = PRReceiptData(
         schoolName: "Oasis Public School",
@@ -57,7 +60,8 @@ struct PaymentReceiptView: View {
     var body: some View {
         VStack(spacing: 0) {
             // 1. Custom Header
-            PRHeaderView()
+            // Passed onBack to PRHeaderView
+            PRHeaderView(onBack: onBack)
             
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 20) {
@@ -179,13 +183,21 @@ struct PaymentReceiptView: View {
 
 // MARK: - Subviews
 
+// Added onBack property and wrapped arrow icon in Button
 struct PRHeaderView: View {
+    var onBack: () -> Void
+    
     var body: some View {
         VStack {
             Spacer().frame(height: 50)
             HStack {
-                Image(systemName: "arrow.left")
-                    .font(.system(size: 20, weight: .semibold))
+                //Button wrapping the back arrow to trigger onBack
+                Button(action: onBack) {
+                    Image(systemName: "arrow.left")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(.white)
+                }
+                .buttonStyle(PlainButtonStyle())
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Receipt")
@@ -403,6 +415,7 @@ struct PRBottomActionBar: View {
     }
 }
 
+// Added onBack argument to preview
 #Preview {
-    PaymentReceiptView()
+    PaymentReceiptView(onBack: {})
 }

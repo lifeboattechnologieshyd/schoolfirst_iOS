@@ -17,12 +17,15 @@ enum PaymentMethodType: String, CaseIterable {
 }
 
 struct ChoosePaymentMethodView: View {
+    var onBack: () -> Void
+    var onContinue: () -> Void
+    
     @State private var selectedMethod: PaymentMethodType = .card
     
     var body: some View {
         VStack(spacing: 0) {
             // 1. Custom Header
-            CPMHeaderView()
+            CPMHeaderView(onBack: onBack)
             
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 20) {
@@ -115,8 +118,7 @@ struct ChoosePaymentMethodView: View {
             
             // 7. Bottom Sticky Bar
             CPMBottomBar(amount: "₹8,500") {
-                // TODO: Navigate to review payment screen
-                print("Continue with method: \(selectedMethod.rawValue)")
+                onContinue()
             }
         }
         .edgesIgnoringSafeArea(.top)
@@ -126,12 +128,18 @@ struct ChoosePaymentMethodView: View {
 // MARK: - Subviews
 
 struct CPMHeaderView: View {
+    var onBack: () -> Void
+    
     var body: some View {
         VStack {
             Spacer().frame(height: 50) // Safe area padding
             HStack {
-                Image(systemName: "arrow.left")
-                    .font(.system(size: 20, weight: .semibold))
+                Button(action: onBack) {
+                    Image(systemName: "arrow.left")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(.white)
+                }
+                .buttonStyle(PlainButtonStyle())
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Payment method")
@@ -310,5 +318,5 @@ struct CPMBottomBar: View {
 }
 
 #Preview {
-    ChoosePaymentMethodView()
+    ChoosePaymentMethodView(onBack: {}, onContinue: {})
 }

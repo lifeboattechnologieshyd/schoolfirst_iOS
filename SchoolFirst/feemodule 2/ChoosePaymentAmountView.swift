@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ChoosePaymentAmountView: View {
+    var onBack: () -> Void
+    var onContinue: () -> Void
     
     // MARK: - Selection State (easy to bind to API / ViewModel later)
     enum PaymentOption {
@@ -44,7 +46,7 @@ struct ChoosePaymentAmountView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Header
-            CPAHeaderView()
+            CPAHeaderView(onBack: onBack)
             
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 20) {
@@ -112,8 +114,7 @@ struct ChoosePaymentAmountView: View {
             
             // Bottom sticky bar
             CPABottomBar(selectedAmountText: selectedAmountDisplay) {
-                // TODO: Navigate to payment method screen
-                print("Continue with amount: \(selectedAmount)")
+                onContinue()
             }
         }
         .edgesIgnoringSafeArea(.top)
@@ -122,12 +123,18 @@ struct ChoosePaymentAmountView: View {
 
 // MARK: - Header
 struct CPAHeaderView: View {
+    var onBack: () -> Void
+    
     var body: some View {
         VStack {
             Spacer().frame(height: 50)
             HStack {
-                Image(systemName: "arrow.left")
-                    .font(.system(size: 20, weight: .semibold))
+                Button(action: onBack) {
+                    Image(systemName: "arrow.left")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(.white)
+                }
+                .buttonStyle(PlainButtonStyle())
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Payment amount")
@@ -386,5 +393,5 @@ extension Int {
 }
 
 #Preview {
-    ChoosePaymentAmountView()
+    ChoosePaymentAmountView(onBack: {}, onContinue: {})
 }

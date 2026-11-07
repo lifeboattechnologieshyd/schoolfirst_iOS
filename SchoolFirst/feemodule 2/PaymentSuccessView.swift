@@ -18,6 +18,10 @@ struct PSPaymentData {
 }
 
 struct PaymentSuccessView: View {
+    //  onBack and onViewReceipt closure properties
+    var onBack: () -> Void
+    var onViewReceipt: () -> Void
+    
     // Dummy Data (Replace with ViewModel / API response later)
     let data = PSPaymentData(
         amountPaid: "₹8,585",
@@ -35,7 +39,8 @@ struct PaymentSuccessView: View {
     var body: some View {
         VStack(spacing: 0) {
             // 1. Custom Header
-            PSHeaderView()
+            //  Passed onBack to PSHeaderView
+            PSHeaderView(onBack: onBack)
             
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 20) {
@@ -74,7 +79,8 @@ struct PaymentSuccessView: View {
                     PSAppliedItemsCard(items: data.appliedItems)
                     
                     // 5. Action Buttons
-                    PSActionButtonsView()
+                    // Passed onViewReceipt to PSActionButtonsView
+                    PSActionButtonsView(onViewReceipt: onViewReceipt)
                     
                     // 6. Footer Help Text
                     PSHelpFooter()
@@ -91,13 +97,21 @@ struct PaymentSuccessView: View {
 
 // MARK: - Subviews
 
+// Added onBack property and wrapped arrow in Button
 struct PSHeaderView: View {
+    var onBack: () -> Void
+    
     var body: some View {
         VStack {
             Spacer().frame(height: 50)
             HStack {
-                Image(systemName: "arrow.left")
-                    .font(.system(size: 20, weight: .semibold))
+                //Button wrapping the back arrow to trigger onBack
+                Button(action: onBack) {
+                    Image(systemName: "arrow.left")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(.white)
+                }
+                .buttonStyle(PlainButtonStyle())
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Payment complete")
@@ -236,13 +250,15 @@ struct PSAppliedItemsCard: View {
     }
 }
 
+// Added onViewReceipt property and wired it to View detailed receipt button
 struct PSActionButtonsView: View {
+    var onViewReceipt: () -> Void
+    
     var body: some View {
         VStack(spacing: 12) {
             // Primary Button
-            Button(action: {
-                // TODO: Handle detailed receipt view
-            }) {
+            // Changed from empty TODO to onViewReceipt callback
+            Button(action: onViewReceipt) {
                 HStack {
                     Image(systemName: "doc.text")
                     Text("View detailed receipt")
@@ -315,6 +331,7 @@ struct PSHelpFooter: View {
     }
 }
 
+//  Added onBack and onViewReceipt arguments to preview
 #Preview {
-    PaymentSuccessView()
+    PaymentSuccessView(onBack: {}, onViewReceipt: {})
 }

@@ -496,7 +496,7 @@ extension Homescreen: UICollectionViewDelegate, UICollectionViewDataSource, UICo
 
     private func navigateToParentfeeVC() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        if let paymentVC = storyboard.instantiateViewController(withIdentifier: "ParentfeeVC") as? ParentfeeVC {
+        if let paymentVC = storyboard.instantiateViewController(withIdentifier: "FeedashboardVC") as? FeedashboardVC {
             paymentVC.hidesBottomBarWhenPushed = true
             if let nav = navigationController {
                 nav.setNavigationBarHidden(true, animated: false)

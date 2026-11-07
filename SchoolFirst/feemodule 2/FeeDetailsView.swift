@@ -8,10 +8,13 @@
 import SwiftUI
 
 struct FeeDetailsView: View {
+    var onBack: () -> Void
+    var onChoosePaymentAmount: () -> Void
+    
     var body: some View {
         VStack(spacing: 0) {
             // Custom Header
-            FDHeaderView()
+            FDHeaderView(onBack: onBack)
             
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 16) {
@@ -40,7 +43,7 @@ struct FeeDetailsView: View {
             .background(Color(UIColor.systemGroupedBackground))
             
             // Bottom Sticky Payment Bar
-            FDBottomPaymentBar()
+            FDBottomPaymentBar(onChoosePaymentAmount: onChoosePaymentAmount)
         }
         .edgesIgnoringSafeArea(.top)
     }
@@ -49,12 +52,18 @@ struct FeeDetailsView: View {
 // MARK: - Components
 
 struct FDHeaderView: View {
+    var onBack: () -> Void
+    
     var body: some View {
         VStack {
-            Spacer().frame(height: 50) // Safe area padding
+            Spacer().frame(height: 50)
             HStack {
-                Image(systemName: "arrow.left")
-                    .font(.system(size: 20, weight: .semibold))
+                Button(action: onBack) {
+                    Image(systemName: "arrow.left")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(.white)
+                }
+                .buttonStyle(PlainButtonStyle())
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Fee details")
@@ -74,7 +83,7 @@ struct FDHeaderView: View {
             .padding(.horizontal)
             .padding(.bottom, 16)
         }
-        .background(Color(red: 0.05, green: 0.35, blue: 0.65)) // Theme Blue
+        .background(Color(red: 0.05, green: 0.35, blue: 0.65))
     }
 }
 
@@ -239,6 +248,8 @@ struct FDPaymentSummaryCard: View {
 }
 
 struct FDBottomPaymentBar: View {
+    var onChoosePaymentAmount: () -> Void
+    
     var body: some View {
         VStack(spacing: 16) {
             HStack {
@@ -251,21 +262,19 @@ struct FDBottomPaymentBar: View {
                     .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
             }
             
-            Button(action: {
-                // Action to choose payment amount
-            }) {
+            Button(action: onChoosePaymentAmount) {
                 Text("Choose payment amount")
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color(red: 0.1, green: 0.2, blue: 0.4)) // Dark blue button
+                    .background(Color(red: 0.1, green: 0.2, blue: 0.4))
                     .cornerRadius(10)
             }
         }
         .padding(.horizontal)
         .padding(.top, 16)
-        .padding(.bottom, 30) // Extra padding for safe area at bottom
+        .padding(.bottom, 30)
         .background(Color.white)
         .shadow(color: .black.opacity(0.05), radius: 10, y: -5)
     }
@@ -361,5 +370,5 @@ struct FDScheduleRow: View {
 }
 
 #Preview {
-    FeeDetailsView()
+    FeeDetailsView(onBack: {}, onChoosePaymentAmount: {})
 }

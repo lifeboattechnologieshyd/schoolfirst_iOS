@@ -15,8 +15,22 @@ class ChoosepaymentamountVC: UIViewController {
         setupSwiftUIView()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
     private func setupSwiftUIView() {
-        let swiftUIView = ChoosePaymentAmountView()
+        let swiftUIView = ChoosePaymentAmountView(
+            onBack: { [weak self] in
+                self?.handleBackNavigation()
+            },
+            onContinue: { [weak self] in
+                // Navigate to ChoosepaymentmethodVC
+                let paymentMethodVC = ChoosepaymentmethodVC()
+                self?.navigationController?.pushViewController(paymentMethodVC, animated: true)
+            }
+        )
         let hostingController = UIHostingController(rootView: swiftUIView)
         
         addChild(hostingController)
@@ -32,5 +46,13 @@ class ChoosepaymentamountVC: UIViewController {
         ])
         
         navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
+    private func handleBackNavigation() {
+        if let nav = navigationController, nav.viewControllers.first != self {
+            nav.popViewController(animated: true)
+        } else {
+            dismiss(animated: true)
+        }
     }
 }

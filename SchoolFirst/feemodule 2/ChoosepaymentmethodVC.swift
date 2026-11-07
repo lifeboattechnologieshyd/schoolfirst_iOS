@@ -15,9 +15,23 @@ class ChoosepaymentmethodVC: UIViewController {
         setupSwiftUIView()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
     private func setupSwiftUIView() {
-        // 1. Create the SwiftUI View
-        let swiftUIView = ChoosePaymentMethodView()
+        // 1. Create the SwiftUI View with callbacks
+        let swiftUIView = ChoosePaymentMethodView(
+            onBack: { [weak self] in
+                self?.handleBackNavigation()
+            },
+            onContinue: { [weak self] in
+                // Navigate to ReviewpaymentVC
+                let reviewPaymentVC = ReviewpaymentVC()
+                self?.navigationController?.pushViewController(reviewPaymentVC, animated: true)
+            }
+        )
         
         // 2. Wrap it in a UIHostingController
         let hostingController = UIHostingController(rootView: swiftUIView)
@@ -36,7 +50,15 @@ class ChoosepaymentmethodVC: UIViewController {
             hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
         
-        // Hide the default navigation bar since we built a custom one in SwiftUI
+        // Hide the default navigation bar
         navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
+    private func handleBackNavigation() {
+        if let nav = navigationController, nav.viewControllers.first != self {
+            nav.popViewController(animated: true)
+        } else {
+            dismiss(animated: true)
+        }
     }
 }

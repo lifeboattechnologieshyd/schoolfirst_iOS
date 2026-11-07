@@ -15,9 +15,23 @@ class ReviewpaymentVC: UIViewController {
         setupSwiftUIView()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
     private func setupSwiftUIView() {
-        // 1. Create the SwiftUI View
-        let swiftUIView = ReviewPaymentView()
+        // 1. Create the SwiftUI View with onBack closure
+        let swiftUIView = ReviewPaymentView(
+            onBack: { [weak self] in
+                self?.handleBackNavigation()
+            },
+            // onPay closure pushes PaymentsuccessVC on successful payment
+            onPay: { [weak self] in
+                let successVC = PaymentsuccessVC()
+                self?.navigationController?.pushViewController(successVC, animated: true)
+            }
+        )
         
         // 2. Wrap it in a UIHostingController
         let hostingController = UIHostingController(rootView: swiftUIView)
@@ -37,7 +51,14 @@ class ReviewpaymentVC: UIViewController {
         ])
         
         // Hide the default UINavigationController bar
-        // (Since we built a custom header inside the SwiftUI view)
         navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
+    private func handleBackNavigation() {
+        if let nav = navigationController, nav.viewControllers.first != self {
+            nav.popViewController(animated: true)
+        } else {
+            dismiss(animated: true)
+        }
     }
 }

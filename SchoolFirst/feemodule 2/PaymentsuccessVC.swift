@@ -15,9 +15,25 @@ class PaymentsuccessVC: UIViewController {
         setupSwiftUIView()
     }
     
+    // Keeps nav bar hidden when returning to this screen
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
     private func setupSwiftUIView() {
-        // 1. Create the SwiftUI View
-        let swiftUIView = PaymentSuccessView()
+        //   Passed onBack and onViewReceipt closures to PaymentSuccessView
+        let swiftUIView = PaymentSuccessView(
+            onBack: { [weak self] in
+                // ADDED: Handle back navigation (pop)
+                self?.handleBackNavigation()
+            },
+            onViewReceipt: { [weak self] in
+                //  Navigate to PaymentreceiptVC when "View detailed receipt" is tapped
+                let receiptVC = PaymentreceiptVC()
+                self?.navigationController?.pushViewController(receiptVC, animated: true)
+            }
+        )
         
         // 2. Wrap it in a UIHostingController
         let hostingController = UIHostingController(rootView: swiftUIView)
@@ -38,5 +54,14 @@ class PaymentsuccessVC: UIViewController {
         
         // Hide the default UINavigationController bar
         navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
+    //  Handles pop navigation back to previous screen 
+    private func handleBackNavigation() {
+        if let nav = navigationController, nav.viewControllers.first != self {
+            nav.popViewController(animated: true)
+        } else {
+            dismiss(animated: true)
+        }
     }
 }

@@ -8,10 +8,14 @@
 import SwiftUI
 
 struct FeeDashboardView: View {
+    var onBack: () -> Void
+    var onPayFees: () -> Void
+    var onViewHistory: () -> Void
+    
     var body: some View {
         VStack(spacing: 0) {
-            // 1. Custom Navigation Bar (Renamed to avoid conflict)
-            FeeDashboardHeaderView()
+            // 1. Custom Navigation Bar
+            FeeDashboardHeaderView(onBack: onBack)
             
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 16) {
@@ -19,7 +23,7 @@ struct FeeDashboardView: View {
                     StudentSelectorView()
                     
                     // 3. Total Due Card
-                    TotalDueCard()
+                    TotalDueCard(onPayFees: onPayFees)
                     
                     // 4. Split Cards (Current & Upcoming)
                     HStack(spacing: 12) {
@@ -48,11 +52,12 @@ struct FeeDashboardView: View {
                     AnnualFeeStructureCard()
                     
                     // 6. Recent Payment Card
-                    RecentPaymentCard()
+                   
+                    RecentPaymentCard(onViewHistory: onViewHistory)
                 }
                 .padding()
             }
-            .background(Color(UIColor.systemGroupedBackground)) // Light gray background
+            .background(Color(UIColor.systemGroupedBackground))
         }
         .edgesIgnoringSafeArea(.top)
     }
@@ -60,14 +65,19 @@ struct FeeDashboardView: View {
 
 // MARK: - Subviews
 
-// Renamed from CustomHeaderView to FeeDashboardHeaderView
 struct FeeDashboardHeaderView: View {
+    var onBack: () -> Void
+    
     var body: some View {
         VStack {
-            Spacer().frame(height: 50) // Safe area padding
+            Spacer().frame(height: 50)
             HStack {
-                Image(systemName: "arrow.left")
-                    .font(.system(size: 20, weight: .semibold))
+                Button(action: onBack) {
+                    Image(systemName: "arrow.left")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(.white)
+                }
+                .buttonStyle(PlainButtonStyle())
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Fees")
@@ -87,7 +97,7 @@ struct FeeDashboardHeaderView: View {
             .padding(.horizontal)
             .padding(.bottom, 16)
         }
-        .background(Color(red: 0.05, green: 0.35, blue: 0.65)) // Theme Blue
+        .background(Color(red: 0.05, green: 0.35, blue: 0.65))
     }
 }
 
@@ -124,6 +134,8 @@ struct StudentSelectorView: View {
 }
 
 struct TotalDueCard: View {
+    var onPayFees: () -> Void
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -144,15 +156,13 @@ struct TotalDueCard: View {
             
             Text("₹8,500")
                 .font(.system(size: 36, weight: .heavy))
-                .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25)) // Dark Navy
+                .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
             
             Text("Includes ₹350 late fee under Standard Overdue Policy.")
                 .font(.system(size: 13))
                 .foregroundColor(.secondary)
             
-            Button(action: {
-                // Action for pay fees
-            }) {
+            Button(action: onPayFees) {
                 HStack {
                     Image(systemName: "arrow.right")
                     Text("Pay fees")
@@ -161,7 +171,7 @@ struct TotalDueCard: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color(red: 0.1, green: 0.2, blue: 0.4)) // Dark Blue Button
+                .background(Color(red: 0.1, green: 0.2, blue: 0.4))
                 .cornerRadius(10)
             }
             .padding(.top, 4)
@@ -279,7 +289,10 @@ struct FeeRow: View {
     }
 }
 
+
 struct RecentPaymentCard: View {
+    var onViewHistory: () -> Void
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
@@ -287,9 +300,13 @@ struct RecentPaymentCard: View {
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
                 Spacer()
-                Text("View History")
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundColor(Color(red: 0.05, green: 0.35, blue: 0.65))
+                
+                Button(action: onViewHistory) {
+                    Text("View History")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundColor(Color(red: 0.05, green: 0.35, blue: 0.65))
+                }
+                .buttonStyle(PlainButtonStyle())
             }
             
             HStack(spacing: 12) {
@@ -324,4 +341,9 @@ struct RecentPaymentCard: View {
         .cornerRadius(12)
         .shadow(color: .black.opacity(0.03), radius: 5, y: 2)
     }
+}
+
+#Preview {
+    
+    FeeDashboardView(onBack: {}, onPayFees: {}, onViewHistory: {})
 }
