@@ -7,59 +7,176 @@
 
 import SwiftUI
 
+class FeeDashboardViewModel: ObservableObject {
+    @Published var feeResponse: PendingFeeResponse?
+    @Published var completedFeeResponse: CompletedFeeResponse?
+    
+    @Published var isLoading: Bool = false
+    @Published var errorMessage: String?
+    
+    func fetchFeeData() {
+        self.isLoading = true
+        self.errorMessage = nil
+        
+        let studentId = UserManager.shared.resolvedStudentID
+        let schoolId = UserManager.shared.resolvedSchoolID
+        
+        let params: [String: Any] = ["student_id": studentId]
+        let headers: [String: String] = ["X-School-Id": schoolId]
+        
+        // Call Pending Fee API
+        NetworkManager.shared.request(
+            urlString: API.STUDENT_PENDING_FEE,
+            method: .GET,
+            requiresAuth: true,
+            parameters: params,
+            headers: headers
+        ) { [weak self] (result: Result<APIResponse<PendingFeeResponse>, NetworkError>) in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                switch result {
+                case .success(let response):
+                    if response.success {
+                        self?.feeResponse = response.data
+                    } else {
+                        self?.errorMessage = response.description
+                    }
+                case .failure(let error):
+                    self?.errorMessage = error.localizedDescription
+                }
+            }
+        }
+    }
+    
+    func fetchCompletedFeeData() {
+        let studentId = UserManager.shared.resolvedStudentID
+        let schoolId = UserManager.shared.resolvedSchoolID
+        
+        let params: [String: Any] = ["student_id": studentId]
+        let headers: [String: String] = ["X-School-Id": schoolId]
+        
+        NetworkManager.shared.request(
+            urlString: API.FEE_COMPLETED_PAYMENT,
+            method: .GET,
+            requiresAuth: true,
+            parameters: params,
+            headers: headers
+        ) { [weak self] (result: Result<APIResponse<CompletedFeeResponse>, NetworkError>) in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let response):
+                    if response.success {
+                        self?.completedFeeResponse = response.data
+                    }
+                case .failure(let error):
+                    print("Error fetching completed fees: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
+    func formatCurrency(_ value: Double?) -> String {
+        guard let value = value else { return "₹0" }
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 2
+        return "₹\(formatter.string(from: NSNumber(value: value)) ?? "0")"
+    }
+}
+
 struct FeeDashboardView: View {
     var onBack: () -> Void
-    var onPayFees: () -> Void
-    var onViewHistory: () -> Void
+    var onPayFees: (PendingFeeResponse?) -> Void
+    var onViewHistory: (CompletedFeeResponse?) -> Void // **** UPDATED: Accept API Model ****
+    
+    @StateObject private var viewModel = FeeDashboardViewModel()
     
     var body: some View {
         VStack(spacing: 0) {
-            // 1. Custom Navigation Bar
             FeeDashboardHeaderView(onBack: onBack)
             
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 16) {
-                    // 2. Student Selector
-                    StudentSelectorView()
-                    
-                    // 3. Total Due Card
-                    TotalDueCard(onPayFees: onPayFees)
-                    
-                    // 4. Split Cards (Current & Upcoming)
-                    HStack(spacing: 12) {
-                        InstallmentCard(
-                            iconName: "exclamationmark.circle",
-                            iconColor: .orange,
-                            badgeText: "7 days",
-                            badgeColor: .orange,
-                            title: "Current installment",
-                            amount: "₹5,500",
-                            dueDate: "Due 10 Aug 2026"
+            ZStack {
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 16) {
+                        StudentSelectorView(
+                            name: viewModel.feeResponse?.student.name ?? UserManager.shared.resolvedStudentName,
+                            admissionNo: viewModel.feeResponse?.student.admissionNumber ?? "",
+                            className: UserManager.shared.resolvedGradeSection
                         )
                         
-                        InstallmentCard(
-                            iconName: "calendar.badge.clock",
-                            iconColor: .blue,
-                            badgeText: "Term 3",
-                            badgeColor: .blue,
-                            title: "Upcoming",
-                            amount: "₹3,000",
-                            dueDate: "Due 10 Oct 2026"
+                        TotalDueCard(
+                            totalDue: viewModel.formatCurrency(viewModel.feeResponse?.totalPayableAmount),
+                            lateFee: viewModel.feeResponse?.feeSummary?.totalLateFee ?? 0.0,
+                            onPayFees: { onPayFees(viewModel.feeResponse) }
                         )
+                        
+                        if let fees = viewModel.feeResponse?.fees, !fees.isEmpty {
+                            HStack(spacing: 12) {
+                                if let currentFee = fees.first {
+                                    InstallmentCard(
+                                        iconName: "exclamationmark.circle",
+                                        iconColor: .orange,
+                                        badgeText: "Due soon",
+                                        badgeColor: .orange,
+                                        title: currentFee.installment.isEmpty ? currentFee.feeType : currentFee.installment,
+                                        amount: currentFee.formattedPayableAmount,
+                                        dueDate: currentFee.formattedDueDate.isEmpty ? "No Due Date" : "Due \(currentFee.formattedDueDate)"
+                                    )
+                                }
+                                
+                                if fees.count > 1 {
+                                    let upcomingFee = fees[1]
+                                    InstallmentCard(
+                                        iconName: "calendar.badge.clock",
+                                        iconColor: .blue,
+                                        badgeText: "Upcoming",
+                                        badgeColor: .blue,
+                                        title: upcomingFee.installment.isEmpty ? upcomingFee.feeType : upcomingFee.installment,
+                                        amount: upcomingFee.formattedPayableAmount,
+                                        dueDate: upcomingFee.formattedDueDate.isEmpty ? "No Due Date" : "Due \(upcomingFee.formattedDueDate)"
+                                    )
+                                } else {
+                                    Spacer().frame(maxWidth: .infinity)
+                                }
+                            }
+                        }
+                        
+                        AnnualFeeStructureCard(
+                            assignedAmount: viewModel.formatCurrency(viewModel.feeResponse?.feeSummary?.totalFee),
+                            concession: viewModel.formatCurrency(viewModel.feeResponse?.feeSummary?.totalConcession),
+                            paidToDate: viewModel.formatCurrency(viewModel.feeResponse?.feeSummary?.totalPaid),
+                            outstanding: viewModel.formatCurrency(viewModel.feeResponse?.feeSummary?.outstandingAmount),
+                            classInfo: UserManager.shared.resolvedGradeSection
+                        )
+                        
+                        if let recentPayment = viewModel.completedFeeResponse?.payments.first {
+                            RecentPaymentCard(
+                                amountText: "\(recentPayment.formattedTotalAmount) paid",
+                                detailsText: "\(recentPayment.formattedPaymentDate) • \(recentPayment.paymentGateway.isEmpty ? "Online" : recentPayment.paymentGateway) • \(recentPayment.referenceNumber)",
+                                statusText: "Paid",
+                                onViewHistory: { onViewHistory(viewModel.completedFeeResponse) } // **** UPDATED ****
+                            )
+                        }
                     }
-                    
-                    // 5. Annual Fee Structure Card
-                    AnnualFeeStructureCard()
-                    
-                    // 6. Recent Payment Card
-                   
-                    RecentPaymentCard(onViewHistory: onViewHistory)
+                    .padding()
                 }
-                .padding()
+                
+                if viewModel.isLoading {
+                    Color.black.opacity(0.1).edgesIgnoringSafeArea(.all)
+                    ProgressView("Fetching fees...")
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(10)
+                        .shadow(radius: 10)
+                }
             }
             .background(Color(UIColor.systemGroupedBackground))
         }
         .edgesIgnoringSafeArea(.top)
+        .onAppear {
+            viewModel.fetchFeeData()
+            viewModel.fetchCompletedFeeData()
+        }
     }
 }
 
@@ -102,9 +219,21 @@ struct FeeDashboardHeaderView: View {
 }
 
 struct StudentSelectorView: View {
+    var name: String
+    var admissionNo: String
+    var className: String
+    
+    var initials: String {
+        let components = name.split(separator: " ")
+        if components.count >= 2 {
+            return "\(components[0].prefix(1))\(components[1].prefix(1))".uppercased()
+        }
+        return String(name.prefix(2)).uppercased()
+    }
+    
     var body: some View {
         HStack {
-            Text("AS")
+            Text(initials)
                 .font(.system(size: 14, weight: .bold))
                 .foregroundColor(Color(red: 0.05, green: 0.35, blue: 0.65))
                 .frame(width: 40, height: 40)
@@ -112,16 +241,14 @@ struct StudentSelectorView: View {
                 .clipShape(Circle())
             
             VStack(alignment: .leading, spacing: 2) {
-                Text("Aarav Sharma")
+                Text(name)
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(.primary)
-                Text("Class 10-A • SF-2026-001")
+                Text("\(className) • \(admissionNo)")
                     .font(.system(size: 12))
                     .foregroundColor(.secondary)
             }
-            
             Spacer()
-            
             Image(systemName: "chevron.up.chevron.down")
                 .font(.system(size: 14))
                 .foregroundColor(.secondary)
@@ -134,6 +261,8 @@ struct StudentSelectorView: View {
 }
 
 struct TotalDueCard: View {
+    var totalDue: String
+    var lateFee: Double
     var onPayFees: () -> Void
     
     var body: some View {
@@ -145,22 +274,28 @@ struct TotalDueCard: View {
                 
                 Spacer()
                 
-                Text("Overdue")
+                Text(totalDue == "₹0" ? "Cleared" : "Overdue")
                     .font(.system(size: 12, weight: .bold))
-                    .foregroundColor(.orange)
+                    .foregroundColor(totalDue == "₹0" ? .green : .orange)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
-                    .background(Color.orange.opacity(0.15))
+                    .background(totalDue == "₹0" ? Color.green.opacity(0.15) : Color.orange.opacity(0.15))
                     .cornerRadius(8)
             }
             
-            Text("₹8,500")
+            Text(totalDue)
                 .font(.system(size: 36, weight: .heavy))
                 .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
             
-            Text("Includes ₹350 late fee under Standard Overdue Policy.")
-                .font(.system(size: 13))
-                .foregroundColor(.secondary)
+            if lateFee > 0 {
+                Text("Includes ₹\(Int(lateFee)) late fee under Standard Overdue Policy.")
+                    .font(.system(size: 13))
+                    .foregroundColor(.secondary)
+            } else {
+                Text("No late fees applied at this time.")
+                    .font(.system(size: 13))
+                    .foregroundColor(.secondary)
+            }
             
             Button(action: onPayFees) {
                 HStack {
@@ -175,6 +310,8 @@ struct TotalDueCard: View {
                 .cornerRadius(10)
             }
             .padding(.top, 4)
+            .disabled(totalDue == "₹0")
+            .opacity(totalDue == "₹0" ? 0.6 : 1.0)
         }
         .padding()
         .background(Color.white)
@@ -216,10 +353,12 @@ struct InstallmentCard: View {
                 Text(title)
                     .font(.system(size: 13))
                     .foregroundColor(.secondary)
+                    .lineLimit(1)
                 
                 Text(amount)
                     .font(.system(size: 20, weight: .bold))
                     .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
+                    .minimumScaleFactor(0.8)
                 
                 Text(dueDate)
                     .font(.system(size: 11))
@@ -227,6 +366,7 @@ struct InstallmentCard: View {
             }
         }
         .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.white)
         .cornerRadius(12)
         .shadow(color: .black.opacity(0.03), radius: 5, y: 2)
@@ -234,6 +374,12 @@ struct InstallmentCard: View {
 }
 
 struct AnnualFeeStructureCard: View {
+    var assignedAmount: String
+    var concession: String
+    var paidToDate: String
+    var outstanding: String
+    var classInfo: String
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
@@ -246,19 +392,17 @@ struct AnnualFeeStructureCard: View {
                     .foregroundColor(Color(red: 0.05, green: 0.35, blue: 0.65))
             }
             
-            Text("Class 9-10 • Term-wise billing")
+            Text("\(classInfo) • Term-wise billing")
                 .font(.system(size: 13))
                 .foregroundColor(.secondary)
                 .padding(.top, -8)
             
             VStack(spacing: 12) {
-                FeeRow(title: "Assigned amount", amount: "₹18,300")
-                FeeRow(title: "Merit concession", amount: "− ₹1,000", isDiscount: true)
-                FeeRow(title: "Paid to date", amount: "₹9,150", isDiscount: true)
-                
+                FeeRow(title: "Assigned amount", amount: assignedAmount)
+                FeeRow(title: "Merit concession", amount: "- \(concession)", isDiscount: true)
+                FeeRow(title: "Paid to date", amount: paidToDate, isDiscount: true)
                 Divider()
-                
-                FeeRow(title: "Outstanding fees", amount: "₹8,150", isBold: true)
+                FeeRow(title: "Outstanding fees", amount: outstanding, isBold: true)
             }
         }
         .padding()
@@ -289,8 +433,10 @@ struct FeeRow: View {
     }
 }
 
-
 struct RecentPaymentCard: View {
+    var amountText: String
+    var detailsText: String
+    var statusText: String
     var onViewHistory: () -> Void
     
     var body: some View {
@@ -317,17 +463,17 @@ struct RecentPaymentCard: View {
                     .cornerRadius(8)
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("₹9,150 paid")
+                    Text(amountText)
                         .font(.system(size: 14, weight: .bold))
                         .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
-                    Text("12 Aug 2026 • Online • RCP-2026-0892")
+                    Text(detailsText)
                         .font(.system(size: 11))
                         .foregroundColor(.secondary)
                 }
                 
                 Spacer()
                 
-                Text("Paid")
+                Text(statusText)
                     .font(.system(size: 12, weight: .bold))
                     .foregroundColor(.green)
                     .padding(.horizontal, 10)
@@ -344,6 +490,5 @@ struct RecentPaymentCard: View {
 }
 
 #Preview {
-    
-    FeeDashboardView(onBack: {}, onPayFees: {}, onViewHistory: {})
+    FeeDashboardView(onBack: {}, onPayFees: { _ in }, onViewHistory: { _ in })
 }

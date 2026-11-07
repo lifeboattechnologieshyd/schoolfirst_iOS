@@ -8,8 +8,20 @@
 import SwiftUI
 
 struct FeeDetailsView: View {
+    // **** ADDED: Property to hold data passed from UIKit ****
+    var feeData: PendingFeeResponse?
+    
     var onBack: () -> Void
     var onChoosePaymentAmount: () -> Void
+    
+    // **** ADDED: Helper formatter ****
+    func formatCurrency(_ value: Double?) -> String {
+        guard let value = value else { return "₹0" }
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 2
+        return "₹\(formatter.string(from: NSNumber(value: value)) ?? "0")"
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -19,22 +31,39 @@ struct FeeDetailsView: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 16) {
                     // 1. Annual Fee Structure
-                    FDAnnualStructureCard()
+                    FDAnnualStructureCard(
+                        assignedAmount: formatCurrency(feeData?.feeSummary?.totalFee),
+                        concession: formatCurrency(feeData?.feeSummary?.totalConcession),
+                        netPayable: formatCurrency((feeData?.feeSummary?.totalFee ?? 0) - (feeData?.feeSummary?.totalConcession ?? 0))
+                    )
                     
                     // 2. Component Breakdown
-                    FDComponentBreakdownCard()
+                    FDComponentBreakdownCard(fees: feeData?.fees ?? [])
                     
                     // 3. Merit Concession Info Box
-                    FDMeritConcessionBox()
+                    if let concession = feeData?.feeSummary?.totalConcession, concession > 0 {
+                        FDMeritConcessionBox(concessionAmount: formatCurrency(concession))
+                    }
                     
                     // 4. Installment Schedule
-                    FDInstallmentScheduleCard()
+                    FDInstallmentScheduleCard(fees: feeData?.fees ?? [])
                     
                     // 5. Late-fee Impact Box
-                    FDLateFeeImpactBox()
+                    if let lateFee = feeData?.feeSummary?.totalLateFee, lateFee > 0 {
+                        FDLateFeeImpactBox(
+                            lateFee: formatCurrency(lateFee),
+                            currentDue: formatCurrency(feeData?.totalPayableAmount)
+                        )
+                    }
                     
                     // 6. Payment Summary
-                    FDPaymentSummaryCard()
+                    FDPaymentSummaryCard(
+                        paid: formatCurrency(feeData?.feeSummary?.totalPaid),
+                        outstanding: formatCurrency(feeData?.feeSummary?.outstandingAmount),
+                        lateFee: formatCurrency(feeData?.feeSummary?.totalLateFee),
+                        totalDue: formatCurrency(feeData?.totalPayableAmount),
+                        hasLateFee: (feeData?.feeSummary?.totalLateFee ?? 0) > 0
+                    )
                     
                     Spacer().frame(height: 20)
                 }
@@ -43,7 +72,11 @@ struct FeeDetailsView: View {
             .background(Color(UIColor.systemGroupedBackground))
             
             // Bottom Sticky Payment Bar
-            FDBottomPaymentBar(onChoosePaymentAmount: onChoosePaymentAmount)
+            FDBottomPaymentBar(
+                totalDue: formatCurrency(feeData?.totalPayableAmount),
+                isDisabled: (feeData?.totalPayableAmount ?? 0) <= 0,
+                onChoosePaymentAmount: onChoosePaymentAmount
+            )
         }
         .edgesIgnoringSafeArea(.top)
     }
@@ -87,7 +120,12 @@ struct FDHeaderView: View {
     }
 }
 
+// **** UPDATED: Accepts API values ****
 struct FDAnnualStructureCard: View {
+    var assignedAmount: String
+    var concession: String
+    var netPayable: String
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
@@ -95,7 +133,8 @@ struct FDAnnualStructureCard: View {
                     Text("Annual Fee Structure")
                         .font(.system(size: 16, weight: .bold))
                         .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
-                    Text("Class 9-10 • AY 2026-27 • Term-wise")
+                    // Class name rendered via global scope
+                    Text("\(UserManager.shared.resolvedGradeSection) • Term-wise")
                         .font(.system(size: 12))
                         .foregroundColor(.secondary)
                 }
@@ -110,9 +149,11 @@ struct FDAnnualStructureCard: View {
             }
             
             VStack(spacing: 12) {
-                FDSimpleRow(title: "Assigned amount", amount: "₹18,300", isBoldTitle: true, isBoldAmount: true)
-                FDSimpleRow(title: "Approved merit concession", amount: "− ₹1,000", amountColor: .green)
-                FDSimpleRow(title: "Net payable", amount: "₹17,300")
+                FDSimpleRow(title: "Assigned amount", amount: assignedAmount, isBoldTitle: true, isBoldAmount: true)
+                if concession != "₹0" {
+                    FDSimpleRow(title: "Approved merit concession", amount: "− \(concession)", amountColor: .green)
+                }
+                FDSimpleRow(title: "Net payable", amount: netPayable)
             }
         }
         .padding()
@@ -121,25 +162,36 @@ struct FDAnnualStructureCard: View {
     }
 }
 
+// **** UPDATED: Dynamically rendering the component rows based on API fees array ****
 struct FDComponentBreakdownCard: View {
+    var fees: [PendingFeeItem]
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Component breakdown")
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
-                Text("Configured by the school for Aarav's class and assignments.")
+                Text("Configured by the school for \(UserManager.shared.resolvedStudentName)'s class.")
                     .font(.system(size: 12))
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
             
             VStack(spacing: 16) {
-                FDDetailRow(title: "Tuition fee", subtitle: "Academic • Required", amount: "₹12,000")
-                FDDetailRow(title: "Transport fee", subtitle: "Route 4 - Assigned", amount: "₹3,500")
-                FDDetailRow(title: "Library access", subtitle: "Annual - Optional", amount: "₹500")
-                FDDetailRow(title: "Lab & practical", subtitle: "Class 10", amount: "₹1,500")
-                FDDetailRow(title: "Sports & gym", subtitle: "Annual - Required", amount: "₹800")
+                if fees.isEmpty {
+                    Text("No component breakdown available.")
+                        .font(.system(size: 14))
+                        .foregroundColor(.secondary)
+                } else {
+                    ForEach(fees, id: \.studentFeeId) { fee in
+                        FDDetailRow(
+                            title: fee.feeType.isEmpty ? "Fee" : fee.feeType,
+                            subtitle: fee.installment.isEmpty ? "Academic" : fee.installment,
+                            amount: fee.formattedAmount
+                        )
+                    }
+                }
             }
         }
         .padding()
@@ -148,7 +200,10 @@ struct FDComponentBreakdownCard: View {
     }
 }
 
+// **** UPDATED: Added prop to receive dynamic concession amount ****
 struct FDMeritConcessionBox: View {
+    var concessionAmount: String
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -158,7 +213,7 @@ struct FDMeritConcessionBox: View {
                     .font(.system(size: 14, weight: .bold))
                     .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
                 Spacer()
-                Text("− ₹1,000")
+                Text("− \(concessionAmount)")
                     .font(.system(size: 14, weight: .bold))
                     .foregroundColor(.blue)
             }
@@ -173,7 +228,10 @@ struct FDMeritConcessionBox: View {
     }
 }
 
+// **** UPDATED: Dynamically rendering installments based on API data ****
 struct FDInstallmentScheduleCard: View {
+    var fees: [PendingFeeItem]
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 4) {
@@ -186,9 +244,30 @@ struct FDInstallmentScheduleCard: View {
             }
             
             VStack(spacing: 16) {
-                FDScheduleRow(icon: "checkmark.circle", iconColor: .green, title: "Term 1", date: "10 Apr 2026", amount: "₹9,150", status: "Paid", statusColor: .green)
-                FDScheduleRow(icon: "calendar.badge.exclamationmark", iconColor: .orange, title: "Term 2", date: "10 Aug 2026", amount: "₹5,150", status: "Overdue", statusColor: .orange)
-                FDScheduleRow(icon: "calendar", iconColor: .blue, title: "Term 3", date: "10 Oct 2026", amount: "₹3,000", status: "Upcoming", statusColor: .blue)
+                if fees.isEmpty {
+                    Text("No installments to show.")
+                        .font(.system(size: 14))
+                        .foregroundColor(.secondary)
+                } else {
+                    ForEach(fees, id: \.studentFeeId) { fee in
+                        let isPaid = fee.status.uppercased() == "PAID"
+                        let isOverdue = fee.status.uppercased() == "OVERDUE"
+                        
+                        let icon = isPaid ? "checkmark.circle" : (isOverdue ? "calendar.badge.exclamationmark" : "calendar")
+                        let iconColor: Color = isPaid ? .green : (isOverdue ? .orange : .blue)
+                        let title = fee.installment.isEmpty ? fee.feeType : fee.installment
+                        
+                        FDScheduleRow(
+                            icon: icon,
+                            iconColor: iconColor,
+                            title: title,
+                            date: fee.formattedDueDate,
+                            amount: fee.formattedAmount,
+                            status: fee.status.isEmpty ? "Upcoming" : fee.status.capitalized,
+                            statusColor: iconColor
+                        )
+                    }
+                }
             }
         }
         .padding()
@@ -197,7 +276,11 @@ struct FDInstallmentScheduleCard: View {
     }
 }
 
+// **** UPDATED: Passing API Data ****
 struct FDLateFeeImpactBox: View {
+    var lateFee: String
+    var currentDue: String
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Late-fee impact")
@@ -210,12 +293,9 @@ struct FDLateFeeImpactBox: View {
                 .padding(.top, -8)
             
             VStack(spacing: 8) {
-                FDSimpleRow(title: "Term 2 outstanding", amount: "₹5,150")
-                FDSimpleRow(title: "7 days overdue - ₹50/day", amount: "+ ₹350", amountColor: .red)
-                
+                FDSimpleRow(title: "Late fee applied", amount: "+ \(lateFee)", amountColor: .red)
                 Divider().padding(.vertical, 4)
-                
-                FDSimpleRow(title: "Current installment due", amount: "₹5,500", isBoldTitle: true, isBoldAmount: true)
+                FDSimpleRow(title: "Current installment due", amount: currentDue, isBoldTitle: true, isBoldAmount: true)
             }
         }
         .padding()
@@ -224,7 +304,14 @@ struct FDLateFeeImpactBox: View {
     }
 }
 
+// **** UPDATED: Used passed API values for summary ****
 struct FDPaymentSummaryCard: View {
+    var paid: String
+    var outstanding: String
+    var lateFee: String
+    var totalDue: String
+    var hasLateFee: Bool
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Payment summary")
@@ -232,13 +319,15 @@ struct FDPaymentSummaryCard: View {
                 .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
             
             VStack(spacing: 12) {
-                FDSimpleRow(title: "Paid", amount: "₹9,150", amountColor: .green)
-                FDSimpleRow(title: "Outstanding fees", amount: "₹8,150")
-                FDSimpleRow(title: "Late fee", amount: "₹350", amountColor: .red)
+                FDSimpleRow(title: "Paid", amount: paid, amountColor: .green)
+                FDSimpleRow(title: "Outstanding fees", amount: outstanding)
+                if hasLateFee {
+                    FDSimpleRow(title: "Late fee", amount: lateFee, amountColor: .red)
+                }
                 
                 Divider()
                 
-                FDSimpleRow(title: "Total due today", amount: "₹8,500", isBoldTitle: true, isBoldAmount: true)
+                FDSimpleRow(title: "Total due today", amount: totalDue, isBoldTitle: true, isBoldAmount: true)
             }
         }
         .padding()
@@ -247,7 +336,10 @@ struct FDPaymentSummaryCard: View {
     }
 }
 
+// **** UPDATED: Dynamically bind Total Due and disable if nothing to pay ****
 struct FDBottomPaymentBar: View {
+    var totalDue: String
+    var isDisabled: Bool
     var onChoosePaymentAmount: () -> Void
     
     var body: some View {
@@ -257,7 +349,7 @@ struct FDBottomPaymentBar: View {
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
                 Spacer()
-                Text("₹8,500")
+                Text(totalDue)
                     .font(.system(size: 20, weight: .bold))
                     .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
             }
@@ -271,6 +363,8 @@ struct FDBottomPaymentBar: View {
                     .background(Color(red: 0.1, green: 0.2, blue: 0.4))
                     .cornerRadius(10)
             }
+            .disabled(isDisabled)
+            .opacity(isDisabled ? 0.6 : 1.0)
         }
         .padding(.horizontal)
         .padding(.top, 16)
@@ -367,8 +461,4 @@ struct FDScheduleRow: View {
             }
         }
     }
-}
-
-#Preview {
-    FeeDetailsView(onBack: {}, onChoosePaymentAmount: {})
 }

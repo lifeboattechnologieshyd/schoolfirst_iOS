@@ -27,8 +27,9 @@ class FeedashboardVC: UIViewController {
             onBack: { [weak self] in
                 self?.handleBackNavigation()
             },
-            onPayFees: { [weak self] in
+            onPayFees: { [weak self] feeResponse in
                 let detailsVC = FeedetailsVC()
+                detailsVC.feeResponse = feeResponse // Pass data
                 if let nav = self?.navigationController {
                     nav.pushViewController(detailsVC, animated: true)
                 } else {
@@ -36,8 +37,10 @@ class FeedashboardVC: UIViewController {
                 }
             },
             
-            onViewHistory: { [weak self] in
+            // **** UPDATED: Accept completedFeeResponse parameter and pass it to PaymenthistoryVC ****
+            onViewHistory: { [weak self] completedFeeResponse in
                 let historyVC = PaymenthistoryVC()
+                historyVC.completedFeeResponse = completedFeeResponse // **** ADDED: Pass data ****
                 if let nav = self?.navigationController {
                     nav.pushViewController(historyVC, animated: true)
                 } else {

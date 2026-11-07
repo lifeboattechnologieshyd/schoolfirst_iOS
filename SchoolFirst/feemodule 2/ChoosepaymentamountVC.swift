@@ -10,6 +10,8 @@ import SwiftUI
 
 class ChoosepaymentamountVC: UIViewController {
     
+    var feeResponse: PendingFeeResponse?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupSwiftUIView()
@@ -22,13 +24,15 @@ class ChoosepaymentamountVC: UIViewController {
     
     private func setupSwiftUIView() {
         let swiftUIView = ChoosePaymentAmountView(
+            feeData: feeResponse,
             onBack: { [weak self] in
                 self?.handleBackNavigation()
             },
             onContinue: { [weak self] in
-                // Navigate to ChoosepaymentmethodVC
-                let paymentMethodVC = ChoosepaymentmethodVC()
-                self?.navigationController?.pushViewController(paymentMethodVC, animated: true)
+                // **** UPDATED: Navigate to ReviewpaymentVC and pass API data ****
+                let reviewVC = ReviewpaymentVC()
+                reviewVC.feeResponse = self?.feeResponse
+                self?.navigationController?.pushViewController(reviewVC, animated: true)
             }
         )
         let hostingController = UIHostingController(rootView: swiftUIView)

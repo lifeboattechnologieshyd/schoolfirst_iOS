@@ -10,11 +10,13 @@ import SwiftUI
 
 class PaymenthistoryVC: UIViewController {
     
+    // **** ADDED: API Response object passed from Dashboard ****
+    var completedFeeResponse: CompletedFeeResponse?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupSwiftUIView()
     }
-    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -23,7 +25,9 @@ class PaymenthistoryVC: UIViewController {
     
     private func setupSwiftUIView() {
         
+        // **** UPDATED: Pass response to PaymentHistoryView ****
         let swiftUIView = PaymentHistoryView(
+            response: completedFeeResponse,
             onBack: { [weak self] in
                 self?.handleBackNavigation()
             }

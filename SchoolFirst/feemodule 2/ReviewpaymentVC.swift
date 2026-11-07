@@ -10,6 +10,9 @@ import SwiftUI
 
 class ReviewpaymentVC: UIViewController {
     
+    // **** ADDED: Property to receive API data from ChoosepaymentamountVC ****
+    var feeResponse: PendingFeeResponse?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupSwiftUIView()
@@ -23,6 +26,7 @@ class ReviewpaymentVC: UIViewController {
     private func setupSwiftUIView() {
         // 1. Create the SwiftUI View with onBack closure
         let swiftUIView = ReviewPaymentView(
+            feeData: feeResponse, // **** UPDATED: Passed data to SwiftUI view ****
             onBack: { [weak self] in
                 self?.handleBackNavigation()
             },

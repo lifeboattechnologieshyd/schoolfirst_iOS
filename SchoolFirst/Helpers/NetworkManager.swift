@@ -2994,7 +2994,7 @@ struct FeePaymentCreationResponse: Decodable {
 }
 
 // MARK: - Completed Fee Payments Response
-// Endpoint: /fee/completed/payment
+//***** Endpoint: /fee/completed/payment
 
 struct CompletedFeeResponse: Decodable {
     let student:         CompletedFeeStudent
@@ -5404,7 +5404,7 @@ struct DeliveryInfo {
     let country: String
 }
 
-// MARK: - Create Order Response
+//**** MARK: - Create Order Response
 struct CreateOrderResponseModel: Codable {
     let id: String?
     let orderId: String?

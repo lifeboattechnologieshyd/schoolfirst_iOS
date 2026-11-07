@@ -7,91 +7,67 @@
 
 import SwiftUI
 
-// MARK: - Data Models (Ready for API Integration)
-enum PHStatus: String, CaseIterable {
-    case paid = "Paid"
-    case pending = "Pending"
-    case failed = "Failed"
-    
-    var iconName: String {
-        switch self {
-        case .paid: return "checkmark"
-        case .pending: return "clock"
-        case .failed: return "xmark"
-        }
-    }
-    
-    var iconColor: Color {
-        switch self {
-        case .paid: return .green
-        case .pending: return .blue
-        case .failed: return .orange
-        }
-    }
-    
-    var iconBgColor: Color {
-        switch self {
-        case .paid: return Color.green.opacity(0.1)
-        case .pending: return Color.blue.opacity(0.1)
-        case .failed: return Color.orange.opacity(0.1)
-        }
-    }
-    
-    var textColor: Color {
-        switch self {
-        case .paid, .pending: return Color(red: 0.05, green: 0.35, blue: 0.65)
-        case .failed: return .orange
-        }
-    }
-}
-
-struct PHTransaction: Identifiable {
-    let id = UUID()
-    let amount: String
-    let dateDetails: String
-    let transactionID: String
-    let status: PHStatus
-    let actionText: String? // "RCP-2026-0893", "Check status", "Try again"
-}
+// **** UPDATED: Completely removed dummy models (PHStatus & PHTransaction) and static variables. Using direct API Model Data. ****
 
 struct PaymentHistoryView: View {
-    // onBack closure property
+    // **** ADDED: API Response Model parameter ****
+    var response: CompletedFeeResponse?
     var onBack: () -> Void
-    
-    // Dummy Data (Replace with ViewModel / API Data later)
-    let studentName = "Aarav Sharma"
-    let studentInitials = "AS"
-    let studentClass = "Class 10-A • SF-2026-001"
-    let academicYear = "AY 2026-27"
-    
-    let paidAmount = "₹17,735"
-    let successfulPayments = "2 successful payments"
-    
-    let otherAttempts = "2"
-    let pendingFailedText = "1 pending • 1 failed"
-    
-    let transactions: [PHTransaction] = [
-        PHTransaction(amount: "₹8,585", dateDetails: "17 Aug 2026 • 9:41 AM • Card", transactionID: "TXN-SF-260817-4902", status: .paid, actionText: "RCP-2026-0893"),
-        PHTransaction(amount: "₹5,500", dateDetails: "16 Aug 2026 • 6:18 PM • UPI", transactionID: "TXN-SF-260816-4811", status: .pending, actionText: "Check status"),
-        PHTransaction(amount: "₹5,500", dateDetails: "15 Aug 2026 • 8:06 PM • UPI", transactionID: "TXN-SF-260815-4762", status: .failed, actionText: "Try again"),
-        PHTransaction(amount: "₹9,150", dateDetails: "12 Aug 2026 • 11:27 AM • Online", transactionID: "TXN-SF-260812-4520", status: .paid, actionText: "RCP-2026-0892")
-    ]
     
     // Filter state
     @State private var selectedFilter: String = "All"
     let filters = ["All", "Paid", "Pending", "Failed"]
     
-    var filteredTransactions: [PHTransaction] {
-        if selectedFilter == "All" {
-            return transactions
+    // **** ADDED: Dynamically derived student values ****
+    var studentName: String {
+        response?.student.name ?? UserManager.shared.resolvedStudentName
+    }
+    
+    var studentInitials: String {
+        let components = studentName.split(separator: " ")
+        if components.count >= 2 {
+            return "\(components[0].prefix(1))\(components[1].prefix(1))".uppercased()
         }
-        return transactions.filter { $0.status.rawValue == selectedFilter }
+        return String(studentName.prefix(2)).uppercased()
+    }
+    
+    var studentClass: String {
+        let grade = UserManager.shared.resolvedGradeSection
+        let admissionNo = response?.student.admissionNumber ?? ""
+        return admissionNo.isEmpty ? grade : "\(grade) • \(admissionNo)"
+    }
+    
+    var academicYear: String {
+        let ayName = response?.student.academicYear.name ?? ""
+        if ayName.isEmpty { return "AY" }
+        return ayName.hasPrefix("AY") ? ayName : "AY \(ayName)"
+    }
+    
+    // **** ADDED: Dynamically format summary values ****
+    var paidAmount: String {
+        formatAmount(response?.totalPaidAmount)
+    }
+    
+    var successfulPaymentsCount: Int {
+        response?.payments.count ?? 0
+    }
+    
+    // Derived transactions for the list
+    var filteredTransactions: [CompletedFeeTransaction] {
+        guard let payments = response?.payments else { return [] }
+        if selectedFilter == "All" {
+            return payments
+        }
+        return payments.filter { transaction in
+            // Mapping status dynamically based on items. Fallback to "Paid" if status is unavailable.
+            let status = transaction.fees.first?.displayStatus ?? "Paid"
+            return status.caseInsensitiveCompare(selectedFilter) == .orderedSame
+        }
     }
     
     var body: some View {
         VStack(spacing: 0) {
             // 1. Header
-            // UPDATED: Passed onBack to PHHeaderView
             PHHeaderView(onBack: onBack)
             
             ScrollView(showsIndicators: false) {
@@ -110,14 +86,14 @@ struct PaymentHistoryView: View {
                         PHSummaryCard(
                             title: "Paid this year",
                             value: paidAmount,
-                            subtitle: successfulPayments,
+                            subtitle: "\(successfulPaymentsCount) successful payments",
                             isHighlighted: true
                         )
                         
                         PHSummaryCard(
                             title: "Other attempts",
-                            value: otherAttempts,
-                            subtitle: pendingFailedText,
+                            value: "0", // Since this is a completed API response, pending/failed attempts are mostly 0.
+                            subtitle: "0 pending • 0 failed",
                             isHighlighted: false
                         )
                     }
@@ -153,7 +129,7 @@ struct PaymentHistoryView: View {
                         Text("Recent activity")
                             .font(.system(size: 16, weight: .bold))
                             .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
-                        Text("Academic Year 2026–27")
+                        Text(academicYear)
                             .font(.system(size: 12))
                             .foregroundColor(.secondary)
                     }
@@ -168,7 +144,8 @@ struct PaymentHistoryView: View {
                             .padding(.top, 20)
                     } else {
                         VStack(spacing: 12) {
-                            ForEach(filteredTransactions) { transaction in
+                            // **** UPDATED: Dynamically parsing API payments ****
+                            ForEach(filteredTransactions, id: \.transactionId) { transaction in
                                 PHTransactionCard(transaction: transaction)
                             }
                         }
@@ -187,19 +164,26 @@ struct PaymentHistoryView: View {
         }
         .edgesIgnoringSafeArea(.top)
     }
+    
+    // **** ADDED: Helper Format amount locally ****
+    private func formatAmount(_ amount: Double?) -> String {
+        guard let amount = amount else { return "₹0" }
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 2
+        return "₹\(formatter.string(from: NSNumber(value: amount)) ?? "0")"
+    }
 }
 
 // MARK: - Subviews
 
-//Added onBack closure and wrapped back arrow in Button
 struct PHHeaderView: View {
     var onBack: () -> Void
     
     var body: some View {
         VStack {
-            Spacer().frame(height: 50) // Safe area padding
+            Spacer().frame(height: 50)
             HStack {
-                //ADDED: Button to trigger onBack
                 Button(action: onBack) {
                     Image(systemName: "arrow.left")
                         .font(.system(size: 20, weight: .semibold))
@@ -225,7 +209,7 @@ struct PHHeaderView: View {
             .padding(.horizontal)
             .padding(.bottom, 16)
         }
-        .background(Color(red: 0.05, green: 0.35, blue: 0.65)) // Theme Blue
+        .background(Color(red: 0.05, green: 0.35, blue: 0.65))
     }
 }
 
@@ -298,8 +282,55 @@ struct PHSummaryCard: View {
     }
 }
 
+// **** UPDATED: Binds real CompletedFeeTransaction API Model directly ****
 struct PHTransactionCard: View {
-    let transaction: PHTransaction
+    let transaction: CompletedFeeTransaction
+    
+    // Status Logic Extractors
+    private var displayStatus: String {
+        transaction.fees.first?.displayStatus ?? "Paid"
+    }
+    
+    private var isPaid: Bool {
+        displayStatus.caseInsensitiveCompare("Paid") == .orderedSame || displayStatus.caseInsensitiveCompare("Success") == .orderedSame
+    }
+    
+    private var isFailed: Bool {
+        displayStatus.caseInsensitiveCompare("Failed") == .orderedSame
+    }
+    
+    private var iconName: String {
+        if isPaid { return "checkmark" }
+        if isFailed { return "xmark" }
+        return "clock"
+    }
+    
+    private var iconColor: Color {
+        if isPaid { return .green }
+        if isFailed { return .orange }
+        return .blue
+    }
+    
+    private var iconBgColor: Color {
+        if isPaid { return Color.green.opacity(0.1) }
+        if isFailed { return Color.orange.opacity(0.1) }
+        return Color.blue.opacity(0.1)
+    }
+    
+    private var textColor: Color {
+        if isPaid || !isFailed { return Color(red: 0.05, green: 0.35, blue: 0.65) }
+        return .orange
+    }
+    
+    private var actionText: String? {
+        if isPaid {
+            return transaction.referenceNumber.isEmpty ? "Receipt" : "RCP-\(transaction.referenceNumber)"
+        } else if isFailed {
+            return "Try again"
+        } else {
+            return "Check status"
+        }
+    }
     
     var body: some View {
         VStack(spacing: 12) {
@@ -308,25 +339,25 @@ struct PHTransactionCard: View {
                 // Status Icon
                 ZStack {
                     Circle()
-                        .fill(transaction.status.iconBgColor)
+                        .fill(iconBgColor)
                         .frame(width: 40, height: 40)
                     
-                    Image(systemName: transaction.status.iconName)
+                    Image(systemName: iconName)
                         .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(transaction.status.iconColor)
+                        .foregroundColor(iconColor)
                 }
                 
                 // Info
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(transaction.amount)
+                    Text(transaction.formattedTotalAmount)
                         .font(.system(size: 16, weight: .bold))
                         .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
                     
-                    Text(transaction.dateDetails)
+                    Text("\(transaction.formattedPaymentDate) • \(transaction.paymentGateway.isEmpty ? "Online" : transaction.paymentGateway)")
                         .font(.system(size: 12))
                         .foregroundColor(.secondary)
                     
-                    Text(transaction.transactionID)
+                    Text(transaction.transactionId.isEmpty ? transaction.gatewayTransactionId : transaction.transactionId)
                         .font(.system(size: 11))
                         .foregroundColor(.secondary.opacity(0.7))
                         .padding(.top, 2)
@@ -335,17 +366,17 @@ struct PHTransactionCard: View {
                 Spacer()
                 
                 // Status Text
-                Text(transaction.status.rawValue)
+                Text(displayStatus)
                     .font(.system(size: 12, weight: .bold))
-                    .foregroundColor(transaction.status.textColor)
+                    .foregroundColor(textColor)
             }
             
             // Bottom Row: Action Text (Receipt / Check status / Try again)
-            if let actionText = transaction.actionText {
+            if let actionText = actionText {
                 HStack {
                     Spacer()
                     
-                    if transaction.status == .paid {
+                    if isPaid {
                         HStack(spacing: 4) {
                             Image(systemName: "doc.text.fill")
                                 .font(.system(size: 10))
@@ -356,7 +387,7 @@ struct PHTransactionCard: View {
                     } else {
                         Text(actionText)
                             .font(.system(size: 12, weight: .semibold))
-                            .foregroundColor(transaction.status.textColor)
+                            .foregroundColor(textColor)
                     }
                 }
             }
@@ -393,6 +424,5 @@ struct PHBottomNote: View {
 }
 
 #Preview {
-    // UPDATED: Added onBack argument
-    PaymentHistoryView(onBack: {})
+    PaymentHistoryView(response: nil, onBack: {})
 }

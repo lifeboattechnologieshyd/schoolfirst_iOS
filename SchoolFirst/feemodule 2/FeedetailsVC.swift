@@ -10,6 +10,8 @@ import SwiftUI
 
 class FeedetailsVC: UIViewController {
     
+    var feeResponse: PendingFeeResponse?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupSwiftUIView()
@@ -21,27 +23,25 @@ class FeedetailsVC: UIViewController {
     }
     
     private func setupSwiftUIView() {
-        // 1. Create the SwiftUI View with Callbacks
         let swiftUIView = FeeDetailsView(
+            feeData: feeResponse,
             onBack: { [weak self] in
                 self?.handleBackNavigation()
             },
             onChoosePaymentAmount: { [weak self] in
-                // Changed target to ChoosepaymentamountVC as requested
                 let paymentAmountVC = ChoosepaymentamountVC()
+                // **** ADDED: Pass the API response to the Choose Payment Amount screen ****
+                paymentAmountVC.feeResponse = self?.feeResponse
                 self?.navigationController?.pushViewController(paymentAmountVC, animated: true)
             }
         )
         
-        // 2. Wrap it in a UIHostingController
         let hostingController = UIHostingController(rootView: swiftUIView)
         
-        // 3. Add the Hosting Controller as a child
         addChild(hostingController)
         view.addSubview(hostingController.view)
         hostingController.didMove(toParent: self)
         
-        // 4. Setup Constraints to fill the entire VC
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
@@ -50,7 +50,6 @@ class FeedetailsVC: UIViewController {
             hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
         
-        // Hide the default navigation bar
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
     

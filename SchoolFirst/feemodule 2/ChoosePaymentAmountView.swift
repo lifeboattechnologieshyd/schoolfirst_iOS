@@ -8,10 +8,12 @@
 import SwiftUI
 
 struct ChoosePaymentAmountView: View {
+    // **** ADDED: API Response object passed from ViewController ****
+    var feeData: PendingFeeResponse?
+    
     var onBack: () -> Void
     var onContinue: () -> Void
     
-    // MARK: - Selection State (easy to bind to API / ViewModel later)
     enum PaymentOption {
         case fullOutstanding
         case currentInstallment
@@ -21,37 +23,65 @@ struct ChoosePaymentAmountView: View {
     @State private var selectedOption: PaymentOption = .fullOutstanding
     @State private var customAmountText: String = ""
     
-    // Dummy values (replace with API data later)
-    private let fullOutstandingAmount = 8500
-    private let currentInstallmentAmount = 5500
-    private let minCustomAmount = 1000
-    private let maxCustomAmount = 8500
+    // **** UPDATED: Dynamically bind full outstanding amount ****
+    private var fullOutstandingAmount: Double {
+        feeData?.totalPayableAmount ?? 0.0
+    }
     
-    private var selectedAmount: Int {
+    // **** UPDATED: Dynamically bind current installment based on first unpaid fee ****
+    private var currentInstallmentFee: PendingFeeItem? {
+        feeData?.fees.first(where: { $0.payableAmount > 0 }) ?? feeData?.fees.first
+    }
+    
+    private var currentInstallmentAmount: Double {
+        currentInstallmentFee?.payableAmount ?? 0.0
+    }
+    
+    // **** UPDATED: Dynamic subtitles parsing API item fields ****
+    private var currentInstallmentSubtitle: String {
+        guard let fee = currentInstallmentFee else { return "" }
+        let name = fee.installment.isEmpty ? fee.feeType : fee.installment
+        let outStr = formatCurrency(fee.outstandingAmount)
+        let lateStr = formatCurrency(fee.lateFee)
+        if fee.lateFee > 0 {
+            return "\(name) outstanding \(outStr) + late fee \(lateStr)"
+        } else {
+            return "\(name) outstanding \(outStr)"
+        }
+    }
+    
+    // **** UPDATED: Dynamic limit logic based on outstanding amount ****
+    private var maxCustomAmount: Double {
+        fullOutstandingAmount
+    }
+    
+    private var minCustomAmount: Double {
+        // Keeps the minimum policy at 1000 unless outstanding is less than 1000
+        min(1000.0, maxCustomAmount)
+    }
+    
+    private var selectedAmount: Double {
         switch selectedOption {
         case .fullOutstanding: return fullOutstandingAmount
         case .currentInstallment: return currentInstallmentAmount
-        case .custom:
-            return Int(customAmountText) ?? 0
+        case .custom: return Double(customAmountText) ?? 0.0
         }
     }
     
     private var selectedAmountDisplay: String {
-        if selectedOption == .custom && (customAmountText.isEmpty || Int(customAmountText) == nil) {
+        if selectedOption == .custom && (customAmountText.isEmpty || Double(customAmountText) == nil) {
             return "₹0"
         }
-        return "₹\(selectedAmount.formattedWithComma)"
+        return formatCurrency(selectedAmount)
     }
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
             CPAHeaderView(onBack: onBack)
             
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 20) {
                     
-                    // Title section
                     VStack(alignment: .leading, spacing: 6) {
                         Text("How much would you like to pay?")
                             .font(.system(size: 22, weight: .bold))
@@ -64,45 +94,46 @@ struct ChoosePaymentAmountView: View {
                     }
                     .padding(.top, 8)
                     
-                    // Partial payments allowed banner
-                    CPAPartialPaymentsBanner()
+                    // **** UPDATED: Pass dynamic min amount into banner ****
+                    CPAPartialPaymentsBanner(minAmount: formatNumber(minCustomAmount))
                     
-                    // Payment options
                     VStack(spacing: 12) {
                         // 1. Full outstanding
                         CPAPaymentOptionRow(
                             isSelected: selectedOption == .fullOutstanding,
                             title: "Full outstanding",
                             subtitle: "Clears all fee dues and the current late fee",
-                            amount: "₹\(fullOutstandingAmount.formattedWithComma)",
+                            amount: formatCurrency(fullOutstandingAmount), // **** UPDATED ****
                             showAmount: true
                         ) {
                             selectedOption = .fullOutstanding
                         }
                         
                         // 2. Current installment
-                        CPAPaymentOptionRow(
-                            isSelected: selectedOption == .currentInstallment,
-                            title: "Current installment",
-                            subtitle: "Term 2 outstanding ₹5,150 + late fee ₹350",
-                            amount: "₹\(currentInstallmentAmount.formattedWithComma)",
-                            showAmount: true
-                        ) {
-                            selectedOption = .currentInstallment
+                        // **** UPDATED: Safely show only if there is an installment ****
+                        if currentInstallmentFee != nil {
+                            CPAPaymentOptionRow(
+                                isSelected: selectedOption == .currentInstallment,
+                                title: "Current installment",
+                                subtitle: currentInstallmentSubtitle, // **** UPDATED ****
+                                amount: formatCurrency(currentInstallmentAmount), // **** UPDATED ****
+                                showAmount: true
+                            ) {
+                                selectedOption = .currentInstallment
+                            }
                         }
                         
                         // 3. Custom amount
                         CPACustomAmountOption(
                             isSelected: selectedOption == .custom,
                             customAmountText: $customAmountText,
-                            minAmount: minCustomAmount,
-                            maxAmount: maxCustomAmount
+                            minAmount: formatNumber(minCustomAmount), // **** UPDATED ****
+                            maxAmount: formatNumber(maxCustomAmount)  // **** UPDATED ****
                         ) {
                             selectedOption = .custom
                         }
                     }
                     
-                    // How payment is applied
                     CPAPaymentAppliedInfo()
                     
                     Spacer().frame(height: 16)
@@ -112,12 +143,28 @@ struct ChoosePaymentAmountView: View {
             }
             .background(Color(UIColor.systemGroupedBackground))
             
-            // Bottom sticky bar
             CPABottomBar(selectedAmountText: selectedAmountDisplay) {
                 onContinue()
             }
         }
         .edgesIgnoringSafeArea(.top)
+    }
+    
+    // **** ADDED: Currency Formatting Helpers for Double values ****
+    private func formatCurrency(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.locale = Locale(identifier: "en_IN")
+        formatter.maximumFractionDigits = 2
+        return "₹\(formatter.string(from: NSNumber(value: value)) ?? "0")"
+    }
+    
+    private func formatNumber(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.locale = Locale(identifier: "en_IN")
+        formatter.maximumFractionDigits = 2
+        return formatter.string(from: NSNumber(value: value)) ?? "0"
     }
 }
 
@@ -160,6 +207,8 @@ struct CPAHeaderView: View {
 
 // MARK: - Partial payments banner
 struct CPAPartialPaymentsBanner: View {
+    var minAmount: String // **** ADDED: Accept dynamic minimum amount string ****
+    
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: "shield.lefthalf.filled")
@@ -172,7 +221,8 @@ struct CPAPartialPaymentsBanner: View {
                     .font(.system(size: 14, weight: .bold))
                     .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
                 
-                Text("Minimum ₹1,000 • No more than outstanding amount")
+                // **** UPDATED: Dynamically bind the minimum string ****
+                Text("Minimum ₹\(minAmount) • No more than outstanding amount")
                     .font(.system(size: 12))
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -260,8 +310,8 @@ struct CPAPaymentOptionRow: View {
 struct CPACustomAmountOption: View {
     let isSelected: Bool
     @Binding var customAmountText: String
-    let minAmount: Int
-    let maxAmount: Int
+    let minAmount: String // **** UPDATED: Changed to String to accept pre-formatted Double ****
+    let maxAmount: String // **** UPDATED: Changed to String to accept pre-formatted Double ****
     let action: () -> Void
     
     var body: some View {
@@ -299,15 +349,15 @@ struct CPACustomAmountOption: View {
             }
             .buttonStyle(PlainButtonStyle())
             
-            // Text field (only visible / enabled feeling when selected)
             if isSelected {
                 HStack {
                     Text("₹")
                         .font(.system(size: 16, weight: .medium))
                         .foregroundColor(.secondary)
                     
-                    TextField("Enter ₹\(minAmount.formattedWithComma)–₹\(maxAmount.formattedWithComma)", text: $customAmountText)
-                        .keyboardType(.numberPad)
+                    // **** UPDATED: Bound exact dynamic format strings ****
+                    TextField("Enter ₹\(minAmount)–₹\(maxAmount)", text: $customAmountText)
+                        .keyboardType(.decimalPad) // UPDATED to Decimal Pad
                         .font(.system(size: 16))
                 }
                 .padding(.horizontal, 14)
@@ -365,7 +415,7 @@ struct CPABottomBar: View {
             }
             
             Button(action: onContinue) {
-                Text("Continue to payment method")
+                Text("Review payment")
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
@@ -382,16 +432,8 @@ struct CPABottomBar: View {
     }
 }
 
-// MARK: - Number formatting helper
-extension Int {
-    var formattedWithComma: String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.locale = Locale(identifier: "en_IN") // Indian numbering (optional)
-        return formatter.string(from: NSNumber(value: self)) ?? "\(self)"
-    }
-}
+// **** UPDATED: Removed Int extension `formattedWithComma` as logic was shifted to properly handle Double/Decimals from API Response ****
 
 #Preview {
-    ChoosePaymentAmountView(onBack: {}, onContinue: {})
+    ChoosePaymentAmountView(feeData: nil, onBack: {}, onContinue: {})
 }

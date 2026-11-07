@@ -7,51 +7,36 @@
 
 import SwiftUI
 
-// MARK: - Data Models (Ready for API Integration)
-struct RPFeeItem: Identifiable {
-    let id = UUID()
-    let title: String
-    let amount: String
-}
-
-struct RPReviewData {
-    let academicYear: String
-    let feeStructure: String
-    let paymentMethodTitle: String
-    let paymentMethodSubtitle: String
-    let outstandingItems: [RPFeeItem]
-    let outstandingTotal: String
-    let meritConcession: String
-    let feeAmount: String
-    let lateFee: String
-    let convenienceFee: String
-    let totalPayable: String
-}
+// **** UPDATED: Removed dummy models RPReviewData and RPFeeItem. Replaced with direct API Model bindings. ****
 
 struct ReviewPaymentView: View {
-    var onBack: () -> Void
-    var onPay: () -> Void // ADDED: onPay closure property
+    // **** ADDED: API Response object passed from ViewController ****
+    var feeData: PendingFeeResponse?
     
-    // Dummy Data (Replace this with API data / ViewModel later)
-    let data = RPReviewData(
-        academicYear: "2026-27",
-        feeStructure: "Annual Fee",
-        paymentMethodTitle: "Debit / credit card",
-        paymentMethodSubtitle: "Secure online payment",
-        outstandingItems: [
-            RPFeeItem(title: "Tuition fee", amount: "₹4,900"),
-            RPFeeItem(title: "Transport fee · Route 4", amount: "₹1,500"),
-            RPFeeItem(title: "Library access", amount: "₹250"),
-            RPFeeItem(title: "Lab & practical", amount: "₹1,000"),
-            RPFeeItem(title: "Sports & gym", amount: "₹500")
-        ],
-        outstandingTotal: "₹8,150",
-        meritConcession: "- ₹1,000",
-        feeAmount: "₹8,150",
-        lateFee: "₹350",
-        convenienceFee: "₹85",
-        totalPayable: "₹8,585"
-    )
+    var onBack: () -> Void
+    var onPay: () -> Void
+    
+    // **** ADDED: Dynamic computed properties mapping API data ****
+    private var academicYear: String {
+        feeData?.student.academicYear?.name ?? "AY 2026-27"
+    }
+    
+    private var totalPayable: Double {
+        feeData?.totalPayableAmount ?? 0.0
+    }
+    
+    private var totalLateFee: Double {
+        feeData?.feeSummary?.totalLateFee ?? 0.0
+    }
+    
+    private var totalConcession: Double {
+        feeData?.feeSummary?.totalConcession ?? 0.0
+    }
+    
+    private var baseFeeAmount: Double {
+        // Base amount excluding the late fee
+        max(0, totalPayable - totalLateFee)
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -62,16 +47,28 @@ struct ReviewPaymentView: View {
                 VStack(spacing: 16) {
                     
                     // 2. Payment Details
-                    RPPaymentDetailsCard(data: data)
+                    RPPaymentDetailsCard(
+                        academicYear: academicYear,
+                        feeStructure: "Annual Fee" // Defaulted to Annual Fee, as specific term structure isn't in header
+                    )
                     
                     // 3. Outstanding Fee Items
-                    RPOutstandingItemsCard(data: data)
+                    RPOutstandingItemsCard(
+                        fees: feeData?.fees ?? [],
+                        totalOutstanding: totalPayable
+                    )
                     
                     // 4. Merit Concession
-                    RPMeritConcessionCard(amount: data.meritConcession)
+                    if totalConcession > 0 {
+                        RPMeritConcessionCard(amount: formatCurrency(totalConcession))
+                    }
                     
                     // 5. Charges and Total
-                    RPChargesTotalCard(data: data)
+                    RPChargesTotalCard(
+                        baseFee: baseFeeAmount,
+                        lateFee: totalLateFee,
+                        totalPayable: totalPayable
+                    )
                     
                     // 6. Info Note
                     RPInfoNoteView()
@@ -83,10 +80,23 @@ struct ReviewPaymentView: View {
             .background(Color(UIColor.systemGroupedBackground))
             
             // 7. Bottom Sticky Bar
-            // Replaced TODO placeholder with the onPay closure
-            RPBottomBar(amount: data.totalPayable, onBack: onBack, onPay: onPay)
+            RPBottomBar(
+                amount: formatCurrency(totalPayable),
+                isDisabled: totalPayable <= 0,
+                onBack: onBack,
+                onPay: onPay
+            )
         }
         .edgesIgnoringSafeArea(.top)
+    }
+    
+    // **** ADDED: Currency Formatting Helper ****
+    private func formatCurrency(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.locale = Locale(identifier: "en_IN")
+        formatter.maximumFractionDigits = 2
+        return "₹\(formatter.string(from: NSNumber(value: value)) ?? "0")"
     }
 }
 
@@ -124,12 +134,14 @@ struct RPHeaderView: View {
             .padding(.horizontal)
             .padding(.bottom, 16)
         }
-        .background(Color(red: 0.05, green: 0.35, blue: 0.65)) // Theme Blue
+        .background(Color(red: 0.05, green: 0.35, blue: 0.65))
     }
 }
 
+// **** UPDATED: Takes specific strings rather than dummy struct ****
 struct RPPaymentDetailsCard: View {
-    let data: RPReviewData
+    let academicYear: String
+    let feeStructure: String
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -142,7 +154,7 @@ struct RPPaymentDetailsCard: View {
                     Text("Academic year")
                         .font(.system(size: 12))
                         .foregroundColor(.secondary)
-                    Text(data.academicYear)
+                    Text(academicYear)
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
                 }
@@ -151,7 +163,7 @@ struct RPPaymentDetailsCard: View {
                     Text("Fee structure")
                         .font(.system(size: 12))
                         .foregroundColor(.secondary)
-                    Text(data.feeStructure)
+                    Text(feeStructure)
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
                 }
@@ -169,10 +181,10 @@ struct RPPaymentDetailsCard: View {
                     .cornerRadius(8)
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(data.paymentMethodTitle)
+                    Text("Debit / credit card")
                         .font(.system(size: 14, weight: .bold))
                         .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
-                    Text(data.paymentMethodSubtitle)
+                    Text("Secure online payment")
                         .font(.system(size: 12))
                         .foregroundColor(.secondary)
                 }
@@ -180,7 +192,7 @@ struct RPPaymentDetailsCard: View {
                 Spacer()
                 
                 Button("Change") {
-                    // TODO: Action to change payment method
+                    // Action to change payment method
                 }
                 .font(.system(size: 13, weight: .bold))
                 .foregroundColor(Color(red: 0.05, green: 0.35, blue: 0.65))
@@ -192,8 +204,10 @@ struct RPPaymentDetailsCard: View {
     }
 }
 
+// **** UPDATED: Dynamically loop through PendingFeeItem array ****
 struct RPOutstandingItemsCard: View {
-    let data: RPReviewData
+    let fees: [PendingFeeItem]
+    let totalOutstanding: Double
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -201,22 +215,31 @@ struct RPOutstandingItemsCard: View {
                 Text("Outstanding fee items")
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
-                Text("Amounts remaining after the payment made on 12 Aug 2026.")
+                Text("Amounts currently remaining for this academic year.")
                     .font(.system(size: 12))
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
             
             VStack(spacing: 12) {
-                ForEach(data.outstandingItems) { item in
-                    HStack {
-                        Text(item.title)
-                            .font(.system(size: 14))
-                            .foregroundColor(.secondary)
-                        Spacer()
-                        Text(item.amount)
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
+                if fees.isEmpty {
+                    Text("No outstanding items.")
+                        .font(.system(size: 14))
+                        .foregroundColor(.secondary)
+                } else {
+                    ForEach(fees, id: \.studentFeeId) { item in
+                        // Only render unpaid fee items
+                        if item.payableAmount > 0 {
+                            HStack {
+                                Text(item.feeType.isEmpty ? "Fee" : item.feeType)
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                                Text(formatCurrency(item.payableAmount))
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
+                            }
+                        }
                     }
                 }
                 
@@ -227,7 +250,7 @@ struct RPOutstandingItemsCard: View {
                         .font(.system(size: 15, weight: .bold))
                         .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
                     Spacer()
-                    Text(data.outstandingTotal)
+                    Text(formatCurrency(totalOutstanding))
                         .font(.system(size: 15, weight: .bold))
                         .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
                 }
@@ -237,8 +260,17 @@ struct RPOutstandingItemsCard: View {
         .background(Color.white)
         .cornerRadius(12)
     }
+    
+    private func formatCurrency(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.locale = Locale(identifier: "en_IN")
+        formatter.maximumFractionDigits = 2
+        return "₹\(formatter.string(from: NSNumber(value: value)) ?? "0")"
+    }
 }
 
+// **** UPDATED: Takes isolated String amount ****
 struct RPMeritConcessionCard: View {
     let amount: String
     
@@ -261,7 +293,7 @@ struct RPMeritConcessionCard: View {
             
             Spacer()
             
-            Text(amount)
+            Text("- \(amount)")
                 .font(.system(size: 16, weight: .bold))
                 .foregroundColor(.green)
         }
@@ -271,8 +303,11 @@ struct RPMeritConcessionCard: View {
     }
 }
 
+// **** UPDATED: Calculations match API models, removed fake Convenience Fee that affects balance ****
 struct RPChargesTotalCard: View {
-    let data: RPReviewData
+    let baseFee: Double
+    let lateFee: Double
+    let totalPayable: Double
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -281,9 +316,11 @@ struct RPChargesTotalCard: View {
                 .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
             
             VStack(spacing: 12) {
-                RPChargeRow(title: "Fee amount", amount: data.feeAmount)
-                RPChargeRow(title: "Late fee · 7 days overdue", amount: data.lateFee, color: .red)
-                RPChargeRow(title: "Card convenience fee · 1%", amount: data.convenienceFee)
+                RPChargeRow(title: "Fee amount", amount: formatCurrency(baseFee))
+                
+                if lateFee > 0 {
+                    RPChargeRow(title: "Late fee", amount: formatCurrency(lateFee), color: .red)
+                }
                 
                 Divider().padding(.vertical, 4)
                 
@@ -292,7 +329,7 @@ struct RPChargesTotalCard: View {
                         .font(.system(size: 15, weight: .bold))
                         .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
                     Spacer()
-                    Text(data.totalPayable)
+                    Text(formatCurrency(totalPayable))
                         .font(.system(size: 18, weight: .bold))
                         .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
                 }
@@ -301,6 +338,14 @@ struct RPChargesTotalCard: View {
         .padding()
         .background(Color.white)
         .cornerRadius(12)
+    }
+    
+    private func formatCurrency(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.locale = Locale(identifier: "en_IN")
+        formatter.maximumFractionDigits = 2
+        return "₹\(formatter.string(from: NSNumber(value: value)) ?? "0")"
     }
 }
 
@@ -351,8 +396,10 @@ struct RPInfoNoteView: View {
     }
 }
 
+// **** UPDATED: Dynamically disables button if there is nothing to pay ****
 struct RPBottomBar: View {
     let amount: String
+    let isDisabled: Bool
     let onBack: () -> Void
     let onPay: () -> Void
     
@@ -382,17 +429,19 @@ struct RPBottomBar: View {
                         )
                         .cornerRadius(10)
                 }
-                .frame(width: 100) // Fixed width for back button as per design
+                .frame(width: 100)
                 
                 Button(action: onPay) {
-                    Text("Pay \(amount)")
+                    Text(amount == "₹0" ? "Cleared" : "Pay \(amount)")
                         .font(.system(size: 16, weight: .bold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
-                        .background(Color(red: 0.1, green: 0.2, blue: 0.4)) // Dark Blue
+                        .background(Color(red: 0.1, green: 0.2, blue: 0.4))
                         .cornerRadius(10)
                 }
+                .disabled(isDisabled)
+                .opacity(isDisabled ? 0.6 : 1.0)
             }
         }
         .padding(.horizontal, 16)
@@ -403,7 +452,6 @@ struct RPBottomBar: View {
     }
 }
 
-//Added onPay argument to preview
 #Preview {
-    ReviewPaymentView(onBack: {}, onPay: {})
+    ReviewPaymentView(feeData: nil, onBack: {}, onPay: {})
 }
