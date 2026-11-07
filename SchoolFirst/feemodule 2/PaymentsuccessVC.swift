@@ -37,6 +37,9 @@ class PaymentsuccessVC: UIViewController {
             },
             onViewReceipt: { [weak self] in
                 let receiptVC = PaymentreceiptVC()
+                receiptVC.feeResponse = self?.feeResponse
+                receiptVC.paymentCreationData = self?.paymentCreationData
+                receiptVC.verifyPaymentData = self?.verifyPaymentData
                 self?.navigationController?.pushViewController(receiptVC, animated: true)
             },
             onBackToFees: { [weak self] in
@@ -77,14 +80,17 @@ class PaymentsuccessVC: UIViewController {
     private func handleBackToFees() {
         if let nav = navigationController {
             for vc in nav.viewControllers {
-                if vc is ParentfeeVC {
+                if vc is FeedashboardVC {
                     nav.popToViewController(vc, animated: true)
                     return
                 }
             }
-            nav.popToRootViewController(animated: true)
+            let feeDashboard = FeedashboardVC()
+            nav.pushViewController(feeDashboard, animated: true)
         } else {
-            dismiss(animated: true)
+            let feeDashboard = FeedashboardVC()
+            feeDashboard.modalPresentationStyle = .fullScreen
+            present(feeDashboard, animated: true)
         }
     }
 }

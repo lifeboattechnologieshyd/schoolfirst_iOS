@@ -134,7 +134,18 @@ struct PaymentSuccessView: View {
                     // 5. Action Buttons
                     PSActionButtonsView(
                         onViewReceipt: onViewReceipt,
-                        onBackToFees: onBackToFees ?? onBack
+                        onBackToFees: onBackToFees ?? onBack,
+                        onShare: {
+                            let shareText = """
+                            🎉 Fee Payment Successful
+                            Receipt: \(data.receiptNumber)
+                            Student: \(studentName)
+                            Amount Paid: \(data.amountPaid)
+                            Date: \(data.dateTime)
+                            Status: Verified
+                            """
+                            ReceiptSharePresenter.present(items: [shareText])
+                        }
                     )
                     
                     // 6. Footer Help Text
@@ -336,6 +347,7 @@ struct PSAppliedItemsCard: View {
 struct PSActionButtonsView: View {
     var onViewReceipt: () -> Void
     var onBackToFees: (() -> Void)? = nil
+    var onShare: (() -> Void)? = nil
     
     var body: some View {
         VStack(spacing: 12) {
@@ -355,7 +367,7 @@ struct PSActionButtonsView: View {
             
             HStack(spacing: 12) {
                 Button(action: {
-                    // Share Receipt placeholder
+                    onShare?()
                 }) {
                     HStack {
                         Image(systemName: "square.and.arrow.up")

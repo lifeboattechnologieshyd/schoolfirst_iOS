@@ -10,6 +10,11 @@ import SwiftUI
 
 class PaymentreceiptVC: UIViewController {
     
+    // Injected API Data
+    var feeResponse: PendingFeeResponse?
+    var paymentCreationData: FeePaymentCreationResponse?
+    var verifyPaymentData: FeeVerifyPaymentData?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupSwiftUIView()
@@ -22,10 +27,12 @@ class PaymentreceiptVC: UIViewController {
     }
     
     private func setupSwiftUIView() {
-        //  Passed onBack closure to PaymentReceiptView
+        // Passed onBack closure and API models to PaymentReceiptView
         let swiftUIView = PaymentReceiptView(
+            feeData: feeResponse,
+            creationData: paymentCreationData,
+            verifyData: verifyPaymentData,
             onBack: { [weak self] in
-                //  Handle back navigation (pop)
                 self?.handleBackNavigation()
             }
         )
@@ -51,7 +58,7 @@ class PaymentreceiptVC: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
-    // Handles pop navigation back to previous screen 
+    // Handles pop navigation back to previous screen
     private func handleBackNavigation() {
         if let nav = navigationController, nav.viewControllers.first != self {
             nav.popViewController(animated: true)
