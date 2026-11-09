@@ -46,7 +46,10 @@ struct FeeDetailsView: View {
                     }
                     
                     // 4. Installment Schedule
-                    FDInstallmentScheduleCard(fees: feeData?.fees ?? [])
+                    // Hides the card completely until the backend sends installment/term data
+                    if let fees = feeData?.fees, fees.contains(where: { !$0.installment.isEmpty }) {
+                        FDInstallmentScheduleCard(fees: fees)
+                    }
                     
                     // 5. Late-fee Impact Box
                     if let lateFee = feeData?.feeSummary?.totalLateFee, lateFee > 0 {

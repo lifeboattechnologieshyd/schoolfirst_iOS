@@ -23,8 +23,7 @@ struct PaymentSuccessView: View {
     var creationData: FeePaymentCreationResponse?
     var verifyData: FeeVerifyPaymentData?
     
-    // Callbacks
-    var onBack: () -> Void
+    // Callbacks — onBack removed because back button is removed
     var onViewReceipt: () -> Void
     var onBackToFees: (() -> Void)? = nil
     
@@ -62,14 +61,48 @@ struct PaymentSuccessView: View {
             dateStr = df.string(from: Date())
         }
         
+        // MARK: - FIX: Distribute actual paid amount across fee items
         var items: [String] = []
-        if let fees = feeData?.fees, !fees.isEmpty {
-            for fee in fees {
-                items.append("\(formatCurrency(fee.payableAmount)) applied to \(fee.feeType)")
+        
+        // Parse actual paid amount as Double
+        let paidAmountDouble: Double
+        if let vAmount = verifyData?.amount, let vDouble = Double(vAmount) {
+            paidAmountDouble = vDouble
+        } else if let cAmount = creationData?.amount, cAmount > 0 {
+            paidAmountDouble = cAmount
+        } else if let total = feeData?.totalPayableAmount, total > 0 {
+            paidAmountDouble = total
+        } else {
+            paidAmountDouble = 0
+        }
+        
+        // Get outstanding fee items (those with payableAmount > 0)
+        let outstandingFees = feeData?.fees.filter { $0.payableAmount > 0 } ?? []
+        
+        if !outstandingFees.isEmpty {
+            var remainingToPay = paidAmountDouble
+            
+            for fee in outstandingFees {
+                if remainingToPay <= 0 { break }
+                
+                let appliedToThisFee = min(fee.payableAmount, remainingToPay)
+                if appliedToThisFee > 0 {
+                    items.append("\(formatCurrency(appliedToThisFee)) applied to \(fee.feeType.isEmpty ? "Fee" : fee.feeType)")
+                    remainingToPay -= appliedToThisFee
+                }
             }
-            if let lateFee = feeData?.feeSummary?.totalLateFee, lateFee > 0 {
-                items.append("\(formatCurrency(lateFee)) late fee settled")
+            
+            // Handle late fee if any amount remains
+            if remainingToPay > 0 {
+                let lateFee = feeData?.feeSummary?.totalLateFee ?? 0.0
+                if lateFee > 0 {
+                    let appliedLateFee = min(lateFee, remainingToPay)
+                    if appliedLateFee > 0 {
+                        items.append("\(formatCurrency(appliedLateFee)) late fee settled")
+                    }
+                }
             }
+            
             items.append("Receipt generated and saved to payment history")
         } else {
             items = [
@@ -94,8 +127,8 @@ struct PaymentSuccessView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // 1. Custom Header
-            PSHeaderView(onBack: onBack)
+            // 1. Custom Header (no back button)
+            PSHeaderView()
             
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 20) {
@@ -134,7 +167,7 @@ struct PaymentSuccessView: View {
                     // 5. Action Buttons
                     PSActionButtonsView(
                         onViewReceipt: onViewReceipt,
-                        onBackToFees: onBackToFees ?? onBack,
+                        onBackToFees: onBackToFees,
                         onShare: {
                             let shareText = """
                             🎉 Fee Payment Successful
@@ -198,19 +231,10 @@ struct PaymentSuccessView: View {
 // MARK: - Subviews
 
 struct PSHeaderView: View {
-    var onBack: () -> Void
-    
     var body: some View {
         VStack {
             Spacer().frame(height: 50)
             HStack {
-                Button(action: onBack) {
-                    Image(systemName: "arrow.left")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(.white)
-                }
-                .buttonStyle(PlainButtonStyle())
-                
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Payment complete")
                         .font(.system(size: 20, weight: .bold))
@@ -424,5 +448,5 @@ struct PSHelpFooter: View {
 }
 
 #Preview {
-    PaymentSuccessView(onBack: {}, onViewReceipt: {})
+    PaymentSuccessView(onViewReceipt: {})
 }

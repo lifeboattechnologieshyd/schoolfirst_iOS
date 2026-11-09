@@ -18,23 +18,27 @@ class PaymentsuccessVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupSwiftUIView()
+        
+        // Disable swipe-back gesture so user cannot navigate back after payment success
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
     }
     
     // Keeps nav bar hidden when returning to this screen
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
+        
+        // Ensure swipe-back stays disabled whenever this screen appears
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
     }
     
     private func setupSwiftUIView() {
         // Passed callbacks and API data to PaymentSuccessView
+        // Back navigation button removed — no onBack callback passed
         let swiftUIView = PaymentSuccessView(
             feeData: feeResponse,
             creationData: paymentCreationData,
             verifyData: verifyPaymentData,
-            onBack: { [weak self] in
-                self?.handleBackNavigation()
-            },
             onViewReceipt: { [weak self] in
                 let receiptVC = PaymentreceiptVC()
                 receiptVC.feeResponse = self?.feeResponse
@@ -69,12 +73,9 @@ class PaymentsuccessVC: UIViewController {
     }
     
     // Handles pop navigation back to previous screen
+    // Kept as no-op — back navigation is disabled after successful payment
     private func handleBackNavigation() {
-        if let nav = navigationController, nav.viewControllers.first != self {
-            nav.popViewController(animated: true)
-        } else {
-            dismiss(animated: true)
-        }
+        // Intentionally left empty to prevent going back from payment success screen
     }
     
     private func handleBackToFees() {
