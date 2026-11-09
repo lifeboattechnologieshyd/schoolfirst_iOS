@@ -28,10 +28,11 @@ class ChoosepaymentamountVC: UIViewController {
             onBack: { [weak self] in
                 self?.handleBackNavigation()
             },
-            onContinue: { [weak self] in
-                // **** UPDATED: Navigate to ReviewpaymentVC and pass API data ****
+            onContinue: { [weak self] selectedAmount in
+                // **** UPDATED: Navigate to ReviewpaymentVC and pass API data and selected amount ****
                 let reviewVC = ReviewpaymentVC()
                 reviewVC.feeResponse = self?.feeResponse
+                reviewVC.selectedAmount = selectedAmount
                 self?.navigationController?.pushViewController(reviewVC, animated: true)
             }
         )

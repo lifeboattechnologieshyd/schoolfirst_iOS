@@ -12,6 +12,7 @@ import SwiftUI
 struct ReviewPaymentView: View {
     // **** ADDED: API Response object passed from ViewController ****
     var feeData: PendingFeeResponse?
+    var selectedAmount: Double?
     var isLoading: Bool = false
     
     var onBack: () -> Void
@@ -23,11 +24,19 @@ struct ReviewPaymentView: View {
     }
     
     private var totalPayable: Double {
+        if let custom = selectedAmount, custom > 0 {
+            return custom
+        }
+        return feeData?.totalPayableAmount ?? 0.0
+    }
+    
+    private var totalOutstandingFee: Double {
         feeData?.totalPayableAmount ?? 0.0
     }
     
     private var totalLateFee: Double {
-        feeData?.feeSummary?.totalLateFee ?? 0.0
+        let lateFee = feeData?.feeSummary?.totalLateFee ?? 0.0
+        return min(lateFee, totalPayable)
     }
     
     private var totalConcession: Double {
@@ -56,7 +65,7 @@ struct ReviewPaymentView: View {
                     // 3. Outstanding Fee Items
                     RPOutstandingItemsCard(
                         fees: feeData?.fees ?? [],
-                        totalOutstanding: totalPayable
+                        totalOutstanding: totalOutstandingFee
                     )
                     
                     // 4. Merit Concession
@@ -466,5 +475,5 @@ struct RPBottomBar: View {
 }
 
 #Preview {
-    ReviewPaymentView(feeData: nil, onBack: {}, onPay: {})
+    ReviewPaymentView(feeData: nil, selectedAmount: nil, onBack: {}, onPay: {})
 }

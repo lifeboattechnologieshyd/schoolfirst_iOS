@@ -12,6 +12,7 @@ class ReviewpaymentVC: UIViewController {
     
     // **** Property to receive API data from ChoosepaymentamountVC ****
     var feeResponse: PendingFeeResponse?
+    var selectedAmount: Double?
     
     private var hostingController: UIHostingController<ReviewPaymentView>?
     private var isPaymentInProgress: Bool = false
@@ -54,6 +55,7 @@ class ReviewpaymentVC: UIViewController {
     private func makeSwiftUIView(isLoading: Bool) -> ReviewPaymentView {
         ReviewPaymentView(
             feeData: feeResponse,
+            selectedAmount: selectedAmount,
             isLoading: isLoading,
             onBack: { [weak self] in
                 self?.handleBackNavigation()
@@ -83,7 +85,7 @@ class ReviewpaymentVC: UIViewController {
             return
         }
         
-        let payableAmount = feeResponse?.totalPayableAmount ?? 0.0
+        let payableAmount = (selectedAmount != nil && selectedAmount! > 0) ? selectedAmount! : (feeResponse?.totalPayableAmount ?? 0.0)
         guard payableAmount > 0 else {
             print("⚠️ Fee is already fully paid or 0!")
             AlertManager.shared.showAlert(

@@ -12,7 +12,7 @@ struct ChoosePaymentAmountView: View {
     var feeData: PendingFeeResponse?
     
     var onBack: () -> Void
-    var onContinue: () -> Void
+    var onContinue: (Double) -> Void
     
     enum PaymentOption {
         case fullOutstanding
@@ -144,7 +144,7 @@ struct ChoosePaymentAmountView: View {
             .background(Color(UIColor.systemGroupedBackground))
             
             CPABottomBar(selectedAmountText: selectedAmountDisplay) {
-                onContinue()
+                onContinue(selectedAmount)
             }
         }
         .edgesIgnoringSafeArea(.top)
@@ -423,6 +423,8 @@ struct CPABottomBar: View {
                     .background(Color(red: 0.1, green: 0.2, blue: 0.4))
                     .cornerRadius(10)
             }
+            .disabled(selectedAmountText == "₹0")
+            .opacity(selectedAmountText == "₹0" ? 0.6 : 1.0)
         }
         .padding(.horizontal, 16)
         .padding(.top, 16)
@@ -435,5 +437,5 @@ struct CPABottomBar: View {
 // **** UPDATED: Removed Int extension `formattedWithComma` as logic was shifted to properly handle Double/Decimals from API Response ****
 
 #Preview {
-    ChoosePaymentAmountView(feeData: nil, onBack: {}, onContinue: {})
+    ChoosePaymentAmountView(feeData: nil, onBack: {}, onContinue: { _ in })
 }
