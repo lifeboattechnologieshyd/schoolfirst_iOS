@@ -57,7 +57,7 @@ class FeedashboardVC: UIViewController {
         view.addSubview(hostingController.view)
         hostingController.didMove(toParent: self)
         
-        // 4. Setup Constraints to fill the entire VC
+        // 4. Setup Constraints to fill the VC
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
