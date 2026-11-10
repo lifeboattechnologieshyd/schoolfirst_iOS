@@ -37,6 +37,17 @@ class FeedashboardVC: UIViewController {
                 }
             },
             
+            // **** ADDED: View Details navigation handler ****
+            onViewDetails: { [weak self] feeResponse in
+                let detailsVC = FeedetailsVC()
+                detailsVC.feeResponse = feeResponse // Pass data
+                if let nav = self?.navigationController {
+                    nav.pushViewController(detailsVC, animated: true)
+                } else {
+                    self?.present(detailsVC, animated: true)
+                }
+            },
+            
             // **** UPDATED: Accept completedFeeResponse parameter and pass it to PaymenthistoryVC ****
             onViewHistory: { [weak self] completedFeeResponse in
                 let historyVC = PaymenthistoryVC()

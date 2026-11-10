@@ -87,6 +87,7 @@ class FeeDashboardViewModel: ObservableObject {
 struct FeeDashboardView: View {
     var onBack: () -> Void
     var onPayFees: (PendingFeeResponse?) -> Void
+    var onViewDetails: (PendingFeeResponse?) -> Void // Added this closure
     var onViewHistory: (CompletedFeeResponse?) -> Void
     
     @StateObject private var viewModel = FeeDashboardViewModel()
@@ -157,7 +158,8 @@ struct FeeDashboardView: View {
                                 concession: viewModel.formatCurrency(viewModel.feeResponse?.feeSummary?.totalConcession),
                                 paidToDate: viewModel.formatCurrency(viewModel.feeResponse?.feeSummary?.totalPaid),
                                 outstanding: viewModel.formatCurrency(viewModel.feeResponse?.feeSummary?.outstandingAmount),
-                                classInfo: UserManager.shared.resolvedGradeSection
+                                classInfo: UserManager.shared.resolvedGradeSection,
+                                onViewDetails: { onViewDetails(viewModel.feeResponse) } // Passed the action
                             )
                             
                             if let recentPayment = viewModel.completedFeeResponse?.payments.first {
@@ -539,6 +541,7 @@ struct AnnualFeeStructureCard: View {
     var paidToDate: String
     var outstanding: String
     var classInfo: String
+    var onViewDetails: () -> Void // Added action here
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -547,9 +550,13 @@ struct AnnualFeeStructureCard: View {
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
                 Spacer()
-                Text("View details")
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundColor(Color(red: 0.05, green: 0.35, blue: 0.65))
+                
+                // Wrapped the text in a Button
+                Button(action: onViewDetails) {
+                    Text("View details")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundColor(Color(red: 0.05, green: 0.35, blue: 0.65))
+                }
             }
             
             Text("\(classInfo) • Term-wise billing")
@@ -669,5 +676,5 @@ struct RecentPaymentCard: View {
 }
 
 #Preview {
-    FeeDashboardView(onBack: {}, onPayFees: { _ in }, onViewHistory: { _ in })
+    FeeDashboardView(onBack: {}, onPayFees: { _ in }, onViewDetails: { _ in }, onViewHistory: { _ in })
 }
