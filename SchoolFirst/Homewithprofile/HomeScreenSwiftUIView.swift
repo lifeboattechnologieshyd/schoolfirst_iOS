@@ -95,7 +95,8 @@ struct HomeScreenSwiftUIView: View {
                     headerView
                     
                     // MARK: - MAIN WHITE / GRAY BOARD
-                    VStack(spacing: 24) {
+                    // 🛠 FIXED: Reduced spacing from 24 to 20 to match Figma's tighter layout
+                    VStack(spacing: 20) {
                         activeChildSelectorView
                         tabsView
                         schoolTodayBannerView
@@ -103,17 +104,20 @@ struct HomeScreenSwiftUIView: View {
                         modulesGridView
                     }
                     .padding(.horizontal, 20)
-                    .padding(.top, 30)
+                    // 🛠 FIXED: Reduced top padding inside the white board from 30 to 24
+                    .padding(.top, 24)
                     .background(figmaBgGray)
-                    .homeScreenCornerRadius(30, corners: [.topLeft, .topRight])
-                    .offset(y: -30)
-                    .padding(.bottom, -30)
+                    // 🛠 FIXED: Reduced corner radius slightly from 30 to 24 to match Figma shape
+                    .homeScreenCornerRadius(24, corners: [.topLeft, .topRight])
+                    // 🛠 FIXED: Adjusted overlap offset to -20 so it sits perfectly below the welcome text
+                    .offset(y: -20)
+                    .padding(.bottom, -20)
                 }
             }
         }
     }
     
-    // MARK: - Extracted Views (Fixes Compiler Time-out)
+    // MARK: - Extracted Views
     
     private var headerView: some View {
         ZStack(alignment: .trailing) {
@@ -152,7 +156,8 @@ struct HomeScreenSwiftUIView: View {
             }
             .padding(.horizontal, 24)
             .padding(.top, 20)
-            .padding(.bottom, 60)
+            // 🛠 FIXED: Reduced bottom padding from 60 to 30 to remove the massive blue gap
+            .padding(.bottom, 30)
         }
         .background(figmaBlueHeader)
     }
@@ -219,7 +224,6 @@ struct HomeScreenSwiftUIView: View {
             viewModel.switchKid(to: index)
         }) {
             HStack(spacing: 12) {
-                // ✅ FIXED: Using DBManager helper instead of 'kid.profileImage'
                 asyncProfileImage(url: DBManager.extractPhotoURL(from: kid) ?? "")
                 
                 VStack(alignment: .leading, spacing: 2) {
@@ -227,14 +231,12 @@ struct HomeScreenSwiftUIView: View {
                         .font(.system(size: 15, weight: .bold))
                         .foregroundColor(.black)
                     
-                    // Format as "Grade 5 - Section B" if section exists, or just "Grade 5"
                     Text(kid.section?.isEmpty == false ? "Grade \(kid.grade) - Section \(kid.section!)" : "Grade \(kid.grade)")
                         .font(.system(size: 12, weight: .regular))
                         .foregroundColor(.gray)
                 }
                 Spacer()
                 
-                // Blue Dot for active selection
                 if viewModel.selectedIndex == index {
                     Circle()
                         .fill(Color.blue)
@@ -247,7 +249,6 @@ struct HomeScreenSwiftUIView: View {
         .buttonStyle(PlainButtonStyle())
     }
     
-    // Helper to avoid deep nesting inside AsyncImage
     @ViewBuilder
     private func asyncProfileImage(url: String) -> some View {
         AsyncImage(url: URL(string: url)) { phase in
@@ -265,19 +266,17 @@ struct HomeScreenSwiftUIView: View {
     
     private var tabsView: some View {
         HStack(spacing: 0) {
-            // ✅ Family Zone is now a tappable button
             Button(action: onFamilyZoneTapped) {
                 HStack {
                     Image(systemName: "heart")
                     Text("Family Zone")
                 }
                 .font(.system(size: 14, weight: .medium))
-                .foregroundColor(figmaSegmentUnselectedText) // **** UPDATED: Figma unselected text color ****
+                .foregroundColor(figmaSegmentUnselectedText)
                 .frame(maxWidth: .infinity)
             }
             .buttonStyle(PlainButtonStyle())
             
-            // School Zone remains static (Active)
             HStack {
                 Image(systemName: "building.columns.fill")
                 Text("School Zone")
@@ -286,7 +285,6 @@ struct HomeScreenSwiftUIView: View {
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
-            // **** UPDATED: Figma blue gradient for selected segment ****
             .background(
                 LinearGradient(
                     gradient: Gradient(colors: [figmaSegmentSelectedStart, figmaSegmentSelectedEnd]),
@@ -295,7 +293,6 @@ struct HomeScreenSwiftUIView: View {
                 )
             )
             .cornerRadius(20)
-            // **** ADDED: Yellow line at the bottom of the selected segment ****
             .overlay(alignment: .bottom) {
                 Capsule()
                     .fill(figmaSegmentIndicatorYellow)
@@ -304,14 +301,13 @@ struct HomeScreenSwiftUIView: View {
             }
         }
         .padding(5)
-        .background(Color.white) // **** UPDATED: Figma white segment container ****
+        .background(Color.white)
         .cornerRadius(24)
-        .shadow(color: Color.black.opacity(0.04), radius: 6, x: 0, y: 3) // **** ADDED: Soft shadow like Figma ****
+        .shadow(color: Color.black.opacity(0.04), radius: 6, x: 0, y: 3)
     }
     
     private var schoolTodayBannerView: some View {
         ZStack(alignment: .trailing) {
-            // **** UPDATED: Figma sky-blue gradient background ****
             LinearGradient(
                 gradient: Gradient(colors: [figmaBannerStart, figmaBannerEnd]),
                 startPoint: .leading,
@@ -335,7 +331,7 @@ struct HomeScreenSwiftUIView: View {
                 
                 Text("Regular Classes")
                     .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(figmaBannerTitle) // **** UPDATED: Figma navy title color ****
+                    .foregroundColor(figmaBannerTitle)
                 
                 Text("Have a great day, \(viewModel.currentName.split(separator: " ").first ?? "Student")!")
                     .font(.system(size: 13))
@@ -357,25 +353,21 @@ struct HomeScreenSwiftUIView: View {
                 .foregroundColor(.gray)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.top, 10)
+        // 🛠 FIXED: Removed '.padding(.top, 10)' which was causing double spacing above this text
     }
     
-    // **** UPDATED: Title now sits INSIDE the white card, below the icon (as per Figma) ****
     private var modulesGridView: some View {
         LazyVGrid(columns: columns, spacing: 14) {
             ForEach(modules) { module in
                 Button(action: {
                     onModuleTapped(module.title)
                 }) {
-                    // ===== WHITE CARD (Icon + Title inside) =====
                     VStack(spacing: 8) {
-                        // Icon
                         Image(module.image)
                             .resizable()
                             .scaledToFit()
                             .frame(width: 52, height: 52)
                         
-                        // Title below the icon, inside the card
                         Text(module.title)
                             .font(.system(size: 12, weight: .medium))
                             .foregroundColor(Color(red: 45/255, green: 45/255, blue: 55/255))
@@ -396,7 +388,7 @@ struct HomeScreenSwiftUIView: View {
                             )
                             .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 4)
                     )
-                    .contentShape(RoundedRectangle(cornerRadius: 16)) // Whole card is tappable
+                    .contentShape(RoundedRectangle(cornerRadius: 16))
                 }
                 .buttonStyle(PlainButtonStyle())
             }

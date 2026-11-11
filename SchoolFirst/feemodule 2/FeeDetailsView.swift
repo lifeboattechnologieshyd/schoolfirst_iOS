@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct FeeDetailsView: View {
-    // **** ADDED: Property to hold data passed from UIKit ****
+    // Property to hold data passed from UIKit
     var feeData: PendingFeeResponse?
     
     var onBack: () -> Void
     var onChoosePaymentAmount: () -> Void
     
-    // **** ADDED: Helper formatter ****
+    // Helper formatter
     func formatCurrency(_ value: Double?) -> String {
         guard let value = value else { return "₹0" }
         let formatter = NumberFormatter()
@@ -25,7 +25,7 @@ struct FeeDetailsView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Custom Header
+            // ✅ FIXED: Header now shows dynamic student info instead of static placeholder
             FDHeaderView(onBack: onBack)
             
             ScrollView(showsIndicators: false) {
@@ -104,7 +104,8 @@ struct FDHeaderView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Fee details")
                         .font(.system(size: 20, weight: .bold))
-                    Text("School moments, all in one place")
+                    // ✅ FIXED: Replaced static "School moments..." with dynamic user data
+                    Text("\(UserManager.shared.resolvedStudentName) • \(UserManager.shared.resolvedGradeSection)")
                         .font(.system(size: 12))
                         .opacity(0.8)
                 }
@@ -123,7 +124,6 @@ struct FDHeaderView: View {
     }
 }
 
-// **** UPDATED: Accepts API values ****
 struct FDAnnualStructureCard: View {
     var assignedAmount: String
     var concession: String
@@ -136,7 +136,7 @@ struct FDAnnualStructureCard: View {
                     Text("Annual Fee Structure")
                         .font(.system(size: 16, weight: .bold))
                         .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
-                    // Class name rendered via global scope
+                    // ✅ Dynamic class name
                     Text("\(UserManager.shared.resolvedGradeSection) • Term-wise")
                         .font(.system(size: 12))
                         .foregroundColor(.secondary)
@@ -165,7 +165,6 @@ struct FDAnnualStructureCard: View {
     }
 }
 
-// **** UPDATED: Dynamically rendering the component rows based on API fees array ****
 struct FDComponentBreakdownCard: View {
     var fees: [PendingFeeItem]
     
@@ -175,6 +174,7 @@ struct FDComponentBreakdownCard: View {
                 Text("Component breakdown")
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
+                // ✅ Already dynamic
                 Text("Configured by the school for \(UserManager.shared.resolvedStudentName)'s class.")
                     .font(.system(size: 12))
                     .foregroundColor(.secondary)
@@ -203,7 +203,6 @@ struct FDComponentBreakdownCard: View {
     }
 }
 
-// **** UPDATED: Added prop to receive dynamic concession amount ****
 struct FDMeritConcessionBox: View {
     var concessionAmount: String
     
@@ -220,7 +219,8 @@ struct FDMeritConcessionBox: View {
                     .font(.system(size: 14, weight: .bold))
                     .foregroundColor(.blue)
             }
-            Text("Approved for academic performance. Applied proportionally across unpaid installments.")
+            // ✅ FIXED: Cleaned up text
+            Text("Concession applied proportionally across unpaid installments.")
                 .font(.system(size: 12))
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -231,7 +231,6 @@ struct FDMeritConcessionBox: View {
     }
 }
 
-// **** UPDATED: Dynamically rendering installments based on API data ****
 struct FDInstallmentScheduleCard: View {
     var fees: [PendingFeeItem]
     
@@ -241,7 +240,8 @@ struct FDInstallmentScheduleCard: View {
                 Text("Installment schedule")
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
-                Text("The school has enabled term-wise billing.")
+                // ✅ FIXED: Cleaned up placeholder text
+                Text("Track your upcoming and paid installments.")
                     .font(.system(size: 12))
                     .foregroundColor(.secondary)
             }
@@ -279,7 +279,6 @@ struct FDInstallmentScheduleCard: View {
     }
 }
 
-// **** UPDATED: Passing API Data ****
 struct FDLateFeeImpactBox: View {
     var lateFee: String
     var currentDue: String
@@ -290,7 +289,8 @@ struct FDLateFeeImpactBox: View {
                 .font(.system(size: 16, weight: .bold))
                 .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.25))
             
-            Text("Standard Overdue Policy - read-only")
+            // ✅ FIXED: Removed "Standard Overdue Policy - read-only" placeholder text
+            Text("Additional charges applied to overdue installments.")
                 .font(.system(size: 12))
                 .foregroundColor(.secondary)
                 .padding(.top, -8)
@@ -307,7 +307,6 @@ struct FDLateFeeImpactBox: View {
     }
 }
 
-// **** UPDATED: Used passed API values for summary ****
 struct FDPaymentSummaryCard: View {
     var paid: String
     var outstanding: String
@@ -339,7 +338,6 @@ struct FDPaymentSummaryCard: View {
     }
 }
 
-// **** UPDATED: Dynamically bind Total Due and disable if nothing to pay ****
 struct FDBottomPaymentBar: View {
     var totalDue: String
     var isDisabled: Bool
