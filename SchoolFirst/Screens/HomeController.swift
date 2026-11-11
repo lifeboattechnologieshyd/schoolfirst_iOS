@@ -819,6 +819,7 @@ struct FamilyZoneSwiftUIView: View {
                         .padding(.top, 2) // **** UPDATED: Less space above "Grow together" like Figma (was 10) ****
                         
                         // 5. Modules Grid
+                        // **** UPDATED: Title now sits INSIDE the white card, below the icon (as per Figma) ****
                         LazyVGrid(columns: columns, spacing: 14) {
                             ForEach(state.modules) { module in
                                 Button(action: {
@@ -826,30 +827,36 @@ struct FamilyZoneSwiftUIView: View {
                                         onModuleTapped(index)
                                     }
                                 }) {
+                                    // ===== WHITE CARD (Icon + Title inside) =====
                                     VStack(spacing: 8) {
-                                        ZStack {
-                                            RoundedRectangle(cornerRadius: 16)
-                                                .fill(Color.white)
-                                                .overlay(
-                                                    RoundedRectangle(cornerRadius: 16)
-                                                        .stroke(Color(red: 225/255, green: 230/255, blue: 240/255), lineWidth: 1)
-                                                )
-                                                .shadow(color: Color.black.opacity(0.04), radius: 6, x: 0, y: 3)
-                                            
-                                            Image(module.image as String)
-                                                .resizable()
-                                                .scaledToFit()
-                                                .frame(width: 46, height: 46)
-                                        }
-                                        .frame(height: 85)
-                                        .frame(maxWidth: .infinity)
+                                        // Icon
+                                        Image(module.image as String)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 46, height: 46)
                                         
+                                        // Title below the icon, inside the card
                                         Text(module.title)
                                             .font(.system(size: 12, weight: .medium))
                                             .foregroundColor(Color(red: 45/255, green: 45/255, blue: 55/255))
                                             .multilineTextAlignment(.center)
                                             .lineLimit(1)
+                                            .minimumScaleFactor(0.8)
                                     }
+                                    .padding(.vertical, 12)
+                                    .padding(.horizontal, 6)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 100)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 16)
+                                            .fill(Color.white)
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 16)
+                                                    .stroke(Color(red: 225/255, green: 230/255, blue: 240/255), lineWidth: 1)
+                                            )
+                                            .shadow(color: Color.black.opacity(0.04), radius: 6, x: 0, y: 3)
+                                    )
+                                    .contentShape(RoundedRectangle(cornerRadius: 16)) // Whole card is tappable
                                 }
                                 .buttonStyle(PlainButtonStyle())
                             }

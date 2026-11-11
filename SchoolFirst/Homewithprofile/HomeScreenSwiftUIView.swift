@@ -360,40 +360,43 @@ struct HomeScreenSwiftUIView: View {
         .padding(.top, 10)
     }
     
+    // **** UPDATED: Title now sits INSIDE the white card, below the icon (as per Figma) ****
     private var modulesGridView: some View {
         LazyVGrid(columns: columns, spacing: 14) {
             ForEach(modules) { module in
                 Button(action: {
                     onModuleTapped(module.title)
                 }) {
-                    VStack(spacing: 6) {
-                        // ===== OUTER WHITE CARD =====
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(Color.white)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 16)
-                                        .stroke(Color(red: 225/255, green: 230/255, blue: 240/255), lineWidth: 1)
-                                )
-                                .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 4)
-                            
-                            // Centered icon/tile
-                            Image(module.image)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 52, height: 52)
-                        }
-                        .frame(height: 90)
-                        .frame(maxWidth: .infinity)
+                    // ===== WHITE CARD (Icon + Title inside) =====
+                    VStack(spacing: 8) {
+                        // Icon
+                        Image(module.image)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 52, height: 52)
                         
-                        // ===== TITLE BELOW =====
+                        // Title below the icon, inside the card
                         Text(module.title)
                             .font(.system(size: 12, weight: .medium))
                             .foregroundColor(Color(red: 45/255, green: 45/255, blue: 55/255))
                             .multilineTextAlignment(.center)
                             .lineLimit(1)
+                            .minimumScaleFactor(0.8)
                     }
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 6)
                     .frame(maxWidth: .infinity)
+                    .frame(height: 100)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.white)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(Color(red: 225/255, green: 230/255, blue: 240/255), lineWidth: 1)
+                            )
+                            .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 4)
+                    )
+                    .contentShape(RoundedRectangle(cornerRadius: 16)) // Whole card is tappable
                 }
                 .buttonStyle(PlainButtonStyle())
             }
