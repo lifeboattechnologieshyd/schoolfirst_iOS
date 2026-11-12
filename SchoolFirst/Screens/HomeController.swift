@@ -861,7 +861,7 @@ struct FamilyZoneSwiftUIView: View {
                                 .buttonStyle(PlainButtonStyle())
                             }
                         }
-                        .padding(.bottom, 40)
+                        .padding(.bottom, 100) // ✅ Extra space for floating tab bar
                     }
                     .padding(.horizontal, 24)
                     .padding(.top, 30)

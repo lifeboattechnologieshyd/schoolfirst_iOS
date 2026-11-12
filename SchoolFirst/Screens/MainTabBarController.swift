@@ -10,518 +10,297 @@ import UIKit
 class MainTabBarController: UITabBarController,
                             UITabBarControllerDelegate,
                             UINavigationControllerDelegate {
-    
-    let circleButton = UIButton(type: .custom)
-    let middleLabel = UILabel()
-    let homeIndex = 2
-    let gapOffset: CGFloat = 10
-    
-    private var tabBarShapeLayer: CAShapeLayer?
-    private var customTabBarView: UIView!
-    private var tabButtons: [UIButton] = []
-    
-    private var isTabBarSetup = false
-    
-    let tabBarBottomMargin: CGFloat = 1
-    let tabBarCustomHeight: CGFloat = 60
-    
-    let tabItems: [(icon: String, title: String)] = [
-        ("calendar_tab", "Calendar"),
-        ("courses_tab", "CourseEdemy"),
-        ("", ""),
-        ("myschool", "My School"),
-        ("profile_tab", "Profile")
+
+    // MARK: - Tab Configuration (Figma Design)
+    // Tab items matching Figma: Calendar | Edutainment | Home | Feels | Profile
+    let tabItems: [(icon: String, title: String, systemIcon: String)] = [
+        ("Calendar vector icon", "Calendar",    "calendar"),
+        ("Feels emotion symbol", "Edutainment", "face.smiling"),
+        ("Vector 1",               "Home",        "house"),
+        ("Vocabee play vector icon", "Feels",   "play.circle"),
+        ("Profile vector icon",  "Profile",     "person")
     ]
-    
-    let selectedColor = UIColor(red: 0.043, green: 0.337, blue: 0.604, alpha: 1)
-    let normalColor = UIColor.gray
-    
+
+    let homeIndex = 2   // "Home" is in the center
+
+    // MARK: - Colors
+    let selectedColor   = UIColor(red: 0.043, green: 0.337, blue: 0.859, alpha: 1) // blue
+    let normalColor     = UIColor(red: 0.42,  green: 0.46,  blue: 0.54,  alpha: 1) // gray
+    let selectedBgColor = UIColor(red: 0.043, green: 0.337, blue: 0.859, alpha: 0.10)
+
+    // MARK: - Layout constants
+    let tabBarCustomHeight:  CGFloat = 72   // height of the floating pill container
+    let tabBarSideInset:     CGFloat = 16   // horizontal margin from screen edge
+    let tabBarBottomInset:   CGFloat = 12   // gap above home-indicator
+
+    // MARK: - Private state
+    private var customTabBarView: UIView!
+    private var pillBgView: UIView!          // rounded pill background
+    private var tabButtons: [UIButton] = []
+    private var isTabBarSetup = false
     var isSchoolUser = false
-    
+
+    // MARK: - Life-cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = self
-        
-        // ✅ IMPORTANT: Hide native tab bar completely
         hideNativeTabBar()
-        
+
         if !isTabBarSetup {
             setupCustomTabBar()
-            setupCircleButton()
-            setupMiddleLabel()
             isTabBarSetup = true
         }
-        
+
         for vc in viewControllers ?? [] {
-            if let nav = vc as? UINavigationController {
-                nav.delegate = self
-            }
+            if let nav = vc as? UINavigationController { nav.delegate = self }
         }
-        
-        updateMiddleTabTitleAndImage()
-        updateTabSelection()
+
+        updateTabSelection(to: selectedIndex)
     }
-    
-    // ✅ NEW: Properly hide native tab bar
-    func hideNativeTabBar() {
-        tabBar.isHidden = true
-        tabBar.alpha = 0
-        tabBar.frame = CGRect.zero
-        tabBar.isUserInteractionEnabled = false
-        
-        // ✅ Move it off screen
-        tabBar.frame.origin.y = UIScreen.main.bounds.height + 100
-    }
-    
-    // ✅ Called every time view appears - ensure native tab bar stays hidden
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         hideNativeTabBar()
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        // ✅ Always hide native tab bar when appearing
         hideNativeTabBar()
-        
-        positionCustomTabBar()
-        positionCircle()
-        positionMiddleLabel()
+        layoutCustomTabBar()
         updateVisibilityBasedOnDepth()
         bringTabBarToFront()
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
-        // ✅ Keep native tab bar hidden on every layout pass
         hideNativeTabBar()
-        
-        positionCustomTabBar()
-        positionCircle()
-        positionMiddleLabel()
+        layoutCustomTabBar()
     }
-    
-    // ✅ Rest of your code stays the same...
-    
+
+    // MARK: - Native tab bar suppression
+
+    func hideNativeTabBar() {
+        tabBar.isHidden = true
+        tabBar.alpha = 0
+        tabBar.isUserInteractionEnabled = false
+        tabBar.frame.origin.y = UIScreen.main.bounds.height + 100
+    }
+
+    // MARK: - Build custom tab bar
+
     func setupCustomTabBar() {
-        customTabBarView?.removeFromSuperview()
-        
+        // Outer container (clear, same width as screen)
         customTabBarView = UIView()
         customTabBarView.backgroundColor = .clear
         customTabBarView.tag = 999
         view.addSubview(customTabBarView)
-        
-        addTabBarShape()
-        createTabButtons()
+
+        // Rounded pill card (white, shadow)
+        pillBgView = UIView()
+        pillBgView.backgroundColor = .white
+        pillBgView.layer.cornerRadius = 28
+        pillBgView.layer.shadowColor   = UIColor.black.cgColor
+        pillBgView.layer.shadowOpacity = 0.10
+        pillBgView.layer.shadowRadius  = 16
+        pillBgView.layer.shadowOffset  = CGSize(width: 0, height: 4)
+        customTabBarView.addSubview(pillBgView)
+
+        buildTabButtons()
     }
-    
-    func positionCustomTabBar() {
-        guard customTabBarView != nil, customTabBarView.superview != nil else { return }
-        
-        let bottomInset = view.safeAreaInsets.bottom
-        customTabBarView.frame = CGRect(
-            x: 0,
-            y: view.bounds.height - tabBarCustomHeight - tabBarBottomMargin - bottomInset,
-            width: view.bounds.width,
-            height: tabBarCustomHeight
-        )
-        
-        addTabBarShape()
-        positionTabButtons()
-    }
-    
-    func createTabButtons() {
+
+    func buildTabButtons() {
         tabButtons.forEach { $0.removeFromSuperview() }
         tabButtons.removeAll()
-        
-        for (index, item) in tabItems.enumerated() {
-            if index == homeIndex {
-                let emptyButton = UIButton()
-                emptyButton.isUserInteractionEnabled = false
-                tabButtons.append(emptyButton)
-                continue
-            }
-            
-            let button = createTabButton(
-                icon: item.icon,
-                title: item.title,
-                tag: index
-            )
-            customTabBarView.addSubview(button)
-            tabButtons.append(button)
-        }
-    }
-    
-    func createTabButton(icon: String, title: String, tag: Int) -> UIButton {
-        let button = UIButton(type: .custom)
-        button.tag = tag
-        button.addTarget(self, action: #selector(tabButtonTapped(_:)), for: .touchUpInside)
-        
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.distribution = .fill
-        stackView.spacing = 4
-        stackView.isUserInteractionEnabled = false
-        
-        let iconImageView = UIImageView()
-        iconImageView.contentMode = .scaleAspectFit
-        if let systemImage = UIImage(systemName: icon) {
-            iconImageView.image = systemImage.withRenderingMode(.alwaysTemplate)
-        } else {
-            iconImageView.image = UIImage(named: icon)?.withRenderingMode(.alwaysTemplate)
-        }
-        iconImageView.tintColor = normalColor
-        iconImageView.tag = 100
-        iconImageView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            iconImageView.widthAnchor.constraint(equalToConstant: 24),
-            iconImageView.heightAnchor.constraint(equalToConstant: 24)
-        ])
-        
-        let titleLabel = UILabel()
-        titleLabel.text = title
-        titleLabel.font = UIFont.systemFont(ofSize: 10, weight: .medium)
-        titleLabel.textColor = normalColor
-        titleLabel.textAlignment = .center
-        titleLabel.tag = 101
-        titleLabel.adjustsFontSizeToFitWidth = true
-        titleLabel.minimumScaleFactor = 0.7
-        
-        stackView.addArrangedSubview(iconImageView)
-        stackView.addArrangedSubview(titleLabel)
-        
-        button.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        let leadingConstraint = stackView.leadingAnchor.constraint(greaterThanOrEqualTo: button.leadingAnchor, constant: 2)
-        let trailingConstraint = stackView.trailingAnchor.constraint(lessThanOrEqualTo: button.trailingAnchor, constant: -2)
-        
-        // Lower priority to avoid conflicts when button width is 0 during initial layout
-        leadingConstraint.priority = .defaultHigh
-        trailingConstraint.priority = .defaultHigh
-        
-        NSLayoutConstraint.activate([
-            stackView.centerXAnchor.constraint(equalTo: button.centerXAnchor),
-            stackView.centerYAnchor.constraint(equalTo: button.centerYAnchor),
-            leadingConstraint,
-            trailingConstraint
-        ])
-        
-        return button
-    }
-    
-    func positionTabButtons() {
-        for (index, button) in tabButtons.enumerated() {
-            if index == homeIndex { continue }
-            
-            button.translatesAutoresizingMaskIntoConstraints = false
-            if button.superview == nil {
-                customTabBarView.addSubview(button)
-            }
-            
-            // ✅ Use multiplier for proportional width
-            NSLayoutConstraint.activate([
-                button.widthAnchor.constraint(equalTo: customTabBarView.widthAnchor, multiplier: 1.0 / CGFloat(tabItems.count)),
-                button.heightAnchor.constraint(equalToConstant: tabBarCustomHeight),
-                button.topAnchor.constraint(equalTo: customTabBarView.topAnchor),
-                button.leadingAnchor.constraint(equalTo: customTabBarView.leadingAnchor, constant: CGFloat(index) * (view.bounds.width / CGFloat(tabItems.count)))
-            ])
-        }
-    }
-    
-    @objc func tabButtonTapped(_ sender: UIButton) {
-        selectedIndex = sender.tag
-        updateTabSelection()
-        
-        if let nav = viewControllers?[sender.tag] as? UINavigationController {
-            nav.popToRootViewController(animated: false)
-        }
-        
-        circleButton.layer.borderColor = UIColor.clear.cgColor
-    }
-    
-    func updateTabSelection() {
-        for (index, button) in tabButtons.enumerated() {
-            if index == homeIndex { continue }
-            
-            let isSelected = (index == selectedIndex)
-            
-            if let stackView = button.subviews.first(where: { $0 is UIStackView }) as? UIStackView {
-                if let iconView = stackView.arrangedSubviews.first as? UIImageView {
-                    iconView.tintColor = isSelected ? selectedColor : normalColor
-                }
-                
-                if let label = stackView.arrangedSubviews.last as? UILabel {
-                    label.textColor = isSelected ? selectedColor : normalColor
-                    label.font = UIFont.systemFont(ofSize: 10, weight: isSelected ? .semibold : .medium)
-                }
-            }
-        }
-        
-        if selectedIndex == homeIndex {
-            circleButton.layer.borderColor = selectedColor.cgColor
-            middleLabel.textColor = selectedColor
-            middleLabel.font = UIFont.systemFont(ofSize: 10, weight: .semibold)
-        } else {
-            circleButton.layer.borderColor = UIColor.clear.cgColor
-            middleLabel.textColor = normalColor
-            middleLabel.font = UIFont.systemFont(ofSize: 10, weight: .medium)
-        }
-    }
-    
-    func addTabBarShape() {
-        tabBarShapeLayer?.removeFromSuperlayer()
-        
-        guard customTabBarView != nil else { return }
-        
-        let shapeLayer = CAShapeLayer()
-        shapeLayer.path = createDipPath()
-        shapeLayer.fillColor = UIColor.white.cgColor
-        shapeLayer.shadowOpacity = 0.15
-        shapeLayer.shadowRadius = 16
-        shapeLayer.shadowOffset = CGSize(width: 0, height: -4)
-        shapeLayer.shadowColor = UIColor.black.cgColor
-        
-        customTabBarView.layer.insertSublayer(shapeLayer, at: 0)
-        tabBarShapeLayer = shapeLayer
-    }
-    
-    func createDipPath() -> CGPath {
-        let w = view.bounds.width
-        let h: CGFloat = tabBarCustomHeight
-        let mid = w / 2
-        let r: CGFloat = 24
-        let dipW: CGFloat = w * 0.26
-        let dipD: CGFloat = 26
-        
-        let p = UIBezierPath()
-        
-        p.move(to: CGPoint(x: r, y: 0))
-        p.addQuadCurve(to: CGPoint(x: 0, y: r), controlPoint: CGPoint(x: 0, y: 0))
-        p.addLine(to: CGPoint(x: 0, y: h - r))
-        p.addQuadCurve(to: CGPoint(x: r, y: h), controlPoint: CGPoint(x: 0, y: h))
-        p.addLine(to: CGPoint(x: w - r, y: h))
-        p.addQuadCurve(to: CGPoint(x: w, y: h - r), controlPoint: CGPoint(x: w, y: h))
-        p.addLine(to: CGPoint(x: w, y: r))
-        p.addQuadCurve(to: CGPoint(x: w - r, y: 0), controlPoint: CGPoint(x: w, y: 0))
-        
-        let dipStart = mid + dipW / 2
-        let dipEnd = mid - dipW / 2
-        
-        p.addLine(to: CGPoint(x: dipStart, y: 0))
-        p.addQuadCurve(to: CGPoint(x: mid, y: dipD), controlPoint: CGPoint(x: mid + dipW / 4, y: dipD))
-        p.addQuadCurve(to: CGPoint(x: dipEnd, y: 0), controlPoint: CGPoint(x: mid - dipW / 4, y: dipD))
-        p.addLine(to: CGPoint(x: r, y: 0))
-        p.close()
-        
-        return p.cgPath
-    }
-    
-    func bringTabBarToFront() {
-        if customTabBarView != nil {
-            view.bringSubviewToFront(customTabBarView)
-        }
-        view.bringSubviewToFront(circleButton)
-    }
-    
-    func setupCircleButton() {
-        circleButton.removeFromSuperview()
-        
-        let size: CGFloat = 60
-        circleButton.frame = CGRect(x: 0, y: 0, width: size, height: size)
-        circleButton.layer.cornerRadius = size / 2
-        circleButton.backgroundColor = .white
-        circleButton.tag = 998
-        
-        // ✅ Do NOT use clipsToBounds = true here (it kills the shadow).
-        // Image is set safely in applyCircleImage(_:)
-        circleButton.setTitle(nil, for: .normal)
-        circleButton.setTitle(nil, for: .highlighted)
-        
-        // Default placeholder until updateMiddleTabTitleAndImage() runs
-        applyCircleImage(UIImage(named: "MyPlan") ?? UIImage(named: "oasis_logo"))
-        
-        circleButton.layer.borderWidth = 3
-        circleButton.layer.borderColor = UIColor.clear.cgColor
-        
-        circleButton.layer.shadowOpacity = 0.25
-        circleButton.layer.shadowRadius = 10
-        circleButton.layer.shadowOffset = CGSize(width: 0, height: 3)
-        circleButton.layer.shadowColor = UIColor.black.cgColor
-        
-        circleButton.removeTarget(nil, action: nil, for: .allEvents)
-        circleButton.addTarget(self, action: #selector(circleTapped), for: .touchUpInside)
-        
-        view.addSubview(circleButton)
-        view.bringSubviewToFront(circleButton)
-    }
-    
-    func setupMiddleLabel() {
-        middleLabel.removeFromSuperview()
-        
-        middleLabel.text = "Home"
-        middleLabel.font = UIFont.systemFont(ofSize: 10, weight: .medium)
-        middleLabel.textColor = normalColor
-        middleLabel.textAlignment = .center
-        middleLabel.adjustsFontSizeToFitWidth = true
-        middleLabel.minimumScaleFactor = 0.7
-        middleLabel.tag = 997
-        
-        customTabBarView.addSubview(middleLabel)
-    }
-    
-    func positionMiddleLabel() {
-        guard customTabBarView != nil else { return }
-        
-        let labelWidth: CGFloat = 80
-        let labelHeight: CGFloat = 14
-        
-        middleLabel.frame = CGRect(
-            x: (view.bounds.width - labelWidth) / 2,
-            y: tabBarCustomHeight - labelHeight - 8,
-            width: labelWidth,
-            height: labelHeight
-        )
-    }
-    
-    func positionCircle() {
-        guard customTabBarView != nil else { return }
-        
-        let tabFrame = customTabBarView.frame
-        let circleHalf = circleButton.bounds.height / 2
 
-        circleButton.center = CGPoint(
-            x: tabFrame.midX,
-            y: tabFrame.minY - circleHalf + gapOffset
-        )
-        
-        view.bringSubviewToFront(circleButton)
+        for (index, item) in tabItems.enumerated() {
+            let btn = makeFigmaTabButton(item: item, tag: index)
+            pillBgView.addSubview(btn)
+            tabButtons.append(btn)
+        }
     }
-    
-    @objc func circleTapped() {
-        selectedIndex = homeIndex
-        updateTabSelection()
-        
-        if let nav = viewControllers?[homeIndex] as? UINavigationController {
+
+    // Creates a vertical stack (icon pill + label) matching the Figma tab style
+    func makeFigmaTabButton(item: (icon: String, title: String, systemIcon: String), tag: Int) -> UIButton {
+        let btn = UIButton(type: .custom)
+        btn.tag = tag
+        btn.addTarget(self, action: #selector(tabButtonTapped(_:)), for: .touchUpInside)
+
+        // --- icon background pill (shows only when selected) ---
+        let iconBg = UIView()
+        iconBg.backgroundColor = selectedBgColor
+        iconBg.layer.cornerRadius = 16
+        iconBg.alpha = 0
+        iconBg.isUserInteractionEnabled = false
+        iconBg.tag = 200          // to find it later
+        btn.addSubview(iconBg)
+
+        // --- icon image ---
+        let iconView = UIImageView()
+        iconView.contentMode = .scaleAspectFit
+        iconView.isUserInteractionEnabled = false
+        iconView.tag = 100
+
+        // Try asset first, then SF Symbol
+        if let assetImg = UIImage(named: item.icon) {
+            iconView.image = assetImg.withRenderingMode(.alwaysTemplate)
+        } else if let sfImg = UIImage(systemName: item.systemIcon) {
+            iconView.image = sfImg.withRenderingMode(.alwaysTemplate)
+        }
+        iconView.tintColor = normalColor
+        btn.addSubview(iconView)
+
+        // --- label ---
+        let lbl = UILabel()
+        lbl.text = item.title
+        lbl.font = UIFont.systemFont(ofSize: 10, weight: .medium)
+        lbl.textColor = normalColor
+        lbl.textAlignment = .center
+        lbl.adjustsFontSizeToFitWidth = true
+        lbl.minimumScaleFactor = 0.7
+        lbl.isUserInteractionEnabled = false
+        lbl.tag = 101
+        btn.addSubview(lbl)
+
+        // --- auto-layout ---
+        iconBg.translatesAutoresizingMaskIntoConstraints  = false
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+        lbl.translatesAutoresizingMaskIntoConstraints      = false
+
+        NSLayoutConstraint.activate([
+            // icon pill: 44 × 32, centred horizontally, sits in the top part of the button
+            iconBg.centerXAnchor.constraint(equalTo: btn.centerXAnchor),
+            iconBg.topAnchor.constraint(equalTo: btn.topAnchor, constant: 8),
+            iconBg.widthAnchor.constraint(equalToConstant: 44),
+            iconBg.heightAnchor.constraint(equalToConstant: 32),
+
+            // icon image inside the pill
+            iconView.centerXAnchor.constraint(equalTo: iconBg.centerXAnchor),
+            iconView.centerYAnchor.constraint(equalTo: iconBg.centerYAnchor),
+            iconView.widthAnchor.constraint(equalToConstant: 22),
+            iconView.heightAnchor.constraint(equalToConstant: 22),
+
+            // label below the pill
+            lbl.topAnchor.constraint(equalTo: iconBg.bottomAnchor, constant: 3),
+            lbl.centerXAnchor.constraint(equalTo: btn.centerXAnchor),
+            lbl.leadingAnchor.constraint(greaterThanOrEqualTo: btn.leadingAnchor, constant: 2),
+            lbl.trailingAnchor.constraint(lessThanOrEqualTo: btn.trailingAnchor, constant: -2)
+        ])
+
+        return btn
+    }
+
+    // MARK: - Layout (called every time bounds change)
+
+    func layoutCustomTabBar() {
+        guard customTabBarView != nil, customTabBarView.superview != nil else { return }
+
+        let totalH    = tabBarCustomHeight
+        let sideInset = tabBarSideInset
+        let w         = view.bounds.width - sideInset * 2
+
+        // Position matches the Homescreen SwiftUI tab bar:
+        // 12pt from the true screen bottom (ignores safe area, same as .ignoresSafeArea + .padding(.bottom,12))
+        customTabBarView.frame = CGRect(
+            x: sideInset,
+            y: view.bounds.height - totalH - tabBarBottomInset,
+            width: w,
+            height: totalH
+        )
+
+        // Pill fills the container
+        pillBgView.frame = customTabBarView.bounds
+
+        // Distribute tab buttons equally inside the pill
+        let btnW = w / CGFloat(tabItems.count)
+        for (index, btn) in tabButtons.enumerated() {
+            btn.frame = CGRect(x: btnW * CGFloat(index), y: 0, width: btnW, height: totalH)
+        }
+    }
+
+    // MARK: - Selection
+
+    @objc func tabButtonTapped(_ sender: UIButton) {
+        let newIndex = sender.tag
+        selectedIndex = newIndex
+        updateTabSelection(to: newIndex)
+
+        if let nav = viewControllers?[newIndex] as? UINavigationController {
             nav.popToRootViewController(animated: false)
         }
-        
-        circleButton.layer.borderColor = selectedColor.cgColor
     }
-    
+
+    func updateTabSelection(to selectedIdx: Int) {
+        for (index, btn) in tabButtons.enumerated() {
+            let isSelected = (index == selectedIdx)
+
+            // Icon pill background
+            if let iconBg = btn.subviews.first(where: { $0.tag == 200 }) {
+                iconBg.alpha = isSelected ? 1 : 0
+            }
+            // Icon tint
+            if let iconView = btn.subviews.first(where: { $0.tag == 100 }) as? UIImageView {
+                iconView.tintColor = isSelected ? selectedColor : normalColor
+            }
+            // Label
+            if let lbl = btn.subviews.first(where: { $0.tag == 101 }) as? UILabel {
+                lbl.textColor = isSelected ? selectedColor : normalColor
+                lbl.font = UIFont.systemFont(ofSize: 10, weight: isSelected ? .semibold : .medium)
+            }
+        }
+    }
+
+    override var selectedIndex: Int {
+        didSet { updateTabSelection(to: selectedIndex) }
+    }
+
+    // MARK: - Visibility helpers
+
+    func bringTabBarToFront() {
+        view.bringSubviewToFront(customTabBarView)
+    }
+
     func updateVisibilityBasedOnDepth() {
         guard let nav = viewControllers?[selectedIndex] as? UINavigationController else { return }
-        
         let isRoot = (nav.viewControllers.count == 1)
-        
         customTabBarView?.isHidden = !isRoot
-        circleButton.isHidden = !isRoot
-        middleLabel.isHidden = !isRoot
-        circleButton.alpha = isRoot ? 1 : 0
-        circleButton.isUserInteractionEnabled = isRoot
-        
-        // ✅ ALWAYS keep native tab bar hidden
         hideNativeTabBar()
     }
-    
-    override var selectedIndex: Int {
-        didSet {
-            updateTabSelection()
-        }
-    }
-    
+
+    // MARK: - Delegate
+
     func tabBarController(_ tabBarController: UITabBarController,
                           didSelect viewController: UIViewController) {
-        updateTabSelection()
+        updateTabSelection(to: selectedIndex)
         updateVisibilityBasedOnDepth()
-        hideNativeTabBar() // ✅ Extra safety
+        hideNativeTabBar()
     }
-    
+
     func navigationController(_ navigationController: UINavigationController,
-                              willShow viewController: UIViewController,
-                              animated: Bool) {
+                               willShow viewController: UIViewController,
+                               animated: Bool) {
         DispatchQueue.main.async {
             self.updateVisibilityBasedOnDepth()
-            self.hideNativeTabBar() // ✅ Extra safety
+            self.hideNativeTabBar()
         }
     }
-    
+
     func navigationController(_ navigationController: UINavigationController,
-                              didShow viewController: UIViewController,
-                              animated: Bool) {
+                               didShow viewController: UIViewController,
+                               animated: Bool) {
         updateVisibilityBasedOnDepth()
-        hideNativeTabBar() // ✅ Extra safety
+        hideNativeTabBar()
     }
-    
-    // MARK: - Circle image helpers (ONLY change for your requirement)
-    
-    /// Safely applies any image to the circle button so it is always visible.
-    private func applyCircleImage(_ image: UIImage?) {
-        circleButton.setTitle(nil, for: .normal)
-        circleButton.setTitle(nil, for: .highlighted)
-        circleButton.setTitle(nil, for: .disabled)
-        
-        guard let image = image else {
-            circleButton.setImage(nil, for: .normal)
-            return
-        }
-        
-        // ✅ alwaysOriginal → asset colors stay, not tinted away
-        let finalImage = image.withRenderingMode(.alwaysOriginal)
-        
-        circleButton.setImage(finalImage, for: .normal)
-        circleButton.setImage(finalImage, for: .highlighted)
-        circleButton.setImage(finalImage, for: .disabled)
-        
-        circleButton.imageView?.contentMode = .scaleAspectFit
-        circleButton.imageView?.clipsToBounds = true
-        
-        // Keep image padded inside the 60pt circle
-        circleButton.contentHorizontalAlignment = .fill
-        circleButton.contentVerticalAlignment = .fill
-        circleButton.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        
-        // Make sure image view is on top
-        if let imageView = circleButton.imageView {
-            circleButton.bringSubviewToFront(imageView)
-        }
-    }
-    
+
+    // MARK: - Unused legacy stubs (kept so callers don't break)
+
+    // These were part of the old "circle button" Home design.
+    // They are no longer used but kept to avoid breaking any
+    // call-sites that might reference them from other files.
+
+    var isSchoolUserUnused: Bool { isSchoolUser }
+
     func updateMiddleTabTitleAndImage() {
-        isSchoolUser = false
-        
-        // Always clear title so it never covers the image
-        circleButton.setTitle(nil, for: .normal)
-        circleButton.setTitle(nil, for: .highlighted)
-        
-        if UserManager.shared.user?.students?.count ?? 0 > 0 {
-            let first_student = UserManager.shared.user?.students?.first
-            if let school = first_student?.school {
-                let logoURL = school.smallLogo ?? ""
-                
-                // ✅ Only treat as school user when URL is actually valid
-                if !logoURL.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    isSchoolUser = true
-                    circleButton.loadImage(url: logoURL)
-                    middleLabel.text = "Home"
-                    return
-                }
-            }
-        }
-        
-        // ✅ Non-school user OR missing logo → show MyPlan from assets
-        if let myPlanImage = UIImage(named: "MyPlan") {
-            applyCircleImage(myPlanImage)
-        } else if let fallback = UIImage(named: "oasis_logo") {
-            // safety fallback if asset name differs
-            applyCircleImage(fallback)
-            print("⚠️ MyPlan not found in Assets — using oasis_logo. Check exact asset name.")
-        } else {
-            print("⚠️ Neither MyPlan nor oasis_logo found in Assets.xcassets")
-        }
-        
-        middleLabel.text = "Home"
+        // No-op — the centre tab is now a standard flat tab (no floating circle).
     }
 }

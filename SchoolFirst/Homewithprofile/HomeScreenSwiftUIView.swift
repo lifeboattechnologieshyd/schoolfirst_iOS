@@ -114,6 +114,15 @@ struct HomeScreenSwiftUIView: View {
                     .padding(.bottom, -20)
                 }
             }
+            
+            // MARK: - Floating Pill Tab Bar (Figma Design)
+            VStack {
+                Spacer()
+                floatingTabBar
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 12)
+            }
+            .ignoresSafeArea(edges: .bottom)
         }
     }
     
@@ -393,7 +402,68 @@ struct HomeScreenSwiftUIView: View {
                 .buttonStyle(PlainButtonStyle())
             }
         }
-        .padding(.bottom, 40)
+        .padding(.bottom, 100) // ✅ Extra space for floating tab bar
+    }
+    
+    // MARK: - Floating Tab Bar (Figma Pill Design)
+    
+    private var floatingTabBar: some View {
+        HStack(spacing: 0) {
+            tabBarItem(icon: "Calendar vector icon",    sfSymbol: "calendar",     title: "Calendar",    isSelected: false, action: {})
+            tabBarItem(icon: "Feels emotion symbol",    sfSymbol: "face.smiling", title: "Edutainment", isSelected: false, action: {})
+            tabBarItem(icon: "Vector 1",                  sfSymbol: "house",        title: "Home",        isSelected: false, action: { onFamilyZoneTapped() })
+            tabBarItem(icon: "Vocabee play vector icon",sfSymbol: "play.circle",  title: "Feels",       isSelected: false, action: {})
+            tabBarItem(icon: "Profile vector icon",     sfSymbol: "person",       title: "Profile",     isSelected: false, action: {})
+        }
+        .frame(height: 72)
+        .background(
+            RoundedRectangle(cornerRadius: 28)
+                .fill(Color.white)
+                .shadow(color: Color.black.opacity(0.10), radius: 16, x: 0, y: 4)
+        )
+    }
+    
+    @ViewBuilder
+    private func tabBarItem(icon: String, sfSymbol: String, title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        let tabBlue  = Color(red: 0.043, green: 0.337, blue: 0.859)
+        let tabGray  = Color(red: 0.42,  green: 0.46,  blue: 0.54)
+        let iconBgColor = tabBlue.opacity(0.10)
+        
+        Button(action: action) {
+            VStack(spacing: 3) {
+                ZStack {
+                    if isSelected {
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(iconBgColor)
+                            .frame(width: 44, height: 32)
+                    }
+                    // Try named asset, fall back to SF Symbol
+                    if UIImage(named: icon) != nil {
+                        Image(icon)
+                            .renderingMode(.template)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 22, height: 22)
+                            .foregroundColor(isSelected ? tabBlue : tabGray)
+                    } else {
+                        Image(systemName: sfSymbol)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 22, height: 22)
+                            .foregroundColor(isSelected ? tabBlue : tabGray)
+                    }
+                }
+                .frame(width: 44, height: 32)
+                
+                Text(title)
+                    .font(.system(size: 10, weight: isSelected ? .semibold : .medium))
+                    .foregroundColor(isSelected ? tabBlue : tabGray)
+                    .minimumScaleFactor(0.7)
+                    .lineLimit(1)
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
