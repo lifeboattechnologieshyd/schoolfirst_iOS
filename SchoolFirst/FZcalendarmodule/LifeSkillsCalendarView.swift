@@ -27,6 +27,9 @@ struct LifeSkillsCalendarView: View {
     // Callback for Month view button navigation
     var onMonthViewTap: (() -> Void)?
     
+    // Callback for View all button navigation
+    var onViewAllTap: (() -> Void)?
+    
     // Dummy Data for UI
     let weekDays: [CalendarDay] = [
         CalendarDay(dayName: "Mon", date: "19", isSelected: false, hasDot: true),
@@ -64,14 +67,14 @@ struct LifeSkillsCalendarView: View {
                             Spacer()
                             
                             Button(action: {
-                                // Navigate to CalendarmonthviewVC
                                 onMonthViewTap?()
                             }) {
                                 Text("Month view")
                                     .font(.custom("Inter-SemiBold", size: 14))
                                     .foregroundColor(Color.CustomPrimaryBlue)
                             }
-                            .buttonStyle(PlainButtonStyle()) // ensures tap works reliably
+                            .buttonStyle(PlainButtonStyle())
+                            .contentShape(Rectangle())
                         }
                         
                         HStack(spacing: 8) {
@@ -103,12 +106,14 @@ struct LifeSkillsCalendarView: View {
                             Spacer()
                             
                             Button(action: {
-                                // TODO: Handle View All Action
+                                onViewAllTap?()
                             }) {
                                 Text("View all")
                                     .font(.custom("Inter-SemiBold", size: 14))
                                     .foregroundColor(Color.CustomPrimaryBlue)
                             }
+                            .buttonStyle(PlainButtonStyle())
+                            .contentShape(Rectangle())
                         }
                         
                         ScrollView(.horizontal, showsIndicators: false) {
@@ -137,7 +142,7 @@ struct LifeSkillsCalendarView: View {
                         Text("See how a daily prompt helps your family learn together.")
                             .font(.custom("Inter-Regular", size: 14))
                             .foregroundColor(Color.gray)
-                            .padding(.bottom, 100) // Added extra padding for the tab bar
+                            .padding(.bottom, 100)
                     }
                     
                 }
@@ -269,7 +274,6 @@ struct PastDatePill: View {
 struct ActivityCardView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // Tag
             Text("TODAY • 23 OCT")
                 .font(.custom("Inter-Bold", size: 10))
                 .foregroundColor(Color.CustomDarkText)
@@ -278,7 +282,6 @@ struct ActivityCardView: View {
                 .background(Color.white)
                 .cornerRadius(12)
             
-            // Texts
             VStack(alignment: .leading, spacing: 8) {
                 Text("Family Role Reversal Day")
                     .font(.custom("Inter-Bold", size: 22))
@@ -300,7 +303,6 @@ struct ActivityCardView: View {
                     .foregroundColor(Color.CustomDarkText)
             }
             
-            // Buttons
             HStack(spacing: 12) {
                 Button(action: {
                     // TODO: Start Activity
@@ -339,10 +341,8 @@ struct ActivityCardView: View {
 struct NewHereVideoCard: View {
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-            // Background Gradient
             LinearGradient(gradient: Gradient(colors: [Color.orange, Color.pink, Color.purple]), startPoint: .topLeading, endPoint: .bottomTrailing)
             
-            // Play Button
             VStack {
                 Spacer()
                 HStack {
@@ -354,14 +354,13 @@ struct NewHereVideoCard: View {
                             Image(systemName: "play.fill")
                                 .foregroundColor(Color.CustomPrimaryBlue)
                                 .font(.system(size: 20))
-                                .offset(x: 2) // Center optical alignment
+                                .offset(x: 2)
                         )
                     Spacer()
                 }
                 Spacer()
             }
             
-            // Bottom Text
             Text("What is the Family Life Skills Calendar?")
                 .font(.custom("Inter-Bold", size: 16))
                 .foregroundColor(.white)
@@ -399,11 +398,11 @@ extension Color {
         Scanner(string: hex).scanHexInt64(&int)
         let a, r, g, b: UInt64
         switch hex.count {
-        case 3: // RGB (12-bit)
+        case 3:
             (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6: // RGB (24-bit)
+        case 6:
             (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8: // ARGB (32-bit)
+        case 8:
             (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
         default:
             (a, r, g, b) = (1, 1, 1, 0)

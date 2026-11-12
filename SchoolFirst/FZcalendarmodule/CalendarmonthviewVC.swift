@@ -1,10 +1,3 @@
-//
-//  CalendarmonthviewVC.swift
-//  SchoolFirst
-//
-//  Created by vamshi krishna on 12/11/26.
-//
-
 import UIKit
 import SwiftUI
 
@@ -16,10 +9,36 @@ class CalendarmonthviewVC: UIViewController {
         // 1. Hide the UIKit Navigation Bar
         self.navigationController?.setNavigationBarHidden(true, animated: false)
         
-        // 2. Initialize the SwiftUI Month View with Back Action
-        let swiftUIView = CalendarMonthSwiftUIView(onBack: { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
-        })
+        // 2. Initialize the SwiftUI Month View with Back + Open Activity Action
+        let swiftUIView = CalendarMonthSwiftUIView(
+            onBack: { [weak self] in
+                guard let self = self else { return }
+                DispatchQueue.main.async {
+                    if let nav = self.navigationController, nav.viewControllers.count > 1 {
+                        nav.popViewController(animated: true)
+                    } else if self.presentingViewController != nil {
+                        self.dismiss(animated: true, completion: nil)
+                    } else {
+                        self.dismiss(animated: true, completion: nil)
+                    }
+                }
+            },
+            onOpenActivityTap: { [weak self] in
+                guard let self = self else { return }
+                DispatchQueue.main.async {
+                    let dailyVC = DailyactivityVC()
+                    dailyVC.hidesBottomBarWhenPushed = true
+                    dailyVC.modalPresentationStyle = .fullScreen
+                    
+                    if let nav = self.navigationController {
+                        nav.pushViewController(dailyVC, animated: true)
+                    } else {
+                        // TabBar case where navigationController is nil
+                        self.present(dailyVC, animated: true, completion: nil)
+                    }
+                }
+            }
+        )
         
         // 3. Wrap it in a UIHostingController
         let hostingController = UIHostingController(rootView: swiftUIView)
@@ -39,6 +58,11 @@ class CalendarmonthviewVC: UIViewController {
         
         // 6. Notify the hosting controller
         hostingController.didMove(toParent: self)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 }
 
@@ -60,17 +84,15 @@ fileprivate struct MonthDayItem: Identifiable {
 // MARK: - Main SwiftUI View
 struct CalendarMonthSwiftUIView: View {
     var onBack: (() -> Void)?
+    var onOpenActivityTap: (() -> Void)?
     
     let weekDays = ["S", "M", "T", "W", "T", "F", "S"]
     
-    // Added fileprivate here to fix the compiler error
     fileprivate let monthDays: [MonthDayItem] = [
-        // 4 Empty slots for Sun, Mon, Tue, Wed
         MonthDayItem(dayNumber: "", status: .empty),
         MonthDayItem(dayNumber: "", status: .empty),
         MonthDayItem(dayNumber: "", status: .empty),
         MonthDayItem(dayNumber: "", status: .empty),
-        // Days 1 to 31
         MonthDayItem(dayNumber: "1", status: .done),
         MonthDayItem(dayNumber: "2", status: .done),
         MonthDayItem(dayNumber: "3", status: .done),
@@ -110,15 +132,12 @@ struct CalendarMonthSwiftUIView: View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .leading, spacing: 0) {
                 
-                // 1. Custom Header
                 MonthScreenHeaderView(onBack: onBack)
                 
                 VStack(alignment: .leading, spacing: 24) {
                     
-                    // 2. Calendar Card
                     VStack(alignment: .leading, spacing: 20) {
                         
-                        // Month Title & Arrows
                         HStack {
                             Text("October 2026")
                                 .font(.custom("Inter-Bold", size: 18))
@@ -127,17 +146,13 @@ struct CalendarMonthSwiftUIView: View {
                             Spacer()
                             
                             HStack(spacing: 20) {
-                                Button(action: {
-                                    // TODO: Previous Month
-                                }) {
+                                Button(action: {}) {
                                     Image(systemName: "chevron.left")
                                         .font(.system(size: 13, weight: .bold))
                                         .foregroundColor(Color(hexCode: "3451D1"))
                                 }
                                 
-                                Button(action: {
-                                    // TODO: Next Month
-                                }) {
+                                Button(action: {}) {
                                     Image(systemName: "chevron.right")
                                         .font(.system(size: 13, weight: .bold))
                                         .foregroundColor(Color(hexCode: "3451D1"))
@@ -145,7 +160,6 @@ struct CalendarMonthSwiftUIView: View {
                             }
                         }
                         
-                        // Weekdays Header (S M T W T F S)
                         HStack(spacing: 0) {
                             ForEach(0..<weekDays.count, id: \.self) { index in
                                 Text(weekDays[index])
@@ -155,14 +169,12 @@ struct CalendarMonthSwiftUIView: View {
                             }
                         }
                         
-                        // Calendar Dates Grid
                         LazyVGrid(columns: columns, spacing: 12) {
                             ForEach(monthDays) { item in
                                 DayCellView(item: item)
                             }
                         }
                         
-                        // Legend (Done, Missed, Today)
                         HStack(spacing: 16) {
                             LegendItem(color: Color(hexCode: "475467"), text: "Done", textColor: Color(hexCode: "667085"))
                             LegendItem(color: Color(hexCode: "B42318"), text: "Missed", textColor: Color(hexCode: "B42318"))
@@ -176,15 +188,12 @@ struct CalendarMonthSwiftUIView: View {
                     .cornerRadius(20)
                     .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 4)
                     
-                    // 3. Today's Activity Section
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Today’s activity")
                             .font(.custom("Inter-Bold", size: 18))
                             .foregroundColor(Color(hexCode: "1C1E26"))
                         
-                        // Prompt Card
                         VStack(alignment: .leading, spacing: 12) {
-                            // Badge
                             Text("PROMPT")
                                 .font(.custom("Inter-Bold", size: 10))
                                 .foregroundColor(Color(hexCode: "594300"))
@@ -193,7 +202,6 @@ struct CalendarMonthSwiftUIView: View {
                                 .background(Color(hexCode: "FEEB9E"))
                                 .cornerRadius(8)
                             
-                            // Title & Subtitle
                             VStack(alignment: .leading, spacing: 6) {
                                 Text("Family Role Reversal Day")
                                     .font(.custom("Inter-Bold", size: 18))
@@ -204,9 +212,8 @@ struct CalendarMonthSwiftUIView: View {
                                     .foregroundColor(Color(hexCode: "667085"))
                             }
                             
-                            // Button
                             Button(action: {
-                                // TODO: Open Activity Action
+                                onOpenActivityTap?()
                             }) {
                                 Text("Open activity")
                                     .font(.custom("Inter-SemiBold", size: 15))
@@ -223,7 +230,7 @@ struct CalendarMonthSwiftUIView: View {
                         .cornerRadius(20)
                         .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 4)
                     }
-                    .padding(.bottom, 100) // Padding for bottom tab bar
+                    .padding(.bottom, 100)
                     
                 }
                 .padding(.horizontal, 20)
@@ -234,8 +241,6 @@ struct CalendarMonthSwiftUIView: View {
         .navigationBarHidden(true)
     }
 }
-
-// MARK: - Subviews
 
 fileprivate struct MonthScreenHeaderView: View {
     var onBack: (() -> Void)?
@@ -262,9 +267,7 @@ fileprivate struct MonthScreenHeaderView: View {
                 
                 Spacer()
                 
-                Button(action: {
-                    // TODO: Share action
-                }) {
+                Button(action: {}) {
                     Image(systemName: "square.and.arrow.up")
                         .font(.system(size: 16, weight: .bold))
                         .foregroundColor(.white)
@@ -311,9 +314,7 @@ fileprivate struct DayCellView: View {
             Color.clear
                 .frame(width: 40, height: 46)
         } else {
-            Button(action: {
-                // TODO: Date tap action
-            }) {
+            Button(action: {}) {
                 VStack(spacing: 4) {
                     Text(item.dayNumber)
                         .font(.custom(fontName(for: item.status), size: 15))
@@ -353,11 +354,11 @@ fileprivate struct DayCellView: View {
     private func dotColor(for status: DayStatus) -> Color {
         switch status {
         case .done:
-            return Color(hexCode: "30A454") // Green
+            return Color(hexCode: "30A454")
         case .missed:
-            return Color(hexCode: "D92D20") // Red
+            return Color(hexCode: "D92D20")
         case .today:
-            return Color(hexCode: "FDB022") // Yellow
+            return Color(hexCode: "FDB022")
         default:
             return .clear
         }
@@ -381,8 +382,6 @@ fileprivate struct LegendItem: View {
         }
     }
 }
-
-// MARK: - Fileprivate Helpers (Prevents conflicts with other files)
 
 fileprivate struct MonthHeaderRoundedCorner: Shape {
     var radius: CGFloat = .infinity

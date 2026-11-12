@@ -12,26 +12,48 @@ class CalendarViewController: UIViewController {
         // 1. Hide the UIKit Navigation Bar
         self.navigationController?.setNavigationBarHidden(true, animated: false)
         
-        // 2. Initialize your new SwiftUI View with Back Action + Month View Action
+        // 2. Initialize SwiftUI View with Back + Month View + View All Action
         let swiftUIView = LifeSkillsCalendarView(
             onBack: { [weak self] in
-                self?.navigationController?.popViewController(animated: true)
+                guard let self = self else { return }
+                DispatchQueue.main.async {
+                    if let nav = self.navigationController, nav.viewControllers.count > 1 {
+                        nav.popViewController(animated: true)
+                    } else if self.presentingViewController != nil {
+                        self.dismiss(animated: true, completion: nil)
+                    } else {
+                        // Came directly from TabBar (no nav stack) -> go to Home tab
+                        self.tabBarController?.selectedIndex = 2
+                    }
+                }
             },
             onMonthViewTap: { [weak self] in
                 guard let self = self else { return }
-                
-                // Make sure we run on main thread
                 DispatchQueue.main.async {
-                    // ---------- WAY 1: Programmatic VC ----------
                     let monthVC = CalendarmonthviewVC()
+                    monthVC.hidesBottomBarWhenPushed = true
+                    monthVC.modalPresentationStyle = .fullScreen
                     
-                    // ---------- WAY 2: If your VC is in Storyboard, use this instead ----------
-                    // let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                    // let monthVC = storyboard.instantiateViewController(withIdentifier: "CalendarmonthviewVC") as! CalendarmonthviewVC
+                    if let nav = self.navigationController {
+                        nav.pushViewController(monthVC, animated: true)
+                    } else {
+                        self.present(monthVC, animated: true, completion: nil)
+                    }
+                }
+            },
+            onViewAllTap: { [weak self] in
+                guard let self = self else { return }
+                DispatchQueue.main.async {
+                    let pastVC = PastdatesactivitiesVC()
+                    pastVC.hidesBottomBarWhenPushed = true
+                    pastVC.modalPresentationStyle = .fullScreen
                     
-                    // Show navigation bar on the next screen
-                    self.navigationController?.setNavigationBarHidden(false, animated: true)
-                    self.navigationController?.pushViewController(monthVC, animated: true)
+                    if let nav = self.navigationController {
+                        nav.pushViewController(pastVC, animated: true)
+                    } else {
+                        // TabBar case: navigationController is nil, so present
+                        self.present(pastVC, animated: true, completion: nil)
+                    }
                 }
             }
         )
@@ -59,7 +81,6 @@ class CalendarViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // Keep nav bar hidden when coming back to this screen
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 }

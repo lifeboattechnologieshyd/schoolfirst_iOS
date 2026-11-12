@@ -500,7 +500,7 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
             navigationController?.pushViewController(vc, animated: true)
         case 3:
             let stbd = UIStoryboard(name: "Main", bundle: nil)
-            let vc = stbd.instantiateViewController(identifier: "EdutainmentController") as! EdutainmentController
+            let vc = stbd.instantiateViewController(identifier: "CalendarViewController") as! CalendarViewController
             navigationController?.pushViewController(vc, animated: true)
         case 4:
             let stbd = UIStoryboard(name: "Feels", bundle: nil)
