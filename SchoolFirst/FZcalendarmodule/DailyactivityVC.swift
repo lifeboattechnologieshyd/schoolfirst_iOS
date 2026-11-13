@@ -178,66 +178,67 @@ struct DailyActivitySwiftUIView: View {
     
     var body: some View {
         VStack(spacing: 0) {
+            
+            // 1. PINNED HEADER: Stays fixed at the top
+            DailyActivityHeaderView(
+                dateText: viewModel.data.topDateText,
+                onBack: onBack,
+                onShare: onShareTap
+            )
+            .zIndex(1)
+            
+            // 2. SCROLLABLE CONTENT: Only the cards scroll
             ScrollView(.vertical, showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 0) {
+                VStack(alignment: .leading, spacing: 24) {
                     
-                    DailyActivityHeaderView(
-                        dateText: viewModel.data.topDateText,
-                        onBack: onBack,
-                        onShare: onShareTap
-                    )
+                    // Prompt Card
+                    DailyPromptCardView(data: viewModel.data)
                     
-                    VStack(alignment: .leading, spacing: 24) {
+                    // Watch First
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text(viewModel.data.watchTitle)
+                            .font(.custom("Inter-Bold", size: 18))
+                            .foregroundColor(Color(hexCode: "1C1E26"))
                         
-                        // 1. Prompt Card
-                        DailyPromptCardView(data: viewModel.data)
+                        DailyVideoCardView(
+                            title: viewModel.data.videoTitle,
+                            onPlay: onPlayVideoTap
+                        )
                         
-                        // 2. Watch First
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text(viewModel.data.watchTitle)
+                        Text(viewModel.data.videoSubtitle)
+                            .font(.custom("Inter-Regular", size: 14))
+                            .foregroundColor(Color(hexCode: "667085"))
+                    }
+                    
+                    // How to do it
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack {
+                            Text(viewModel.data.howToTitle)
                                 .font(.custom("Inter-Bold", size: 18))
                                 .foregroundColor(Color(hexCode: "1C1E26"))
-                            
-                            DailyVideoCardView(
-                                title: viewModel.data.videoTitle,
-                                onPlay: onPlayVideoTap
-                            )
-                            
-                            Text(viewModel.data.videoSubtitle)
-                                .font(.custom("Inter-Regular", size: 14))
+                            Spacer()
+                            Text(viewModel.data.durationText)
+                                .font(.custom("Inter-Medium", size: 12))
                                 .foregroundColor(Color(hexCode: "667085"))
                         }
                         
-                        // 3. How to do it
                         VStack(alignment: .leading, spacing: 16) {
-                            HStack {
-                                Text(viewModel.data.howToTitle)
-                                    .font(.custom("Inter-Bold", size: 18))
-                                    .foregroundColor(Color(hexCode: "1C1E26"))
-                                Spacer()
-                                Text(viewModel.data.durationText)
-                                    .font(.custom("Inter-Medium", size: 12))
-                                    .foregroundColor(Color(hexCode: "667085"))
-                            }
-                            
-                            VStack(alignment: .leading, spacing: 16) {
-                                ForEach(viewModel.data.steps) { step in
-                                    DailyStepRowView(step: step)
-                                }
+                            ForEach(viewModel.data.steps) { step in
+                                DailyStepRowView(step: step)
                             }
                         }
-                        
-                        // 4. Reflect Card
-                        DailyReflectCardView(data: viewModel.data)
-                        
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 24)
-                    .padding(.bottom, 20)
+                    
+                    // Reflect Card
+                    DailyReflectCardView(data: viewModel.data)
+                    
                 }
+                .padding(.horizontal, 20)
+                .padding(.top, 24)
+                .padding(.bottom, 20)
             }
             
-            // 5. Bottom Buttons
+            // 3. PINNED BOTTOM BUTTONS: Fixed at the bottom
             HStack(spacing: 12) {
                 Button(action: {
                     onShareTap?()
@@ -271,6 +272,7 @@ struct DailyActivitySwiftUIView: View {
             .padding(.bottom, 24)
             .background(Color.white)
         }
+        .edgesIgnoringSafeArea(.top) // Ensures pinned header hits the absolute top of the screen
         .background(Color(hexCode: "F4F6FB").edgesIgnoringSafeArea(.all))
         .navigationBarHidden(true)
     }
@@ -329,7 +331,6 @@ fileprivate struct DailyActivityHeaderView: View {
             )
         )
         .clipShape(DailyHeaderRoundedCorner(radius: 32, corners: [.bottomLeft, .bottomRight]))
-        .edgesIgnoringSafeArea(.top)
     }
     
     func safeAreaTop() -> CGFloat {

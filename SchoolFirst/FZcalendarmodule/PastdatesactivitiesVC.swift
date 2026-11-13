@@ -45,27 +45,29 @@ class PastdatesactivitiesVC: UIViewController {
                 guard let self = self else { return }
                 DispatchQueue.main.async {
                     // Open DailyactivityVC on row tap
-                    let dailyVC = DailyactivityVC()
-                    dailyVC.hidesBottomBarWhenPushed = true
-                    dailyVC.modalPresentationStyle = .fullScreen
-                    if let nav = self.navigationController {
-                        nav.pushViewController(dailyVC, animated: true)
-                    } else {
-                        self.present(dailyVC, animated: true, completion: nil)
-                    }
+                    // let dailyVC = DailyactivityVC()
+                    // dailyVC.hidesBottomBarWhenPushed = true
+                    // dailyVC.modalPresentationStyle = .fullScreen
+                    // if let nav = self.navigationController {
+                    //     nav.pushViewController(dailyVC, animated: true)
+                    // } else {
+                    //     self.present(dailyVC, animated: true, completion: nil)
+                    // }
+                    print("Tapped on activity: \(item.title)")
                 }
             },
             onOpenMissedTap: { [weak self] in
                 guard let self = self else { return }
                 DispatchQueue.main.async {
-                    let dailyVC = DailyactivityVC()
-                    dailyVC.hidesBottomBarWhenPushed = true
-                    dailyVC.modalPresentationStyle = .fullScreen
-                    if let nav = self.navigationController {
-                        nav.pushViewController(dailyVC, animated: true)
-                    } else {
-                        self.present(dailyVC, animated: true, completion: nil)
-                    }
+                    // let dailyVC = DailyactivityVC()
+                    // dailyVC.hidesBottomBarWhenPushed = true
+                    // dailyVC.modalPresentationStyle = .fullScreen
+                    // if let nav = self.navigationController {
+                    //     nav.pushViewController(dailyVC, animated: true)
+                    // } else {
+                    //     self.present(dailyVC, animated: true, completion: nil)
+                    // }
+                    print("Open Missed Tapped")
                 }
             }
         )
@@ -186,19 +188,22 @@ struct PastDatesSwiftUIView: View {
     }
     
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 0) {
-                
-                PastDatesHeaderView(
-                    title: viewModel.headerTitle,
-                    subtitle: viewModel.headerSubtitle,
-                    onBack: onBack,
-                    onShare: onShareTap
-                )
-                
+        VStack(spacing: 0) {
+            
+            // 1. PINNED HEADER (Will not scroll)
+            PastDatesHeaderView(
+                title: viewModel.headerTitle,
+                subtitle: viewModel.headerSubtitle,
+                onBack: onBack,
+                onShare: onShareTap
+            )
+            .zIndex(1) // Keeps it visibly above the scrolling content
+            
+            // 2. SCROLLABLE CONTENT (Only this part scrolls)
+            ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 16) {
                     
-                    // 1. Filters
+                    // Filters
                     HStack(spacing: 8) {
                         ForEach(PastDatesFilter.allCases) { filter in
                             PastFilterChip(
@@ -211,12 +216,12 @@ struct PastDatesSwiftUIView: View {
                         }
                     }
                     
-                    // 2. Section Title
+                    // Section Title
                     Text(viewModel.sectionTitle)
                         .font(.custom("Inter-Bold", size: 16))
                         .foregroundColor(Color(hexCode: "1C1E26"))
                     
-                    // 3. List
+                    // List
                     VStack(spacing: 12) {
                         ForEach(viewModel.filteredActivities) { item in
                             Button(action: {
@@ -228,7 +233,7 @@ struct PastDatesSwiftUIView: View {
                         }
                     }
                     
-                    // 4. Missed Card
+                    // Missed Card
                     PastMissedCardView(
                         title: viewModel.missedTitle,
                         subtitle: viewModel.missedSubtitle,
@@ -243,6 +248,7 @@ struct PastDatesSwiftUIView: View {
                 .padding(.bottom, 100)
             }
         }
+        .edgesIgnoringSafeArea(.top) // Ensures the background of the header hits the absolute top
         .background(Color(hexCode: "F4F6FB").edgesIgnoringSafeArea(.all))
         .navigationBarHidden(true)
     }
@@ -298,7 +304,6 @@ fileprivate struct PastDatesHeaderView: View {
             )
         )
         .clipShape(PastHeaderRoundedCorner(radius: 32, corners: [.bottomLeft, .bottomRight]))
-        .edgesIgnoringSafeArea(.top)
     }
     
     func safeAreaTop() -> CGFloat {

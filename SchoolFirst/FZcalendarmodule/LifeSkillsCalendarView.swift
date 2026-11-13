@@ -5,7 +5,7 @@ struct CalendarDay: Identifiable {
     let id = UUID()
     let dayName: String
     let date: String
-    let isSelected: Bool
+    var isSelected: Bool // Changed to var so it can be updated on tap
     let hasDot: Bool
 }
 
@@ -30,8 +30,8 @@ struct LifeSkillsCalendarView: View {
     // Callback for View all button navigation
     var onViewAllTap: (() -> Void)?
     
-    // Dummy Data for UI
-    let weekDays: [CalendarDay] = [
+    // Changed to @State to update UI dynamically on tap
+    @State private var weekDays: [CalendarDay] = [
         CalendarDay(dayName: "Mon", date: "19", isSelected: false, hasDot: true),
         CalendarDay(dayName: "Tue", date: "20", isSelected: false, hasDot: true),
         CalendarDay(dayName: "Wed", date: "21", isSelected: false, hasDot: true),
@@ -49,15 +49,17 @@ struct LifeSkillsCalendarView: View {
     ]
     
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 0) {
-                
-                // 1. Custom Header
-                HeaderView(onBack: onBack)
-                
+        VStack(spacing: 0) {
+            
+            // 1. PINNED CUSTOM HEADER (Will not scroll)
+            HeaderView(onBack: onBack)
+                .zIndex(1)
+            
+            // 2. SCROLLABLE CONTENT (Only bottom part scrolls)
+            ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 24) {
                     
-                    // 2. Current Month & Week View
+                    // Current Month & Week View
                     VStack(alignment: .leading, spacing: 16) {
                         HStack {
                             Text("October 2026")
@@ -77,10 +79,18 @@ struct LifeSkillsCalendarView: View {
                             .contentShape(Rectangle())
                         }
                         
-                        HStack(spacing: 8) {
-                            ForEach(weekDays) { day in
-                                WeekDayPill(day: day)
+                        // HORIZONTAL SCROLL FOR DATES
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(weekDays) { day in
+                                    WeekDayPill(day: day)
+                                        .onTapGesture {
+                                            // Handle Date Selection
+                                            selectDate(tappedDay: day)
+                                        }
+                                }
                             }
+                            .padding(.vertical, 4) // Prevents shadow from clipping
                         }
                         
                         // Streak Badge
@@ -116,6 +126,7 @@ struct LifeSkillsCalendarView: View {
                             .contentShape(Rectangle())
                         }
                         
+                        // HORIZONTAL SCROLL FOR PAST DATES (Already fixed in your code, keeping untouched)
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 12) {
                                 ForEach(pastDates) { date in
@@ -128,6 +139,7 @@ struct LifeSkillsCalendarView: View {
                                     .frame(width: 20, height: 70)
                                     .opacity(0.5)
                             }
+                            .padding(.vertical, 4)
                         }
                     }
                     
@@ -142,7 +154,7 @@ struct LifeSkillsCalendarView: View {
                         Text("See how a daily prompt helps your family learn together.")
                             .font(.custom("Inter-Regular", size: 14))
                             .foregroundColor(Color.gray)
-                            .padding(.bottom, 100)
+                            .padding(.bottom, 100) // Spacing so user can scroll fully down
                     }
                     
                 }
@@ -150,8 +162,16 @@ struct LifeSkillsCalendarView: View {
                 .padding(.top, 24)
             }
         }
+        .edgesIgnoringSafeArea(.top) // Allows pinned header to reach absolute top seamlessly
         .background(Color.CustomAppBackground.edgesIgnoringSafeArea(.all))
         .navigationBarHidden(true)
+    }
+    
+    // Function to process tap and select only the clicked date
+    private func selectDate(tappedDay: CalendarDay) {
+        for index in weekDays.indices {
+            weekDays[index].isSelected = (weekDays[index].id == tappedDay.id)
+        }
     }
 }
 
@@ -206,7 +226,6 @@ struct HeaderView: View {
             LinearGradient(gradient: Gradient(colors: [Color.CustomHeaderStart, Color.CustomHeaderEnd]), startPoint: .topLeading, endPoint: .bottomTrailing)
         )
         .customCornerRadius(32, corners: [.bottomLeft, .bottomRight])
-        .edgesIgnoringSafeArea(.top)
     }
     
     func safeAreaTop() -> CGFloat {
@@ -238,7 +257,7 @@ struct WeekDayPill: View {
                 .frame(width: 6, height: 6)
                 .padding(.top, 2)
         }
-        .frame(maxWidth: .infinity)
+        .frame(width: 46) // Changed to a fixed width so ScrollView horizontal behavior functions properly
         .padding(.vertical, 12)
         .background(day.isSelected ? Color.CustomPrimaryBlue : Color.white)
         .cornerRadius(14)

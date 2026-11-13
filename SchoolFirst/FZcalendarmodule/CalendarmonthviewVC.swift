@@ -1,6 +1,9 @@
 import UIKit
 import SwiftUI
 
+// =====================================================
+// MARK: - CalendarViewController (UIKit Host)
+// =====================================================
 class CalendarmonthviewVC: UIViewController {
     
     override func viewDidLoad() {
@@ -33,7 +36,6 @@ class CalendarmonthviewVC: UIViewController {
                     if let nav = self.navigationController {
                         nav.pushViewController(dailyVC, animated: true)
                     } else {
-                        // TabBar case where navigationController is nil
                         self.present(dailyVC, animated: true, completion: nil)
                     }
                 }
@@ -42,6 +44,7 @@ class CalendarmonthviewVC: UIViewController {
         
         // 3. Wrap it in a UIHostingController
         let hostingController = UIHostingController(rootView: swiftUIView)
+        hostingController.view.backgroundColor = .clear // Ensure clear background
         
         // 4. Add the hosting controller to the current view controller
         addChild(hostingController)
@@ -79,16 +82,20 @@ fileprivate struct MonthDayItem: Identifiable {
     let id = UUID()
     let dayNumber: String
     let status: DayStatus
+    var isSelected: Bool = false // Added to track selection state
 }
 
+// =====================================================
 // MARK: - Main SwiftUI View
+// =====================================================
 struct CalendarMonthSwiftUIView: View {
     var onBack: (() -> Void)?
     var onOpenActivityTap: (() -> Void)?
     
     let weekDays = ["S", "M", "T", "W", "T", "F", "S"]
     
-    fileprivate let monthDays: [MonthDayItem] = [
+    // Changed to @State so the UI updates when a date is selected
+    @State fileprivate var monthDays: [MonthDayItem] = [
         MonthDayItem(dayNumber: "", status: .empty),
         MonthDayItem(dayNumber: "", status: .empty),
         MonthDayItem(dayNumber: "", status: .empty),
@@ -115,7 +122,7 @@ struct CalendarMonthSwiftUIView: View {
         MonthDayItem(dayNumber: "20", status: .done),
         MonthDayItem(dayNumber: "21", status: .done),
         MonthDayItem(dayNumber: "22", status: .done),
-        MonthDayItem(dayNumber: "23", status: .today),
+        MonthDayItem(dayNumber: "23", status: .today, isSelected: true), // Initially Selected
         MonthDayItem(dayNumber: "24", status: .future),
         MonthDayItem(dayNumber: "25", status: .future),
         MonthDayItem(dayNumber: "26", status: .future),
@@ -129,11 +136,14 @@ struct CalendarMonthSwiftUIView: View {
     let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 7)
     
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 0) {
-                
-                MonthScreenHeaderView(onBack: onBack)
-                
+        VStack(spacing: 0) {
+            
+            // 1. PINNED HEADER: Stays fixed at the top
+            MonthScreenHeaderView(onBack: onBack)
+                .zIndex(1)
+            
+            // 2. SCROLLABLE CONTENT: Only the calendar and card scroll
+            ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 24) {
                     
                     VStack(alignment: .leading, spacing: 20) {
@@ -169,12 +179,16 @@ struct CalendarMonthSwiftUIView: View {
                             }
                         }
                         
+                        // Calendar Grid
                         LazyVGrid(columns: columns, spacing: 12) {
                             ForEach(monthDays) { item in
-                                DayCellView(item: item)
+                                DayCellView(item: item) {
+                                    selectDate(item)
+                                }
                             }
                         }
                         
+                        // Legend
                         HStack(spacing: 16) {
                             LegendItem(color: Color(hexCode: "475467"), text: "Done", textColor: Color(hexCode: "667085"))
                             LegendItem(color: Color(hexCode: "B42318"), text: "Missed", textColor: Color(hexCode: "B42318"))
@@ -188,6 +202,7 @@ struct CalendarMonthSwiftUIView: View {
                     .cornerRadius(20)
                     .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 4)
                     
+                    // Today's Activity Card
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Today’s activity")
                             .font(.custom("Inter-Bold", size: 18))
@@ -237,11 +252,22 @@ struct CalendarMonthSwiftUIView: View {
                 .padding(.top, 24)
             }
         }
+        .edgesIgnoringSafeArea(.top)
         .background(Color(hexCode: "F4F6FB").edgesIgnoringSafeArea(.all))
         .navigationBarHidden(true)
     }
+    
+    // Function to update the selected date on tap
+    private func selectDate(_ tappedItem: MonthDayItem) {
+        for index in monthDays.indices {
+            monthDays[index].isSelected = (monthDays[index].id == tappedItem.id)
+        }
+    }
 }
 
+// =====================================================
+// MARK: - Subviews
+// =====================================================
 fileprivate struct MonthScreenHeaderView: View {
     var onBack: (() -> Void)?
     
@@ -292,7 +318,6 @@ fileprivate struct MonthScreenHeaderView: View {
             )
         )
         .clipShape(MonthHeaderRoundedCorner(radius: 32, corners: [.bottomLeft, .bottomRight]))
-        .edgesIgnoringSafeArea(.top)
     }
     
     func safeAreaTop() -> CGFloat {
@@ -308,24 +333,27 @@ fileprivate struct MonthScreenHeaderView: View {
 
 fileprivate struct DayCellView: View {
     let item: MonthDayItem
+    let onTap: () -> Void
     
     var body: some View {
         if item.status == .empty {
             Color.clear
                 .frame(width: 40, height: 46)
         } else {
-            Button(action: {}) {
+            Button(action: onTap) {
                 VStack(spacing: 4) {
                     Text(item.dayNumber)
                         .font(.custom(fontName(for: item.status), size: 15))
-                        .foregroundColor(textColor(for: item.status))
+                        // White text if selected, otherwise fallback to standard coloring
+                        .foregroundColor(item.isSelected ? .white : textColor(for: item.status))
                     
                     Circle()
                         .fill(dotColor(for: item.status))
                         .frame(width: 5, height: 5)
                 }
                 .frame(width: 40, height: 46)
-                .background(item.status == .today ? Color(hexCode: "3451D1") : Color.clear)
+                // Blue background if selected
+                .background(item.isSelected ? Color(hexCode: "3451D1") : Color.clear)
                 .cornerRadius(12)
             }
         }
@@ -341,9 +369,8 @@ fileprivate struct DayCellView: View {
     }
     
     private func textColor(for status: DayStatus) -> Color {
+        // We decouple selection styling from the raw status so other days can be tapped
         switch status {
-        case .today:
-            return .white
         case .future:
             return Color(hexCode: "667085")
         default:
