@@ -1,10 +1,3 @@
-//
-//  EdutainmentHomeView.swift
-//  SchoolFirst
-//
-//  Created by vamshi krishna on 13/11/26.
-//
-
 import SwiftUI
 
 // MARK: - Models for API integration readiness
@@ -69,9 +62,13 @@ struct EdutainmentHomeView: View {
     var onBack: (() -> Void)? = nil
     var onSeeAllExplore: (() -> Void)? = nil
     var onStoriesTap: (() -> Void)? = nil
+    var onSeeAllTrending: (() -> Void)? = nil
+    var onSeeAllRecentlyAdded: (() -> Void)? = nil
+    var onFeaturedPlayTap: (() -> Void)? = nil
 
     @State private var searchText = ""
     @State private var selectedCategoryIndex: Int = 0
+    @State private var selectedSegment: Int = 0   // 0 = DIY, 1 = Stories
 
     let categories: [CategoryItem] = [
         CategoryItem(name: "All", dotColor: nil),
@@ -83,39 +80,22 @@ struct EdutainmentHomeView: View {
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .leading, spacing: 22) {
-                // 1. Navigation Header
                 topBarView
-
-                // 2. Welcome Title
                 headerGreetingView
-
-                // 3. Search Bar
                 searchBarView
-
-                // 4. DIY / Stories Toggle Switch
                 tabSwitcher
-
-                // 5. Category Horizontal Filter Pills
                 categoryPillsSection
-
-                // 6. Featured Hero Banner
                 featuredCardView
-
-                // 7. Explore DIY Activities Section
                 exploreActivitiesSection
-
-                // 8. Trending Now Section
                 trendingSection
-
-                // 9. Recently Added Section
                 recentlyAddedSection
-
                 Spacer(minLength: 40)
             }
             .padding(.horizontal, 20)
             .padding(.top, 12)
         }
         .background(AppColors.background.ignoresSafeArea())
+        .onAppear { selectedSegment = 0 }   // reset to DIY when returning from Stories
     }
 
     // MARK: - Top Bar
@@ -152,7 +132,6 @@ struct EdutainmentHomeView: View {
                 }
             }
 
-            // User Profile Circle
             Text("AS")
                 .font(.inter(.bold, size: 14))
                 .foregroundColor(.white)
@@ -201,40 +180,48 @@ struct EdutainmentHomeView: View {
     // MARK: - DIY / Stories Segment Switcher
     private var tabSwitcher: some View {
         HStack(spacing: 0) {
-            // DIY (Active on this Home screen)
-            HStack(spacing: 8) {
-                Image(systemName: "scissors")
-                    .font(.system(size: 14, weight: .bold))
-                Text("DIY")
-                    .font(.inter(.bold, size: 14))
+            segmentButton(index: 0, icon: "scissors", title: "DIY") {
+                // DIY is the home tab — no navigation needed
             }
-            .foregroundColor(.white)
-            .frame(maxWidth: .infinity)
-            .frame(height: 44)
-            .background(AppColors.primary)
-            .clipShape(Capsule())
 
-            // Stories (Index 1 - tapping navigates to StoriesVC)
-            Button(action: {
+            segmentButton(index: 1, icon: "book.closed", title: "Stories") {
                 onStoriesTap?()
-            }) {
-                HStack(spacing: 8) {
-                    Image(systemName: "book.closed")
-                        .font(.system(size: 14))
-                    Text("Stories")
-                        .font(.inter(.medium, size: 14))
-                }
-                .foregroundColor(AppColors.textGray)
-                .frame(maxWidth: .infinity)
-                .frame(height: 44)
-                .background(Color.white)
-                .clipShape(Capsule())
             }
         }
         .padding(4)
         .background(Color.white)
         .clipShape(Capsule())
         .shadow(color: Color.black.opacity(0.03), radius: 6, x: 0, y: 2)
+    }
+
+    // ✅ CHANGED: high-priority tap gesture instead of Button,
+    // so other gestures (ScrollView / UIKit) can't steal the tap
+    private func segmentButton(index: Int, icon: String, title: String,
+                               action: @escaping () -> Void) -> some View {
+        let isSelected = selectedSegment == index
+        return HStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.system(size: 14, weight: isSelected ? .bold : .medium))
+            Text(title)
+                .font(.inter(isSelected ? .bold : .medium, size: 14))
+        }
+        .foregroundColor(isSelected ? .white : AppColors.textGray)
+        .frame(maxWidth: .infinity)
+        .frame(height: 44)
+        .background(
+            Capsule().fill(isSelected ? AppColors.primary : Color.white)
+        )
+        .contentShape(Capsule())          // whole pill is tappable
+        .highPriorityGesture(
+            TapGesture().onEnded {
+                print("🟣 segment tapped:", index)
+                if index == 0 {
+                    selectedSegment = 0   // only DIY stays selected; Stories just navigates
+                }
+                action()
+            }
+        )
+        .accessibilityAddTraits(.isButton)
     }
 
     // MARK: - Horizontal Category Pills
@@ -270,7 +257,6 @@ struct EdutainmentHomeView: View {
     // MARK: - Featured Hero Card
     private var featuredCardView: some View {
         ZStack(alignment: .bottomLeading) {
-            // Background Image
             AsyncImage(url: URL(string: "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=800&auto=format&fit=crop")) { image in
                 image.resizable()
                     .aspectRatio(contentMode: .fill)
@@ -280,14 +266,12 @@ struct EdutainmentHomeView: View {
             .frame(height: 200)
             .clipped()
 
-            // Dark gradient overlay
             LinearGradient(
                 colors: [Color.clear, Color.black.opacity(0.75)],
                 startPoint: .top,
                 endPoint: .bottom
             )
 
-            // Top-left "Featured Today" badge
             VStack {
                 HStack {
                     HStack(spacing: 5) {
@@ -308,10 +292,11 @@ struct EdutainmentHomeView: View {
             }
             .padding(14)
 
-            // Play Icon Button
             HStack {
                 Spacer()
-                Button(action: {}) {
+                Button(action: {
+                    onFeaturedPlayTap?()
+                }) {
                     Image(systemName: "play.fill")
                         .font(.system(size: 16))
                         .foregroundColor(AppColors.primary)
@@ -324,7 +309,6 @@ struct EdutainmentHomeView: View {
             .padding(.trailing, 18)
             .padding(.bottom, 48)
 
-            // Bottom Content Information
             VStack(alignment: .leading, spacing: 5) {
                 Text("Paper Bag Tree Craft")
                     .font(.inter(.bold, size: 18))
@@ -406,7 +390,13 @@ struct EdutainmentHomeView: View {
     // MARK: - Trending Section
     private var trendingSection: some View {
         VStack(alignment: .leading, spacing: 14) {
-            SectionHeaderView(title: "Trending now", subtitle: "Most made this week")
+            SectionHeaderView(
+                title: "Trending now",
+                subtitle: "Most made this week",
+                onSeeAll: {
+                    onSeeAllTrending?()
+                }
+            )
 
             VStack(spacing: 14) {
                 TrendingRowView(
@@ -442,7 +432,13 @@ struct EdutainmentHomeView: View {
     // MARK: - Recently Added Section
     private var recentlyAddedSection: some View {
         VStack(alignment: .leading, spacing: 14) {
-            SectionHeaderView(title: "Recently added", subtitle: "Fresh from this week")
+            SectionHeaderView(
+                title: "Recently added",
+                subtitle: "Fresh from this week",
+                onSeeAll: {
+                    onSeeAllRecentlyAdded?()
+                }
+            )
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 16) {
@@ -591,13 +587,11 @@ struct TrendingRowView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            // Rank Number
             Text("\(rank)")
                 .font(.inter(.extraBold, size: 30))
                 .foregroundColor(AppColors.primary.opacity(0.25))
                 .frame(width: 25)
 
-            // Thumbnail
             AsyncImage(url: URL(string: imageUrl)) { img in
                 img.resizable().aspectRatio(contentMode: .fill)
             } placeholder: {
@@ -606,7 +600,6 @@ struct TrendingRowView: View {
             .frame(width: 62, height: 62)
             .clipShape(RoundedRectangle(cornerRadius: 14))
 
-            // Details
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
                     .font(.inter(.bold, size: 13))
@@ -639,7 +632,6 @@ struct TrendingRowView: View {
 
             Spacer()
 
-            // Circular Play Button
             Button(action: {}) {
                 Image(systemName: "play.fill")
                     .font(.system(size: 11))

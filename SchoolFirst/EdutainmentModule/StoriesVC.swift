@@ -27,9 +27,20 @@ class StoriesVC: UIViewController {
             },
             onSeeAllRecent: { [weak self] in
                 guard let self else { return }
-                let vc = AlledutainementVC()
+                let vc = AllstoriesVC()
                 if let nav = self.navigationController { nav.pushViewController(vc, animated: true) }
                 else { vc.modalPresentationStyle = .fullScreen; self.present(vc, animated: true) }
+            },
+            // ✅ ADDED: navigate to StorydetailsVC on "Watch now"
+            onWatchNow: { [weak self] in
+                guard let self else { return }
+                let vc = StorydetailsVC()
+                if let nav = self.navigationController {
+                    nav.pushViewController(vc, animated: true)
+                } else {
+                    vc.modalPresentationStyle = .fullScreen
+                    self.present(vc, animated: true)
+                }
             }
         )
 

@@ -121,35 +121,78 @@ class StoriesViewModel: ObservableObject {
     }
 }
 
+// MARK: - FIXED REMOTE IMAGE (Strictly constrained - stops width overflow)
+private struct StoryHomeRemoteImage: View {
+    let urlString: String
+
+    var body: some View {
+        GeometryReader { proxy in
+            let width = proxy.size.width
+            let height = proxy.size.height
+
+            Group {
+                if let url = URL(string: urlString), !urlString.isEmpty {
+                    AsyncImage(url: url) { phase in
+                        if let image = phase.image {
+                            image.resizable().scaledToFill()
+                                .frame(width: width, height: height)
+                                .clipped()
+                        } else if phase.error != nil {
+                            placeholder
+                        } else {
+                            ZStack {
+                                Color.gray.opacity(0.15)
+                                ProgressView()
+                            }
+                        }
+                    }
+                } else {
+                    placeholder
+                }
+            }
+            .frame(width: width, height: height)
+            .clipped()
+        }
+    }
+
+    private var placeholder: some View {
+        ZStack {
+            Color.gray.opacity(0.15)
+            Image(systemName: "photo").foregroundColor(Color.gray.opacity(0.45))
+        }
+    }
+}
+
 // MARK: - MAIN VIEW
 struct StoriesHomeView: View {
     var onBack: (() -> Void)? = nil
     var onDIYTap: (() -> Void)? = nil
     var onSeeAllRecent: (() -> Void)? = nil
+    var onWatchNow: (() -> Void)? = nil              // ✅ ADDED
     @StateObject private var vm = StoriesViewModel()
 
     var body: some View {
-        ZStack(alignment: .top) {
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 0) {
-                    heroView
-                    VStack(spacing: 16) {
-                        continueCard
-                        filterPills
-                        shelfSection
-                        recentSection
-                        popularSection
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 14)
-                    .padding(.bottom, 30)
-                }
-            }
-            .background(StoryTheme.bg)
-            .ignoresSafeArea(edges: .top)
+        // FIXED: Removed outer fixed ZStack, topBar no longer floats over scrolled content
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: 0) {
+                heroView
 
-            topBar
+                VStack(spacing: 16) {
+                    continueCard
+                    filterPills
+                    shelfSection
+                    recentSection
+                    popularSection
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 14)
+                .padding(.bottom, 30)
+                .frame(maxWidth: .infinity) // FIXED
+            }
+            .frame(maxWidth: .infinity) // FIXED: content width = screen width
         }
+        .background(StoryTheme.bg)
+        .ignoresSafeArea(edges: .top)
         .background(StoryTheme.bg.ignoresSafeArea())
     }
 
@@ -207,14 +250,15 @@ struct StoriesHomeView: View {
     // MARK: Hero
     private var heroView: some View {
         ZStack(alignment: .bottomLeading) {
-            AsyncImage(url: URL(string: vm.featured?.imageUrl ?? "")) { img in
-                img.resizable().aspectRatio(contentMode: .fill)
-            } placeholder: {
-                Color(red: 0.25, green: 0.28, blue: 0.4)
-            }
-            .frame(height: 430).frame(maxWidth: .infinity).clipped()
+            // FIXED: Was AsyncImage - now constrained image
+            StoryHomeRemoteImage(urlString: vm.featured?.imageUrl ?? "")
+                .frame(maxWidth: .infinity)
+                .frame(height: 430)
+                .clipped()
 
             LinearGradient(colors: [.black.opacity(0.05), .black.opacity(0.25), .black.opacity(0.85)], startPoint: .top, endPoint: .bottom)
+                .frame(maxWidth: .infinity)
+                .frame(height: 430)
 
             VStack(alignment: .leading, spacing: 10) {
                 HStack(spacing: 6) {
@@ -242,7 +286,7 @@ struct StoriesHomeView: View {
                 .foregroundColor(.white.opacity(0.92))
 
                 HStack(spacing: 10) {
-                    Button(action: {}) {
+                    Button(action: { onWatchNow?() }) {                                   // ✅ CHANGED (was `Button(action: {})`)
                         HStack(spacing: 7) {
                             Image(systemName: "play.fill").font(.system(size: 11))
                             Text("Watch now").font(inter(.bold, 14))
@@ -260,6 +304,15 @@ struct StoriesHomeView: View {
                 .padding(.top, 4)
             }
             .padding(.horizontal, 20).padding(.bottom, 22)
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            // FIXED: topBar inside hero - scrolls away, no overlap on lower sections
+            VStack(spacing: 0) {
+                topBar
+                Spacer()
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 430)
         }
         .frame(height: 430).frame(maxWidth: .infinity)
         .clipShape(BottomRounded(radius: 26))
@@ -268,12 +321,10 @@ struct StoriesHomeView: View {
     // MARK: Continue
     private var continueCard: some View {
         HStack(spacing: 11) {
-            AsyncImage(url: URL(string: vm.continueItem?.imageUrl ?? "")) { image in
-                image.resizable().aspectRatio(contentMode: .fill)
-            } placeholder: {
-                Color.gray.opacity(0.15)
-            }
-            .frame(width: 50, height: 50).clipShape(RoundedRectangle(cornerRadius: 14))
+            // FIXED: Was AsyncImage
+            StoryHomeRemoteImage(urlString: vm.continueItem?.imageUrl ?? "")
+                .frame(width: 50, height: 50)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
 
             VStack(alignment: .leading, spacing: 3) {
                 Text("Continue listening").font(inter(.semibold, 11)).foregroundColor(StoryTheme.primary)
@@ -337,6 +388,7 @@ struct StoriesHomeView: View {
                 }
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     // MARK: Recent
@@ -356,40 +408,39 @@ struct StoriesHomeView: View {
                 HStack(spacing: 12) {
                     ForEach(vm.filteredRecent) { r in
                         VStack(alignment: .leading, spacing: 7) {
-                            ZStack(alignment: .bottomLeading) {
-                                AsyncImage(url: URL(string: r.imageUrl)) { image in
-                                    image.resizable().aspectRatio(contentMode: .fill)
-                                } placeholder: {
-                                    Color.gray.opacity(0.15)
-                                }
-                                .frame(width: 132, height: 160).clipShape(RoundedRectangle(cornerRadius: 18))
-                                if r.isFromSchool {
-                                    VStack {
+                            // FIXED: Was AsyncImage + Spacer() VStack inside ZStack
+                            StoryHomeRemoteImage(urlString: r.imageUrl)
+                                .frame(width: 132, height: 160)
+                                .overlay(alignment: .top) {
+                                    if r.isFromSchool {
                                         Text("From school").font(inter(.bold, 8)).foregroundColor(.white)
                                             .padding(.horizontal, 8).padding(.vertical, 4)
                                             .background(StoryTheme.greenBadge).clipShape(Capsule())
-                                            .frame(maxWidth: .infinity)
                                             .padding(.top, 8)
-                                        Spacer()
                                     }
                                 }
-                                HStack(spacing: 4) {
-                                    Image(systemName: r.isVideo ? "video.fill" : "headphones").font(.system(size: 8, weight: .bold))
-                                    Text(r.duration).font(inter(.bold, 9.5))
+                                .overlay(alignment: .bottomLeading) {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: r.isVideo ? "video.fill" : "headphones").font(.system(size: 8, weight: .bold))
+                                        Text(r.duration).font(inter(.bold, 9.5))
+                                    }
+                                    .foregroundColor(.white).padding(.horizontal, 8).padding(.vertical, 5)
+                                    .background(Color.black.opacity(0.62)).clipShape(Capsule())
+                                    .padding(8)
                                 }
-                                .foregroundColor(.white).padding(.horizontal, 8).padding(.vertical, 5)
-                                .background(Color.black.opacity(0.62)).clipShape(Capsule())
-                                .padding(8)
-                            }
+                                .clipShape(RoundedRectangle(cornerRadius: 18))
+
                             Text(r.title).font(inter(.bold, 12)).foregroundColor(StoryTheme.dark).lineLimit(2)
                                 .frame(width: 132, height: 32, alignment: .topLeading)
                         }
+                        .frame(width: 132)
                     }
                 }
                 .padding(.horizontal, 16)
             }
             .padding(.horizontal, -16)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     // MARK: Popular
@@ -404,12 +455,11 @@ struct StoriesHomeView: View {
                     let p = vm.popular[idx]
                     VStack(spacing: 0) {
                         HStack(spacing: 12) {
-                            AsyncImage(url: URL(string: p.imageUrl)) { image in
-                                image.resizable().aspectRatio(contentMode: .fill)
-                            } placeholder: {
-                                Color.gray.opacity(0.12)
-                            }
-                            .frame(width: 60, height: 60).clipShape(RoundedRectangle(cornerRadius: 16))
+                            // FIXED: Was AsyncImage
+                            StoryHomeRemoteImage(urlString: p.imageUrl)
+                                .frame(width: 60, height: 60)
+                                .clipShape(RoundedRectangle(cornerRadius: 16))
+
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(p.title).font(inter(.bold, 13)).foregroundColor(StoryTheme.dark).lineLimit(2)
                                 HStack(spacing: 5) {
@@ -423,6 +473,8 @@ struct StoriesHomeView: View {
                                     Text(p.plays).font(inter(.medium, 11))
                                 }
                                 .foregroundColor(StoryTheme.gray)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
                             }
                             Spacer()
                             Button(action: {}) {
@@ -441,6 +493,7 @@ struct StoriesHomeView: View {
             .background(Color.white).clipShape(RoundedRectangle(cornerRadius: 22))
             .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 4)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

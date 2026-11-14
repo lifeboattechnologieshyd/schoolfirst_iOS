@@ -36,9 +36,18 @@ final class AllstoriesVC: UIViewController {
             onSearchTap: {
                 // TODO: Search
             },
-            onStoryTap: { story in
-                // TODO: Push detail/player with story.id
-                print("Open story:", story.id)
+            onStoryTap: { [weak self] story in
+                guard let self = self else { return }
+                DispatchQueue.main.async {
+                    let detailVC = PicturestoryVC()
+                    // Later: detailVC.storyId = story.id
+                    if let nav = self.navigationController {
+                        nav.pushViewController(detailVC, animated: true)
+                    } else {
+                        detailVC.modalPresentationStyle = .fullScreen
+                        self.present(detailVC, animated: true)
+                    }
+                }
             }
         )
 
