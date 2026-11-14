@@ -514,8 +514,7 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDelegateFlow
             let vc = storyboard?.instantiateViewController(identifier: "CoursesVC") as! CoursesVC
             navigationController?.pushViewController(vc, animated: true)
         case 7:
-            let stbd = UIStoryboard(name: "EdStore", bundle: nil)
-            let vc = stbd.instantiateViewController(identifier: "EdStoreViewController") as! EdStoreViewController
+            let vc = EdutainmenthomeVC()
             navigationController?.pushViewController(vc, animated: true)
         case 8:
             let vc = storyboard?.instantiateViewController(identifier: "ComingSoonVC") as! ComingSoonVC
